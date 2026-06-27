@@ -21,6 +21,11 @@
 /storage/*.key
 /storage/pail
 /vendor
+/docs
+/docs/database.md
+/docs/project.md
+/docs/rules.md
+/docs/task.md
 _ide_helper.php
 Homestead.json
 Homestead.yaml
