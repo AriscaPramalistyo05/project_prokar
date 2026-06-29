@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Mail\OtpMail;
+use App\Models\EmailOtpVerification;
 use App\Models\User;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules;
-use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
@@ -25,27 +25,40 @@ class RegisteredUserController extends Controller
 
     /**
      * Handle an incoming registration request.
-     *
-     * @throws ValidationException
+     * TIDAK langsung login — redirect ke halaman OTP dulu.
      */
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'name'     => ['required', 'string', 'max:100'],
+            'email'    => ['required', 'string', 'lowercase', 'email', 'max:150', 'unique:' . User::class],
+            'phone'    => ['required', 'string', 'max:20'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
+        // Buat akun tapi email_verified_at masih null (belum aktif)
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
+            'name'     => $request->name,
+            'email'    => $request->email,
+            'phone'    => $request->phone,
             'password' => Hash::make($request->password),
         ]);
 
-        event(new Registered($user));
+        // Generate & simpan OTP
+        $otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
 
-        Auth::login($user);
+        EmailOtpVerification::create([
+            'user_id'    => $user->id,
+            'otp'        => $otp,
+            'expires_at' => now()->addMinutes(10),
+        ]);
 
-        return redirect(route('dashboard', absolute: false));
+        // Kirim email OTP
+        Mail::to($user->email)->send(new OtpMail($user, $otp));
+
+        // Simpan user_id di session untuk dipakai di OtpController
+        session(['otp_user_id' => $user->id]);
+
+        return redirect()->route('auth.otp');
     }
 }

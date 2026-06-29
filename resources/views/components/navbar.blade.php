@@ -75,9 +75,55 @@
       <button aria-label="Cari">
         <i class="fa-solid fa-magnifying-glass text-[20px] text-black" aria-hidden="true"></i>
       </button>
-      <button aria-label="Akun" class="w-9 h-9 rounded-full bg-[#D6A520] flex items-center justify-center">
-        <span class="text-white font-bold text-sm" aria-hidden="true">N</span>
-      </button>
+      @guest
+    <a href="{{ route('login') }}" aria-label="Login" class="w-9 h-9 flex items-center justify-center rounded-full bg-[#D6A520]">
+        <i class="fa-regular fa-user text-white text-sm"></i>
+    </a>
+@endguest
+@auth
+    @php
+        $user = auth()->user();
+        $hasAvatar = !empty($user->avatar);
+        $initials = collect(explode(' ', $user->name))
+            ->map(fn($part) => strtoupper(substr($part, 0, 1)))
+            ->join('');
+    @endphp
+    <div x-data="{ open: false }" class="relative">
+        <button @click="open = !open" aria-label="Account"
+            class="inline-flex items-center justify-center w-9 h-9 rounded-full flex-none overflow-hidden {{ $hasAvatar ? '' : 'bg-[#D6A520]' }}">
+            @if($hasAvatar)
+                <img src="{{ $user->avatar }}" alt="Avatar" class="rounded-full w-9 h-9 object-cover">
+            @else
+                <span class="w-full h-full flex items-center justify-center text-white font-bold text-sm">{{ $initials }}</span>
+            @endif
+        </button>
+        <div x-show="open" @click.away="open = false" x-transition
+            class="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg z-20">
+            <div class="p-4 flex items-center gap-3 border-b">
+                @if($hasAvatar)
+                    <img src="{{ $user->avatar }}" alt="Avatar" class="w-12 h-12 rounded-full object-cover">
+                @else
+                    <div class="w-12 h-12 rounded-full bg-[#D6A520] flex items-center justify-center text-white text-lg font-bold">
+                        {{ $initials }}
+                    </div>
+                @endif
+                <div>
+                    <p class="text-sm font-medium text-gray-900">{{ $user->name }}</p>
+                    <p class="text-xs text-gray-500">{{ $user->email }}</p>
+                </div>
+            </div>
+            <hr class="my-1">
+            <a href="{{ Route::has('profile.edit') ? route('profile.edit') : '#' }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profil Saya</a>
+            <a href="{{ Route::has('settings') ? route('settings') : '#' }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Pengaturan</a>
+            <hr class="my-1">
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Logout</button>
+            </form>
+        </div>
+    </div>
+@endauth
+
       <a href="{{ route('cart') }}" aria-label="Keranjang" class="relative">
         <i class="fa-solid fa-cart-shopping text-[20px] text-black" aria-hidden="true"></i>
         <span

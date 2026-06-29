@@ -39,6 +39,16 @@ Route::view('/checkout',         'pages.checkout-address')->name('checkout.addre
 // ─── AUTH (Breeze) ──────────────────────────────────────────────
 require __DIR__.'/auth.php';
 
+// ─── OTP EMAIL VERIFICATION ─────────────────────────────────────
+Route::middleware('guest')->group(function () {
+    Route::get('/verifikasi-email', [\App\Http\Controllers\Auth\OtpController::class, 'show'])
+        ->name('auth.otp');
+    Route::post('/verifikasi-email', [\App\Http\Controllers\Auth\OtpController::class, 'verify'])
+        ->name('auth.otp.verify');
+    Route::get('/verifikasi-email/kirim-ulang', [\App\Http\Controllers\Auth\OtpController::class, 'resend'])
+        ->name('auth.otp.resend');
+});
+
 // ─── GOOGLE SOCIALITE ───────────────────────────────────────────
 Route::get('/auth/google/redirect', [GoogleController::class, 'redirect'])
     ->name('auth.google.redirect');
