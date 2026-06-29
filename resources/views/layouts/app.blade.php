@@ -258,6 +258,18 @@
   @endif
 
   @stack('scripts')
+
+  {{-- Firebase web config — dibaca oleh fcm.js, nilainya dari tabel settings --}}
+  <script id="firebase-config" type="application/json">
+    {!! json_encode([
+        'apiKey'             => setting('firebase_api_key'),
+        'projectId'          => setting('firebase_project_id'),
+        'messagingSenderId'  => setting('firebase_messaging_sender_id'),
+        'appId'              => setting('firebase_app_id'),
+        'vapidKey'           => setting('firebase_vapid_key'),
+    ]) !!}
+  </script>
+
   @livewireScripts
 </body>
 
