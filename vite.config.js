@@ -9,6 +9,7 @@ export default defineConfig({
             input: [
                 'resources/css/app.css',
                 'resources/js/app.js',
+                'resources/js/opening.js',
                 // Admin panel — Tailwind v4 + daisyUI, terpisah dari frontend (CDN)
                 'resources/css/admin.css',
                 'resources/js/admin.js',

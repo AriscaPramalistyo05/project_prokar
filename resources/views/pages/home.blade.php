@@ -349,6 +349,8 @@
 
 @section('content')
 
+  @include('opening')
+
   <main>
     <!-- HERO -->
     <section id="hero" class="bg-white w-full overflow-hidden">
