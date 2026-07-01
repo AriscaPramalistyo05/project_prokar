@@ -17,7 +17,15 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+            'verified' => \App\Http\Middleware\EnsureEmailVerified::class,
         ]);
+
+        $middleware->redirectUsersTo(function (Request $request) {
+            if ($request->user() && $request->user()->hasRole(['super_admin', 'teknisi'])) {
+                return route('admin.dashboard');
+            }
+            return route('home');
+        });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

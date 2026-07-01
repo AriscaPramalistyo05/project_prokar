@@ -12,131 +12,182 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700;800&family=Archivo+Narrow:wght@500;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "secondary-container": "#fecb00",
+                        "secondary-container-soft": "#fff6d6",
+                        "on-secondary-container": "#6e5700",
+                        "primary": "#000000",
+                        "on-surface-variant": "#6b6f70",
+                        "outline-variant": "#e3e3e3",
+                        "background": "#fbf9f8",
+                        "error": "#ba1a1a",
+                        "error-container": "#ffdad6",
+                        "on-error-container": "#93000a"
+                    },
+                    fontFamily: {
+                        "label-mono": ["Archivo Narrow"],
+                        "body-md": ["Public Sans"]
+                    }
+                }
+            }
+        };
+    </script>
 
     <style>
-        body { font-family: 'Public Sans', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
         .otp-input {
-            width: 56px;
+            width: 48px;
             height: 56px;
             text-align: center;
-            font-size: 24px;
-            font-weight: 700;
-            border: 1px solid #E0E0E0;
+            font-family: 'Public Sans', sans-serif;
+            font-size: 22px;
+            font-weight: 800;
+            border: 1.5px solid #e3e3e3;
             border-radius: 0;
             outline: none;
-            transition: border-color 0.15s;
-            background: #fff;
+            background: #ffffff;
+            transition: border-color 0.15s, background-color 0.15s;
         }
         .otp-input:focus {
             border-color: #000000;
             box-shadow: 0 0 0 1px #000000;
         }
         .otp-input.filled {
-            border-color: #000000;
+            border-color: #f1c100;
+            background: #fff6d6;
         }
+
+        @media (max-width: 360px) {
+            .otp-input { width: 40px; height: 48px; font-size: 19px; }
+        }
+
+        /* Kunci agar fit 1 layar tanpa scroll di layar yang cukup tinggi (sama pola dengan login/register) */
+        @media (min-height: 700px) {
+            html, body { height: 100%; overflow: hidden; }
+        }
+
+        [x-cloak] { display: none !important; }
     </style>
 </head>
-<body class="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-12">
 
-    <div class="w-full max-w-md">
+<body class="bg-background font-body-md">
 
-        {{-- Header --}}
-        <div class="mb-8">
-            <a href="{{ route('home') }}" class="inline-block mb-6">
-                <span class="text-2xl font-black uppercase tracking-tighter text-black">Prokar Elektronik</span>
-            </a>
-            <h1 class="text-2xl font-bold text-black mb-1">Verifikasi Email</h1>
-            <div class="w-12 h-0.5 bg-black mb-3"></div>
-            <p class="text-gray-500 text-sm">
-                Kode verifikasi telah dikirim ke<br>
-                <span class="font-semibold text-black">{{ $maskedEmail }}</span>
-            </p>
-        </div>
+    <main class="min-h-screen flex items-center justify-center px-4 py-6">
+        <div class="w-full max-w-sm">
 
-        {{-- Error messages --}}
-        @if ($errors->any())
-            <div class="border-2 border-red-600 bg-red-50 text-red-700 p-3 mb-4 text-sm">
-                @foreach ($errors->all() as $error)
-                    <p>{{ $error }}</p>
-                @endforeach
+            <div class="bg-white border border-outline-variant shadow-sm overflow-hidden">
+
+                {{-- Aksen warna tipis di atas card — pengganti hazard stripe tebal, lebih halus --}}
+                <div class="h-1.5 w-full bg-secondary-container" aria-hidden="true"></div>
+
+                <div class="px-6 sm:px-8 pt-7 pb-6">
+
+                    {{-- Header --}}
+                    <div class="mb-6 text-center">
+                        <a href="{{ route('home') }}" class="inline-block mb-5">
+                            <span class="font-black uppercase tracking-tighter text-xl text-primary">Prokar Elektronik</span>
+                        </a>
+
+                      
+
+                        <h1 class="font-bold text-xl text-primary mb-1">Verifikasi Email</h1>
+                        <p class="text-on-surface-variant text-[13px] leading-relaxed">
+                            Kode verifikasi telah dikirim ke<br>
+                            <span class="font-semibold text-primary">{{ $maskedEmail }}</span>
+                        </p>
+                    </div>
+
+                    {{-- Error messages --}}
+                    @if ($errors->any())
+                        <div class="border border-error bg-error-container text-on-error-container px-3 py-2 mb-4 text-[13px] rounded">
+                            @foreach ($errors->all() as $error)
+                                <p>{{ $error }}</p>
+                            @endforeach
+                        </div>
+                    @endif
+
+                    {{-- Success messages --}}
+                    @if (session('success'))
+                        <div class="border border-secondary-container bg-secondary-container-soft text-on-secondary-container px-3 py-2 mb-4 text-[13px] font-semibold rounded">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
+                    {{-- Form OTP --}}
+                    <form action="{{ route('auth.otp.verify') }}" method="POST" id="otp-form">
+                        @csrf
+                        <input type="hidden" name="otp" id="otp-hidden" />
+
+                        <div class="flex gap-2 justify-center mb-5"
+                             x-data="otpInput()"
+                             x-init="init()">
+
+                            <input class="otp-input" type="text" inputmode="numeric" maxlength="1" data-index="0" autocomplete="off" aria-label="Digit 1" />
+                            <input class="otp-input" type="text" inputmode="numeric" maxlength="1" data-index="1" autocomplete="off" aria-label="Digit 2" />
+                            <input class="otp-input" type="text" inputmode="numeric" maxlength="1" data-index="2" autocomplete="off" aria-label="Digit 3" />
+                            <input class="otp-input" type="text" inputmode="numeric" maxlength="1" data-index="3" autocomplete="off" aria-label="Digit 4" />
+                            <input class="otp-input" type="text" inputmode="numeric" maxlength="1" data-index="4" autocomplete="off" aria-label="Digit 5" />
+                            <input class="otp-input" type="text" inputmode="numeric" maxlength="1" data-index="5" autocomplete="off" aria-label="Digit 6" />
+                        </div>
+
+                        <!-- Tombol tetap brutal/shadow, sesuai permintaan -->
+                        <button type="submit"
+                            class="w-full bg-primary hover:bg-gray-900 text-white py-3 font-bold uppercase tracking-widest text-sm border-2 border-primary shadow-[4px_4px_0px_#f1c100] transition-all active:translate-y-1 active:translate-x-1 active:shadow-none">
+                            Verifikasi
+                        </button>
+                    </form>
+
+                    {{-- Resend dengan Alpine countdown --}}
+                    <div class="mt-5 text-center"
+                         x-data="{
+                             seconds: 60,
+                             started: false,
+                             startTimer() {
+                                 if (this.started) return;
+                                 this.started = true;
+                                 const interval = setInterval(() => {
+                                     if (this.seconds > 0) {
+                                         this.seconds--;
+                                     } else {
+                                         clearInterval(interval);
+                                     }
+                                 }, 1000);
+                             }
+                         }"
+                         x-init="startTimer()">
+
+                        <p class="text-on-surface-variant text-[13px] mb-1.5">Tidak menerima kode?</p>
+
+                        <span x-show="seconds > 0" class="text-on-surface-variant text-[13px]">
+                            Kirim ulang dalam <span x-text="seconds" class="font-bold text-primary tabular-nums"></span> detik
+                        </span>
+
+                        <a x-cloak x-show="seconds === 0"
+                           href="{{ route('auth.otp.resend') }}"
+                           class="text-[13px] font-bold underline text-primary hover:no-underline">
+                            Kirim Ulang Kode
+                        </a>
+                    </div>
+                </div>
+
+                <div class="border-t border-outline-variant px-6 sm:px-8 py-3 text-center bg-secondary-container-soft/40">
+                    <a href="{{ route('register') }}" class="text-[12px] text-on-surface-variant hover:text-primary underline">
+                        &larr; Kembali ke pendaftaran
+                    </a>
+                </div>
             </div>
-        @endif
 
-        {{-- Success messages --}}
-        @if (session('success'))
-            <div class="border-2 border-black bg-yellow-50 text-black p-3 mb-4 text-sm font-semibold">
-                {{ session('success') }}
-            </div>
-        @endif
-
-        {{-- Form OTP --}}
-        <form action="{{ route('auth.otp.verify') }}" method="POST" id="otp-form">
-            @csrf
-            <input type="hidden" name="otp" id="otp-hidden" />
-
-            {{-- 6 kotak OTP --}}
-            <div class="flex gap-3 justify-center mb-6"
-                 x-data="otpInput()"
-                 x-init="init()">
-
-                <input class="otp-input" type="text" inputmode="numeric" maxlength="1"
-                       data-index="0" autocomplete="off" />
-                <input class="otp-input" type="text" inputmode="numeric" maxlength="1"
-                       data-index="1" autocomplete="off" />
-                <input class="otp-input" type="text" inputmode="numeric" maxlength="1"
-                       data-index="2" autocomplete="off" />
-                <input class="otp-input" type="text" inputmode="numeric" maxlength="1"
-                       data-index="3" autocomplete="off" />
-                <input class="otp-input" type="text" inputmode="numeric" maxlength="1"
-                       data-index="4" autocomplete="off" />
-                <input class="otp-input" type="text" inputmode="numeric" maxlength="1"
-                       data-index="5" autocomplete="off" />
-            </div>
-
-            <button type="submit"
-                class="w-full bg-black hover:bg-gray-900 text-white py-3 font-bold uppercase tracking-widest text-sm border-2 border-black shadow-[4px_4px_0px_#374151] transition-all active:translate-y-1 active:translate-x-1 active:shadow-none">
-                Verifikasi
-            </button>
-        </form>
-
-        {{-- Resend dengan Alpine countdown --}}
-        <div class="mt-6 text-center"
-             x-data="{
-                 seconds: 60,
-                 started: false,
-                 startTimer() {
-                     if (this.started) return;
-                     this.started = true;
-                     const interval = setInterval(() => {
-                         if (this.seconds > 0) {
-                             this.seconds--;
-                         } else {
-                             clearInterval(interval);
-                         }
-                     }, 1000);
-                 }
-             }"
-             x-init="startTimer()">
-
-            <p class="text-gray-400 text-sm mb-2">Tidak menerima kode?</p>
-
-            <span x-show="seconds > 0" class="text-gray-400 text-sm">
-                Kirim ulang dalam <span x-text="seconds" class="font-bold text-black"></span> detik
-            </span>
-
-            <a x-show="seconds === 0"
-               href="{{ route('auth.otp.resend') }}"
-               class="text-sm font-bold underline text-black hover:no-underline">
-                Kirim Ulang Kode
-            </a>
         </div>
-
-        <div class="mt-8 text-center">
-            <a href="{{ route('register') }}" class="text-sm text-gray-400 hover:text-black underline">
-                Kembali ke pendaftaran
-            </a>
-        </div>
-    </div>
+    </main>
 
     <script>
         function otpInput() {
@@ -146,18 +197,15 @@
                     const hiddenInput = document.getElementById('otp-hidden');
                     const form = document.getElementById('otp-form');
 
-                    // Focus ke kotak pertama saat load
                     if (inputs[0]) inputs[0].focus();
 
                     inputs.forEach((input, index) => {
-                        // Saat mengetik digit
                         input.addEventListener('input', (e) => {
                             const val = e.target.value.replace(/[^0-9]/g, '');
-                            e.target.value = val.slice(-1); // ambil 1 digit terakhir
+                            e.target.value = val.slice(-1);
 
                             if (val) {
                                 e.target.classList.add('filled');
-                                // Auto-focus ke kotak berikutnya
                                 if (index < inputs.length - 1) {
                                     inputs[index + 1].focus();
                                 }
@@ -165,7 +213,6 @@
                                 e.target.classList.remove('filled');
                             }
 
-                            // Update hidden input & auto-submit kalau digit ke-6 terisi
                             const code = Array.from(inputs).map(i => i.value).join('');
                             hiddenInput.value = code;
 
@@ -174,7 +221,6 @@
                             }
                         });
 
-                        // Backspace → kembali ke input sebelumnya
                         input.addEventListener('keydown', (e) => {
                             if (e.key === 'Backspace' && !e.target.value && index > 0) {
                                 inputs[index - 1].focus();
@@ -183,7 +229,6 @@
                             }
                         });
 
-                        // Paste OTP → auto-isi semua kotak
                         input.addEventListener('paste', (e) => {
                             e.preventDefault();
                             const pasted = (e.clipboardData || window.clipboardData)
@@ -200,7 +245,6 @@
 
                             hiddenInput.value = pasted;
 
-                            // Focus ke kotak terakhir yang terisi atau kotak ke-6
                             const nextEmpty = Array.from(inputs).findIndex(i => !i.value);
                             if (nextEmpty !== -1) {
                                 inputs[nextEmpty].focus();

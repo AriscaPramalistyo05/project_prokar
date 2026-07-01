@@ -1,0 +1,68 @@
+/**
+ * Admin panel stylesheet — Prokar Elektronik
+ * Menggunakan Tailwind CSS v4 + daisyUI (via @tailwindcss/vite)
+ * Dipisah dari frontend (frontend memakai Tailwind via CDN).
+ *
+ * Build dengan: npm run build
+ */
+
+@import "tailwindcss";
+
+/** daisyUI */
+@plugin "daisyui" {
+    themes: prokar --default;
+}
+
+/* maryUI — scan komponen blade agar class utility ter-generate */
+@source "../../vendor/robsontenorio/mary/src/View/Components/**/*.php";
+
+/* Theme toggle support */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/**
+ * Tema kustom daisyUI — Prokar Elektronik
+ * Brand: hitam (primary), putih, aksen kuning #FFCC00
+ */
+@plugin "daisyui/theme" {
+    name: "prokar";
+    default: true;
+    color-scheme: light;
+
+    --color-base-100: #ffffff;          /* putih */
+    --color-base-200: #f1f5f9;           /* slate-100 */
+    --color-base-300: #e2e8f0;           /* slate-200 */
+    --color-base-content: #0f172a;       /* slate-900 */
+
+    --color-primary: oklch(21% 0.006 285);            /* hitam */
+    --color-primary-content: oklch(100% 0 0);         /* putih */
+
+    --color-secondary: oklch(87% 0.17 98);            /* kuning #FFCC00 */
+    --color-secondary-content: oklch(21% 0.006 285);  /* hitam */
+
+    --color-accent: oklch(73% 0.18 56);               /* oranye #FF7A00 */
+    --color-accent-content: oklch(100% 0 0);
+
+    --color-neutral: oklch(21% 0.006 285);
+    --color-neutral-content: oklch(100% 0 0);
+
+    --color-info: oklch(70% 0.14 233);
+    --color-success: oklch(72% 0.17 162);
+    --color-warning: oklch(80% 0.18 84);
+    --color-error: oklch(63% 0.21 25);
+
+    --radius-selector: 0.25rem;
+    --radius-field: 0.25rem;
+    --radius-box: 0.5rem;
+    --border: 1px;
+}
+
+/**
+ * Paginator — gaya tradisional agar cocok dengan desain daisyUI
+ */
+.mary-table-pagination span[aria-current="page"] > span {
+    @apply bg-primary text-base-100;
+}
+
+.mary-table-pagination button {
+    @apply cursor-pointer;
+}

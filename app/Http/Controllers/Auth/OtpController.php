@@ -63,12 +63,15 @@ class OtpController extends Controller
         $record->update(['is_used' => true]);
 
         $user = User::findOrFail($userId);
-        $user->update(['email_verified_at' => now()]);
+        $user->email_verified_at = now();
+        $user->save();
 
         Auth::login($user);
         session()->forget('otp_user_id');
 
-        return redirect()->route('home')->with('success', 'Akun berhasil diverifikasi!');
+        return auth()->user()->hasRole(['super_admin','teknisi'])
+            ? redirect()->route('admin.dashboard')->with('success', 'Akun berhasil diverifikasi!')
+            : redirect()->route('home')->with('success', 'Akun berhasil diverifikasi!');
     }
 
     /**
