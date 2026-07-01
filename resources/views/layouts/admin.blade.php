@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin — Prokar Elektronik</title>
     @vite(['resources/css/admin.css', 'resources/js/admin.js'])
-    @livewireStyles
 </head>
 <body class="bg-base-200 min-h-screen text-base-content">
     <x-main full-width>
@@ -52,6 +51,6 @@
         </x-slot:content>
     </x-main>
 
-    @livewireScripts
+    
 </body>
 </html>
