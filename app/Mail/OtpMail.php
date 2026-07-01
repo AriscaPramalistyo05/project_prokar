@@ -22,7 +22,7 @@ class OtpMail extends Mailable
     {
         return new Envelope(
             // Subject natural — hindari kata-kata spam trigger
-            subject: 'Konfirmasi Pendaftaran Akun — Prokar Elektronik',
+            subject: 'Kode Verifikasi Prokar Elektronik',
         );
     }
 

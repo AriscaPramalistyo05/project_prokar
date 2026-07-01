@@ -65,6 +65,8 @@ Route::middleware('auth')->group(function () {
 // ─── ADMIN ──────────────────────────────────────────────────────
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:super_admin|teknisi'])
     ->group(function () {
-        Route::view('/dashboard', 'admin.dashboard')->name('dashboard');
+        Route::get('/dashboard', function () {
+            return view('admin.dashboard');
+        })->name('dashboard');
         // Route admin lain ditambahkan per fase
     });
