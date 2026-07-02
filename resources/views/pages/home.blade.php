@@ -367,7 +367,7 @@
           Beragam elektronik rumah tangga berkualitas yang siap<br />
           digunakan dan telah melalui proses pengecekan teknisi.
         </p>
-        <a href="{{ route('products.index') }}"
+        <a href="{{ route('produk.index') }}"
           class="hero-btn inline-flex items-center gap-2 bg-[#FFCC00] text-black text-sm md:text-base font-semibold px-8 py-3 rounded-[5px] hover:bg-[#f0c000] transition-colors">
           Lihat Produk
           <i class="fa-solid fa-arrow-right"></i>
@@ -498,7 +498,7 @@
             @endphp
             <article class="onsale-card bg-stone-50 border border-[#e8e8e8] p-2 md:p-2 lg:p-3 flex flex-col" role="listitem" data-id="{{ $product->id }}" data-name="{{ $product->name }}" data-price="{{ $price }}" data-oldprice="{{ $oldPrice }}" data-badge="SALE" data-img="{{ $img }}" data-colors='[]'>
               <div class="relative w-full mb-2 md:mb-2 lg:mb-3">
-                <a href="{{ route('products.show', $product->slug) }}" class="block">
+                <a href="{{ route('produk.show', $product->slug) }}" class="block">
                   <div class="bg-rose-50 w-full overflow-hidden"><img src="{{ $img }}" alt="{{ $product->name }}" loading="lazy" class="w-full h-[130px] md:h-[120px] lg:h-[180px] object-cover"></div>
                 </a>
                 <div class="absolute left-2 top-2 bg-red-600 border border-black px-2 py-1"><span class="text-white text-[8px] md:text-[8px] lg:text-[10px] font-bold uppercase">SALE</span></div>
@@ -506,7 +506,7 @@
                 <button class="mobile-cart-btn" onclick="openCartModal(this.closest('.onsale-card'))" aria-label="Tambah ke keranjang"><i class="fa-solid fa-cart-shopping text-[11px]"></i></button>
               </div>
               <div class="w-full px-1">
-                <a href="{{ route('products.show', $product->slug) }}"><h3 class="text-[12px] md:text-[11px] lg:text-sm font-bold uppercase leading-tight line-clamp-2">{{ $product->name }}</h3></a>
+                <a href="{{ route('produk.show', $product->slug) }}"><h3 class="text-[12px] md:text-[11px] lg:text-sm font-bold uppercase leading-tight line-clamp-2">{{ $product->name }}</h3></a>
                 <div class="flex flex-wrap items-center gap-1 mt-1">
                   <span class="text-red-600 text-[13px] md:text-[12px] lg:text-base whitespace-nowrap">{{ $price }}</span>
                   @if($oldPrice)
@@ -606,7 +606,7 @@
       <div class="flex-1"></div>
       <div class="px-4 pb-4 pt-4 border-t border-gray-100 mt-4">
         <button onclick="addToCart()" class="w-full bg-black text-white font-bold text-sm uppercase tracking-wider py-3 px-4 hover:bg-gray-800 transition-colors font-public">TAMBAH KE KERANJANG</button>
-        <a href="{{ route('products.index') }}" class="block text-center text-xs text-gray-500 mt-2 hover:text-black font-inter underline">Lihat Detail Produk</a>
+        <a href="{{ route('produk.index') }}" class="block text-center text-xs text-gray-500 mt-2 hover:text-black font-inter underline">Lihat Detail Produk</a>
       </div>
     </div>
     <div id="cart-step-added" style="display:none; flex-direction:column;">

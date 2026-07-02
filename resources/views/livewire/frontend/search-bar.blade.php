@@ -29,7 +29,7 @@
                         <ul>
                             @foreach ($results as $r)
                                 <li>
-                                    <a href="{{ route('products.show', $r['slug']) }}"
+                                    <a href="{{ route('produk.show', $r['slug']) }}"
                                         wire:click="closeSearch"
                                         class="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 transition-colors">
                                         <div class="flex-1">

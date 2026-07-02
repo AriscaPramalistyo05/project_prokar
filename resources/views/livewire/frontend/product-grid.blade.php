@@ -4,7 +4,7 @@
             @foreach ($products as $p)
                 <article class="flex flex-col bg-[#F3F3F3] md:bg-white md:mx-4 md:mb-8 border border-transparent md:border-0"
                     style="box-shadow: 0px 2px 4px #0000001a" role="listitem">
-                    <a href="{{ route('products.show', $p['slug']) }}"
+                    <a href="{{ route('produk.show', $p['slug']) }}"
                         aria-label="Lihat detail {{ $p['name'] }}" class="block">
                         <div class="card-bg-img relative"
                             style="background-image: url('{{ $p['image'] }}');">

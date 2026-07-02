@@ -24,18 +24,19 @@ Route::get('/firebase-messaging-sw.js', function () {
 });
 
 // ─── FRONTEND PUBLIC ────────────────────────────────────────────
+// ─── FRONTEND PUBLIC ────────────────────────────────────────────
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-Route::view('/products',         'pages.products')->name('products.index');
-Route::view('/products/{slug}',  'pages.product-detail')->name('products.show');
+Route::get('/produk', [App\Http\Controllers\Frontend\ProductController::class, 'index'])->name('produk.index');
+Route::get('/produk/{slug}', [App\Http\Controllers\Frontend\ProductController::class, 'show'])->name('produk.show');
 
-Route::view('/sell',             'pages.sell')->name('sell');
+Route::view('/jual', 'pages.sell')->name('jual.index');
 
-Route::view('/service',          'pages.service')->name('service');
-Route::view('/service/track',    'pages.service-tracking')->name('service.track');
+Route::view('/servis', 'pages.service')->name('servis.index');
+Route::view('/servis/lacak', 'pages.service-tracking')->name('servis.lacak');
 
-Route::view('/cart',             'pages.cart')->name('cart');
-Route::view('/checkout',         'pages.checkout-address')->name('checkout.address');
+Route::view('/keranjang', 'pages.cart')->name('keranjang.index');
+Route::view('/checkout', 'pages.checkout-address')->name('checkout.address');
 
 // ─── AUTH (Breeze) ──────────────────────────────────────────────
 require __DIR__.'/auth.php';

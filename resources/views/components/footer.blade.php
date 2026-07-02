@@ -25,13 +25,13 @@
       class="flex flex-col items-start pt-2 md:pt-0 gap-1 md:gap-4 lg:gap-7 md:pr-8 lg:pr-[67px] lg:mr-9 md:shrink-0">
       <a href="{{ route('home') }}"
         class="text-[#F9F9F9] font-bold text-base md:text-xl lg:text-[32px] hover:text-[#FFCC00] transition-colors no-underline font-inter">HOME</a>
-      <a href="{{ route('products.index') }}"
+      <a href="{{ route('produk.index') }}"
         class="text-[#F9F9F9] font-bold text-base md:text-xl lg:text-[32px] hover:text-[#FFCC00] transition-colors no-underline font-inter">PRODUK</a>
-      <a href="{{ route('sell') }}"
+      <a href="{{ route('jual.index') }}"
         class="text-[#F9F9F9] font-bold text-base md:text-xl lg:text-[32px] hover:text-[#FFCC00] transition-colors no-underline font-inter">JUAL</a>
-      <a href="{{ route('service') }}"
+      <a href="{{ route('servis.index') }}"
         class="text-[#F9F9F9] font-bold text-base md:text-xl lg:text-[32px] hover:text-[#FFCC00] transition-colors no-underline font-inter">SERVIS</a>
-      <a href="{{ route('service.track') }}"
+      <a href="{{ route('servis.lacak') }}"
         class="text-[#F9F9F9] font-bold text-base md:text-xl lg:text-[32px] hover:text-[#FFCC00] transition-colors no-underline font-inter">TRACK</a>
     </nav>
   </div>
