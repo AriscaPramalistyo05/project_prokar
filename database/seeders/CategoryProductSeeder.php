@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\ProductImage;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
@@ -69,7 +70,7 @@ class CategoryProductSeeder extends Seeder
 
         foreach ($products as $p) {
             $category = $categories->first(fn($c) => $c->name === $p['category']);
-            Product::create([
+            $product = Product::create([
                 'category_id' => $category->id,
                 'name' => $p['name'],
                 'slug' => Str::slug($p['name']),
@@ -82,6 +83,14 @@ class CategoryProductSeeder extends Seeder
                 'stock' => $p['stock'],
                 'status' => $p['status'],
                 'is_promo' => $p['is_promo'],
+            ]);
+
+            // ponytail: seed primary product image so homepage ON SALE displays real photos
+            ProductImage::create([
+                'product_id' => $product->id,
+                'path' => 'assets/images/' . Str::slug($p['name']) . '.jpg',
+                'is_primary' => true,
+                'order' => 0,
             ]);
         }
     }

@@ -44,4 +44,36 @@ class Product extends Model
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
     }
+
+    // ── Scopes ──
+    public function scopePromo($query)
+    {
+        return $query->where('is_promo', true);
+    }
+
+    public function scopeAvailable($query)
+    {
+        return $query->where('status', 'available');
+    }
+
+    public function scopeByCategory($query, $categoryId)
+    {
+        return $query->where('category_id', $categoryId);
+    }
+
+    // ── Relations ──
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function productImages()
+    {
+        return $this->hasMany(ProductImage::class);
+    }
+
+    public function primaryImage()
+    {
+        return $this->hasOne(ProductImage::class)->where('is_primary', true);
+    }
 }
