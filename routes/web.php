@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -23,7 +24,7 @@ Route::get('/firebase-messaging-sw.js', function () {
 });
 
 // ─── FRONTEND PUBLIC ────────────────────────────────────────────
-Route::view('/',                 'pages.home')->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::view('/products',         'pages.products')->name('products.index');
 Route::view('/products/{slug}',  'pages.product-detail')->name('products.show');

@@ -1,57 +1,54 @@
 /**
  * Opening Animation — Vanilla JS
- * ponytail: self-contained, no external deps. Reads config from <script id="opening-config">.
+ * ponytail: self-contained, no external deps.
  */
 (function () {
     'use strict';
 
-    // ── Config ──
     const cfgEl = document.getElementById('opening-config');
-    if (!cfgEl) return; // safety: no config = no animation
+    if (!cfgEl) return;
 
     let config;
     try {
         config = JSON.parse(cfgEl.textContent);
     } catch (e) {
-        console.error('Invalid opening config JSON', e);
+        console.error('Invalid opening config', e);
         return;
     }
 
-    const { text_color, bg_color, accent_color, fade_duration, show_once, messages } = config;
-
-    // ── Check sessionStorage (show_once) ──
-    const alreadyPlayed = show_once && (() => {
-        try {
-            return sessionStorage.getItem('prokar_opening_played') === '1';
-        } catch (e) {
-            return false; // private mode / storage blocked
-        }
-    })();
-
-    if (alreadyPlayed) {
-        document.getElementById('opening-overlay')?.classList.add('is-hidden');
-        return;
-    }
-
-    // ── DOM refs ──
+    const { text_color, bg_color, accent_color, show_once, messages } = config;
     const overlay = document.getElementById('opening-overlay');
     if (!overlay) return;
+
+    // Always auto-hide after 5s no matter what
+    const safety = setTimeout(() => overlay.classList.add('is-hidden'), 5000);
+
+    // Check localStorage (cross-session, unlike sessionStorage)
+    let alreadyPlayed = false;
+    if (show_once) {
+        try {
+            alreadyPlayed = localStorage.getItem('prokar_opening_played') === '1';
+        } catch (e) { /* private mode */ }
+    }
+
+    if (alreadyPlayed) {
+        overlay.classList.add('is-hidden');
+        clearTimeout(safety);
+        return;
+    }
 
     const msgContainer = document.getElementById('opening-messages');
     if (!msgContainer) return;
 
-    // ── Apply dynamic styles via CSS vars ──
+    // Apply dynamic styles
     overlay.style.setProperty('--opening-text', text_color || '#ffffff');
     overlay.style.setProperty('--opening-bg', bg_color || '#000000');
     overlay.style.setProperty('--opening-accent', accent_color || '#fecb00');
 
-    // ── Render messages ──
-    messages.forEach((msg, i) => {
+    // Render messages
+    messages.forEach((msg) => {
         const el = document.createElement('div');
-        el.className = 'opening-msg' + (window.matchMedia('(prefers-reduced-motion: reduce)').matches ? ' is-active' : '');
-        el.dataset.index = String(i);
-
-        // Accessibility: hide inactive messages from screen readers
+        el.className = 'opening-msg';
         el.setAttribute('aria-hidden', 'true');
 
         if (msg.type === 'line') {
@@ -67,16 +64,14 @@
         msgContainer.appendChild(el);
     });
 
-    // ── Reduced motion → skip animation ──
+    // Reduced motion → skip
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        overlay.classList.add('is-hidden');
-        if (show_once) markPlayed();
+        hideAndSave(overlay, safety);
         return;
     }
 
-    // ── Play sequence ──
+    // Play sequence
     let current = 0;
-    const total = messages.length;
     const msgEls = msgContainer.querySelectorAll('.opening-msg');
 
     function showIndex(i) {
@@ -92,34 +87,29 @@
     }
 
     function next() {
-        if (current < total) {
+        if (current < messages.length) {
             showIndex(current);
-            const duration = messages[current]?.duration || 1900;
+            const duration = messages[current]?.duration || 900;
             current++;
             setTimeout(next, duration);
         } else {
-            // Reveal
-            overlay.classList.add('is-hidden');
-            if (show_once) markPlayed();
+            hideAndSave(overlay, safety);
         }
     }
 
-    function markPlayed() {
-        try {
-            sessionStorage.setItem('prokar_opening_played', '1');
-        } catch (e) { /* ignore */ }
-    }
-
-    // Start
     next();
 
     // ── Helpers ──
+    function hideAndSave(overlayEl, timer) {
+        clearTimeout(timer);
+        overlayEl.classList.add('is-hidden');
+        try {
+            localStorage.setItem('prokar_opening_played', '1');
+        } catch (e) { /* ignore */ }
+    }
+
     function escapeHtml(str) {
         if (!str) return '';
-        return str
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;');
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 })();

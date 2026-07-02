@@ -483,115 +483,50 @@
       </div>
     </section>
 
-     {{-- ON SALE section (carousel dimigrasikan ke Livewire) --}}
+    {{-- ON SALE section — ambil dari DB via HomeController --}}
     <section id="on-sale" aria-labelledby="onsale-heading" class="section-public bg-white border-t-2 border-b-2 border-black py-12 md:py-20 px-6 md:px-16">
       <div class="max-w-6xl mx-auto">
         <h2 id="onsale-heading" class="text-black text-center text-2xl sm:text-3xl md:text-4xl font-bold uppercase tracking-tight font-public">ON SALE</h2>
         <p class="text-stone-900 text-center text-sm md:text-base mb-8 md:mb-10">Checkout Sekarang Sebelum Kehabisan</p>
         <div id="onsale-wrapper" class="relative pt-2" aria-label="Produk on sale">
           <div id="onsale-track" class="flex gap-4 pb-2" role="list">
-            {{-- 1. Smart TV 4K UHD 55 inch --}}
-            <article class="onsale-card bg-stone-50 border border-[#e8e8e8] p-2 md:p-2 lg:p-3 flex flex-col" role="listitem" data-id="1" data-name="Smart TV 4K UHD 55 inch" data-price="Rp 5.499.000" data-oldprice="Rp 5.999.000" data-badge="SALE" data-img="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/burs3wxx_expires_30_days.png" data-colors='[]' data-rating="4.5" data-reviews="128">
+            @forelse($promoProducts as $product)
+            @php
+              $img = $product->primaryImage?->path ?? 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/burs3wxx_expires_30_days.png';
+              $oldPrice = $product->promo_price < $product->price ? 'Rp ' . number_format($product->price, 0, ',', '.') : null;
+              $price = 'Rp ' . number_format($product->promo_price ?? $product->price, 0, ',', '.');
+            @endphp
+            <article class="onsale-card bg-stone-50 border border-[#e8e8e8] p-2 md:p-2 lg:p-3 flex flex-col" role="listitem" data-id="{{ $product->id }}" data-name="{{ $product->name }}" data-price="{{ $price }}" data-oldprice="{{ $oldPrice }}" data-badge="SALE" data-img="{{ $img }}" data-colors='[]'>
               <div class="relative w-full mb-2 md:mb-2 lg:mb-3">
-                <a href="{{ route('products.show', 'smart-tv-4k-uhd-55-inch') }}" class="block">
-                  <div class="bg-rose-50 w-full overflow-hidden"><img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/burs3wxx_expires_30_days.png" alt="Smart TV 4K UHD 55 inch" loading="lazy" class="w-full h-[130px] md:h-[120px] lg:h-[180px] object-cover"></div>
+                <a href="{{ route('products.show', $product->slug) }}" class="block">
+                  <div class="bg-rose-50 w-full overflow-hidden"><img src="{{ $img }}" alt="{{ $product->name }}" loading="lazy" class="w-full h-[130px] md:h-[120px] lg:h-[180px] object-cover"></div>
                 </a>
                 <div class="absolute left-2 top-2 bg-red-600 border border-black px-2 py-1"><span class="text-white text-[8px] md:text-[8px] lg:text-[10px] font-bold uppercase">SALE</span></div>
                 <button class="quick-add-btn" onclick="openCartModal(this.closest('.onsale-card'))">+ Tambah Keranjang</button>
                 <button class="mobile-cart-btn" onclick="openCartModal(this.closest('.onsale-card'))" aria-label="Tambah ke keranjang"><i class="fa-solid fa-cart-shopping text-[11px]"></i></button>
               </div>
               <div class="w-full px-1">
-                <a href="{{ route('products.show', 'smart-tv-4k-uhd-55-inch') }}"><h3 class="text-[12px] md:text-[11px] lg:text-sm font-bold uppercase leading-tight line-clamp-2">Smart TV 4K UHD 55 inch</h3></a>
-                <div class="flex flex-wrap items-center gap-1 mt-1"><span class="text-red-600 text-[13px] md:text-[12px] lg:text-base whitespace-nowrap">Rp 5.499.000</span><span class="text-zinc-600 text-[10px] md:text-[10px] lg:text-sm line-through whitespace-nowrap">Rp 5.999.000</span></div>
+                <a href="{{ route('products.show', $product->slug) }}"><h3 class="text-[12px] md:text-[11px] lg:text-sm font-bold uppercase leading-tight line-clamp-2">{{ $product->name }}</h3></a>
+                <div class="flex flex-wrap items-center gap-1 mt-1">
+                  <span class="text-red-600 text-[13px] md:text-[12px] lg:text-base whitespace-nowrap">{{ $price }}</span>
+                  @if($oldPrice)
+                  <span class="text-zinc-600 text-[10px] md:text-[10px] lg:text-sm line-through whitespace-nowrap">{{ $oldPrice }}</span>
+                  @endif
+                </div>
                 <div class="flex gap-1 mt-2"></div>
               </div>
             </article>
-            {{-- 2. Blender Multifungsi --}}
-            <article class="onsale-card bg-stone-50 border border-[#e8e8e8] p-2 md:p-2 lg:p-3 flex flex-col" role="listitem" data-id="2" data-name="Blender Multifungsi" data-price="Rp 450.000" data-oldprice="Rp 550.000" data-badge="SALE" data-img="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/cilcgsan_expires_30_days.png" data-colors='[]' data-rating="4.3" data-reviews="87">
-              <div class="relative w-full mb-2 md:mb-2 lg:mb-3">
-                <a href="{{ route('products.show', 'blender-multifungsi') }}" class="block">
-                  <div class="bg-rose-50 w-full overflow-hidden"><img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/cilcgsan_expires_30_days.png" alt="Blender Multifungsi" loading="lazy" class="w-full h-[130px] md:h-[120px] lg:h-[180px] object-cover"></div>
-                </a>
-                <div class="absolute left-2 top-2 bg-red-600 border border-black px-2 py-1"><span class="text-white text-[8px] md:text-[8px] lg:text-[10px] font-bold uppercase">SALE</span></div>
-                <button class="quick-add-btn" onclick="openCartModal(this.closest('.onsale-card'))">+ Tambah Keranjang</button>
-                <button class="mobile-cart-btn" onclick="openCartModal(this.closest('.onsale-card'))" aria-label="Tambah ke keranjang"><i class="fa-solid fa-cart-shopping text-[11px]"></i></button>
-              </div>
-              <div class="w-full px-1">
-                <a href="{{ route('products.show', 'blender-multifungsi') }}"><h3 class="text-[12px] md:text-[11px] lg:text-sm font-bold uppercase leading-tight line-clamp-2">Blender Multifungsi</h3></a>
-                <div class="flex flex-wrap items-center gap-1 mt-1"><span class="text-red-600 text-[13px] md:text-[12px] lg:text-base">Rp 450.000</span><span class="text-zinc-600 text-[10px] md:text-[10px] lg:text-sm line-through">Rp 550.000</span></div>
-                <div class="flex gap-1 mt-2"></div>
-              </div>
-            </article>
-            {{-- 3. AC Split 1 PK Low Watt --}}
-            <article class="onsale-card bg-stone-50 border border-[#e8e8e8] p-2 md:p-2 lg:p-3 flex flex-col" role="listitem" data-id="3" data-name="AC Split 1 PK Low Watt" data-price="Rp 3.450.000" data-oldprice="Rp 3.800.000" data-badge="SALE" data-img="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/cs9jkbf3_expires_30_days.png" data-colors='[]' data-rating="4.6" data-reviews="56">
-              <div class="relative w-full mb-2 md:mb-2 lg:mb-3">
-                <a href="{{ route('products.show', 'ac-split-1-pk-low-watt') }}" class="block">
-                  <div class="bg-rose-50 w-full overflow-hidden"><img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/cs9jkbf3_expires_30_days.png" alt="AC Split 1 PK Low Watt" loading="lazy" class="w-full h-[130px] md:h-[120px] lg:h-[180px] object-cover"></div>
-                </a>
-                <div class="absolute left-2 top-2 bg-red-600 border border-black px-2 py-1"><span class="text-white text-[8px] md:text-[8px] lg:text-[10px] font-bold uppercase">SALE</span></div>
-                <button class="quick-add-btn" onclick="openCartModal(this.closest('.onsale-card'))">+ Tambah Keranjang</button>
-                <button class="mobile-cart-btn" onclick="openCartModal(this.closest('.onsale-card'))" aria-label="Tambah ke keranjang"><i class="fa-solid fa-cart-shopping text-[11px]"></i></button>
-              </div>
-              <div class="w-full px-1">
-                <a href="{{ route('products.show', 'ac-split-1-pk-low-watt') }}"><h3 class="text-[12px] md:text-[11px] lg:text-sm font-bold uppercase leading-tight line-clamp-2">AC Split 1 PK Low Watt</h3></a>
-                <div class="flex flex-wrap items-center gap-1 mt-1"><span class="text-red-600 text-[13px] md:text-[12px] lg:text-base">Rp 3.450.000</span><span class="text-zinc-600 text-[10px] md:text-[10px] lg:text-sm line-through">Rp 3.800.000</span></div>
-                <div class="flex gap-1 mt-2"></div>
-              </div>
-            </article>
-            {{-- 4. Smart TV 4K UHD 55 inch (repeat) --}}
-            <article class="onsale-card bg-stone-50 border border-[#e8e8e8] p-2 md:p-2 lg:p-3 flex flex-col" role="listitem" data-id="4" data-name="Smart TV 4K UHD 55 inch" data-price="Rp 5.499.000" data-oldprice="Rp 5.999.000" data-badge="SALE" data-img="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/burs3wxx_expires_30_days.png" data-colors='[]' data-rating="4.5" data-reviews="128">
-              <div class="relative w-full mb-2 md:mb-2 lg:mb-3">
-                <a href="{{ route('products.show', 'smart-tv-4k-uhd-55-inch') }}" class="block">
-                  <div class="bg-rose-50 w-full overflow-hidden"><img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/burs3wxx_expires_30_days.png" alt="Smart TV 4K UHD 55 inch" loading="lazy" class="w-full h-[130px] md:h-[120px] lg:h-[180px] object-cover"></div>
-                </a>
-                <div class="absolute left-2 top-2 bg-red-600 border border-black px-2 py-1"><span class="text-white text-[8px] md:text-[8px] lg:text-[10px] font-bold uppercase">SALE</span></div>
-                <button class="quick-add-btn" onclick="openCartModal(this.closest('.onsale-card'))">+ Tambah Keranjang</button>
-                <button class="mobile-cart-btn" onclick="openCartModal(this.closest('.onsale-card'))" aria-label="Tambah ke keranjang"><i class="fa-solid fa-cart-shopping text-[11px]"></i></button>
-              </div>
-              <div class="w-full px-1">
-                <a href="{{ route('products.show', 'smart-tv-4k-uhd-55-inch') }}"><h3 class="text-[12px] md:text-[11px] lg:text-sm font-bold uppercase leading-tight line-clamp-2">Smart TV 4K UHD 55 inch</h3></a>
-                <div class="flex flex-wrap items-center gap-1 mt-1"><span class="text-red-600 text-[13px] md:text-[12px] lg:text-base whitespace-nowrap">Rp 5.499.000</span><span class="text-zinc-600 text-[10px] md:text-[10px] lg:text-sm line-through whitespace-nowrap">Rp 5.999.000</span></div>
-                <div class="flex gap-1 mt-2"></div>
-              </div>
-            </article>
-            {{-- 5. Blender Multifungsi (repeat) --}}
-            <article class="onsale-card bg-stone-50 border border-[#e8e8e8] p-2 md:p-2 lg:p-3 flex flex-col" role="listitem" data-id="5" data-name="Blender Multifungsi" data-price="Rp 450.000" data-oldprice="Rp 550.000" data-badge="SALE" data-img="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/cilcgsan_expires_30_days.png" data-colors='[]' data-rating="4.3" data-reviews="87">
-              <div class="relative w-full mb-2 md:mb-2 lg:mb-3">
-                <a href="{{ route('products.show', 'blender-multifungsi') }}" class="block">
-                  <div class="bg-rose-50 w-full overflow-hidden"><img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/cilcgsan_expires_30_days.png" alt="Blender Multifungsi" loading="lazy" class="w-full h-[130px] md:h-[120px] lg:h-[180px] object-cover"></div>
-                </a>
-                <div class="absolute left-2 top-2 bg-red-600 border border-black px-2 py-1"><span class="text-white text-[8px] md:text-[8px] lg:text-[10px] font-bold uppercase">SALE</span></div>
-                <button class="quick-add-btn" onclick="openCartModal(this.closest('.onsale-card'))">+ Tambah Keranjang</button>
-                <button class="mobile-cart-btn" onclick="openCartModal(this.closest('.onsale-card'))" aria-label="Tambah ke keranjang"><i class="fa-solid fa-cart-shopping text-[11px]"></i></button>
-              </div>
-              <div class="w-full px-1">
-                <a href="{{ route('products.show', 'blender-multifungsi') }}"><h3 class="text-[12px] md:text-[11px] lg:text-sm font-bold uppercase leading-tight line-clamp-2">Blender Multifungsi</h3></a>
-                <div class="flex flex-wrap items-center gap-1 mt-1"><span class="text-red-600 text-[13px] md:text-[12px] lg:text-base">Rp 450.000</span><span class="text-zinc-600 text-[10px] md:text-[10px] lg:text-sm line-through">Rp 550.000</span></div>
-                <div class="flex gap-1 mt-2"></div>
-              </div>
-            </article>
-            {{-- 6. AC Split 1 PK Low Watt (repeat) --}}
-            <article class="onsale-card bg-stone-50 border border-[#e8e8e8] p-2 md:p-2 lg:p-3 flex flex-col" role="listitem" data-id="6" data-name="AC Split 1 PK Low Watt" data-price="Rp 3.450.000" data-oldprice="Rp 3.800.000" data-badge="SALE" data-img="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/cs9jkbf3_expires_30_days.png" data-colors='[]' data-rating="4.6" data-reviews="56">
-              <div class="relative w-full mb-2 md:mb-2 lg:mb-3">
-                <a href="{{ route('products.show', 'ac-split-1-pk-low-watt') }}" class="block">
-                  <div class="bg-rose-50 w-full overflow-hidden"><img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/cs9jkbf3_expires_30_days.png" alt="AC Split 1 PK Low Watt" loading="lazy" class="w-full h-[130px] md:h-[120px] lg:h-[180px] object-cover"></div>
-                </a>
-                <div class="absolute left-2 top-2 bg-red-600 border border-black px-2 py-1"><span class="text-white text-[8px] md:text-[8px] lg:text-[10px] font-bold uppercase">SALE</span></div>
-                <button class="quick-add-btn" onclick="openCartModal(this.closest('.onsale-card'))">+ Tambah Keranjang</button>
-                <button class="mobile-cart-btn" onclick="openCartModal(this.closest('.onsale-card'))" aria-label="Tambah ke keranjang"><i class="fa-solid fa-cart-shopping text-[11px]"></i></button>
-              </div>
-              <div class="w-full px-1">
-                <a href="{{ route('products.show', 'ac-split-1-pk-low-watt') }}"><h3 class="text-[12px] md:text-[11px] lg:text-sm font-bold uppercase leading-tight line-clamp-2">AC Split 1 PK Low Watt</h3></a>
-                <div class="flex flex-wrap items-center gap-1 mt-1"><span class="text-red-600 text-[13px] md:text-[12px] lg:text-base">Rp 3.450.000</span><span class="text-zinc-600 text-[10px] md:text-[10px] lg:text-sm line-through">Rp 3.800.000</span></div>
-                <div class="flex gap-1 mt-2"></div>
-              </div>
-            </article>
+            @empty
+            <p class="text-stone-500 text-center text-sm py-8">Tidak ada produk promo saat ini.</p>
+            @endforelse
           </div>
         </div>
+        @if($promoProducts->count() > 4)
         <div class="flex gap-2 justify-end mt-4">
           <button id="onsale-prev" class="onsale-btn" onclick="onsaleSlide(-1)" disabled aria-label="Produk sebelumnya"><i class="fa-solid fa-chevron-left text-black text-xs"></i></button>
           <button id="onsale-next" class="onsale-btn" onclick="onsaleSlide(1)" aria-label="Produk berikutnya"><i class="fa-solid fa-chevron-right text-black text-xs"></i></button>
         </div>
+        @endif
       </div>
     </section>
 

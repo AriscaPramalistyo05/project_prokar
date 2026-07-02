@@ -33,9 +33,9 @@ class DatabaseSeeder extends Seeder
                     'fade_duration' => 900,
                     'show_once'     => true,
                     'messages'      => [
-                        ['type' => 'line', 'text' => 'Elektronik rusak bukan akhir dari masa pakainya.', 'duration' => 1900],
-                        ['type' => 'line', 'text' => 'Perbaiki. Jual. Beli. Dalam satu platform.', 'duration' => 1900],
-                        ['type' => 'logo', 'text' => 'PROKAR ELEKTRONIK', 'duration' => 2400],
+                        ['type' => 'line', 'text' => 'Elektronik rusak bukan akhir dari masa pakainya.', 'duration' => 1000],
+                        ['type' => 'line', 'text' => 'Perbaiki. Jual. Beli. Dalam satu platform.', 'duration' => 1000],
+                        ['type' => 'logo', 'text' => 'PROKAR ELEKTRONIK', 'duration' => 1500],
                     ]
                 ]),
                 'type'  => 'json',
