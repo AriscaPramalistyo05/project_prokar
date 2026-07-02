@@ -6,10 +6,10 @@
 --}}
 @php
   $isHome     = request()->routeIs('home');
-  $isProducts = request()->routeIs('products.*');
-  $isSell     = request()->routeIs('sell');
-  $isService  = request()->routeIs('service') || request()->routeIs('service.track');
-  $isCart     = request()->routeIs('cart');
+  $isProducts = request()->routeIs('produk.*');
+  $isSell     = request()->routeIs('jual.index');
+  $isService  = request()->routeIs('servis.index') || request()->routeIs('servis.lacak');
+  $isCart     = request()->routeIs('keranjang.index');
   $isCheckout = request()->routeIs('checkout.address');
 @endphp
 
@@ -50,7 +50,7 @@
      ════════════════════════════════════════════ -->
 <header>
   <nav aria-label="Navigasi utama"
-    class="flex justify-between items-center bg-white h-16 md:h-[72px] px-3 md:px-6 lg:px-12 {{ request()->routeIs('products.show') || request()->routeIs('products.index') || request()->routeIs('sell') || request()->routeIs('service') ? 'mb-6 md:mb-10 lg:mb-[72px]' : 'mb-0' }} border-b border-gray-200">
+    class="flex justify-between items-center bg-white h-16 md:h-[72px] px-3 md:px-6 lg:px-12 {{ request()->routeIs('produk.show') || request()->routeIs('produk.index') || request()->routeIs('jual.index') || request()->routeIs('servis.index') ? 'mb-6 md:mb-10 lg:mb-[72px]' : 'mb-0' }} border-b border-gray-200">
     <!-- Left: hamburger+logo -->
     <a href="{{ route('home') }}" aria-label="Prokar Elektronik – Halaman Utama" class="flex items-center gap-2 md:gap-4 flex-shrink-0">
       <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/e0bel3ic_expires_30_days.png"
@@ -64,10 +64,10 @@
     <!-- Centre: nav links -->
     <div class="hidden md:flex items-center gap-4 lg:gap-6 xl:gap-8 flex-grow justify-center">
       <a href="{{ route('home') }}" class="nav-link text-xs md:text-sm {{ $isHome ? 'active' : '' }}" @if($isHome) aria-current="page" @endif>HOME</a>
-      <a href="{{ route('products.index') }}" class="nav-link text-xs md:text-sm {{ $isProducts ? 'active' : '' }}" @if($isProducts) aria-current="page" @endif>PRODUK</a>
-      <a href="{{ route('sell') }}" class="nav-link text-xs md:text-sm {{ $isSell ? 'active' : '' }}" @if($isSell) aria-current="page" @endif>JUAL</a>
-      <a href="{{ route('service') }}" class="nav-link text-xs md:text-sm {{ $isService ? 'active' : '' }}" @if($isService) aria-current="page" @endif>SERVIS</a>
-      <a href="{{ route('service.track') }}" class="nav-link text-xs md:text-sm">TRACK</a>
+      <a href="{{ route('produk.index') }}" class="nav-link text-xs md:text-sm {{ $isProducts ? 'active' : '' }}" @if($isProducts) aria-current="page" @endif>PRODUK</a>
+      <a href="{{ route('jual.index') }}" class="nav-link text-xs md:text-sm {{ $isSell ? 'active' : '' }}" @if($isSell) aria-current="page" @endif>JUAL</a>
+      <a href="{{ route('servis.index') }}" class="nav-link text-xs md:text-sm {{ $isService ? 'active' : '' }}" @if($isService) aria-current="page" @endif>SERVIS</a>
+      <a href="{{ route('servis.lacak') }}" class="nav-link text-xs md:text-sm">TRACK</a>
     </div>
 
     <!-- Right: icons -->
@@ -124,7 +124,7 @@
     </div>
 @endauth
 
-      <a href="{{ route('cart') }}" aria-label="Keranjang" class="relative">
+      <a href="{{ route('keranjang.index') }}" aria-label="Keranjang" class="relative">
         <i class="fa-solid fa-cart-shopping text-[20px] text-black" aria-hidden="true"></i>
         <span
           class="absolute -top-2 -right-2 w-[18px] h-[18px] bg-[#FF7A00] rounded-full text-white text-[10px] font-semibold flex items-center justify-center"

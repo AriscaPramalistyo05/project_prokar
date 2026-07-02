@@ -242,22 +242,22 @@
           <i class="fa-solid fa-chevron-left text-black" aria-hidden="true"></i>
         </button>
 
-        <a href="{{ route('products.index') }}?page=1" aria-label="Halaman 1" aria-current="page"
+        <a href="{{ route('produk.index') }}?page=1" aria-label="Halaman 1" aria-current="page"
           class="flex items-center justify-center bg-black py-[7px] px-[15px] md:px-[17px] mr-2 text-white">
           1
         </a>
-        <a href="{{ route('products.index') }}?page=2" aria-label="Halaman 2"
+        <a href="{{ route('produk.index') }}?page=2" aria-label="Halaman 2"
           class="flex items-center justify-center py-[7px] px-[15px] mr-2 border border-solid border-[#7E7576] text-[#1A1C1C]">
           2
         </a>
-        <a href="{{ route('products.index') }}?page=3" aria-label="Halaman 3"
+        <a href="{{ route('produk.index') }}?page=3" aria-label="Halaman 3"
           class="flex items-center justify-center py-[7px] px-[15px] mr-2 border border-solid border-[#7E7576] text-[#1A1C1C]">
           3
         </a>
         <span class="flex items-center justify-center px-2 mr-2" aria-hidden="true">
           <span class="text-[#1A1C1C] text-base">...</span>
         </span>
-        <a href="{{ route('products.index') }}?page=10" aria-label="Halaman 10"
+        <a href="{{ route('produk.index') }}?page=10" aria-label="Halaman 10"
           class="flex items-center justify-center py-[7px] px-3 mr-2 border border-solid border-[#7E7576] text-[#1A1C1C]">
           10
         </a>

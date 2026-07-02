@@ -2,19 +2,23 @@
 
 namespace App\Livewire\Frontend;
 
+use App\Models\Category;
 use Livewire\Component;
 
 class ProductFilter extends Component
 {
     public $activeCategory = 'semua';
 
-    public array $categories = [
-        ['key' => 'semua', 'label' => 'Semua'],
-        ['key' => 'kulkas', 'label' => 'Kulkas'],
-        ['key' => 'mesin-cuci', 'label' => 'Mesin Cuci'],
-        ['key' => 'televisi', 'label' => 'Televisi'],
-        ['key' => 'lainnya', 'label' => 'Lainnya'],
-    ];
+    public array $categories = [];
+
+    public function mount()
+    {
+        $this->categories = Category::all()
+            ->map(fn ($cat) => ['key' => (string) $cat->id, 'label' => $cat->name])
+            ->prepend(['key' => 'semua', 'label' => 'Semua'])
+            ->values()
+            ->toArray();
+    }
 
     public function select($key)
     {

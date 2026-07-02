@@ -59,7 +59,7 @@
       <livewire:frontend.cart-list />
 
       <div class="mt-auto pt-unit-4 border-t-2 border-primary">
-        <a href="{{ route('products.index') }}" class="flex items-center gap-1 font-label-mono text-label-mono text-on-surface-variant hover:text-primary transition-colors uppercase">
+        <a href="{{ route('produk.index') }}" class="flex items-center gap-1 font-label-mono text-label-mono text-on-surface-variant hover:text-primary transition-colors uppercase">
           <span class="material-symbols-outlined text-[14px]" aria-hidden="true">chevron_left</span>
           Lanjutkan belanja
         </a>
