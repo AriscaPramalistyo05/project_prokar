@@ -16,6 +16,7 @@
             <x-menu activate-by-route>
                 <x-admin.sidebar-item route="admin.dashboard" icon="o-squares-2x2" label="Dashboard" />
                 <x-admin.sidebar-item route="admin.products.index" icon="o-cube" label="Produk" />
+                <x-admin.sidebar-item route="admin.categories.index" icon="o-tag" label="Kategori" />
                 <x-admin.sidebar-item route="admin.services.index" icon="o-wrench-screwdriver" label="Servis" />
                 <x-admin.sidebar-item route="admin.sell-submissions.index" icon="o-arrow-down-tray" label="Jual (Masuk)" />
                 <x-admin.sidebar-item route="admin.orders.index" icon="o-shopping-bag" label="Order" />

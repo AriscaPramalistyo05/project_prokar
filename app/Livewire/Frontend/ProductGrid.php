@@ -44,7 +44,7 @@ class ProductGrid extends Component
         }
 
         $products = $query->get()->map(function (Product $product) {
-            $conditionData = $this->getConditionBadgeData($product->condition);
+            $conditionData = $this->getConditionBadgeData($product->condition, $product->condition_color);
 
             return [
                 'slug' => $product->slug,
@@ -65,39 +65,30 @@ class ProductGrid extends Component
         ]);
     }
 
-    private function getConditionBadgeData($condition)
+    private function getConditionBadgeData($condition, $color = 'blue')
     {
-        switch ($condition) {
-            case 'seperti_baru':
-                return [
-                    'label' => 'Seperti Baru',
-                    'class' => 'bg-[#0356FF] md:bg-[#34C759]'
-                ];
-            case 'kondisi_prima':
-                return [
-                    'label' => 'Kondisi Prima',
-                    'class' => 'bg-[#0356FF] md:bg-emerald-500'
-                ];
-            case 'kondisi_minus_body':
-                return [
-                    'label' => 'Kondisi Minus Body',
-                    'class' => 'bg-[#F9362C] md:bg-[#FF383C]'
-                ];
-            case 'lecet_pemakaian':
-                return [
-                    'label' => 'Lecet Pemakaian',
-                    'class' => 'bg-[#F9362C] md:bg-yellow-500'
-                ];
-            case 'kondisi_baik':
-                return [
-                    'label' => 'Kondisi Baik',
-                    'class' => 'bg-[#0356FF] md:bg-blue-500'
-                ];
-            default:
-                return [
-                    'label' => 'Kondisi Baik',
-                    'class' => 'bg-[#0356FF] md:bg-blue-500'
-                ];
+        $class = 'bg-[#0356FF] md:bg-blue-500';
+        switch ($color) {
+            case 'green':
+                $class = 'bg-[#0356FF] md:bg-[#34C759]';
+                break;
+            case 'emerald':
+                $class = 'bg-[#0356FF] md:bg-emerald-500';
+                break;
+            case 'blue':
+                $class = 'bg-[#0356FF] md:bg-blue-500';
+                break;
+            case 'yellow':
+                $class = 'bg-[#F9362C] md:bg-yellow-500';
+                break;
+            case 'red':
+                $class = 'bg-[#F9362C] md:bg-[#FF383C]';
+                break;
         }
+
+        return [
+            'label' => $condition ?? 'Kondisi Baik',
+            'class' => $class
+        ];
     }
 }

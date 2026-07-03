@@ -70,5 +70,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:super_admin|te
         Route::get('/dashboard', function () {
             return view('admin.dashboard');
         })->name('dashboard');
-        // Route admin lain ditambahkan per fase
+
+        Route::get('/produk', \App\Livewire\Admin\ProductIndex::class)->name('products.index');
+        Route::get('/produk/tambah', \App\Livewire\Admin\ProductForm::class)->name('products.create');
+        Route::get('/produk/{product}/edit', \App\Livewire\Admin\ProductForm::class)->name('products.edit');
+
+        Route::get('/kategori', \App\Livewire\Admin\CategoryIndex::class)->name('categories.index');
     });
