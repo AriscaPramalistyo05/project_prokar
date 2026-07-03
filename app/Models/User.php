@@ -42,4 +42,9 @@ class User extends Authenticatable
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
     }
+
+    public function serviceOrders()
+    {
+        return $this->hasMany(ServiceOrder::class, 'technician_id');
+    }
 }

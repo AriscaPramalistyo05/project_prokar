@@ -6,7 +6,8 @@
                     <i class="fa-solid fa-check text-white text-2xl"></i>
                 </div>
                 <h2 class="text-2xl font-bold uppercase mb-2">Pengajuan Terkirim</h2>
-                <p class="text-[#444748] text-sm mb-6">Tim kami akan menghubungi Anda dalam 1x24 jam untuk konfirmasi jadwal.</p>
+                <p class="text-[#444748] text-sm mb-2">Nomor Tiket Anda: <strong>{{ $serviceCode }}</strong></p>
+                <p class="text-[#444748] text-sm mb-6">Tim kami akan segera memproses pengajuan Anda. Email konfirmasi telah dikirim ke alamat yang Anda berikan.</p>
                 <button wire:click="resetForm" type="button"
                     class="bg-black text-white px-6 py-3 font-bold text-sm uppercase tracking-wider hover:bg-[#222] transition-colors">
                     Ajukan Servis Lain
@@ -26,6 +27,12 @@
                         @error('nama') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
                     <div class="flex-1 flex flex-col gap-2">
+                        <label for="email" class="text-black text-xs font-bold uppercase tracking-wide">Alamat Email</label>
+                        <input wire:model="email" id="email" type="email" placeholder="email@contoh.com"
+                            class="w-full px-4 py-3.5 bg-white border border-gray-200 text-base text-black focus:outline-none focus:border-black transition-colors" />
+                        @error('email') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+                    <div class="flex-1 flex flex-col gap-2">
                         <label for="whatsapp" class="text-black text-xs font-bold uppercase tracking-wide">Nomor WhatsApp</label>
                         <input wire:model="whatsapp" id="whatsapp" type="tel" placeholder="08xxxxxxxxxx"
                             class="w-full px-4 py-3.5 bg-white border border-gray-200 text-base text-black focus:outline-none focus:border-black transition-colors" />
@@ -39,11 +46,9 @@
                         <select wire:model="kategori" id="kategori"
                             class="select-caret w-full px-4 py-3.5 bg-white border border-gray-400 text-base text-black focus:outline-none focus:border-black transition-colors">
                             <option value="">Pilih Kategori</option>
-                            <option value="tv">TV</option>
-                            <option value="kulkas">Kulkas</option>
-                            <option value="mesin-cuci">Mesin Cuci</option>
-                            <option value="ac">AC</option>
-                            <option value="lainnya">Lainnya</option>
+                            @foreach($categories as $cat)
+                                <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                            @endforeach
                         </select>
                         @error('kategori') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
@@ -51,6 +56,7 @@
                         <label for="merek" class="text-black text-xs font-bold uppercase tracking-wide">Merek &amp; Tipe</label>
                         <input wire:model="merek" id="merek" type="text" placeholder="Contoh: Samsung RT38K5032S8"
                             class="w-full px-4 py-3.5 bg-white border border-gray-200 text-base text-black focus:outline-none focus:border-black transition-colors" />
+                        @error('merek') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
                 </div>
 
@@ -71,21 +77,36 @@
                         <input wire:model="photos" id="upload-input" type="file" accept="image/*" multiple class="hidden" />
                     </label>
                     <p class="text-xs text-gray-500">{{ count($photos) }} file dipilih</p>
+                    @error('photos.*') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
 
-                <div class="flex flex-col gap-2">
-                    <div class="flex items-center gap-2">
-                        <label for="alamat" class="text-black text-xs font-bold uppercase tracking-wide">Alamat Lokasi</label>
-                        <span class="px-1.5 py-0.5 bg-[#FAFAFA] border border-gray-200 text-[#7E7576] text-[9px] font-bold uppercase tracking-wide">Wajib</span>
+                @if($serviceType === 'datang')
+                    <div class="flex flex-col md:flex-row gap-5 md:gap-6">
+                        <div class="flex-[2] flex flex-col gap-2">
+                            <div class="flex items-center gap-2">
+                                <label for="alamat" class="text-black text-xs font-bold uppercase tracking-wide">Alamat Lokasi</label>
+                                <span class="px-1.5 py-0.5 bg-[#FAFAFA] border border-gray-200 text-[#7E7576] text-[9px] font-bold uppercase tracking-wide">Wajib</span>
+                            </div>
+                            <textarea wire:model="alamat" id="alamat" rows="3" placeholder="Masukkan alamat lengkap untuk kunjungan teknisi..."
+                                class="w-full px-4 py-3 bg-white border border-gray-400 text-base text-black resize-none focus:outline-none focus:border-black transition-colors"></textarea>
+                            @error('alamat') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+                        </div>
+                        <div class="flex-1 flex flex-col gap-2">
+                            <div class="flex items-center gap-2">
+                                <label for="kota" class="text-black text-xs font-bold uppercase tracking-wide">Kota / Kecamatan</label>
+                                <span class="px-1.5 py-0.5 bg-[#FAFAFA] border border-gray-200 text-[#7E7576] text-[9px] font-bold uppercase tracking-wide">Wajib</span>
+                            </div>
+                            <input wire:model="kota" id="kota" type="text" placeholder="Contoh: Jepara"
+                                class="w-full px-4 py-3.5 bg-white border border-gray-400 text-base text-black focus:outline-none focus:border-black transition-colors" />
+                            @error('kota') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+                        </div>
                     </div>
-                    <textarea wire:model="alamat" id="alamat" rows="3" placeholder="Masukkan alamat lengkap untuk kunjungan teknisi..."
-                        class="w-full px-4 py-3 bg-white border border-gray-400 text-base text-black resize-none focus:outline-none focus:border-black transition-colors"></textarea>
-                    @error('alamat') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
-                </div>
+                @endif
 
-                <button type="submit"
-                    class="px-8 py-4 bg-black text-white text-sm font-bold uppercase tracking-wide hover:bg-[#222] transition-colors">
-                    Ajukan Servis Sekarang
+                <button type="submit" wire:loading.attr="disabled"
+                    class="px-8 py-4 bg-black text-white text-sm font-bold uppercase tracking-wide hover:bg-[#222] transition-colors disabled:opacity-50">
+                    <span wire:loading.remove wire:target="submit">Ajukan Servis Sekarang</span>
+                    <span wire:loading wire:target="submit"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Memproses...</span>
                 </button>
             </form>
         @endif

@@ -24,4 +24,9 @@ class Category extends Model
     {
         return $this->hasMany(Product::class);
     }
+
+    public function serviceOrders()
+    {
+        return $this->hasMany(ServiceOrder::class);
+    }
 }
