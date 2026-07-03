@@ -10,6 +10,8 @@ use App\Listeners\SendCustomerApprovalNotification;
 use App\Listeners\SendOrderCreatedNotification;
 use App\Listeners\SendSellSubmissionCreatedNotification;
 use App\Listeners\SendServiceOrderCreatedNotification;
+use App\Models\Product;
+use App\Observers\ProductObserver;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
@@ -28,6 +30,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Register ProductObserver
+        Product::observe(ProductObserver::class);
+
         // FCM — notifikasi push ke admin
         Event::listen(OrderCreated::class,           SendOrderCreatedNotification::class);
         Event::listen(ServiceOrderCreated::class,    SendServiceOrderCreatedNotification::class);
