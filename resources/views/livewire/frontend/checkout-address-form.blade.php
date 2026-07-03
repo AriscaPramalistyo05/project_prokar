@@ -8,7 +8,7 @@
     <nav aria-label="Breadcrumb" class="flex items-center gap-2 font-label-mono text-label-mono text-on-surface-variant mb-unit-8 uppercase">
       <a class="hover:text-primary transition-colors" href="{{ route('home') }}">Home</a>
       <span class="material-symbols-outlined text-[14px]" aria-hidden="true">chevron_right</span>
-      <a class="hover:text-primary transition-colors" href="{{ route('cart') }}">Cart</a>
+      <a class="hover:text-primary transition-colors" href="{{ route('keranjang.index') }}">Cart</a>
       <span class="material-symbols-outlined text-[14px]" aria-hidden="true">chevron_right</span>
       <span class="text-primary font-bold" aria-current="step">Checkout</span>
     </nav>
@@ -133,7 +133,7 @@
 
     <div class="mt-unit-4 flex items-center justify-between border-t-2 border-primary pt-unit-4">
       <a
-        href="{{ route('cart') }}"
+        href="{{ route('keranjang.index') }}"
         class="flex items-center gap-1 font-label-mono text-label-mono text-on-surface-variant hover:text-primary transition-colors uppercase">
         <span class="material-symbols-outlined text-[14px]" aria-hidden="true">chevron_left</span>
         Return to cart

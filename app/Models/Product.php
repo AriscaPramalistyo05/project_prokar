@@ -19,6 +19,7 @@ class Product extends Model
         'model',
         'description',
         'condition_notes',
+        'condition',
         'price',
         'promo_price',
         'stock',

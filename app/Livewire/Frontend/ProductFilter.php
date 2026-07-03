@@ -13,11 +13,15 @@ class ProductFilter extends Component
 
     public function mount()
     {
-        $this->categories = Category::all()
-            ->map(fn ($cat) => ['key' => (string) $cat->id, 'label' => $cat->name])
-            ->prepend(['key' => 'semua', 'label' => 'Semua'])
-            ->values()
-            ->toArray();
+        $this->activeCategory = request()->query('kategori', 'semua');
+
+        $this->categories = [
+            ['key' => 'semua', 'label' => 'Semua'],
+            ['key' => 'kulkas', 'label' => 'Kulkas'],
+            ['key' => 'mesin-cuci', 'label' => 'Mesin Cuci'],
+            ['key' => 'televisi', 'label' => 'Televisi'],
+            ['key' => 'lainnya', 'label' => 'Lainnya'],
+        ];
     }
 
     public function select($key)

@@ -1,5 +1,22 @@
 @extends('layouts.app')
 
+@php
+$openingEnabled = (bool) (setting('opening_enabled') ?? true);
+$openingConfig = json_decode(setting('opening_config') ?? '{}', true);
+
+$defaultMessages = [
+    ['type' => 'line', 'text' => 'Elektronik rusak bukan akhir dari masa pakainya.', 'duration' => 1900],
+    ['type' => 'line', 'text' => 'Perbaiki. Jual. Beli. Dalam satu platform.', 'duration' => 1900],
+    ['type' => 'logo', 'text' => 'PROKAR ELEKTRONIK', 'duration' => 2400]
+];
+
+$messages = $openingConfig['messages'] ?? $defaultMessages;
+$textColor = $openingConfig['text_color'] ?? '#FFFFFF';
+$bgColor = $openingConfig['bg_color'] ?? '#000000';
+$accentColor = $openingConfig['accent_color'] ?? '#FECB00';
+$fadeDuration = $openingConfig['fade_duration'] ?? 900;
+@endphp
+
 @section('title', 'Prokar Elektronik – Jual, Beli & Servis Elektronik Bekas Terpercaya di Jepara')
 @section('description', 'Prokar Elektronik: jual beli dan servis elektronik bekas berkualitas di Jepara. Kulkas, TV, mesin cuci, AC, dispenser bergaransi dengan harga terjangkau. Teknisi berpengalaman.')
 @section('keywords', 'elektronik bekas Jepara, jual kulkas second, servis TV, servis mesin cuci, servis kulkas, AC second, toko elektronik Mlonggo, jual beli elektronik, Prokar Elektronik')
@@ -65,6 +82,30 @@
 
 @push('styles')
 <style>
+    /* ── Opening Animation Styles ── */
+    @keyframes logo-pop {
+      0%   { opacity: 0; transform: scale(0.85); }
+      60%  { opacity: 1; transform: scale(1.03); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    .logo-pop { animation: logo-pop 480ms cubic-bezier(.22,1,.36,1) forwards; }
+
+    .hazard-stripe {
+      background-image: repeating-linear-gradient(45deg, {{ $accentColor }} 0 14px, #1b1c1c 14px 28px);
+    }
+
+    /* Overlay fade-out: dikontrol via class, transisi pakai CSS biasa (bukan library JS) */
+    .opening-overlay {
+      transition: opacity {{ $fadeDuration }}ms ease, visibility 0ms {{ $fadeDuration }}ms;
+    }
+    .opening-overlay.is-hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    [x-cloak] { display: none !important; }
+
     /* ── Announcement bar marquee ── */
     .marquee-container {
       overflow: hidden;
@@ -348,8 +389,51 @@
 @endpush
 
 @section('content')
+<div x-data="openingAnimation({
+    enabled: {{ $openingEnabled ? 'true' : 'false' }},
+    fadeDuration: {{ $fadeDuration }},
+    messages: {{ json_encode($messages) }}
+})" x-init="init()" class="relative min-h-screen w-full overflow-hidden">
 
-  @include('opening')
+    <!-- ===================== Overlay Opening Animation (Brutalist) ===================== -->
+    <div
+      x-cloak
+      x-show="!skip && enabled"
+      class="opening-overlay fixed inset-0 z-50 flex flex-col"
+      :class="{ 'is-hidden': phase === 'reveal' || phase === 'done' }"
+      style="background-color: {{ $bgColor }}; transition: opacity {{ $fadeDuration }}ms ease, visibility 0ms {{ $fadeDuration }}ms; --opening-accent: {{ $accentColor }}; --opening-text: {{ $textColor }};"
+    >
+      <!-- Hazard stripe atas, signature element yang sama dengan panel login/register -->
+      <div class="hazard-stripe h-2.5 w-full shrink-0" aria-hidden="true"></div>
+
+      <!-- Frame brutalist: bracket sudut kuning ala viewfinder -->
+      <div class="relative flex-grow flex items-center justify-center px-6">
+        <span class="absolute top-6 left-6 w-8 h-8 border-t-4 border-l-4" style="border-color: {{ $accentColor }};" aria-hidden="true"></span>
+        <span class="absolute top-6 right-6 w-8 h-8 border-t-4 border-r-4" style="border-color: {{ $accentColor }};" aria-hidden="true"></span>
+        <span class="absolute bottom-6 left-6 w-8 h-8 border-b-4 border-l-4" style="border-color: {{ $accentColor }};" aria-hidden="true"></span>
+        <span class="absolute bottom-6 right-6 w-8 h-8 border-b-4 border-r-4" style="border-color: {{ $accentColor }};" aria-hidden="true"></span>
+
+        <!-- Teks/logo yang di-cycle -->
+        <template x-for="(msg, i) in messages" :key="i">
+          <div x-show="index === i" x-transition:enter="transition ease-out duration-700" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-500" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="text-center max-w-2xl">
+
+            <template x-if="msg.type === 'line'">
+              <p class="font-body-md text-xl sm:text-2xl md:text-3xl font-bold leading-snug px-4" x-text="msg.text" style="color: {{ $textColor }};"></p>
+            </template>
+
+            <template x-if="msg.type === 'logo'">
+              <div class="logo-pop flex flex-col items-center gap-2">
+                <span class="font-brand-display font-black uppercase tracking-tight text-4xl sm:text-5xl md:text-6xl border-4 px-6 py-3" x-text="msg.text" style="color: {{ $accentColor }}; border-color: {{ $accentColor }};"></span>
+                <span class="font-label-mono text-[11px] uppercase tracking-[0.3em] text-tertiary-fixed-dim mt-2">Mlonggo &middot; Jepara</span>
+              </div>
+            </template>
+
+          </div>
+        </template>
+      </div>
+
+      <div class="hazard-stripe h-2.5 w-full shrink-0" aria-hidden="true"></div>
+    </div>
 
   <main>
     <!-- HERO -->
@@ -401,27 +485,27 @@
       <!-- Category Cards -->
       <nav aria-label="Kategori produk" class="max-w-6xl mx-auto px-6 md:px-16 pt-6">
         <ul class="flex flex-row gap-2 md:gap-5 items-end justify-start lg:justify-center list-none m-0 p-0 overflow-x-auto scrollbar-hide">
-          <li class="shrink-0"><a href="{{ route('products.index') }}?kategori=kulkas" class="cat-card shadow-soft">
+          <li class="shrink-0"><a href="{{ route('produk.index') }}?kategori=kulkas" class="cat-card shadow-soft">
               <div class="bg-gray-50 w-full"><img src="{{ asset('assets/images/kulkas0.png') }}" class="w-full h-[120px] md:h-[185px] lg:h-[130px] object-cover" alt="Kulkas bekas berkualitas" loading="lazy" /></div>
               <div class="py-3 px-2 w-full border-t border-gray-50"><span class="cat-label text-[#111827] text-center text-xs md:text-sm block">Kulkas</span></div>
             </a></li>
-          <li class="shrink-0"><a href="{{ route('products.index') }}?kategori=tv" class="cat-card cat-card--tall shadow-soft">
+          <li class="shrink-0"><a href="{{ route('produk.index') }}?kategori=tv" class="cat-card cat-card--tall shadow-soft">
               <div class="bg-gray-50 w-full"><img src="{{ asset('assets/images/tv0.png') }}" class="w-full h-[140px] md:h-[215px] lg:h-[155px] object-cover" alt="TV bekas berkualitas" loading="lazy" /></div>
               <div class="py-3 px-2 w-full border-t border-gray-50"><span class="cat-label text-[#111827] text-center text-xs md:text-sm block">TV</span></div>
             </a></li>
-          <li class="shrink-0"><a href="{{ route('products.index') }}?kategori=mesin-cuci" class="cat-card shadow-soft">
+          <li class="shrink-0"><a href="{{ route('produk.index') }}?kategori=mesin-cuci" class="cat-card shadow-soft">
               <div class="bg-gray-50 w-full"><img src="{{ asset('assets/images/mesin-cuci0.png') }}" class="w-full h-[120px] md:h-[185px] lg:h-[130px] object-cover" alt="Mesin Cuci bekas berkualitas" loading="lazy" /></div>
               <div class="py-3 px-2 w-full border-t border-gray-50"><span class="cat-label text-[#111827] text-center text-xs md:text-sm block">Mesin Cuci</span></div>
             </a></li>
-          <li class="shrink-0"><a href="{{ route('products.index') }}?kategori=ac" class="cat-card cat-card--tall shadow-soft">
+          <li class="shrink-0"><a href="{{ route('produk.index') }}?kategori=ac" class="cat-card cat-card--tall shadow-soft">
               <div class="bg-gray-50 w-full"><img src="{{ asset('assets/images/ac0.png') }}" class="w-full h-[140px] md:h-[215px] lg:h-[155px] object-cover" alt="AC bekas berkualitas" loading="lazy" /></div>
               <div class="py-3 px-2 w-full border-t border-gray-50"><span class="cat-label text-[#111827] text-center text-xs md:text-sm block">AC</span></div>
             </a></li>
-          <li class="shrink-0"><a href="{{ route('products.index') }}?kategori=dispenser" class="cat-card shadow-soft">
+          <li class="shrink-0"><a href="{{ route('produk.index') }}?kategori=dispenser" class="cat-card shadow-soft">
               <div class="bg-gray-50 w-full"><img src="{{ asset('assets/images/dispenser0.png') }}" class="w-full h-[120px] md:h-[185px] lg:h-[130px] object-cover" alt="Dispenser bekas berkualitas" loading="lazy" /></div>
               <div class="py-3 px-2 w-full border-t border-gray-50"><span class="cat-label text-[#111827] text-center text-xs md:text-sm block">Dispenser</span></div>
             </a></li>
-          <li class="shrink-0"><a href="{{ route('products.index') }}?kategori=microwave" class="cat-card cat-card--tall shadow-soft">
+          <li class="shrink-0"><a href="{{ route('produk.index') }}?kategori=microwave" class="cat-card cat-card--tall shadow-soft">
               <div class="bg-gray-50 w-full"><img src="{{ asset('assets/images/microwave0.png') }}" class="w-full h-[140px] md:h-[215px] lg:h-[155px] object-cover" alt="Microwave bekas berkualitas" loading="lazy" /></div>
               <div class="py-3 px-2 w-full border-t border-gray-50"><span class="cat-label text-[#111827] text-center text-xs md:text-sm block">Microwave</span></div>
             </a></li>
@@ -629,11 +713,12 @@
       </div>
       <div class="px-4 pt-5 pb-4 flex flex-col gap-3 mt-auto">
         <button onclick="closeCartModal()" class="w-full border-2 border-black text-black font-bold text-sm uppercase tracking-wider py-3 hover:bg-black hover:text-white transition-colors font-public">LANJUT BELANJA</button>
-        <a href="{{ route('cart') }}" class="w-full block text-center bg-black text-white font-bold text-sm uppercase tracking-wider py-3 hover:bg-gray-800 transition-colors font-public">LIHAT KERANJANG</a>
+        <a href="{{ route('keranjang.index') }}" class="w-full block text-center bg-black text-white font-bold text-sm uppercase tracking-wider py-3 hover:bg-gray-800 transition-colors font-public">LIHAT KERANJANG</a>
         <a href="{{ route('checkout.address') }}" class="w-full block text-center bg-[#FFCC00] text-black font-bold text-sm uppercase tracking-wider py-3 hover:bg-[#f0c000] transition-colors font-public">CHECKOUT</a>
       </div>
     </div>
   </div>
+</div>
 @endsection
 
 @push('scripts')
@@ -691,14 +776,18 @@
     const cardW = getOnsaleCardWidth();
     const maxIndex = getOnsaleMaxIndex();
     if (onsaleIndex > maxIndex) onsaleIndex = maxIndex;
-    document.getElementById("onsale-track").style.transform =
-      `translateX(-${onsaleIndex * (cardW + ONSALE_GAP)}px)`;
+    const track = document.getElementById("onsale-track");
+    if (track) {
+      track.style.transform = `translateX(-${onsaleIndex * (cardW + ONSALE_GAP)}px)`;
+    }
     const prevBtn = document.getElementById("onsale-prev");
     const nextBtn = document.getElementById("onsale-next");
-    prevBtn.disabled = onsaleIndex === 0;
-    prevBtn.style.opacity = onsaleIndex === 0 ? "0.3" : "1";
-    nextBtn.disabled = onsaleIndex >= maxIndex;
-    nextBtn.style.opacity = onsaleIndex >= maxIndex ? "0.3" : "1";
+    if (prevBtn && nextBtn) {
+      prevBtn.disabled = onsaleIndex === 0;
+      prevBtn.style.opacity = onsaleIndex === 0 ? "0.3" : "1";
+      nextBtn.disabled = onsaleIndex >= maxIndex;
+      nextBtn.style.opacity = onsaleIndex >= maxIndex ? "0.3" : "1";
+    }
   }
 
   function onsaleSlide(dir) {
@@ -816,6 +905,70 @@
       item.classList.add("open");
       btn.setAttribute("aria-expanded", "true");
     }
+  }
+
+  // ===========================
+  // OPENING ANIMATION
+  // ===========================
+  function openingAnimation(config) {
+    return {
+      enabled: config.enabled,
+      phase: "intro", // intro -> reveal -> done
+      index: 0,
+      skip: false,
+      messages: config.messages,
+
+      init() {
+        if (!this.enabled) {
+          this.skip = true;
+          this.phase = "done";
+          return;
+        }
+
+        const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        let alreadyPlayed = false;
+        try {
+          alreadyPlayed = sessionStorage.getItem("prokar_opening_played") === "1";
+        } catch (e) {
+          // sessionStorage can fail in private mode
+        }
+
+        if (prefersReducedMotion || alreadyPlayed) {
+          this.skip = true;
+          this.phase = "done";
+          return;
+        }
+
+        this.runSequence();
+      },
+
+      runSequence() {
+        const fadeDuration = config.fadeDuration;
+
+        const step = (i) => {
+          this.index = i;
+          const duration = this.messages[i]?.duration || 1900;
+          window.setTimeout(() => {
+            if (i < this.messages.length - 1) {
+              step(i + 1);
+            } else {
+              this.phase = "reveal";
+              window.setTimeout(() => {
+                this.phase = "done";
+                try {
+                  sessionStorage.setItem("prokar_opening_played", "1");
+                } catch (e) {
+                  /* ignore */
+                }
+              }, fadeDuration);
+            }
+          }, duration);
+        };
+
+        step(0);
+      }
+    };
   }
 </script>
 @endpush

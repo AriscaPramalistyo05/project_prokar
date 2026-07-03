@@ -24,7 +24,7 @@
                                 {{ $p['name'] }}
                             </h2>
                             <div class="flex items-start mb-1 md:mb-2 md:h-8">
-                                <div class="inline-block bg-[#0356FF] md:bg-emerald-500 py-0.5 md:py-1 px-2 md:px-3 min-w-[60px] text-center">
+                                <div class="inline-block {{ $p['condition_class'] }} py-0.5 md:py-1 px-2 md:px-3 min-w-[60px] text-center">
                                     <span class="text-white font-bold text-[9px] md:text-xs">{{ $p['condition'] }}</span>
                                 </div>
                             </div>
