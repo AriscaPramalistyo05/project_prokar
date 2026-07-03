@@ -13,6 +13,7 @@ class ServiceImage extends Model
         'uploaded_by',
     ];
 
+    // ── Relations ──
     public function serviceOrder()
     {
         return $this->belongsTo(ServiceOrder::class);

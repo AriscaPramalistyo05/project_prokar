@@ -34,14 +34,14 @@
     </x-table>
 
     <!-- Create/Edit Modal -->
-    <x-modal wire:model="showModal" title="{{ $categoryId ? 'Edit Kategori' : 'Tambah Kategori' }}">
+    <x-modal id="category-modal" title="{{ $categoryId ? 'Edit Kategori' : 'Tambah Kategori' }}">
         <x-form wire:submit="save">
             <x-input label="Nama Kategori" wire:model="name" placeholder="Masukkan nama kategori (contoh: Televisi)" required />
             
             <x-input label="Icon Class (FontAwesome / Heroicons)" wire:model="icon" placeholder="contoh: fa-solid fa-tv atau o-tv" />
 
             <x-slot:actions>
-                <x-button label="Batal" wire:click="$set('showModal', false)" class="btn-ghost" />
+                <x-button label="Batal" onclick="document.getElementById('category-modal').close()" class="btn-ghost" />
                 <x-button label="Simpan" type="submit" class="btn-primary" spinner="save" />
             </x-slot:actions>
         </x-form>

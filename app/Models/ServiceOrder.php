@@ -48,6 +48,18 @@ class ServiceOrder extends Model
         ];
     }
 
+    // ── Auto-generate service_code ──
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            $model->service_code = 'SRV-' . date('Ymd') . '-' .
+                str_pad(ServiceOrder::whereDate('created_at', today())->count() + 1, 4, '0', STR_PAD_LEFT);
+        });
+    }
+
+    // ── Activity Log ──
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
@@ -56,6 +68,7 @@ class ServiceOrder extends Model
             ->dontSubmitEmptyLogs();
     }
 
+    // ── Relations ──
     protected static function boot()
     {
         parent::boot();
