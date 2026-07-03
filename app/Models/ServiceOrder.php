@@ -69,6 +69,18 @@ class ServiceOrder extends Model
     }
 
     // ── Relations ──
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->service_code)) {
+                $todayCount = self::whereDate('created_at', today())->count() + 1;
+                $model->service_code = 'SRV-' . date('Ymd') . '-' . str_pad($todayCount, 4, '0', STR_PAD_LEFT);
+            }
+        });
+    }
+
     public function technician()
     {
         return $this->belongsTo(User::class, 'technician_id');

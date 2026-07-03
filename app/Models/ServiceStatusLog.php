@@ -14,12 +14,13 @@ class ServiceStatusLog extends Model
     ];
 
     // ── Relations ──
+
     public function serviceOrder()
     {
         return $this->belongsTo(ServiceOrder::class);
     }
 
-    public function changedBy()
+    public function changer()
     {
         return $this->belongsTo(User::class, 'changed_by');
     }
