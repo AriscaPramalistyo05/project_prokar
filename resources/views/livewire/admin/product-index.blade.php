@@ -97,12 +97,12 @@
     </x-table>
 
     <!-- Delete Confirmation Modal -->
-    <x-modal wire:model="showDeleteModal" title="Konfirmasi Penghapusan">
+    <x-modal id="product-delete-modal" title="Konfirmasi Penghapusan">
         <div class="mb-4">
             Apakah Anda yakin ingin menonaktifkan/menghapus produk ini? Produk yang dihapus akan disimpan sebagai soft-delete dan tidak akan tampil di katalog pembeli.
         </div>
         <x-slot:actions>
-            <x-button label="Batal" wire:click="$set('showDeleteModal', false)" class="btn-ghost" />
+            <x-button label="Batal" onclick="document.getElementById('product-delete-modal').close()" class="btn-ghost" />
             <x-button label="Ya, Hapus" wire:click="deleteProduct" class="btn-error text-white" />
         </x-slot:actions>
     </x-modal>

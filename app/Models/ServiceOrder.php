@@ -48,11 +48,44 @@ class ServiceOrder extends Model
         ];
     }
 
+    // ── Auto-generate service_code ──
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            $model->service_code = 'SRV-' . date('Ymd') . '-' .
+                str_pad(ServiceOrder::whereDate('created_at', today())->count() + 1, 4, '0', STR_PAD_LEFT);
+        });
+    }
+
+    // ── Activity Log ──
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
             ->logOnly(['status', 'diagnosis', 'estimated_cost', 'final_cost', 'customer_approval', 'payment_status', 'technician_id'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
+    }
+
+    // ── Relations ──
+    public function technician()
+    {
+        return $this->belongsTo(User::class, 'technician_id');
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function serviceImages()
+    {
+        return $this->hasMany(ServiceImage::class);
+    }
+
+    public function serviceStatusLogs()
+    {
+        return $this->hasMany(ServiceStatusLog::class);
     }
 }

@@ -16,7 +16,7 @@ class ProductIndex extends Component
     public $filterStatus = '';
     
     // For delete confirmation
-    public $showDeleteModal = false;
+    public bool $showDeleteModal = false;
     public $productIdToDelete = null;
 
     protected $queryString = [
@@ -43,7 +43,7 @@ class ProductIndex extends Component
     public function confirmDelete($id)
     {
         $this->productIdToDelete = $id;
-        $this->showDeleteModal = true;
+        $this->js("document.getElementById('product-delete-modal').showModal()");
     }
 
     public function deleteProduct()
@@ -53,7 +53,7 @@ class ProductIndex extends Component
             $product->delete(); // performs soft delete
             $this->dispatch('mary-toast', type: 'success', title: 'Produk berhasil dinonaktifkan (soft delete)');
         }
-        $this->showDeleteModal = false;
+        $this->js("document.getElementById('product-delete-modal').close()");
         $this->productIdToDelete = null;
     }
 

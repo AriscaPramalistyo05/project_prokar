@@ -12,7 +12,7 @@ class CategoryIndex extends Component
     use WithPagination;
 
     public $search = '';
-    public $showModal = false;
+    public bool $showModal = false;
     
     // Form fields
     public $categoryId = null;
@@ -40,7 +40,7 @@ class CategoryIndex extends Component
         $this->categoryId = null;
         $this->name = '';
         $this->icon = '';
-        $this->showModal = true;
+        $this->js("document.getElementById('category-modal').showModal()");
     }
 
     public function openEditModal(Category $category)
@@ -49,7 +49,7 @@ class CategoryIndex extends Component
         $this->categoryId = $category->id;
         $this->name = $category->name;
         $this->icon = $category->icon;
-        $this->showModal = true;
+        $this->js("document.getElementById('category-modal').showModal()");
     }
 
     public function save()
@@ -73,7 +73,7 @@ class CategoryIndex extends Component
             $this->dispatch('mary-toast', type: 'success', title: 'Kategori berhasil ditambahkan');
         }
 
-        $this->showModal = false;
+        $this->js("document.getElementById('category-modal').close()");
     }
 
     public function deleteCategory(Category $category)
