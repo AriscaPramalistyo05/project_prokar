@@ -34,6 +34,16 @@ Route::view('/jual', 'pages.sell')->name('jual.index');
 
 Route::view('/servis', 'pages.service')->name('servis.index');
 Route::view('/servis/lacak', 'pages.service-tracking')->name('servis.lacak');
+Route::get('/servis/lacak/{code}', \App\Livewire\Frontend\TrackService::class)->name('servis.track');
+Route::get('/servis/garansi/{code}/download', function ($code) {
+    $serviceOrder = \App\Models\ServiceOrder::where('service_code', $code)->firstOrFail();
+    if ($serviceOrder->status !== 'completed') {
+        abort(404, 'Garansi belum tersedia.');
+    }
+    
+    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.warranty', ['serviceOrder' => $serviceOrder]);
+    return $pdf->download('Kartu-Garansi-' . $code . '.pdf');
+})->name('servis.garansi.download');
 
 Route::view('/keranjang', 'pages.cart')->name('keranjang.index');
 Route::view('/checkout', 'pages.checkout-address')->name('checkout.address');
@@ -76,4 +86,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:super_admin|te
         Route::get('/produk/{product}/edit', \App\Livewire\Admin\ProductForm::class)->name('products.edit');
 
         Route::get('/kategori', \App\Livewire\Admin\CategoryIndex::class)->name('categories.index');
+
+        Route::get('/servis', \App\Livewire\Admin\ServiceIndex::class)->name('services.index');
+        Route::get('/servis/{serviceOrder}', \App\Livewire\Admin\ServiceDetail::class)->name('services.show');
     });

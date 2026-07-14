@@ -12,6 +12,7 @@ class ServiceOrder extends Model
 
     protected $fillable = [
         'service_code',
+        'user_id',
         'technician_id',
         'customer_name',
         'customer_email',
@@ -60,16 +61,9 @@ class ServiceOrder extends Model
     }
 
     // ── Relations ──
-    protected static function boot()
+    public function user()
     {
-        parent::boot();
-
-        static::creating(function ($model) {
-            if (empty($model->service_code)) {
-                $todayCount = self::whereDate('created_at', today())->count() + 1;
-                $model->service_code = 'SRV-' . date('Ymd') . '-' . str_pad($todayCount, 4, '0', STR_PAD_LEFT);
-            }
-        });
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function technician()

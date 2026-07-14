@@ -7,6 +7,8 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
+        "aliziodev/laravel-wilayah": "^1.0",
+        "barryvdh/laravel-dompdf": "^3.1",
         "blade-ui-kit/blade-heroicons": "*",
         "intervention/image": "^4.1",
         "kreait/laravel-firebase": "^7.2",

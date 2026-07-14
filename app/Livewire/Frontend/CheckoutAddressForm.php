@@ -6,46 +6,75 @@ use Livewire\Component;
 
 class CheckoutAddressForm extends Component
 {
-    public string $firstName = '';
-    public string $lastName = '';
-    public string $address = '';
-    public string $apartment = '';
-    public string $city = '';
-    public string $province = '';
-    public string $postalCode = '';
+    public string $name = '';
+    
+    // Address Fields
+    public $province_id = '';
+    public $regency_id = '';
+    public $district_id = '';
+    public $village_id = '';
+    public $address_detail = '';
+
     public string $phone = '';
     public string $email = '';
     public bool $submitted = false;
 
     protected $rules = [
-        'firstName' => 'required|string|min:1|max:60',
-        'lastName' => 'required|string|min:1|max:60',
-        'address' => 'required|string|min:5|max:200',
-        'apartment' => 'nullable|string|max:100',
-        'city' => 'required|string|min:2|max:100',
-        'province' => 'required|in:DIY,DKI,JB,JTG',
-        'postalCode' => 'required|string|min:3|max:10',
-        'phone' => 'required|string|min:8|max:20',
+        'name' => 'required|string|min:1|max:120',
+        'province_id' => 'required',
+        'regency_id' => 'required',
+        'district_id' => 'required',
+        'village_id' => 'required',
+        'address_detail' => 'required|string|min:5',
+        'phone' => ['required', 'string', new \App\Rules\IndonesianPhone()],
         'email' => 'required|email|max:120',
     ];
 
     protected $messages = [
-        'firstName.required' => 'Nama depan wajib diisi.',
-        'lastName.required' => 'Nama belakang wajib diisi.',
-        'address.required' => 'Alamat wajib diisi.',
-        'city.required' => 'Kota wajib diisi.',
-        'province.required' => 'Pilih provinsi.',
-        'postalCode.required' => 'Kode pos wajib diisi.',
+        'name.required' => 'Nama lengkap wajib diisi.',
+        'province_id.required' => 'Provinsi wajib dipilih.',
+        'regency_id.required' => 'Kabupaten/Kota wajib dipilih.',
+        'district_id.required' => 'Kecamatan wajib dipilih.',
+        'village_id.required' => 'Desa/Kelurahan wajib dipilih.',
+        'address_detail.required' => 'Detail alamat wajib diisi.',
         'phone.required' => 'Nomor telepon wajib diisi.',
         'email.required' => 'Email wajib diisi.',
         'email.email' => 'Format email tidak valid.',
     ];
 
+    public function mount()
+    {
+        if (\Illuminate\Support\Facades\Auth::check()) {
+            $user = \Illuminate\Support\Facades\Auth::user();
+            $this->name = $user->name ?? '';
+            $this->phone = $user->phone ?? '';
+            $this->email = $user->email ?? '';
+        }
+    }
+
+    #[\Livewire\Attributes\On('address-updated')]
+    public function updateAddress($data)
+    {
+        if (isset($data['province_id'])) {
+            $this->province_id = $data['province_id'];
+            $this->regency_id = $data['regency_id'];
+            $this->district_id = $data['district_id'];
+            $this->village_id = $data['village_id'];
+            $this->address_detail = $data['address_detail'];
+        }
+    }
+
     public function submit(): void
     {
         $this->validate();
 
-        $this->dispatch('address-updated', city: $this->city, postalCode: $this->postalCode);
+        $this->dispatch('checkout-address-updated', [
+            'province_id' => $this->province_id,
+            'regency_id' => $this->regency_id,
+            'district_id' => $this->district_id,
+            'village_id' => $this->village_id,
+            'address_detail' => $this->address_detail,
+        ]);
         $this->submitted = true;
     }
 

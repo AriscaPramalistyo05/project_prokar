@@ -246,6 +246,8 @@
 </head>
 
 <body class="@yield('body_class', 'bg-white')">
+
+
   @if(!request()->routeIs('keranjang.index') && !request()->routeIs('checkout.address'))
     <x-navbar />
   @endif

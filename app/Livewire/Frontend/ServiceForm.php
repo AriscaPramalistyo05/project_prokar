@@ -15,18 +15,44 @@ class ServiceForm extends Component
     public $kategori = '';
     public $merek = '';
     public $deskripsi = '';
-    public $alamat = '';
-    public $kota = '';
-    public $photos = [];
-    public $submitted = false;
+    
     public $serviceType = 'datang'; // datang = home_visit, kirim = drop_off
-    public $serviceCode = '';
 
-    protected $listeners = ['serviceTypeChanged' => 'setServiceType'];
+    // Address Fields
+    public $province_id = '';
+    public $regency_id = '';
+    public $district_id = '';
+    public $village_id = '';
+    public $address_detail = '';
+
+    public $media = [];
+    public $submitted = false;
+    public $newServiceCode = '';
+
+    protected $listeners = ['serviceTypeChanged' => 'setServiceType', 'address-updated' => 'updateAddress'];
 
     public function setServiceType($type)
     {
         $this->serviceType = $type;
+    }
+
+    public function mount()
+    {
+        if (\Illuminate\Support\Facades\Auth::check()) {
+            $user = \Illuminate\Support\Facades\Auth::user();
+            $this->nama = $user->name;
+            $this->email = $user->email ?? '';
+            $this->whatsapp = $user->phone ?? '';
+        }
+    }
+
+    public function updateAddress($data)
+    {
+        $this->province_id = $data['province_id'];
+        $this->regency_id = $data['regency_id'];
+        $this->district_id = $data['district_id'];
+        $this->village_id = $data['village_id'];
+        $this->address_detail = $data['address_detail'];
     }
 
     protected function rules()
@@ -34,13 +60,42 @@ class ServiceForm extends Component
         return [
             'nama' => 'required|string|min:2|max:100',
             'email' => 'required|email|max:150',
-            'whatsapp' => 'required|string|min:8|max:20',
+            'whatsapp' => ['required', 'string', new \App\Rules\IndonesianPhone()],
             'kategori' => 'required|exists:categories,id',
-            'merek' => 'required|string|max:100', // device_brand
-            'deskripsi' => 'required|string|min:10|max:1000', // complaint
-            'alamat' => $this->serviceType === 'datang' ? 'required|string|min:10|max:500' : 'nullable|string|max:500',
-            'kota' => $this->serviceType === 'datang' ? 'required|string|max:100' : 'nullable|string|max:100',
-            'photos.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'merek' => 'required|string|max:100',
+            'deskripsi' => 'required|string|min:10|max:1000',
+            'province_id' => $this->serviceType === 'datang' ? 'required' : 'nullable',
+            'regency_id' => $this->serviceType === 'datang' ? 'required' : 'nullable',
+            'district_id' => $this->serviceType === 'datang' ? 'required' : 'nullable',
+            'village_id' => $this->serviceType === 'datang' ? 'required' : 'nullable',
+            'address_detail' => $this->serviceType === 'datang' ? 'required|string|min:10' : 'nullable|string|min:10',
+            'media' => 'nullable|array|max:5',
+            'media.*' => [
+                'required',
+                'file',
+                'max:20480', // 20MB
+                function ($attribute, $value, $fail) {
+                    $extension = strtolower($value->getClientOriginalExtension());
+                    $imageExts = ['jpg', 'jpeg', 'png', 'webp'];
+                    $videoExts = ['mp4', 'mov', 'avi', 'webm'];
+                    if (!in_array($extension, array_merge($imageExts, $videoExts))) {
+                        $fail('File harus berupa foto (jpg, png, webp) atau video (mp4, mov, avi, webm).');
+                    }
+                },
+            ],
+        ];
+    }
+
+    protected function messages()
+    {
+        return [
+            'province_id.required' => 'Provinsi wajib dipilih.',
+            'regency_id.required' => 'Kabupaten/Kota wajib dipilih.',
+            'district_id.required' => 'Kecamatan wajib dipilih.',
+            'village_id.required' => 'Desa/Kelurahan wajib dipilih.',
+            'address_detail.required' => 'Detail alamat wajib diisi.',
+            'media.max' => 'Maksimal 5 file yang dapat diupload.',
+            'media.*.max' => 'Ukuran file maksimal 20MB.',
         ];
     }
 
@@ -48,73 +103,45 @@ class ServiceForm extends Component
     {
         $this->validate();
 
-        // Start Transaction
         \Illuminate\Support\Facades\DB::transaction(function () {
-            // Create ServiceOrder
-            $order = \App\Models\ServiceOrder::create([
+            $serviceOrder = \App\Models\ServiceOrder::create([
+                'user_id' => \Illuminate\Support\Facades\Auth::id(), // null if guest
                 'customer_name' => $this->nama,
                 'customer_email' => $this->email,
                 'customer_phone' => $this->whatsapp,
                 'service_type' => $this->serviceType === 'datang' ? 'home_visit' : 'drop_off',
-                'customer_address' => $this->alamat,
-                'customer_city' => $this->kota,
                 'category_id' => $this->kategori,
                 'device_brand' => $this->merek,
                 'complaint' => $this->deskripsi,
+                'customer_address' => $this->address_detail,
+                'customer_city' => $this->regency_id, // we might want to resolve name later, but keeping as regency_id for now
+                'status' => 'pending',
             ]);
 
-            $this->serviceCode = $order->service_code;
-
-            // Handle photos
-            if (!empty($this->photos)) {
-                foreach ($this->photos as $photo) {
-                    $path = $photo->store('services', 'public');
-                    \App\Models\ServiceImage::create([
-                        'service_order_id' => $order->id,
-                        'path' => $path,
+            if (!empty($this->media)) {
+                foreach ($this->media as $file) {
+                    $serviceOrder->serviceImages()->create([
+                        'path' => $file->store('service_images', 'public'),
                         'type' => 'complaint',
-                        'uploaded_by' => auth()->id(), // nullable if guest
+                        'uploaded_by' => \Illuminate\Support\Facades\Auth::id(), // null if guest
                     ]);
                 }
             }
 
             // Fire event so FCM can notify admins
-            event(new \App\Events\ServiceOrderCreated($order));
+            event(new \App\Events\ServiceOrderCreated($serviceOrder));
 
-            // Send Email Confirmation
-            try {
-                $this->setupSmtp();
-                \Illuminate\Support\Facades\Mail::to($this->email)->send(new \App\Mail\ServiceConfirmationMail($order));
-            } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error('Failed to send service email: ' . $e->getMessage());
-            }
+            $this->newServiceCode = $serviceOrder->service_code;
         });
 
         $this->submitted = true;
-        $this->reset(['nama', 'email', 'whatsapp', 'kategori', 'merek', 'deskripsi', 'alamat', 'kota', 'photos']);
-    }
-
-    private function setupSmtp()
-    {
-        if (setting('smtp_host')) {
-            config([
-                'mail.mailers.smtp.host' => setting('smtp_host'),
-                'mail.mailers.smtp.port' => setting('smtp_port'),
-                'mail.mailers.smtp.encryption' => setting('smtp_encryption'),
-                'mail.mailers.smtp.username' => setting('smtp_username'),
-                'mail.mailers.smtp.password' => setting('smtp_password'),
-                'mail.from.address' => setting('smtp_from_address', config('mail.from.address')),
-                'mail.from.name' => setting('smtp_from_name', config('mail.from.name')),
-            ]);
-            
-            // Purge the mailer to force recreation with new config
-            \Illuminate\Support\Facades\Mail::purge('smtp');
-        }
+        $this->reset(['nama', 'email', 'whatsapp', 'kategori', 'merek', 'deskripsi', 'province_id', 'regency_id', 'district_id', 'village_id', 'address_detail', 'media']);
     }
 
     public function resetForm()
     {
         $this->submitted = false;
+        $this->newServiceCode = '';
         $this->resetErrorBag();
     }
 

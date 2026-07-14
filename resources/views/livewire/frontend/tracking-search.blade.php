@@ -1,4 +1,31 @@
-<section class="bg-[#F8F8F8] border-b-2 border-black py-12 md:py-16 px-4">
+<section class="bg-[#F8F8F8] border-b-2 border-black py-12 md:py-16 px-4"
+    x-data="{
+        localCodes: [],
+        authCheck: {{ auth()->check() ? 'true' : 'false' }},
+        dbServices: {{ \Illuminate\Support\Js::from($userServices) }},
+        init() {
+            let stored = JSON.parse(localStorage.getItem('my_services') || '[]');
+            this.localCodes = stored;
+            
+            if (this.authCheck && this.localCodes.length > 0) {
+                // Trigger Livewire sync if user is logged in
+                $wire.syncLocalCodes(this.localCodes).then(() => {
+                    // synced
+                });
+            }
+        },
+        get displayedServices() {
+            if (this.authCheck) {
+                return this.dbServices.map(s => s.service_code);
+            }
+            return this.localCodes;
+        },
+        clickService(code) {
+            $wire.ticketNumber = code;
+            $wire.search();
+        }
+    }"
+>
   <div class="max-w-2xl mx-auto text-center flex flex-col items-center gap-4">
     <span class="text-[10px] font-archivo font-bold uppercase tracking-widest text-gray-500 border border-gray-300 px-3 py-1">CEK STATUS</span>
     <h1 class="font-public font-black text-3xl md:text-5xl text-black uppercase leading-tight">
@@ -8,19 +35,34 @@
       Masukkan nomor tiket servis untuk memantau progress perbaikan secara real-time.
     </p>
 
+    <!-- Daftar Servis Aktif (Otomatis dari LocalStorage / Akun) -->
+    <div x-show="displayedServices.length > 0" class="w-full max-w-md mt-4" x-cloak>
+        <p class="text-xs font-bold text-black uppercase text-left mb-2">Riwayat Servis Anda:</p>
+        <div class="flex flex-col gap-2">
+            <template x-for="code in displayedServices" :key="code">
+                <button @click="clickService(code)" 
+                    class="w-full bg-white border border-gray-300 p-3 flex justify-between items-center hover:border-black transition-colors">
+                    <span class="text-sm font-bold font-inter" x-text="code"></span>
+                    <span class="text-xs text-gray-500 flex items-center gap-1">Lacak <i class="fa-solid fa-chevron-right"></i></span>
+                </button>
+            </template>
+        </div>
+    </div>
+
     <!-- Search -->
-    <div class="w-full max-w-md mt-2 flex flex-col sm:flex-row gap-0 border-2 border-black overflow-hidden">
+    <div class="w-full max-w-md mt-4 flex flex-col sm:flex-row gap-0 border-2 border-black overflow-hidden">
       <input
-        wire:model.defer="ticketNumber"
+        wire:model="ticketNumber"
         wire:keydown.enter="search"
         type="text"
-        placeholder="Contoh: TRX-SERVIS-001"
+        placeholder="Atau ketik kode: SRV-2026..."
         class="flex-grow px-4 py-3 text-sm font-inter text-black bg-white focus:outline-none border-none"
         aria-label="Nomor tiket servis" />
       <button
         type="button"
         wire:click="search"
-        class="bg-black text-white font-public font-bold text-xs uppercase tracking-widest px-6 py-3 hover:bg-gray-800 transition-colors whitespace-nowrap no-print">
+        class="bg-black text-white font-public font-bold text-xs uppercase tracking-widest px-6 py-3 hover:bg-gray-800 transition-colors whitespace-nowrap no-print"
+        wire:loading.attr="disabled">
         CEK STATUS
       </button>
     </div>
@@ -28,22 +70,5 @@
     @if ($errorMessage)
       <p class="text-xs text-red-600 font-inter mt-1">{{ $errorMessage }}</p>
     @endif
-
-    <!-- Demo toggle -->
-    <div class="flex items-center gap-2 mt-1 no-print">
-      <span class="text-[11px] text-gray-400 font-inter">Demo:</span>
-      <button
-        type="button"
-        wire:click="switchState('ongoing')"
-        class="tab-btn text-[11px] font-inter font-semibold px-3 py-1 border border-gray-300 {{ $activeState === 'ongoing' ? 'active' : 'bg-white text-gray-500' }}">
-        Sedang Dikerjakan
-      </button>
-      <button
-        type="button"
-        wire:click="switchState('done')"
-        class="tab-btn text-[11px] font-inter font-semibold px-3 py-1 border border-gray-300 {{ $activeState === 'done' ? 'active' : 'bg-white text-gray-500' }}">
-        Selesai
-      </button>
-    </div>
   </div>
 </section>
