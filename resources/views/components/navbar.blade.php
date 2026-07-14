@@ -35,9 +35,12 @@
       </div>
     </div>
   @else
-    <span class="text-white text-[7px] sm:text-[10px] md:text-sm leading-snug">
-      Masuk atau daftar akun agar bisa melanjutkan belanja dan menikmati layanan penuh. Daftar sekarang.
-    </span>
+    @guest
+      <span class="text-white text-[7px] sm:text-[10px] md:text-sm leading-snug">
+        Masuk atau daftar akun agar bisa melanjutkan belanja dan menikmati layanan penuh.
+        <a href="{{ route('login') }}" class="text-[#FFCC00] font-bold hover:underline ml-1">Daftar sekarang.</a>
+      </span>
+    @endguest
   @endif
   <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/uxcfq6ti_expires_30_days.png"
     alt="" class="w-5 h-[17px] object-contain shrink-0 md:hidden" />

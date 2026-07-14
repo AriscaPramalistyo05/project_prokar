@@ -24,89 +24,33 @@
 
   <form wire:submit.prevent="submit" class="flex flex-col gap-unit-2">
 
-    <div class="flex flex-col sm:flex-row gap-unit-2">
+    <div class="flex flex-col gap-unit-2">
       <div class="w-full relative">
-        <label for="firstName" class="sr-only">Nama depan</label>
+        <label for="name" class="sr-only">Nama Lengkap</label>
         <input
           type="text"
-          id="firstName"
-          wire:model.defer="firstName"
-          placeholder="First name"
+          id="name"
+          wire:model.defer="name"
+          placeholder="Nama Lengkap"
           class="block w-full border border-primary bg-surface p-3 rounded-none font-body-md placeholder-on-surface-variant" />
-        @error('firstName') <span class="text-xs text-red-600 mt-1">{{ $message }}</span> @enderror
-      </div>
-      <div class="w-full relative">
-        <label for="lastName" class="sr-only">Nama belakang</label>
-        <input
-          type="text"
-          id="lastName"
-          wire:model.defer="lastName"
-          placeholder="Last name"
-          class="block w-full border border-primary bg-surface p-3 rounded-none font-body-md placeholder-on-surface-variant" />
-        @error('lastName') <span class="text-xs text-red-600 mt-1">{{ $message }}</span> @enderror
+        @error('name') <span class="text-xs text-red-600 mt-1">{{ $message }}</span> @enderror
       </div>
     </div>
 
-    <div class="w-full relative">
-      <label for="address" class="sr-only">Alamat</label>
-      <input
-        type="text"
-        id="address"
-        wire:model.defer="address"
-        placeholder="Address"
-        class="block w-full border border-primary bg-surface p-3 rounded-none font-body-md placeholder-on-surface-variant" />
-      @error('address') <span class="text-xs text-red-600 mt-1">{{ $message }}</span> @enderror
-    </div>
-
-    <div class="w-full relative">
-      <label for="apartment" class="sr-only">Apartemen / unit (opsional)</label>
-      <input
-        type="text"
-        id="apartment"
-        wire:model.defer="apartment"
-        placeholder="Apartment, suite, etc. (optional)"
-        class="block w-full border border-primary bg-surface p-3 rounded-none font-body-md placeholder-on-surface-variant" />
-    </div>
-
-    <div class="w-full relative">
-      <label for="city" class="sr-only">Kota</label>
-      <input
-        type="text"
-        id="city"
-        wire:model.live="city"
-        placeholder="City"
-        class="block w-full border border-primary bg-surface p-3 rounded-none font-body-md placeholder-on-surface-variant" />
-      @error('city') <span class="text-xs text-red-600 mt-1">{{ $message }}</span> @enderror
-    </div>
-
-    <div class="flex flex-col sm:flex-row gap-unit-2">
-      <div class="w-full sm:w-2/3 relative">
-        <label class="absolute top-2 left-3 font-label-mono text-label-mono text-on-surface-variant bg-surface px-1 z-10" for="province">Province</label>
-        <select
-          id="province"
-          wire:model.defer="province"
-          class="block w-full border border-primary bg-surface py-3 px-3 pt-6 rounded-none font-body-md appearance-none">
-          <option value="">Select Province</option>
-          <option value="DIY">Yogyakarta</option>
-          <option value="DKI">Jakarta</option>
-          <option value="JB">Jawa Barat</option>
-          <option value="JTG">Jawa Tengah</option>
-        </select>
-        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-primary">
-          <span class="material-symbols-outlined" aria-hidden="true">expand_more</span>
-        </div>
-        @error('province') <span class="text-xs text-red-600 mt-1">{{ $message }}</span> @enderror
-      </div>
-      <div class="w-full sm:w-1/3 relative">
-        <label for="postalCode" class="sr-only">Kode pos</label>
-        <input
-          type="text"
-          id="postalCode"
-          wire:model.live="postalCode"
-          placeholder="Postal code"
-          class="block w-full border border-primary bg-surface p-3 rounded-none font-body-md placeholder-on-surface-variant h-full" />
-        @error('postalCode') <span class="text-xs text-red-600 mt-1">{{ $message }}</span> @enderror
-      </div>
+    <div class="w-full relative" wire:ignore>
+        <livewire:frontend.address-picker :initialData="[
+            'province_id' => $province_id,
+            'regency_id' => $regency_id,
+            'district_id' => $district_id,
+            'village_id' => $village_id,
+            'address_detail' => $address_detail,
+        ]" 
+        input-class="block w-full border border-primary bg-surface p-3 rounded-none font-body-md placeholder-on-surface-variant"
+        label-class="block text-sm font-bold text-gray-700 mb-1"
+        />
+        @error('province_id') <span class="text-xs text-red-600 mt-1">{{ $message }}</span> @enderror
+        @error('regency_id') <span class="text-xs text-red-600 mt-1">{{ $message }}</span> @enderror
+        @error('address_detail') <span class="text-xs text-red-600 mt-1">{{ $message }}</span> @enderror
     </div>
 
     <div class="w-full relative">
