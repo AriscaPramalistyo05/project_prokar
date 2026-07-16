@@ -73,7 +73,7 @@
     <livewire:frontend.tracking-search />
 
     <!-- ── Result Container (Livewire) ── -->
-    <livewire:frontend.tracking-result />
+    <!-- (Moved to TrackService route) -->
 
   </main>
 @endsection

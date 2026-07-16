@@ -8,7 +8,8 @@
   $isHome     = request()->routeIs('home');
   $isProducts = request()->routeIs('produk.*');
   $isSell     = request()->routeIs('jual.index');
-  $isService  = request()->routeIs('servis.index') || request()->routeIs('servis.lacak');
+  $isService  = request()->routeIs('servis.index');
+  $isTrack    = request()->routeIs('servis.lacak') || request()->routeIs('servis.track');
   $isCart     = request()->routeIs('keranjang.index');
   $isCheckout = request()->routeIs('checkout.address');
 @endphp
@@ -70,7 +71,7 @@
       <a href="{{ route('produk.index') }}" class="nav-link text-xs md:text-sm {{ $isProducts ? 'active' : '' }}" @if($isProducts) aria-current="page" @endif>PRODUK</a>
       <a href="{{ route('jual.index') }}" class="nav-link text-xs md:text-sm {{ $isSell ? 'active' : '' }}" @if($isSell) aria-current="page" @endif>JUAL</a>
       <a href="{{ route('servis.index') }}" class="nav-link text-xs md:text-sm {{ $isService ? 'active' : '' }}" @if($isService) aria-current="page" @endif>SERVIS</a>
-      <a href="{{ route('servis.lacak') }}" class="nav-link text-xs md:text-sm">TRACK</a>
+      <a href="{{ route('servis.lacak') }}" class="nav-link text-xs md:text-sm {{ $isTrack ? 'active' : '' }}" @if($isTrack) aria-current="page" @endif>TRACK</a>
     </div>
 
     <!-- Right: icons -->

@@ -24,7 +24,17 @@
                     <i class="fa-solid fa-check text-white text-2xl"></i>
                 </div>
                 <h2 class="text-2xl font-bold uppercase mb-2">Pengajuan Berhasil</h2>
-                <p class="text-[#444748] text-sm mb-4">Gunakan kode di bawah ini untuk melacak status servis Anda.</p>
+                @if($serviceType === 'kirim')
+                    <p class="text-[#444748] text-sm mb-4">
+                        Silakan <strong>antar/kirimkan perangkat Anda ke toko kami</strong> dan tunjukkan kode tiket di bawah ini.<br>
+                        Gunakan kode ini juga untuk melacak status servis Anda.
+                    </p>
+                @else
+                    <p class="text-[#444748] text-sm mb-4">
+                        <strong>Teknisi kami akan segera memproses jadwal kunjungan</strong> ke alamat Anda.<br>
+                        Gunakan kode di bawah ini untuk melacak status servis Anda.
+                    </p>
+                @endif
                 
                 <div class="max-w-xs mx-auto mb-6 bg-white border border-gray-300 p-4 flex items-center justify-between">
                     <span class="text-xl font-bold tracking-widest text-black" x-text="code"></span>
@@ -46,11 +56,48 @@
                 </div>
             </div>
         @else
+            <!-- Riwayat Servis / Memori Kartu Servis -->
+            <div x-data="{
+                localCodes: [],
+                authCheck: {{ auth()->check() ? 'true' : 'false' }},
+                dbServices: {{ \Illuminate\Support\Js::from($userServices ?? []) }},
+                init() {
+                    let stored = JSON.parse(localStorage.getItem('my_services') || '[]');
+                    this.localCodes = stored;
+                    
+                    if (this.authCheck && this.localCodes.length > 0) {
+                        $wire.syncLocalCodes(this.localCodes).then(() => {});
+                    }
+                },
+                get displayedServices() {
+                    if (this.authCheck) {
+                        return this.dbServices.map(s => s.service_code);
+                    }
+                    return this.localCodes;
+                }
+            }">
+                <div x-show="displayedServices.length > 0" class="mb-8" x-cloak>
+                    <h2 class="text-black text-lg md:text-xl font-bold uppercase mb-3">Riwayat Servis Anda</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <template x-for="code in displayedServices" :key="code">
+                            <a :href="'{{ url('/servis/lacak') }}/' + code"
+                                class="bg-[#FAFAFA] border border-gray-200 p-4 flex justify-between items-center hover:border-black hover:bg-white transition-colors group">
+                                <span class="text-sm font-bold font-inter text-black" x-text="code"></span>
+                                <span class="text-xs text-gray-500 font-bold uppercase tracking-widest flex items-center gap-1 group-hover:text-black">
+                                    Lacak <i class="fa-solid fa-arrow-right"></i>
+                                </span>
+                            </a>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
             <div class="pb-3 md:pb-4 border-b border-gray-100 mb-6 md:mb-8">
                 <h2 id="formulir-heading" class="text-black text-xl md:text-2xl font-bold uppercase">Formulir Pengajuan</h2>
             </div>
 
-            <form wire:submit.prevent="submit" class="flex flex-col gap-6">
+            <form wire:submit.prevent="submit" class="flex flex-col gap-6" x-data="mediaUploader()">
+
                 <div class="flex flex-col md:flex-row gap-5 md:gap-6">
                     <div class="flex-1 flex flex-col gap-2">
                         <label for="nama" class="text-black text-xs font-bold uppercase tracking-wide">Nama Lengkap</label>
@@ -100,18 +147,17 @@
                 </div>
 
                 {{-- Upload Foto/Video dengan auto-compress --}}
-                <div class="flex flex-col gap-2" x-data="mediaUploader()">
-                    <label for="upload-input" class="text-black text-xs font-bold uppercase tracking-wide">Upload Foto/Video Kendala (Opsional, Max 5 file)</label>
-                    <label for="upload-input"
-                        class="flex flex-col items-center justify-center gap-2 p-8 bg-[#FAFAFA] border border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors"
-                        :class="{ 'pointer-events-none opacity-50': compressing }">
-                        <i class="fa-solid fa-cloud-arrow-up text-gray-400 text-3xl" aria-hidden="true"></i>
-                        <p class="text-[#7E7576] text-sm">Klik atau drag file ke sini (Foto max 5MB, Video otomatis dikompres)</p>
-                        <span class="px-4 py-2 bg-white border border-gray-200 text-black text-sm font-bold">Pilih File</span>
-                        <input x-ref="fileInput" x-on:change="handleFiles($event)" id="upload-input" type="file"
-                            accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime,video/x-msvideo,video/webm"
-                            multiple class="hidden" />
-                    </label>
+                    <div class="flex flex-col gap-2">
+                        <label class="text-black text-xs font-bold uppercase tracking-wide">Upload Foto/Video Kendala (Opsional, Max 5 file)</label>
+                        <label for="upload-input" class="flex flex-col items-center justify-center gap-2 p-8 bg-[#FAFAFA] border border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors" :class="{ 'pointer-events-none opacity-50': compressing }">
+                            <i class="fa-solid fa-cloud-arrow-up text-gray-400 text-3xl" aria-hidden="true"></i>
+                            <p class="text-[#7E7576] text-sm text-center">Klik di sini untuk upload<br>(Pilih Kamera, Galeri, atau File Manager di HP Anda)</p>
+                            <span class="px-4 py-2 bg-white border border-gray-200 text-black text-sm font-bold">Pilih File</span>
+                            {{-- Kosongkan atribut accept agar Android memunculkan opsi Kamera --}}
+                            <input x-ref="fileInput" x-on:change="handleFiles($event)" id="upload-input" type="file" multiple class="hidden" />
+                        </label>
+                        <p class="text-[#7E7576] text-xs mt-1">Foto max 5MB, Video otomatis dikompres sebelum diunggah.</p>
+                    </div>
 
                     {{-- Compression Progress --}}
                     <div x-show="compressing" x-transition class="border border-yellow-300 bg-yellow-50 p-4 flex flex-col gap-2" x-cloak>
@@ -155,26 +201,21 @@
                     <p class="text-xs text-gray-500" x-text="processedFiles.length + ' file dipilih'"></p>
                     @error('media') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
                     @error('media.*') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
-                </div>
 
                 @if($serviceType === 'datang')
-                    <div class="flex flex-col gap-2" wire:ignore>
+                    <div class="flex flex-col gap-2">
                         <div class="flex items-center gap-2">
                             <label class="text-black text-xs font-bold uppercase tracking-wide">Alamat Lengkap</label>
                             <span class="px-1.5 py-0.5 bg-[#FAFAFA] border border-gray-200 text-[#7E7576] text-[9px] font-bold uppercase tracking-wide">Wajib</span>
                         </div>
-                        <livewire:frontend.address-picker :initialData="[
-                            'province_id' => $province_id,
-                            'regency_id' => $regency_id,
-                            'district_id' => $district_id,
-                            'village_id' => $village_id,
-                            'address_detail' => $address_detail,
-                        ]" 
-                        input-class="w-full px-4 py-3 bg-white border border-gray-400 text-base text-black focus:outline-none focus:border-black transition-colors"
-                        label-class="text-black text-xs font-bold uppercase tracking-wide mb-2 block"
-                        />
+                        @include('livewire.frontend.address-picker', [
+                            'inputClass' => 'w-full px-4 py-3 bg-white border border-gray-400 text-base text-black focus:outline-none focus:border-black transition-colors',
+                            'labelClass' => 'text-black text-xs font-bold uppercase tracking-wide mb-2 block'
+                        ])
                         @error('province_id') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
                         @error('regency_id') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+                        @error('district_id') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+                        @error('village_id') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
                         @error('address_detail') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
                 @endif
@@ -188,220 +229,220 @@
             </form>
         @endif
     </section>
-</div>
 
-@script
-<script>
-Alpine.data('mediaUploader', () => ({
-    compressing: false,
-    compressionProgress: 0,
-    compressionMessage: '',
-    processedFiles: [],
+    @script
+    <script>
+    Alpine.data('mediaUploader', () => ({
+        compressing: false,
+        compressionProgress: 0,
+        compressionMessage: '',
+        processedFiles: [],
 
-    formatSize(bytes) {
-        if (bytes < 1024) return bytes + ' B';
-        if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
-        return (bytes / 1048576).toFixed(1) + ' MB';
-    },
+        formatSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / 1048576).toFixed(1) + ' MB';
+        },
 
-    removeFile(index) {
-        this.processedFiles.splice(index, 1);
-        this.uploadToLivewire();
-    },
+        removeFile(index) {
+            this.processedFiles.splice(index, 1);
+            this.uploadToLivewire();
+        },
 
-    async handleFiles(event) {
-        const newFiles = Array.from(event.target.files);
-        if (newFiles.length === 0) return;
+        async handleFiles(event) {
+            const newFiles = Array.from(event.target.files);
+            if (newFiles.length === 0) return;
 
-        // Enforce max 5 files total
-        const totalAllowed = 5 - this.processedFiles.length;
-        const filesToProcess = newFiles.slice(0, totalAllowed);
+            // Enforce max 5 files total
+            const totalAllowed = 5 - this.processedFiles.length;
+            const filesToProcess = newFiles.slice(0, totalAllowed);
 
-        if (newFiles.length > totalAllowed) {
-            alert('Maksimal 5 file. ' + (newFiles.length - totalAllowed) + ' file diabaikan.');
-        }
+            if (newFiles.length > totalAllowed) {
+                alert('Maksimal 5 file. ' + (newFiles.length - totalAllowed) + ' file diabaikan.');
+            }
 
-        for (let i = 0; i < filesToProcess.length; i++) {
-            const file = filesToProcess[i];
+            for (let i = 0; i < filesToProcess.length; i++) {
+                const file = filesToProcess[i];
 
-            if (file.type.startsWith('video/')) {
-                // Compress video
-                this.compressing = true;
-                this.compressionMessage = 'Mengompres video "' + file.name + '" (' + (i + 1) + '/' + filesToProcess.length + ')...';
-                this.compressionProgress = 0;
+                if (file.type.startsWith('video/')) {
+                    // Compress video
+                    this.compressing = true;
+                    this.compressionMessage = 'Mengompres video "' + file.name + '" (' + (i + 1) + '/' + filesToProcess.length + ')...';
+                    this.compressionProgress = 0;
 
-                try {
-                    const compressed = await this.compressVideo(file, (progress) => {
-                        this.compressionProgress = Math.round(progress * 100);
-                    });
-                    compressed._compressed = true;
-                    this.processedFiles.push(compressed);
-                } catch (err) {
-                    console.warn('Video compression failed, using original:', err);
-                    // Fallback: upload original
+                    try {
+                        const compressed = await this.compressVideo(file, (progress) => {
+                            this.compressionProgress = Math.round(progress * 100);
+                        });
+                        compressed._compressed = true;
+                        this.processedFiles.push(compressed);
+                    } catch (err) {
+                        console.warn('Video compression failed, using original:', err);
+                        // Fallback: upload original
+                        file._compressed = false;
+                        this.processedFiles.push(file);
+                    }
+                } else {
+                    // Images pass through directly
                     file._compressed = false;
                     this.processedFiles.push(file);
                 }
-            } else {
-                // Images pass through directly
-                file._compressed = false;
-                this.processedFiles.push(file);
             }
-        }
 
-        this.compressing = false;
-        this.compressionProgress = 0;
+            this.compressing = false;
+            this.compressionProgress = 0;
 
-        // Reset file input so same file can be selected again
-        event.target.value = '';
+            // Reset file input so same file can be selected again
+            event.target.value = '';
 
-        // Upload all processed files to Livewire
-        this.uploadToLivewire();
-    },
+            // Upload all processed files to Livewire
+            this.uploadToLivewire();
+        },
 
-    uploadToLivewire() {
-        if (this.processedFiles.length === 0) {
-            this.$wire.set('media', []);
-            return;
-        }
-        this.$wire.uploadMultiple('media', this.processedFiles,
-            () => { /* success */ },
-            (error) => { console.error('Upload error:', error); },
-            (event) => { /* progress */ }
-        );
-    },
+        uploadToLivewire() {
+            if (this.processedFiles.length === 0) {
+                this.$wire.set('media', []);
+                return;
+            }
+            this.$wire.uploadMultiple('media', this.processedFiles,
+                () => { /* success */ },
+                (error) => { console.error('Upload error:', error); },
+                (event) => { /* progress */ }
+            );
+        },
 
-    compressVideo(file, onProgress) {
-        return new Promise((resolve, reject) => {
-            const video = document.createElement('video');
-            video.src = URL.createObjectURL(file);
-            video.muted = true; // required for autoplay
-            video.playsInline = true;
-            video.preload = 'auto';
+        compressVideo(file, onProgress) {
+            return new Promise((resolve, reject) => {
+                const video = document.createElement('video');
+                video.src = URL.createObjectURL(file);
+                video.muted = true; // required for autoplay
+                video.playsInline = true;
+                video.preload = 'auto';
 
-            video.onerror = () => {
-                URL.revokeObjectURL(video.src);
-                reject(new Error('Failed to load video'));
-            };
-
-            video.onloadedmetadata = () => {
-                // Calculate target dimensions (max 480p height)
-                const maxHeight = 480;
-                let width = video.videoWidth;
-                let height = video.videoHeight;
-
-                if (height > maxHeight) {
-                    const ratio = maxHeight / height;
-                    width = Math.round(width * ratio);
-                    height = maxHeight;
-                }
-
-                // Ensure even dimensions (codec requirement)
-                width = width % 2 === 0 ? width : width + 1;
-                height = height % 2 === 0 ? height : height + 1;
-
-                const canvas = document.createElement('canvas');
-                canvas.width = width;
-                canvas.height = height;
-                const ctx = canvas.getContext('2d');
-
-                // Get canvas video stream (24 fps)
-                const canvasStream = canvas.captureStream(24);
-
-                // Try to get audio from the video
-                let combinedStream = canvasStream;
-                let audioContext = null;
-
-                try {
-                    audioContext = new AudioContext();
-                    const source = audioContext.createMediaElementSource(video);
-                    const dest = audioContext.createMediaStreamDestination();
-                    source.connect(dest);
-                    // Don't connect to speakers — silent processing
-
-                    combinedStream = new MediaStream([
-                        ...canvasStream.getVideoTracks(),
-                        ...dest.stream.getAudioTracks(),
-                    ]);
-                } catch (e) {
-                    // Audio extraction failed — continue without audio
-                    console.warn('Audio extraction skipped:', e);
-                }
-
-                // Determine MIME type — browser support varies
-                const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp8')
-                    ? 'video/webm;codecs=vp8'
-                    : (MediaRecorder.isTypeSupported('video/webm') ? 'video/webm' : '');
-
-                if (!mimeType) {
+                video.onerror = () => {
                     URL.revokeObjectURL(video.src);
-                    if (audioContext) audioContext.close();
-                    reject(new Error('Browser does not support WebM recording'));
-                    return;
-                }
-
-                const recorder = new MediaRecorder(combinedStream, {
-                    mimeType: mimeType,
-                    videoBitsPerSecond: 1_000_000, // 1 Mbps
-                });
-
-                const chunks = [];
-                recorder.ondataavailable = (e) => {
-                    if (e.data.size > 0) chunks.push(e.data);
+                    reject(new Error('Failed to load video'));
                 };
 
-                recorder.onstop = () => {
-                    const blob = new Blob(chunks, { type: 'video/webm' });
-                    const compressedName = file.name.replace(/\.[^.]+$/, '.webm');
-                    const compressedFile = new File([blob], compressedName, {
-                        type: 'video/webm',
-                        lastModified: Date.now(),
-                    });
+                video.onloadedmetadata = () => {
+                    // Calculate target dimensions (max 480p height)
+                    const maxHeight = 480;
+                    let width = video.videoWidth;
+                    let height = video.videoHeight;
 
-                    URL.revokeObjectURL(video.src);
-                    if (audioContext) audioContext.close();
-                    resolve(compressedFile);
-                };
+                    if (height > maxHeight) {
+                        const ratio = maxHeight / height;
+                        width = Math.round(width * ratio);
+                        height = maxHeight;
+                    }
 
-                recorder.onerror = (e) => {
-                    URL.revokeObjectURL(video.src);
-                    if (audioContext) audioContext.close();
-                    reject(e.error || new Error('Recording error'));
-                };
+                    // Ensure even dimensions (codec requirement)
+                    width = width % 2 === 0 ? width : width + 1;
+                    height = height % 2 === 0 ? height : height + 1;
 
-                // Start recording and play video
-                recorder.start(100); // collect data every 100ms
-                video.muted = false; // unmute for audio capture
-                video.volume = 0; // but keep silent
-                video.play().catch(() => {
-                    // Autoplay blocked — try muted
-                    video.muted = true;
-                    video.play();
-                });
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
 
-                // Draw frames to canvas
-                function drawFrame() {
-                    if (video.ended || video.paused) {
-                        recorder.stop();
+                    // Get canvas video stream (24 fps)
+                    const canvasStream = canvas.captureStream(24);
+
+                    // Try to get audio from the video
+                    let combinedStream = canvasStream;
+                    let audioContext = null;
+
+                    try {
+                        audioContext = new AudioContext();
+                        const source = audioContext.createMediaElementSource(video);
+                        const dest = audioContext.createMediaStreamDestination();
+                        source.connect(dest);
+                        // Don't connect to speakers — silent processing
+
+                        combinedStream = new MediaStream([
+                            ...canvasStream.getVideoTracks(),
+                            ...dest.stream.getAudioTracks(),
+                        ]);
+                    } catch (e) {
+                        // Audio extraction failed — continue without audio
+                        console.warn('Audio extraction skipped:', e);
+                    }
+
+                    // Determine MIME type — browser support varies
+                    const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp8')
+                        ? 'video/webm;codecs=vp8'
+                        : (MediaRecorder.isTypeSupported('video/webm') ? 'video/webm' : '');
+
+                    if (!mimeType) {
+                        URL.revokeObjectURL(video.src);
+                        if (audioContext) audioContext.close();
+                        reject(new Error('Browser does not support WebM recording'));
                         return;
                     }
-                    ctx.drawImage(video, 0, 0, width, height);
-                    if (onProgress && video.duration) {
-                        onProgress(Math.min(video.currentTime / video.duration, 1));
-                    }
-                    requestAnimationFrame(drawFrame);
-                }
-                drawFrame();
 
-                // Stop when video ends
-                video.onended = () => {
-                    if (recorder.state !== 'inactive') {
-                        recorder.stop();
+                    const recorder = new MediaRecorder(combinedStream, {
+                        mimeType: mimeType,
+                        videoBitsPerSecond: 1_000_000, // 1 Mbps
+                    });
+
+                    const chunks = [];
+                    recorder.ondataavailable = (e) => {
+                        if (e.data.size > 0) chunks.push(e.data);
+                    };
+
+                    recorder.onstop = () => {
+                        const blob = new Blob(chunks, { type: 'video/webm' });
+                        const compressedName = file.name.replace(/\.[^.]+$/, '.webm');
+                        const compressedFile = new File([blob], compressedName, {
+                            type: 'video/webm',
+                            lastModified: Date.now(),
+                        });
+
+                        URL.revokeObjectURL(video.src);
+                        if (audioContext) audioContext.close();
+                        resolve(compressedFile);
+                    };
+
+                    recorder.onerror = (e) => {
+                        URL.revokeObjectURL(video.src);
+                        if (audioContext) audioContext.close();
+                        reject(e.error || new Error('Recording error'));
+                    };
+
+                    // Start recording and play video
+                    recorder.start(100); // collect data every 100ms
+                    video.muted = false; // unmute for audio capture
+                    video.volume = 0; // but keep silent
+                    video.play().catch(() => {
+                        // Autoplay blocked — try muted
+                        video.muted = true;
+                        video.play();
+                    });
+
+                    // Draw frames to canvas
+                    function drawFrame() {
+                        if (video.ended || video.paused) {
+                            recorder.stop();
+                            return;
+                        }
+                        ctx.drawImage(video, 0, 0, width, height);
+                        if (onProgress && video.duration) {
+                            onProgress(Math.min(video.currentTime / video.duration, 1));
+                        }
+                        requestAnimationFrame(drawFrame);
                     }
+                    drawFrame();
+
+                    // Stop when video ends
+                    video.onended = () => {
+                        if (recorder.state !== 'inactive') {
+                            recorder.stop();
+                        }
+                    };
                 };
-            };
-        });
-    },
-}));
-</script>
-@endscript
+            });
+        },
+    }));
+    </script>
+    @endscript
+</div>
