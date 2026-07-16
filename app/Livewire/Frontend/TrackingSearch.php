@@ -12,8 +12,6 @@ class TrackingSearch extends Component
 
     protected $queryString = ['code' => ['as' => 'code', 'except' => '']];
     public $code = '';
-    
-    public $userServices = [];
 
     public function mount()
     {
@@ -23,7 +21,7 @@ class TrackingSearch extends Component
         }
     }
 
-    public function search(): void
+    public function search()
     {
         $val = strtoupper(trim($this->ticketNumber));
 
@@ -42,18 +40,7 @@ class TrackingSearch extends Component
         }
     }
 
-    #[Livewire\Attributes\On('sync-local-codes')]
-    public function syncLocalCodes($codes)
-    {
-        if (\Illuminate\Support\Facades\Auth::check() && is_array($codes) && count($codes) > 0) {
-            $userId = \Illuminate\Support\Facades\Auth::id();
-            
-            // Sync all codes that belong to this session but don't have a user_id yet
-            \App\Models\ServiceOrder::whereIn('service_code', $codes)
-                ->whereNull('user_id')
-                ->update(['user_id' => $userId]);
-        }
-    }
+
 
     public function switchState(string $state): void
     {
@@ -70,15 +57,6 @@ class TrackingSearch extends Component
 
     public function render()
     {
-        if (\Illuminate\Support\Facades\Auth::check()) {
-            $this->userServices = \App\Models\ServiceOrder::where('user_id', \Illuminate\Support\Facades\Auth::id())
-                ->latest()
-                ->get()
-                ->toArray();
-        } else {
-            $this->userServices = []; // Will be populated by JS from localStorage
-        }
-
         return view('livewire.frontend.tracking-search');
     }
 }

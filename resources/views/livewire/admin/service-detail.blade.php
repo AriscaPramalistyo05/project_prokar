@@ -11,6 +11,16 @@
         <div class="lg:col-span-2 space-y-6">
             <x-card title="Informasi Pelanggan">
                 <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div class="col-span-2">
+                        <span class="text-gray-500 block">Jenis Layanan</span>
+                        @if($serviceOrder->service_type === 'home_visit')
+                            <x-badge value="Kunjungan Teknisi (Home Visit)" class="badge-primary font-bold mt-1" />
+                            <p class="text-xs text-gray-500 mt-1">Teknisi harus datang ke alamat pelanggan di bawah ini.</p>
+                        @else
+                            <x-badge value="Kirim Barang (Drop-off / Kurir)" class="badge-secondary font-bold mt-1" />
+                            <p class="text-xs text-gray-500 mt-1">Pelanggan akan mengirim barang / datang sendiri ke toko.</p>
+                        @endif
+                    </div>
                     <div>
                         <span class="text-gray-500 block">Nama</span>
                         <span class="font-bold">{{ $serviceOrder->customer_name }}</span>
@@ -19,11 +29,15 @@
                         <span class="text-gray-500 block">WhatsApp</span>
                         <span class="font-bold">{{ $serviceOrder->customer_phone }}</span>
                     </div>
-                    <div>
-                        <span class="text-gray-500 block">Alamat</span>
-                        <span class="font-bold">{{ $serviceOrder->customer_address ?: '-' }}</span>
+                    
+                    @if($serviceOrder->service_type === 'home_visit')
+                    <div class="col-span-2">
+                        <span class="text-gray-500 block">Alamat Kunjungan</span>
+                        <span class="font-bold">{{ $serviceOrder->full_address }}</span>
                     </div>
-                    <div>
+                    @endif
+                    
+                    <div class="col-span-2">
                         <span class="text-gray-500 block">Kategori / Merek</span>
                         <span class="font-bold">{{ $serviceOrder->category->name }} / {{ $serviceOrder->device_brand }}</span>
                     </div>
@@ -41,9 +55,16 @@
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                     @forelse($images as $img)
                         <div class="relative group border border-gray-200 p-1 rounded">
-                            <span class="absolute top-2 left-2 text-[10px] bg-black text-white px-2 py-0.5 rounded uppercase">{{ $img->type }}</span>
-                            <a href="{{ asset('storage/'.$img->path) }}" target="_blank">
-                                <img src="{{ asset('storage/'.$img->path) }}" class="w-full h-24 object-cover rounded" />
+                            <span class="absolute top-2 left-2 text-[10px] bg-black text-white px-2 py-0.5 rounded uppercase z-10">{{ $img->type }}</span>
+                            <a href="{{ asset('storage/'.$img->path) }}" target="_blank" class="block w-full h-24 relative">
+                                @if($img->media_type === 'video')
+                                    <video src="{{ asset('storage/'.$img->path) }}" class="w-full h-full object-cover rounded"></video>
+                                    <div class="absolute inset-0 flex items-center justify-center bg-black/30 rounded">
+                                        <x-icon name="o-play" class="w-8 h-8 text-white" />
+                                    </div>
+                                @else
+                                    <img src="{{ asset('storage/'.$img->path) }}" class="w-full h-full object-cover rounded" />
+                                @endif
                             </a>
                         </div>
                     @empty
@@ -53,16 +74,13 @@
 
                 <hr class="my-4 border-gray-100" />
                 
-                <form wire:submit="uploadPhoto" class="flex flex-col sm:flex-row gap-4 items-end">
-                    <div class="w-full sm:w-1/3">
-                        <x-select label="Jenis Foto" wire:model="photo_type" :options="[['id'=>'before', 'name'=>'Sebelum (Before)'], ['id'=>'after', 'name'=>'Sesudah (After)']]" />
-                    </div>
-                    <div class="w-full sm:w-1/2">
-                        <x-file label="Pilih Foto" wire:model="new_photo" accept="image/*" />
-                    </div>
-                    <div>
-                        <x-button type="submit" label="Unggah" icon="o-arrow-up-tray" class="btn-primary w-full" spinner="uploadPhoto" />
-                    </div>
+                <form wire:submit="uploadPhoto" class="flex flex-col gap-4">
+                    <x-select label="Jenis Foto/Video" wire:model="photo_type" :options="[['id'=>'before', 'name'=>'Sebelum (Before)'], ['id'=>'after', 'name'=>'Sesudah (After)']]" />
+                    
+                    {{-- Kosongkan atribut accept agar Android memunculkan 3 opsi sekaligus (Kamera, Galeri, File Manager) --}}
+                    <x-file label="Upload Foto / Video (Bisa langsung pakai Kamera" wire:model="new_photo" hint="Pilih File Manager / Kamera / Galeri di HP Anda" />
+                    
+                    <x-button type="submit" label="Unggah File" icon="o-arrow-up-tray" class="btn-primary w-full" spinner="uploadPhoto" />
                 </form>
             </x-card>
 

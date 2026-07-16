@@ -70,29 +70,18 @@
         <textarea x-model="address_detail" @input="updateNames()" rows="3" class="{{ $inputClass }}" placeholder="Contoh: Jl. Diponegoro No.10, RT 01/RW 02, Samping Masjid" required></textarea>
     </div>
     
-    <!-- Hidden fields to sync with Livewire -->
-    <input type="hidden" wire:model.live="province_id" x-model="province">
-    <input type="hidden" wire:model.live="regency_id" x-model="regency">
-    <input type="hidden" wire:model.live="district_id" x-model="district">
-    <input type="hidden" wire:model.live="village_id" x-model="village">
-    <input type="hidden" wire:model.live="province_name" x-model="province_name">
-    <input type="hidden" wire:model.live="regency_name" x-model="regency_name">
-    <input type="hidden" wire:model.live="district_name" x-model="district_name">
-    <input type="hidden" wire:model.live="village_name" x-model="village_name">
-    <input type="hidden" wire:model.live="address_detail" x-model="address_detail">
-
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.data('addressPicker', () => ({
-                province: @entangle('province_id'),
-                regency: @entangle('regency_id'),
-                district: @entangle('district_id'),
-                village: @entangle('village_id'),
-                address_detail: @entangle('address_detail'),
-                province_name: @entangle('province_name'),
-                regency_name: @entangle('regency_name'),
-                district_name: @entangle('district_name'),
-                village_name: @entangle('village_name'),
+                province: @entangle('province_id').live,
+                regency: @entangle('regency_id').live,
+                district: @entangle('district_id').live,
+                village: @entangle('village_id').live,
+                address_detail: @entangle('address_detail').live,
+                province_name: @entangle('province_name').live,
+                regency_name: @entangle('regency_name').live,
+                district_name: @entangle('district_name').live,
+                village_name: @entangle('village_name').live,
                 
                 provinces: [],
                 regencies: [],

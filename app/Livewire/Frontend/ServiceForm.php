@@ -24,13 +24,17 @@ class ServiceForm extends Component
     public $district_id = '';
     public $village_id = '';
     public $address_detail = '';
+    public $province_name = '';
+    public $regency_name = '';
+    public $district_name = '';
+    public $village_name = '';
 
     public $media = [];
     public $submitted = false;
     public $newServiceCode = '';
+    public $userServices = [];
 
-    protected $listeners = ['serviceTypeChanged' => 'setServiceType', 'address-updated' => 'updateAddress'];
-
+    #[Livewire\Attributes\On('serviceTypeChanged')]
     public function setServiceType($type)
     {
         $this->serviceType = $type;
@@ -43,16 +47,27 @@ class ServiceForm extends Component
             $this->nama = $user->name;
             $this->email = $user->email ?? '';
             $this->whatsapp = $user->phone ?? '';
+
+            $this->userServices = \App\Models\ServiceOrder::where('user_id', $user->id)
+                ->latest()
+                ->get()
+                ->toArray();
+        } else {
+            $this->userServices = [];
         }
     }
 
-    public function updateAddress($data)
+    #[Livewire\Attributes\On('sync-local-codes')]
+    public function syncLocalCodes($codes)
     {
-        $this->province_id = $data['province_id'];
-        $this->regency_id = $data['regency_id'];
-        $this->district_id = $data['district_id'];
-        $this->village_id = $data['village_id'];
-        $this->address_detail = $data['address_detail'];
+        if (\Illuminate\Support\Facades\Auth::check() && is_array($codes) && count($codes) > 0) {
+            $userId = \Illuminate\Support\Facades\Auth::id();
+            
+            // Sync all codes that belong to this session but don't have a user_id yet
+            \App\Models\ServiceOrder::whereIn('service_code', $codes)
+                ->whereNull('user_id')
+                ->update(['user_id' => $userId]);
+        }
     }
 
     protected function rules()
@@ -113,16 +128,24 @@ class ServiceForm extends Component
                 'category_id' => $this->kategori,
                 'device_brand' => $this->merek,
                 'complaint' => $this->deskripsi,
-                'customer_address' => $this->address_detail,
-                'customer_city' => $this->regency_id, // we might want to resolve name later, but keeping as regency_id for now
+                'province_id' => $this->serviceType === 'datang' ? $this->province_id : null,
+                'regency_id' => $this->serviceType === 'datang' ? $this->regency_id : null,
+                'district_id' => $this->serviceType === 'datang' ? $this->district_id : null,
+                'village_id' => $this->serviceType === 'datang' ? $this->village_id : null,
+                'address_detail' => $this->serviceType === 'datang' ? $this->address_detail : null,
                 'status' => 'pending',
             ]);
 
             if (!empty($this->media)) {
                 foreach ($this->media as $file) {
+                    $extension = strtolower($file->getClientOriginalExtension());
+                    $videoExts = ['mp4', 'mov', 'avi', 'webm'];
+                    $mediaType = in_array($extension, $videoExts) ? 'video' : 'image';
+
                     $serviceOrder->serviceImages()->create([
                         'path' => $file->store('service_images', 'public'),
                         'type' => 'complaint',
+                        'media_type' => $mediaType,
                         'uploaded_by' => \Illuminate\Support\Facades\Auth::id(), // null if guest
                     ]);
                 }

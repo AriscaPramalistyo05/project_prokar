@@ -69,7 +69,7 @@ class ServiceIndex extends Component
         return view('livewire.admin.service-index', [
             'services' => $query->paginate(10),
             'headers' => $this->getHeaders(),
-        ]);
+        ])->layout('layouts.admin');
     }
 
     public function getHeaders(): array

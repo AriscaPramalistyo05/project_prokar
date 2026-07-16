@@ -38,7 +38,7 @@
                         default => $service->status,
                     };
                 @endphp
-                <x-badge value="{{ $statusLabel }}" class="{{ $badgeClass }} text-xs" />
+                <x-badge value="{{ $statusLabel }}" class="{{ $badgeClass }} text-xs whitespace-nowrap" />
             @endscope
 
             @scope('cell_created_at', $service)
@@ -57,7 +57,7 @@
             @endscope
 
             @scope('actions', $service)
-                <x-button icon="o-eye" wire:navigate href="{{ route('admin.services.show', $service) }}" class="btn-sm btn-ghost" tooltip="Lihat Detail" />
+                <x-button icon="o-eye" wire:navigate link="{{ route('admin.services.show', $service) }}" class="btn-sm btn-ghost" tooltip="Lihat Detail" />
             @endscope
 
         </x-table>

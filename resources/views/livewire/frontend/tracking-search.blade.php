@@ -1,29 +1,6 @@
 <section class="bg-[#F8F8F8] border-b-2 border-black py-12 md:py-16 px-4"
     x-data="{
-        localCodes: [],
-        authCheck: {{ auth()->check() ? 'true' : 'false' }},
-        dbServices: {{ \Illuminate\Support\Js::from($userServices) }},
-        init() {
-            let stored = JSON.parse(localStorage.getItem('my_services') || '[]');
-            this.localCodes = stored;
-            
-            if (this.authCheck && this.localCodes.length > 0) {
-                // Trigger Livewire sync if user is logged in
-                $wire.syncLocalCodes(this.localCodes).then(() => {
-                    // synced
-                });
-            }
-        },
-        get displayedServices() {
-            if (this.authCheck) {
-                return this.dbServices.map(s => s.service_code);
-            }
-            return this.localCodes;
-        },
-        clickService(code) {
-            $wire.ticketNumber = code;
-            $wire.search();
-        }
+        // No local memory here per user request
     }"
 >
   <div class="max-w-2xl mx-auto text-center flex flex-col items-center gap-4">
@@ -34,20 +11,6 @@
     <p class="text-gray-500 text-sm md:text-base font-inter max-w-md">
       Masukkan nomor tiket servis untuk memantau progress perbaikan secara real-time.
     </p>
-
-    <!-- Daftar Servis Aktif (Otomatis dari LocalStorage / Akun) -->
-    <div x-show="displayedServices.length > 0" class="w-full max-w-md mt-4" x-cloak>
-        <p class="text-xs font-bold text-black uppercase text-left mb-2">Riwayat Servis Anda:</p>
-        <div class="flex flex-col gap-2">
-            <template x-for="code in displayedServices" :key="code">
-                <button @click="clickService(code)" 
-                    class="w-full bg-white border border-gray-300 p-3 flex justify-between items-center hover:border-black transition-colors">
-                    <span class="text-sm font-bold font-inter" x-text="code"></span>
-                    <span class="text-xs text-gray-500 flex items-center gap-1">Lacak <i class="fa-solid fa-chevron-right"></i></span>
-                </button>
-            </template>
-        </div>
-    </div>
 
     <!-- Search -->
     <div class="w-full max-w-md mt-4 flex flex-col sm:flex-row gap-0 border-2 border-black overflow-hidden">

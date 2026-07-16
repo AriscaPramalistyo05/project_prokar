@@ -60,6 +60,15 @@ class ServiceDetail extends Component
     {
         $this->validate();
 
+        $oldStatus = $this->serviceOrder->status;
+
+        // Auto-transitions to help technician
+        if ($this->final_cost > 0 && in_array($this->status, ['waiting_approval', 'in_progress'])) {
+            $this->status = 'completed';
+        } elseif ($this->estimated_cost > 0 && $this->diagnosis && in_array($this->status, ['pending', 'confirmed', 'diagnosing'])) {
+            $this->status = 'waiting_approval';
+        }
+
         // If completed just now
         if ($this->status === 'completed' && $this->serviceOrder->status !== 'completed') {
             $this->serviceOrder->completed_at = now();
@@ -77,23 +86,36 @@ class ServiceDetail extends Component
             'technician_id' => $this->technician_id,
         ]);
 
-        $this->success('Data servis berhasil diperbarui!');
+        // Create log if status changed
+        if ($oldStatus !== $this->status) {
+            $this->serviceOrder->serviceStatusLogs()->create([
+                'status' => $this->status,
+                'note' => 'Status diperbarui oleh ' . Auth::user()->name,
+                'changed_by' => Auth::id(),
+            ]);
+        }
+
+        $this->success('Data servis berhasil diperbarui!', redirectTo: route('admin.services.index'));
     }
 
     public function uploadPhoto()
     {
         $this->validate([
-            'new_photo' => 'required|image|max:10240',
+            'new_photo' => 'required|file|mimes:jpeg,png,jpg,webp,mp4,mov,avi,webm|max:20480',
             'photo_type' => 'required|in:before,after',
         ]);
 
         $path = $this->new_photo->store('service_images', 'public');
 
+        $extension = strtolower($this->new_photo->getClientOriginalExtension());
+        $videoExts = ['mp4', 'mov', 'avi', 'webm'];
+        $mediaType = in_array($extension, $videoExts) ? 'video' : 'image';
+
         $this->serviceOrder->serviceImages()->create([
             'path' => $path,
             'type' => $this->photo_type,
             'uploaded_by' => Auth::id(),
-            'media_type' => 'image',
+            'media_type' => $mediaType,
         ]);
 
         $this->reset('new_photo');
@@ -108,6 +130,6 @@ class ServiceDetail extends Component
             'technicians' => $technicians,
             'statusLogs' => $this->serviceOrder->serviceStatusLogs()->latest()->get(),
             'images' => $this->serviceOrder->serviceImages()->latest()->get(),
-        ]);
+        ])->layout('layouts.admin');
     }
 }
