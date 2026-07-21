@@ -87,6 +87,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:super_admin|te
 
         Route::get('/kategori', \App\Livewire\Admin\CategoryIndex::class)->name('categories.index');
 
+        Route::get('/biaya-tambahan', \App\Livewire\Admin\AdditionalFeeIndex::class)->name('additional-fees.index')->middleware('role:super_admin');
+
         Route::get('/servis', \App\Livewire\Admin\ServiceIndex::class)->name('services.index');
         Route::get('/servis/{serviceOrder}', \App\Livewire\Admin\ServiceDetail::class)->name('services.show');
     });

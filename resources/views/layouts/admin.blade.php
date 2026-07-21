@@ -60,6 +60,7 @@
                         <x-admin.sidebar-item route="admin.reports.index" icon="o-chart-bar" label="Laporan" />
                         <x-admin.sidebar-item route="admin.activity-log" icon="o-clipboard-document-list" label="Activity Log" />
                         <x-menu-separator />
+                        <x-admin.sidebar-item route="admin.additional-fees.index" icon="o-currency-dollar" label="Biaya Tambahan" />
                         <x-admin.sidebar-item route="admin.settings" icon="o-cog-6-tooth" label="Setting" />
                         @endrole
                     </x-menu>

@@ -100,6 +100,11 @@ class ServiceOrder extends Model
         return $this->hasMany(ServiceStatusLog::class);
     }
 
+    public function serviceFees()
+    {
+        return $this->hasMany(ServiceFee::class);
+    }
+
     public function getFullAddressAttribute()
     {
         if (!$this->province_id) {
