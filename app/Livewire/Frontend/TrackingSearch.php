@@ -6,35 +6,41 @@ use Livewire\Component;
 
 class TrackingSearch extends Component
 {
-    public string $ticketNumber = 'TRX-SERVIS-001';
+    public string $ticketNumber = '';
     public string $activeState = 'ongoing';
     public ?string $errorMessage = null;
 
-    /**
-     * Demo dataset (id => state). In production this would be an API call.
-     */
-    protected array $validTickets = [
-        'TRX-SERVIS-001' => 'ongoing',
-        'TRX-SERVIS-002' => 'done',
-    ];
+    protected $queryString = ['code' => ['as' => 'code', 'except' => '']];
+    public $code = '';
 
-    protected $listeners = [
-        'reset-tracking' => 'resetSearch',
-    ];
+    public function mount()
+    {
+        if ($this->code) {
+            $this->ticketNumber = $this->code;
+            $this->search();
+        }
+    }
 
-    public function search(): void
+    public function search()
     {
         $val = strtoupper(trim($this->ticketNumber));
 
-        if (array_key_exists($val, $this->validTickets)) {
-            $this->activeState = $this->validTickets[$val];
-            $this->errorMessage = null;
-            $this->dispatch('tracking-updated', state: $this->activeState, ticket: $val);
-        } else {
-            $this->errorMessage = 'Nomor tiket tidak ditemukan. Coba: TRX-SERVIS-001 atau TRX-SERVIS-002';
+        if (empty($val)) {
+            $this->errorMessage = 'Silakan masukkan kode servis.';
             $this->dispatch('tracking-updated', state: null, ticket: $val);
+            return;
+        }
+
+        $order = \App\Models\ServiceOrder::where('service_code', $val)->first();
+
+        if ($order) {
+            return redirect()->route('servis.track', ['code' => $val]);
+        } else {
+            $this->errorMessage = 'Nomor tiket tidak ditemukan. Pastikan kode sudah benar (contoh: SRV-2026...).';
         }
     }
+
+
 
     public function switchState(string $state): void
     {

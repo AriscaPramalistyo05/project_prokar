@@ -10,6 +10,7 @@ class ServiceImage extends Model
         'service_order_id',
         'path',
         'type',
+        'media_type',
         'uploaded_by',
     ];
 

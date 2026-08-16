@@ -1,0 +1,733 @@
+<!doctype html>
+<html lang="id" prefix="og: https://ogp.me/ns#" class="lenis lenis-smooth">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="theme-color" content="#FFCC00" />
+  <meta name="format-detection" content="telephone=yes" />
+  <meta name="HandheldFriendly" content="true" />
+  <meta name="MobileOptimized" content="width" />
+
+  <!-- ═══ PRIMARY SEO ═══ -->
+  <title>Servis Elektronik – Teknisi Berpengalaman | Prokar Elektronik</title>
+  <meta name="description"
+    content="Servis TV, kulkas, mesin cuci, AC, dan elektronik rumah tangga lainnya oleh teknisi berpengalaman di Jepara. Teknisi datang ke lokasi atau kirim barang ke workshop. Estimasi transparan, bergaransi 30 hari." />
+  <meta name="keywords"
+    content="servis elektronik Jepara, servis TV, servis kulkas, servis mesin cuci, servis AC, reparasi elektronik, teknisi elektronik Mlonggo" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://prokarelektronik.com/servis" />
+
+  <!-- ═══ OPEN GRAPH ═══ -->
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="id_ID" />
+  <meta property="og:site_name" content="Prokar Elektronik" />
+  <meta property="og:url" content="https://prokarelektronik.com/servis" />
+  <meta property="og:title" content="Servis Elektronik – Teknisi Berpengalaman | Prokar Elektronik" />
+  <meta property="og:description"
+    content="Servis TV, kulkas, mesin cuci, AC oleh teknisi berpengalaman. Teknisi datang ke lokasi atau kirim barang ke workshop. Bergaransi 30 hari." />
+  <meta property="og:image" content="https://prokarelektronik.com/og-image.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <!-- ═══ TWITTER CARD ═══ -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Servis Elektronik – Teknisi Berpengalaman | Prokar Elektronik" />
+  <meta name="twitter:description"
+    content="Servis TV, kulkas, mesin cuci, AC oleh teknisi berpengalaman di Jepara. Bergaransi 30 hari." />
+  <meta name="twitter:image" content="https://prokarelektronik.com/og-image.jpg" />
+
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Public+Sans:wght@400;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- Lenis Smooth Scroll CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/lenis@1.1.9/dist/lenis.css">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              yellow: "#FFCC00",
+              orange: "#FF7A00",
+              blue: "#3B82F6",
+              soft: "#E8F4F8",
+              black: "#0A0A0A"
+            }
+          },
+          fontFamily: {
+            archivo: ['"Archivo Narrow"', "sans-serif"],
+            inter: ["Inter", "sans-serif"],
+            public: ['"Public Sans"', "sans-serif"],
+          },
+          boxShadow: {
+            'cuberto': '0 -15px 40px -10px rgba(0,0,0,0.2)',
+            'card': '0 20px 40px -10px rgba(0,0,0,0.15)',
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    :root {
+      --radius-overlap: 3rem;
+    }
+
+    html,
+    body {
+      background: #0A0A0A;
+      overflow-x: hidden;
+      scroll-behavior: initial;
+    }
+
+    body {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      font-size: 16px;
+      color: #111;
+    }
+
+    /* ── Navbar ── */
+    .nav-link {
+      position: relative;
+      color: #555;
+      font-size: 1.1rem;
+      font-weight: 600;
+      transition: color 0.3s ease, transform 0.3s ease;
+    }
+
+    .nav-link:hover {
+      color: #000;
+    }
+
+    .nav-link.active {
+      color: #000;
+      font-weight: 700;
+    }
+
+    .nav-link.active::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -6px;
+      width: 100%;
+      height: 3px;
+      background: #FFCC00;
+      border-radius: 2px;
+    }
+
+    /* ── Overlapping Sections ── */
+    .section-overlap {
+      position: relative;
+      border-radius: var(--radius-overlap) var(--radius-overlap) 0 0;
+      box-shadow: var(--cuberto);
+      will-change: transform;
+    }
+
+    .section-overlap:first-of-type {
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    /* ── Text Animation Classes ── */
+    .reveal-wrapper {
+      overflow: hidden;
+      display: inline-flex;
+      vertical-align: top;
+    }
+
+    .reveal-line {
+      display: inline-block;
+      will-change: transform;
+      transform-origin: left top;
+    }
+
+    .reveal-fade {
+      will-change: transform, opacity;
+      visibility: hidden;
+    }
+
+    .stagger-item {
+      visibility: hidden;
+    }
+
+    /* Hover Effects */
+    .btn-hover {
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    .btn-hover:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 10px 20px -10px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Form Styles */
+    input, select, textarea {
+      background: transparent;
+    }
+    select {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+    }
+    textarea {
+      scrollbar-width: thin;
+    }
+    .select-wrap {
+      position: relative;
+    }
+    .select-wrap::after {
+      content: "";
+      position: absolute;
+      right: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 7px solid #111;
+      pointer-events: none;
+    }
+  </style>
+</head>
+
+<body class="font-inter bg-brand-black">
+
+  <!-- Announcement Bar (Marquee Hitam) -->
+  <div role="banner" class="flex justify-between items-center bg-black py-2.5 px-4 sm:px-10 md:px-[60px] z-50 relative">
+    <div class="w-full text-center">
+      <span class="text-white font-public font-bold text-xs md:text-sm uppercase tracking-widest">
+        Masuk atau daftar akun agar bisa melanjutkan pemesanan layanan.
+      </span>
+    </div>
+  </div>
+
+  <!-- Navbar -->
+  <header class="sticky top-0 z-[100] bg-white/80 backdrop-blur-xl border-b border-gray-200 shadow-sm">
+    <nav class="max-w-[1440px] mx-auto flex justify-between items-center h-20 px-6 lg:px-12">
+      <a href="/" class="flex items-center gap-3">
+        <i class="fa-solid fa-bars text-xl md:hidden cursor-pointer"></i>
+        <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/brnriy48_expires_30_days.png"
+          alt="Prokar Elektronik" class="h-10 w-auto object-contain hidden md:block" />
+        <strong class="md:hidden font-public font-black text-xl">PROKAR.</strong>
+      </a>
+
+      <div class="hidden md:flex items-center gap-8 lg:gap-12 font-public">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="produk.html" class="nav-link">Produk</a>
+        <a href="jual.html" class="nav-link">Jual</a>
+        <a href="servis.html" class="nav-link active" aria-current="page">Servis</a>
+        <a href="track.html" class="nav-link">Track</a>
+      </div>
+
+      <div class="flex items-center gap-5">
+        <button class="hover:scale-110 transition-transform"><i class="fa-solid fa-magnifying-glass text-xl"></i></button>
+        <button class="w-10 h-10 rounded-full bg-black flex items-center justify-center hover:scale-110 transition-transform hover:bg-brand-yellow hover:text-black text-white">
+          <span class="font-bold text-lg">N</span>
+        </button>
+        <button class="relative hover:scale-110 transition-transform">
+          <i class="fa-solid fa-cart-shopping text-xl"></i>
+          <span class="absolute -top-2 -right-2 w-5 h-5 bg-brand-yellow rounded-full text-black text-xs font-bold flex items-center justify-center border-2 border-white">5</span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <main class="bg-brand-black">
+
+    <!-- HEADER SERVIS -->
+    <section class="bg-brand-black py-16 md:py-24 z-10 relative text-center">
+      <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
+        <h1 class="text-white text-5xl md:text-7xl font-black uppercase tracking-tighter font-public mb-4 reveal-wrapper">
+          <span class="reveal-line">Servis Elektronik</span>
+        </h1>
+        <p class="text-gray-400 text-sm md:text-lg font-bold tracking-widest uppercase reveal-fade">
+          Teknisi Berpengalaman, Hasil Terpercaya
+        </p>
+      </div>
+    </section>
+
+    <!-- PILIHAN LAYANAN (OVERLAPPING SECTION) -->
+    <section id="jenis-layanan" class="section-overlap bg-white pt-20 pb-20 z-20">
+      <div class="max-w-5xl mx-auto px-6 lg:px-12 text-center">
+        <h2 class="text-black text-3xl md:text-5xl font-black uppercase tracking-tighter font-public mb-12 reveal-wrapper">
+          <span class="reveal-line">Jenis Layanan</span>
+        </h2>
+
+        <div class="grid md:grid-cols-2 gap-6 md:gap-8 reveal-fade text-left">
+
+          <!-- Layanan 1: Teknisi Datang -->
+          <button id="btnDatang" type="button" class="group relative bg-white border-4 border-black rounded-3xl p-8 flex flex-col items-start gap-4 transition-transform hover:-translate-y-2 shadow-card focus:outline-none">
+            <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center group-hover:bg-brand-yellow transition-colors">
+              <span class="material-symbols-outlined text-4xl text-black">home_repair_service</span>
+            </div>
+            <div>
+              <h3 class="font-black text-2xl font-public uppercase text-black mb-2">Teknisi Datang</h3>
+              <p class="text-gray-600 font-inter text-base">Layanan perbaikan langsung di lokasi Anda (Home Visit).</p>
+            </div>
+          </button>
+
+          <!-- Layanan 2: Kirim Barang -->
+          <button id="btnKirim" type="button" class="group relative bg-white border border-gray-200 rounded-3xl p-8 flex flex-col items-start gap-4 transition-transform hover:-translate-y-2 focus:outline-none">
+            <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center group-hover:bg-brand-yellow transition-colors">
+              <span class="material-symbols-outlined text-4xl text-black">local_shipping</span>
+            </div>
+            <div>
+              <h3 class="font-black text-2xl font-public uppercase text-black mb-2">Kirim Barang</h3>
+              <p class="text-gray-600 font-inter text-base">Kirim unit ke workshop kami untuk penanganan di bengkel (Drop-off).</p>
+            </div>
+          </button>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- CARA KERJA -->
+    <section id="cara-kerja" class="section-overlap bg-brand-soft py-20 z-30">
+      <div class="max-w-[1440px] mx-auto px-6 lg:px-12 text-center">
+        <h2 class="text-black text-3xl md:text-5xl font-black uppercase tracking-tighter font-public mb-12 md:mb-16 reveal-wrapper">
+          <span class="reveal-line">Cara Kerja</span>
+        </h2>
+
+        <div class="relative stagger-group text-left md:text-center max-w-7xl mx-auto">
+          
+          <!-- Garis penghubung DESKTOP -->
+          <div class="hidden md:block absolute top-[40px] left-[8%] right-[8%] h-1 bg-gradient-to-r from-black via-gray-300 to-gray-300 z-0 transform -translate-y-1/2"></div>
+          
+          <!-- Garis penghubung MOBILE -->
+          <div class="md:hidden absolute top-[28px] bottom-[28px] left-[28px] w-1 bg-gradient-to-b from-black via-gray-300 to-gray-300 z-0 transform -translate-x-1/2"></div>
+
+          <!-- GRID 6 STEP -->
+          <div class="grid grid-cols-1 md:grid-cols-6 gap-6 md:gap-4 relative z-10">
+            
+            <!-- Step 1 -->
+            <article class="stagger-item flex flex-row md:flex-col items-start md:items-center gap-5 md:gap-4 relative z-10">
+              <div class="w-14 h-14 md:w-20 md:h-20 rounded-full bg-black text-brand-yellow border-4 border-white flex items-center justify-center text-lg md:text-2xl font-black font-public shadow-md shrink-0 relative z-10">1</div>
+              <div class="bg-white rounded-3xl p-5 md:p-4 w-full shadow-card flex-1 flex flex-col items-start md:items-center text-left md:text-center transform hover:-translate-y-2 transition-transform duration-300">
+                <h3 class="text-base md:text-sm font-bold font-public text-black uppercase mb-1">Masuk</h3>
+                <p class="text-gray-500 font-inter text-xs leading-relaxed">Pengajuan Anda diterima di sistem.</p>
+              </div>
+            </article>
+
+            <!-- Step 2 -->
+            <article class="stagger-item flex flex-row md:flex-col items-start md:items-center gap-5 md:gap-4 relative z-10">
+              <div class="w-14 h-14 md:w-20 md:h-20 rounded-full bg-white text-black border-4 border-gray-200 flex items-center justify-center text-lg md:text-2xl font-black font-public shadow-md shrink-0 relative z-10">2</div>
+              <div class="bg-white rounded-3xl p-5 md:p-4 w-full shadow-card flex-1 flex flex-col items-start md:items-center text-left md:text-center transform hover:-translate-y-2 transition-transform duration-300 md:mt-6">
+                <h3 class="text-base md:text-sm font-bold font-public text-black uppercase mb-1">Dikonfirmasi</h3>
+                <p id="desc-step2" class="text-gray-500 font-inter text-xs leading-relaxed">Teknisi dijadwalkan.</p>
+              </div>
+            </article>
+
+            <!-- Step 3 -->
+            <article class="stagger-item flex flex-row md:flex-col items-start md:items-center gap-5 md:gap-4 relative z-10">
+              <div class="w-14 h-14 md:w-20 md:h-20 rounded-full bg-white text-black border-4 border-gray-200 flex items-center justify-center text-lg md:text-2xl font-black font-public shadow-md shrink-0 relative z-10">3</div>
+              <div class="bg-white rounded-3xl p-5 md:p-4 w-full shadow-card flex-1 flex flex-col items-start md:items-center text-left md:text-center transform hover:-translate-y-2 transition-transform duration-300 md:mt-12">
+                <h3 class="text-base md:text-sm font-bold font-public text-black uppercase mb-1">Diagnosa</h3>
+                <p id="desc-step3" class="text-gray-500 font-inter text-xs leading-relaxed">Teknisi mengecek kerusakan perangkat.</p>
+              </div>
+            </article>
+
+            <!-- Step 4 -->
+            <article class="stagger-item flex flex-row md:flex-col items-start md:items-center gap-5 md:gap-4 relative z-10">
+              <div class="w-14 h-14 md:w-20 md:h-20 rounded-full bg-white text-black border-4 border-gray-200 flex items-center justify-center text-lg md:text-2xl font-black font-public shadow-md shrink-0 relative z-10">4</div>
+              <div class="bg-white rounded-3xl p-5 md:p-4 w-full shadow-card flex-1 flex flex-col items-start md:items-center text-left md:text-center transform hover:-translate-y-2 transition-transform duration-300 md:mt-16">
+                <h3 class="text-base md:text-sm font-bold font-public text-black uppercase mb-1">Persetujuan</h3>
+                <p class="text-gray-500 font-inter text-xs leading-relaxed">Menyetujui biaya via halaman Track.</p>
+              </div>
+            </article>
+
+            <!-- Step 5 -->
+            <article class="stagger-item flex flex-row md:flex-col items-start md:items-center gap-5 md:gap-4 relative z-10">
+              <div class="w-14 h-14 md:w-20 md:h-20 rounded-full bg-white text-black border-4 border-gray-200 flex items-center justify-center text-lg md:text-2xl font-black font-public shadow-md shrink-0 relative z-10">5</div>
+              <div class="bg-white rounded-3xl p-5 md:p-4 w-full shadow-card flex-1 flex flex-col items-start md:items-center text-left md:text-center transform hover:-translate-y-2 transition-transform duration-300 md:mt-12">
+                <h3 class="text-base md:text-sm font-bold font-public text-black uppercase mb-1">Pengerjaan</h3>
+                <p id="desc-step5" class="text-gray-500 font-inter text-xs leading-relaxed">Perbaikan dilakukan teknisi.</p>
+              </div>
+            </article>
+
+            <!-- Step 6 -->
+            <article class="stagger-item flex flex-row md:flex-col items-start md:items-center gap-5 md:gap-4 relative z-10">
+              <div class="w-14 h-14 md:w-20 md:h-20 rounded-full bg-white text-black border-4 border-gray-200 flex items-center justify-center text-lg md:text-2xl font-black font-public shadow-md shrink-0 relative z-10"><i class="fa-solid fa-flag-checkered text-xl"></i></div>
+              <div class="bg-white rounded-3xl p-5 md:p-4 w-full shadow-card flex-1 flex flex-col items-start md:items-center text-left md:text-center transform hover:-translate-y-2 transition-transform duration-300 md:mt-6">
+                <h3 class="text-base md:text-sm font-bold font-public text-black uppercase mb-1">Selesai</h3>
+                <p id="desc-step6" class="text-gray-500 font-inter text-xs leading-relaxed">Pelunasan & garansi terbit.</p>
+              </div>
+            </article>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FORM PENGAJUAN SERVIS -->
+    <section id="form-penjualan" class="section-overlap bg-white py-24 z-40">
+      <div class="max-w-4xl mx-auto px-6 lg:px-12">
+        <div class="bg-white border border-gray-200 rounded-[2.5rem] p-8 md:p-14 shadow-card reveal-fade">
+          <div class="text-center mb-10">
+            <h2 class="text-3xl md:text-4xl font-black font-public uppercase tracking-tighter text-black mb-2">Form Pengajuan Servis</h2>
+            <p class="text-gray-500 font-inter text-sm md:text-base">Silakan isi data dengan lengkap agar teknisi kami dapat memahami kendala perangkat Anda.</p>
+          </div>
+
+          <form class="flex flex-col gap-6" action="/servis/ajukan" method="post">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label for="nama" class="block text-sm font-bold uppercase tracking-widest mb-2 text-gray-700 font-public">Nama Lengkap</label>
+                <input id="nama" name="nama" type="text" placeholder="Masukkan nama Anda" required
+                  class="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 text-base focus:bg-white focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all" />
+              </div>
+              <div>
+                <label for="whatsapp" class="block text-sm font-bold uppercase tracking-widest mb-2 text-gray-700 font-public">Nomor WhatsApp</label>
+                <input id="whatsapp" name="whatsapp" type="tel" placeholder="Contoh: 08123456789" required
+                  class="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 text-base focus:bg-white focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label for="kategori" class="block text-sm font-bold uppercase tracking-widest mb-2 text-gray-700 font-public">Kategori Perangkat</label>
+                <div class="select-wrap">
+                  <select id="kategori" name="kategori" required
+                    class="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 text-base focus:bg-white focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all cursor-pointer">
+                    <option value="" disabled selected>Pilih Kategori</option>
+                    <option value="tv">Televisi</option>
+                    <option value="kulkas">Kulkas</option>
+                    <option value="mesin-cuci">Mesin Cuci</option>
+                    <option value="ac">AC</option>
+                    <option value="lainnya">Lainnya</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label for="merek" class="block text-sm font-bold uppercase tracking-widest mb-2 text-gray-700 font-public">Merek & Tipe</label>
+                <input id="merek" name="merek" type="text" placeholder="Contoh: LG Smart TV 43 Inch / Kulkas Sharp 2 Pintu" required
+                  class="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 text-base focus:bg-white focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all" />
+              </div>
+            </div>
+
+            <div>
+              <label for="deskripsi" class="block text-sm font-bold uppercase tracking-widest mb-2 text-gray-700 font-public">Deskripsi Keluhan</label>
+              <textarea id="deskripsi" name="deskripsi" rows="4" placeholder="Jelaskan masalah yang dialami secara spesifik (Contoh: Kulkas kurang dingin, TV mati total, dll)" required
+                class="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 text-base focus:bg-white focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all resize-none"></textarea>
+            </div>
+
+            <div id="alamat-container">
+              <label for="alamat" class="block text-sm font-bold uppercase tracking-widest mb-2 text-gray-700 font-public">Alamat Kunjungan <span class="text-red-500 text-[10px] ml-1">*Wajib untuk Layanan Teknisi Datang</span></label>
+              <textarea id="alamat" name="alamat" rows="3" placeholder="Masukkan alamat rumah/lokasi lengkap dengan kecamatan dan kode pos..."
+                class="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 text-base focus:bg-white focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all resize-none"></textarea>
+            </div>
+
+            <div>
+              <label class="block text-sm font-bold uppercase tracking-widest mb-2 text-gray-700 font-public">Upload Foto Kendala</label>
+              <label for="upload-foto" class="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-[2rem] p-10 cursor-pointer bg-gray-50 hover:bg-gray-100 hover:border-black transition-all group">
+                <div class="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-sm mb-4 group-hover:scale-110 transition-transform">
+                  <i class="fa-solid fa-cloud-arrow-up text-2xl text-black"></i>
+                </div>
+                <p class="text-black font-bold text-base mb-1">Klik untuk mengunggah foto</p>
+                <p class="text-gray-500 text-sm">Upload foto perangkat atau error yang terjadi (Opsional)</p>
+                <p id="file-name" class="text-brand-blue font-semibold text-sm mt-3 hidden">0 file dipilih</p>
+                <input type="file" id="upload-foto" name="foto[]" accept="image/*" multiple class="hidden" onchange="handleFiles(this)" />
+              </label>
+              <div id="preview-container" class="grid grid-cols-3 md:grid-cols-5 gap-4 mt-6" aria-live="polite"></div>
+            </div>
+
+            <button type="submit" class="mt-4 w-full bg-black text-white py-5 rounded-full font-public font-black uppercase text-lg tracking-widest hover:bg-gray-800 transition-colors btn-hover flex justify-center items-center gap-3">
+              Kirim Pengajuan <i class="fa-solid fa-paper-plane text-brand-yellow"></i>
+            </button>
+
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- KEUNGGULAN LAYANAN (CUBERTO SCATTER EFFECT) -->
+    <section id="keunggulan" aria-label="Keunggulan layanan servis elektronik" class="section-overlap bg-brand-yellow py-32 lg:py-48 z-[45] overflow-hidden">
+      <div class="max-w-[1440px] mx-auto px-6 lg:px-12 relative">
+        <div class="text-center mb-16 lg:hidden reveal-fade">
+          <h2 class="text-black text-4xl font-black uppercase font-public">Keunggulan Kami</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10 relative">
+          
+          <!-- Card 1 (Kiri) -->
+          <article class="scatter-card flex flex-col bg-white rounded-3xl p-8 lg:p-10 shadow-card relative z-[2] border border-gray-100">
+            <div class="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center mb-6 border border-gray-100">
+              <i class="fa-solid fa-user-gear text-3xl text-black"></i>
+            </div>
+            <h3 class="font-black text-black font-public text-xl md:text-2xl tracking-tighter uppercase mb-3">Teknisi Berpengalaman</h3>
+            <p class="text-gray-600 font-inter text-base leading-relaxed">Perangkat Anda ditangani langsung oleh tenaga ahli yang berpengalaman di bidangnya.</p>
+          </article>
+
+          <!-- Card 2 (Tengah) -->
+          <article class="scatter-card flex flex-col bg-white rounded-3xl p-8 lg:p-10 shadow-card relative z-[10] border border-gray-100">
+            <div class="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center mb-6 border border-gray-100">
+              <i class="fa-regular fa-file-lines text-3xl text-black"></i>
+            </div>
+            <h3 class="font-black text-black font-public text-xl md:text-2xl tracking-tighter uppercase mb-3">Estimasi Transparan</h3>
+            <p class="text-gray-600 font-inter text-base leading-relaxed">Rincian kerusakan dan biaya dijelaskan secara transparan di awal, tanpa biaya tersembunyi.</p>
+          </article>
+
+          <!-- Card 3 (Kanan) -->
+          <article class="scatter-card flex flex-col bg-white rounded-3xl p-8 lg:p-10 shadow-card relative z-[1] border border-gray-100">
+            <div class="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center mb-6 border border-gray-100">
+              <i class="fa-solid fa-shield-halved text-3xl text-black"></i>
+            </div>
+            <h3 class="font-black text-black font-public text-xl md:text-2xl tracking-tighter uppercase mb-3">Bergaransi</h3>
+            <p class="text-gray-600 font-inter text-base leading-relaxed">Nikmati rasa aman dengan jaminan garansi perbaikan hingga 30 hari untuk kendala yang sama.</p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER (OVERLAPPING SECTION) -->
+  <footer class="section-overlap bg-brand-black pt-20 pb-10 px-6 md:px-12 z-50">
+    <div
+      class="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-start border-b border-gray-800 pb-16 mb-10 gap-12">
+      <div class="max-w-md">
+        <a href="/">
+          <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/mfbi92py_expires_30_days.png"
+            alt="Prokar Elektronik" class="w-64 mb-6">
+        </a>
+        <p class="text-gray-400 text-lg leading-relaxed font-inter">Urus semua kebutuhan elektronik dalam satu platform
+          terpercaya. Dari servis, jual, hingga beli, cukup lewat satu klik.</p>
+      </div>
+      <nav class="flex flex-col gap-4 font-public">
+        <a href="/" class="text-white text-2xl font-bold hover:text-brand-yellow transition-colors">HOME</a>
+        <a href="/produk" class="text-white text-2xl font-bold hover:text-brand-yellow transition-colors">PRODUK</a>
+        <a href="/jual" class="text-white text-2xl font-bold hover:text-brand-yellow transition-colors">JUAL</a>
+        <a href="/servis" class="text-brand-yellow text-2xl font-bold hover:text-white transition-colors">SERVIS</a>
+        <a href="/track" class="text-white text-2xl font-bold hover:text-brand-yellow transition-colors">TRACK</a>
+      </nav>
+    </div>
+    <div
+      class="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center text-gray-500 font-inter text-sm md:text-base">
+      <p>&copy; <span id="copy-year"></span> Copyright by Prokar Elektronik</p>
+      <p>Made by Lar's</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js"></script>
+
+  <script>
+    // Initialize Lenis
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      direction: 'vertical',
+      smooth: true,
+      mouseMultiplier: 1,
+      touchMultiplier: 2,
+    });
+
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
+    // Sync GSAP with Lenis
+    gsap.registerPlugin(ScrollTrigger);
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add((time) => { lenis.raf(time * 1000) });
+    gsap.ticker.lagSmoothing(0, 0);
+
+    /* --- OVERLAPPING SCROLL EFFECT --- */
+    const overlapSections = document.querySelectorAll('.section-overlap');
+    overlapSections.forEach((section, index) => {
+      if (index === overlapSections.length - 1) return; // Skip footer
+      ScrollTrigger.create({
+        trigger: section,
+        start: () => section.offsetHeight > window.innerHeight ? "bottom bottom" : "top top",
+        pin: true,
+        pinSpacing: false,
+      });
+    });
+
+    /* --- GSAP ANIMATIONS --- */
+
+    // Header text reveal
+    gsap.fromTo("section:first-of-type .reveal-line",
+      { y: "110%" },
+      { y: "0%", duration: 1.2, ease: "power4.out", delay: 0.2 }
+    );
+    gsap.fromTo("section:first-of-type .reveal-fade",
+      { y: 20, autoAlpha: 0 },
+      { y: 0, autoAlpha: 1, duration: 1, ease: "power3.out", delay: 0.4 }
+    );
+
+    // Reveal Elements Standard
+    document.querySelectorAll('.reveal-wrapper:not(section:first-of-type .reveal-wrapper)').forEach(wrapper => {
+      const line = wrapper.querySelector('.reveal-line');
+      if(line) {
+        gsap.fromTo(line, 
+          { y: "110%" },
+          {
+            scrollTrigger: { trigger: wrapper, start: "top 90%" },
+            y: "0%", duration: 1.2, ease: "power4.out"
+          }
+        );
+      }
+    });
+
+    document.querySelectorAll('.reveal-fade:not(section:first-of-type .reveal-fade)').forEach(el => {
+      gsap.fromTo(el,
+        { y: 40, autoAlpha: 0 },
+        {
+          scrollTrigger: { trigger: el, start: "top 90%" },
+          y: 0, autoAlpha: 1, duration: 1, ease: "power3.out"
+        }
+      );
+    });
+
+    // Stagger Groups (Excluding Keunggulan so it doesn't conflict)
+    const staggerGroups = document.querySelectorAll('.stagger-group:not(#keunggulan .stagger-group)');
+    staggerGroups.forEach(group => {
+      const items = group.querySelectorAll('.stagger-item');
+      gsap.fromTo(items,
+        { y: 60, autoAlpha: 0 },
+        {
+          scrollTrigger: { trigger: group, start: "top 85%" },
+          y: 0, autoAlpha: 1, duration: 0.8, stagger: 0.15, ease: "power3.out"
+        }
+      );
+    });
+
+    /* --- SCATTER CARDS ANIMATION (Cuberto Style) --- */
+    let mm = gsap.matchMedia();
+
+    mm.add("(min-width: 768px)", () => {
+      // Setup initial positions (Tumpuk di tengah)
+      const cards = document.querySelectorAll('.scatter-card');
+      if (cards.length === 3) {
+        gsap.set(cards[0], { xPercent: 104, yPercent: 6, rotation: -5 });
+        gsap.set(cards[1], { xPercent: 0, yPercent: 0, rotation: 0 }); 
+        gsap.set(cards[2], { xPercent: -104, yPercent: 6, rotation: 5 });
+
+        // Animasi menyebar lambat
+        gsap.to(cards, {
+          scrollTrigger: {
+            trigger: "#keunggulan",
+            start: "top 45%", 
+            end: "bottom 90%", 
+            scrub: 1.5,
+          },
+          xPercent: 0,
+          yPercent: 0,
+          rotation: 0,
+          ease: "power2.out"
+        });
+      }
+    });
+
+    mm.add("(max-width: 767px)", () => {
+      const cards = document.querySelectorAll('.scatter-card');
+      cards.forEach((card, index) => {
+        const rot = index === 0 ? -12 : (index === 1 ? 12 : -10);
+        gsap.fromTo(card, 
+          { y: 120, rotation: rot, autoAlpha: 0 },
+          {
+            scrollTrigger: { trigger: card, start: "top 85%", scrub: 1, end: "top 50%" },
+            y: 0, rotation: 0, autoAlpha: 1, ease: "power2.out"
+          }
+        );
+      });
+    });
+
+    /* --- INTERAKSI TOMBOL JENIS LAYANAN --- */
+    const btnDatang = document.getElementById('btnDatang');
+    const btnKirim = document.getElementById('btnKirim');
+    const alamatContainer = document.getElementById('alamat-container');
+    const alamatInput = document.getElementById('alamat');
+    
+    // Elemen Teks Deskripsi Timeline
+    const descStep2 = document.getElementById('desc-step2');
+    const descStep3 = document.getElementById('desc-step3');
+    const descStep5 = document.getElementById('desc-step5');
+    const descStep6 = document.getElementById('desc-step6');
+
+    function setActiveBtn(active, inactive) {
+      active.classList.remove('border', 'border-gray-200', 'shadow-none');
+      active.classList.add('border-4', 'border-black', 'shadow-card');
+      
+      inactive.classList.remove('border-4', 'border-black', 'shadow-card');
+      inactive.classList.add('border', 'border-gray-200', 'shadow-none');
+    }
+
+    btnDatang.addEventListener('click', () => {
+      setActiveBtn(btnDatang, btnKirim);
+      alamatContainer.style.display = 'block';
+      alamatInput.required = true;
+
+      // Update Teks Timeline
+      descStep2.textContent = "Teknisi dijadwalkan.";
+      descStep3.textContent = "Teknisi mengecek kerusakan perangkat.";
+      descStep5.textContent = "Perbaikan dilakukan teknisi.";
+      descStep6.textContent = "Pelunasan & garansi terbit.";
+    });
+
+    btnKirim.addEventListener('click', () => {
+      setActiveBtn(btnKirim, btnDatang);
+      alamatContainer.style.display = 'none';
+      alamatInput.required = false;
+
+      // Update Teks Timeline
+      descStep2.textContent = "Perangkat diterima bengkel.";
+      descStep3.textContent = "Teknisi bengkel mendiagnosa kerusakan.";
+      descStep5.textContent = "Perbaikan & penggantian komponen.";
+      descStep6.textContent = "Siap diambil di toko.";
+    });
+
+    /* --- FORM UPLOAD PREVIEW --- */
+    function handleFiles(input) {
+      const container = document.getElementById('preview-container');
+      const label = document.getElementById('file-name');
+      const files = Array.from(input.files);
+      
+      if(files.length > 0) {
+        label.classList.remove('hidden');
+        label.classList.add('block');
+        label.textContent = files.length + ' Foto telah dipilih';
+      } else {
+        label.classList.add('hidden');
+        label.classList.remove('block');
+      }
+
+      container.innerHTML = '';
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = e => {
+          const div = document.createElement('div');
+          div.className = 'relative aspect-square bg-gray-50 rounded-2xl overflow-hidden border border-gray-200 shadow-sm opacity-0 transform translate-y-4';
+          div.innerHTML = '<img src="' + e.target.result + '" alt="Pratinjau" class="w-full h-full object-cover" />';
+          container.appendChild(div);
+          
+          gsap.to(div, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" });
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    document.getElementById('copy-year').textContent = new Date().getFullYear();
+  </script>
+</body>
+
+</html>

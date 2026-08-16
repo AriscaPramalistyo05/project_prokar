@@ -24,7 +24,6 @@ Route::get('/firebase-messaging-sw.js', function () {
 });
 
 // ─── FRONTEND PUBLIC ────────────────────────────────────────────
-// ─── FRONTEND PUBLIC ────────────────────────────────────────────
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/produk', [App\Http\Controllers\Frontend\ProductController::class, 'index'])->name('produk.index');
@@ -34,6 +33,17 @@ Route::view('/jual', 'pages.sell')->name('jual.index');
 
 Route::view('/servis', 'pages.service')->name('servis.index');
 Route::view('/servis/lacak', 'pages.service-tracking')->name('servis.lacak');
+Route::get('/servis/lacak/{code}', \App\Livewire\Frontend\TrackService::class)->name('servis.track');
+Route::get('/servis/garansi/{code}/download', function ($code) {
+    $serviceOrder = \App\Models\ServiceOrder::where('service_code', $code)->firstOrFail();
+    
+    if ($serviceOrder->status !== 'completed') {
+        abort(403, 'Kartu Garansi resmi hanya dapat diunduh jika status perbaikan servis telah selesai.');
+    }
+    
+    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.warranty', ['serviceOrder' => $serviceOrder]);
+    return $pdf->download('Kartu-Garansi-' . $code . '.pdf');
+})->name('servis.garansi.download');
 
 Route::view('/keranjang', 'pages.cart')->name('keranjang.index');
 Route::view('/checkout', 'pages.checkout-address')->name('checkout.address');
@@ -65,15 +75,30 @@ Route::middleware('auth')->group(function () {
 });
 
 // ─── ADMIN ──────────────────────────────────────────────────────
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:super_admin|teknisi'])
-    ->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+    // Bisa diakses oleh super_admin dan teknisi
+    Route::middleware(['role:super_admin|teknisi'])->group(function () {
         Route::get('/dashboard', function () {
             return view('admin.dashboard');
         })->name('dashboard');
 
+        Route::get('/servis', \App\Livewire\Admin\ServiceIndex::class)->name('services.index');
+        Route::get('/servis/{serviceOrder}', \App\Livewire\Admin\ServiceDetail::class)->name('services.show');
+    });
+
+    // Hanya bisa diakses oleh super_admin
+    Route::middleware(['role:super_admin'])->group(function () {
         Route::get('/produk', \App\Livewire\Admin\ProductIndex::class)->name('products.index');
         Route::get('/produk/tambah', \App\Livewire\Admin\ProductForm::class)->name('products.create');
         Route::get('/produk/{product}/edit', \App\Livewire\Admin\ProductForm::class)->name('products.edit');
 
         Route::get('/kategori', \App\Livewire\Admin\CategoryIndex::class)->name('categories.index');
+
+        // Biaya Tambahan (Service)
+        Route::get('/biaya-tambahan', \App\Livewire\Admin\AdditionalFeeIndex::class)->name('additional-fees.index');
+
+        // Pengajuan Jual Barang (Masuk)
+        Route::get('/jual-masuk', \App\Livewire\Admin\SellSubmissionIndex::class)->name('sell-submissions.index');
+        Route::get('/jual-masuk/{sellSubmission}', \App\Livewire\Admin\SellSubmissionDetail::class)->name('sell-submissions.show');
     });
+});

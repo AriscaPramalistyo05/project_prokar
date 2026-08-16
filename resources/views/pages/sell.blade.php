@@ -9,7 +9,7 @@
 @section('og_description', 'Jual elektronik bekas Anda dengan mudah dan cepat. Penilaian transparan, jemput gratis ke lokasi, dan pembayaran langsung di tempat.')
 @section('twitter_title', 'Jual Elektronik Bekas – Penawaran Terbaik | Prokar Elektronik')
 @section('twitter_description', 'Jual elektronik bekas Anda dengan mudah dan cepat. Penilaian transparan, jemput gratis, dan pembayaran langsung.')
-@section('body_class', 'bg-white')
+@section('body_class', 'bg-brand-black')
 
 @push('schema')
 <script type="application/ld+json">
@@ -129,47 +129,6 @@
 
 @push('styles')
 <style>
-  *,
-  *::before,
-  *::after {
-    box-sizing: border-box;
-  }
-
-  body {
-    margin: 0;
-  }
-
-  input,
-  select,
-  textarea,
-  button {
-    font-family: "Archivo Narrow", sans-serif;
-  }
-
-  input,
-  select,
-  textarea {
-    background: transparent;
-  }
-
-  select {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-  }
-
-  textarea {
-    scrollbar-width: thin;
-  }
-
-  textarea::-webkit-scrollbar {
-    width: 4px;
-  }
-
-  textarea::-webkit-scrollbar-thumb {
-    background: #ccc;
-  }
-
   .select-wrap {
     position: relative;
   }
@@ -177,230 +136,278 @@
   .select-wrap::after {
     content: "";
     position: absolute;
-    right: 14px;
+    right: 18px;
     top: 50%;
     transform: translateY(-50%);
     width: 0;
     height: 0;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 6px solid #111;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 7px solid #111;
     pointer-events: none;
   }
 </style>
 @endpush
 
 @section('content')
-<main>
-    <!-- Breadcrumb (visually hidden but crawlable) -->
-    <nav aria-label="Breadcrumb" class="sr-only">
-      <ol>
-        <li><a href="{{ route('home') }}">Home</a></li>
-        <li aria-current="page">Jual</li>
-      </ol>
-    </nav>
+<main class="bg-brand-black">
 
-    <!-- ── HERO: Jual Elektronik ── -->
-    <section aria-labelledby="jual-heading" class="flex flex-col items-center py-10 md:py-14 gap-2 bg-[#F8F8F8]">
-      <div class="inline-flex flex-col items-center pb-1 border-b-2 border-black">
-        <h1 id="jual-heading"
-          class="font-bold text-black text-3xl md:text-4xl lg:text-5xl text-center tracking-tight leading-tight uppercase">
-          Jual Elektronik
-        </h1>
-      </div>
-      <p class="text-[#888888] text-xs text-center tracking-[1.2px] font-semibold uppercase mt-1">
-        Elektronik bekas Anda masih bernilai
+  <!-- Breadcrumb (visually hidden but crawlable) -->
+  <nav aria-label="Breadcrumb" class="sr-only">
+    <ol>
+      <li><a href="{{ route('home') }}">Home</a></li>
+      <li aria-current="page">Jual</li>
+    </ol>
+  </nav>
+
+  <!-- HEADER JUAL -->
+  <section class="bg-brand-black py-16 md:py-24 z-10 relative text-center">
+    <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
+      <h1 class="text-white text-5xl md:text-7xl font-black uppercase tracking-tighter font-public mb-4 reveal-wrapper">
+        <span class="reveal-line">Jual Elektronik</span>
+      </h1>
+      <p class="text-gray-400 text-sm md:text-lg font-bold tracking-widest uppercase reveal-fade">
+        Elektronik Bekas Anda Masih Bernilai
       </p>
-    </section>
+    </div>
+  </section>
 
-    <!-- ── CARA KERJA ── -->
-    <section id="cara-kerja" aria-labelledby="cara-kerja-heading"
-      class="flex flex-col items-center px-4 md:px-6 lg:px-16 py-12 md:py-16 w-full bg-white border-t border-b border-neutral-200">
-      <div class="w-full max-w-screen-xl mx-auto flex flex-col gap-10 md:gap-14">
-        <div class="flex justify-center">
-          <h2 id="cara-kerja-heading"
-            class="font-bold text-[#1A1C1C] text-xl md:text-2xl text-center tracking-[0.24px] uppercase">
-            Cara Kerja
-          </h2>
-        </div>
+  <!-- CARA KERJA (OVERLAPPING SECTION) -->
+  <section id="cara-kerja" class="section-overlap bg-brand-soft pt-20 pb-24 z-20">
+    <div class="max-w-[1440px] mx-auto px-6 lg:px-12 text-center">
+      <h2 class="text-black text-4xl md:text-5xl font-black uppercase tracking-tighter font-public mb-12 md:mb-16 reveal-wrapper">
+        <span class="reveal-line">Cara Kerja</span>
+      </h2>
 
-        <!-- ─────── DESKTOP: Horizontal Timeline (md+) ─────── -->
-        <div class="relative hidden md:block">
-          <div class="absolute top-5 flex" style="left:calc(16.6% + 20px); right:calc(16.6% + 20px); height:2px;"
-            aria-hidden="true">
-            <div class="flex-1 bg-[#111]"></div>
-            <div class="flex-1 bg-[#D1D1D1]"></div>
-          </div>
+      <div class="relative stagger-group text-left md:text-center">
+        
+        <!-- Garis penghubung DESKTOP -->
+        <div class="hidden md:block absolute top-[40px] left-[16.66%] right-[16.66%] h-1 bg-gradient-to-r from-black via-gray-300 to-gray-300 z-0 transform -translate-y-1/2"></div>
+        
+        <!-- Garis penghubung MOBILE -->
+        <div class="md:hidden absolute top-[28px] bottom-[28px] left-[28px] w-1 bg-gradient-to-b from-black via-gray-300 to-gray-300 z-0 transform -translate-x-1/2"></div>
 
-          <ol class="grid grid-cols-3 gap-12 w-full list-none m-0 p-0">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 relative z-10">
+          
+          <!-- Step 1 -->
+          <article class="stagger-item flex flex-row md:flex-col items-start md:items-center gap-5 md:gap-6 relative z-10">
+            <div class="w-14 h-14 md:w-20 md:h-20 rounded-full bg-black text-brand-yellow border-4 border-white flex items-center justify-center text-lg md:text-2xl font-black font-public shadow-md shrink-0 relative z-10">
+              01
+            </div>
+            <div class="bg-white rounded-[2rem] p-6 md:p-8 w-full shadow-card flex-1 flex flex-col items-start md:items-center text-left md:text-center transform hover:-translate-y-2 transition-transform duration-300">
+              <div class="w-12 h-12 md:w-16 md:h-16 bg-gray-50 rounded-2xl flex items-center justify-center mb-4 md:mb-6">
+                <i class="fa-regular fa-file-lines text-2xl md:text-3xl text-brand-blue"></i>
+              </div>
+              <span class="text-gray-400 font-bold text-xs uppercase tracking-widest mb-1 md:hidden">Step 1</span>
+              <h3 class="text-lg md:text-xl font-bold font-public text-black mb-2 md:mb-3">Isi Formulir</h3>
+              <p class="text-gray-600 font-inter text-sm md:text-base">Lengkapi detail dan kondisi barang elektronik Anda melalui form di bawah ini.</p>
+            </div>
+          </article>
 
-            <li class="flex flex-col items-center gap-6">
-              <div
-                class="w-10 h-10 flex items-center justify-center bg-black text-white text-sm font-bold flex-shrink-0 z-10 relative"
-                aria-hidden="true">01</div>
-              <article class="flex flex-col items-start gap-1 p-6 w-full bg-white border border-neutral-200"
-                style="box-shadow:0 2px 4px #0000001a;">
-                <svg width="26" height="27" fill="none" viewBox="0 0 26 27" class="mb-1" aria-hidden="true">
-                  <path d="M4 3h12l6 6v15a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2z" stroke="#1A1C1C"
-                    stroke-width="1.5" />
-                  <polyline points="14,3 14,9 20,9" stroke="#1A1C1C" stroke-width="1.5" />
-                  <line x1="8" y1="13" x2="18" y2="13" stroke="#1A1C1C" stroke-width="1.5" />
-                  <line x1="8" y1="17" x2="18" y2="17" stroke="#1A1C1C" stroke-width="1.5" />
-                </svg>
-                <p class="text-[#999] text-xs font-bold tracking-[0.6px] uppercase">Step 1</p>
-                <h3 class="text-[#1A1C1C] text-lg font-bold">Isi Formulir</h3>
-                <p class="text-[#444748] text-sm leading-5">Lengkapi detail dan kondisi barang elektronik Anda.</p>
-              </article>
-            </li>
+          <!-- Step 2 -->
+          <article class="stagger-item flex flex-row md:flex-col items-start md:items-center gap-5 md:gap-6 relative z-10">
+            <div class="w-14 h-14 md:w-20 md:h-20 rounded-full bg-white text-black border-4 border-gray-200 flex items-center justify-center text-lg md:text-2xl font-black font-public shadow-md shrink-0 relative z-10">
+              02
+            </div>
+            <div class="bg-white rounded-[2rem] p-6 md:p-8 w-full shadow-card flex-1 flex flex-col items-start md:items-center text-left md:text-center transform hover:-translate-y-2 transition-transform duration-300 md:mt-8">
+              <div class="w-12 h-12 md:w-16 md:h-16 bg-gray-50 rounded-2xl flex items-center justify-center mb-4 md:mb-6">
+                <i class="fa-solid fa-hand-holding-dollar text-2xl md:text-3xl text-emerald-500"></i>
+              </div>
+              <span class="text-gray-400 font-bold text-xs uppercase tracking-widest mb-1 md:hidden">Step 2</span>
+              <h3 class="text-lg md:text-xl font-bold font-public text-black mb-2 md:mb-3">Dapatkan Penawaran</h3>
+              <p class="text-gray-600 font-inter text-sm md:text-base">Tim ahli kami akan menilai dan menghubungi Anda dengan harga terbaik yang sesuai.</p>
+            </div>
+          </article>
 
-            <li class="flex flex-col items-center gap-6">
-              <div
-                class="w-10 h-10 flex items-center justify-center bg-white border-2 border-[#D1D1D1] text-black text-sm font-bold flex-shrink-0 z-10 relative"
-                aria-hidden="true">02</div>
-              <article class="flex flex-col items-start gap-1 p-6 w-full bg-white border border-neutral-200"
-                style="box-shadow:0 2px 4px #0000001a;">
-                <svg width="22" height="27" fill="none" viewBox="0 0 22 27" class="mb-1" aria-hidden="true">
-                  <rect x="2" y="2" width="18" height="23" rx="2" stroke="#1A1C1C" stroke-width="1.5" />
-                  <line x1="6" y1="8" x2="16" y2="8" stroke="#1A1C1C" stroke-width="1.5" />
-                  <line x1="6" y1="13" x2="16" y2="13" stroke="#1A1C1C" stroke-width="1.5" />
-                  <line x1="6" y1="18" x2="12" y2="18" stroke="#1A1C1C" stroke-width="1.5" />
-                </svg>
-                <p class="text-[#999] text-xs font-bold tracking-[0.6px] uppercase">Step 2</p>
-                <h3 class="text-[#1A1C1C] text-lg font-bold">Dapatkan Penawaran</h3>
-                <p class="text-[#444748] text-sm leading-5">Tim kami menghubungi Anda dengan harga terbaik.</p>
-              </article>
-            </li>
+          <!-- Step 3 -->
+          <article class="stagger-item flex flex-row md:flex-col items-start md:items-center gap-5 md:gap-6 relative z-10">
+            <div class="w-14 h-14 md:w-20 md:h-20 rounded-full bg-white text-black border-4 border-gray-200 flex items-center justify-center text-lg md:text-2xl font-black font-public shadow-md shrink-0 relative z-10">
+              03
+            </div>
+            <div class="bg-white rounded-[2rem] p-6 md:p-8 w-full shadow-card flex-1 flex flex-col items-start md:items-center text-left md:text-center transform hover:-translate-y-2 transition-transform duration-300 md:mt-16">
+              <div class="w-12 h-12 md:w-16 md:h-16 bg-gray-50 rounded-2xl flex items-center justify-center mb-4 md:mb-6">
+                <i class="fa-solid fa-truck-fast text-2xl md:text-3xl text-brand-orange"></i>
+              </div>
+              <span class="text-gray-400 font-bold text-xs uppercase tracking-widest mb-1 md:hidden">Step 3</span>
+              <h3 class="text-lg md:text-xl font-bold font-public text-black mb-2 md:mb-3">Jemput &amp; Bayar</h3>
+              <p class="text-gray-600 font-inter text-base">Tim kami akan menjemput barang secara gratis dan melakukan pembayaran di tempat.</p>
+            </div>
+          </article>
 
-            <li class="flex flex-col items-center gap-6">
-              <div
-                class="w-10 h-10 flex items-center justify-center bg-white border-2 border-[#D1D1D1] text-black text-sm font-bold flex-shrink-0 z-10 relative"
-                aria-hidden="true">03</div>
-              <article class="flex flex-col items-start gap-1 p-6 w-full bg-white border border-neutral-200"
-                style="box-shadow:0 2px 4px #0000001a;">
-                <svg width="30" height="22" fill="none" viewBox="0 0 30 22" class="mb-1" aria-hidden="true">
-                  <rect x="1" y="5" width="22" height="14" rx="1" stroke="#1A1C1C" stroke-width="1.5" />
-                  <path d="M23 9h3l4 5v5h-7V9z" stroke="#1A1C1C" stroke-width="1.5" />
-                  <circle cx="7" cy="19" r="2.5" stroke="#1A1C1C" stroke-width="1.5" />
-                  <circle cx="23" cy="19" r="2.5" stroke="#1A1C1C" stroke-width="1.5" />
-                </svg>
-                <p class="text-[#999] text-xs font-bold tracking-[0.6px] uppercase">Step 3</p>
-                <h3 class="text-[#1A1C1C] text-lg font-bold">Penjemputan &amp; Pembayaran</h3>
-                <p class="text-[#444748] text-sm leading-5">Gratis jemput ke lokasi, bayar langsung di tempat.</p>
-              </article>
-            </li>
-
-          </ol>
-        </div>
-
-        <!-- ─────── MOBILE + TABLET: Vertical Timeline (< md) ─────── -->
-        <div class="md:hidden">
-          <ol class="relative list-none m-0 p-0 flex flex-col">
-            <div class="absolute top-5 bottom-5 w-0.5 bg-[#D1D1D1]" style="left:19px;" aria-hidden="true"></div>
-            <div class="absolute bg-[#111] w-0.5" style="left:19px; top:20px; height:calc(50% - 20px);"
-              aria-hidden="true"></div>
-
-            <li class="relative flex gap-5 pb-8">
-              <div
-                class="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-black text-white text-sm font-bold z-10 relative"
-                aria-hidden="true">01</div>
-              <article class="flex flex-col items-start gap-1 p-5 flex-1 bg-white border border-neutral-200"
-                style="box-shadow:0 2px 4px #0000001a;">
-                <svg width="22" height="23" fill="none" viewBox="0 0 26 27" class="mb-1" aria-hidden="true">
-                  <path d="M4 3h12l6 6v15a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2z" stroke="#1A1C1C"
-                    stroke-width="1.5" />
-                  <polyline points="14,3 14,9 20,9" stroke="#1A1C1C" stroke-width="1.5" />
-                  <line x1="8" y1="13" x2="18" y2="13" stroke="#1A1C1C" stroke-width="1.5" />
-                  <line x1="8" y1="17" x2="18" y2="17" stroke="#1A1C1C" stroke-width="1.5" />
-                </svg>
-                <p class="text-[#999] text-xs font-bold tracking-[0.6px] uppercase">Step 1</p>
-                <h3 class="text-[#1A1C1C] text-base font-bold">Isi Formulir</h3>
-                <p class="text-[#444748] text-sm leading-5">Lengkapi detail dan kondisi barang elektronik Anda.</p>
-              </article>
-            </li>
-
-            <li class="relative flex gap-5 pb-8">
-              <div
-                class="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-white border-2 border-[#D1D1D1] text-black text-sm font-bold z-10 relative"
-                aria-hidden="true">02</div>
-              <article class="flex flex-col items-start gap-1 p-5 flex-1 bg-white border border-neutral-200"
-                style="box-shadow:0 2px 4px #0000001a;">
-                <svg width="20" height="23" fill="none" viewBox="0 0 22 27" class="mb-1" aria-hidden="true">
-                  <rect x="2" y="2" width="18" height="23" rx="2" stroke="#1A1C1C" stroke-width="1.5" />
-                  <line x1="6" y1="8" x2="16" y2="8" stroke="#1A1C1C" stroke-width="1.5" />
-                  <line x1="6" y1="13" x2="16" y2="13" stroke="#1A1C1C" stroke-width="1.5" />
-                  <line x1="6" y1="18" x2="12" y2="18" stroke="#1A1C1C" stroke-width="1.5" />
-                </svg>
-                <p class="text-[#999] text-xs font-bold tracking-[0.6px] uppercase">Step 2</p>
-                <h3 class="text-[#1A1C1C] text-base font-bold">Dapatkan Penawaran</h3>
-                <p class="text-[#444748] text-sm leading-5">Tim kami menghubungi Anda dengan harga terbaik.</p>
-              </article>
-            </li>
-
-            <li class="relative flex gap-5">
-              <div
-                class="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-white border-2 border-[#D1D1D1] text-black text-sm font-bold z-10 relative"
-                aria-hidden="true">03</div>
-              <article class="flex flex-col items-start gap-1 p-5 flex-1 bg-white border border-neutral-200"
-                style="box-shadow:0 2px 4px #0000001a;">
-                <svg width="26" height="19" fill="none" viewBox="0 0 30 22" class="mb-1" aria-hidden="true">
-                  <rect x="1" y="5" width="22" height="14" rx="1" stroke="#1A1C1C" stroke-width="1.5" />
-                  <path d="M23 9h3l4 5v5h-7V9z" stroke="#1A1C1C" stroke-width="1.5" />
-                  <circle cx="7" cy="19" r="2.5" stroke="#1A1C1C" stroke-width="1.5" />
-                  <circle cx="23" cy="19" r="2.5" stroke="#1A1C1C" stroke-width="1.5" />
-                </svg>
-                <p class="text-[#999] text-xs font-bold tracking-[0.6px] uppercase">Step 3</p>
-                <h3 class="text-[#1A1C1C] text-base font-bold">Penjemputan &amp; Pembayaran</h3>
-                <p class="text-[#444748] text-sm leading-5">Gratis jemput ke lokasi, bayar langsung di tempat.</p>
-              </article>
-            </li>
-          </ol>
         </div>
       </div>
-    </section>
 
-    <!-- ── FORM PENJUALAN (Livewire) ── -->
-    <livewire:frontend.sell-form />
+    </div>
+  </section>
 
-    <!-- ── KEUNGGULAN LAYANAN ── -->
-    <section aria-label="Keunggulan layanan jual elektronik"
-      class="grid grid-cols-1 md:grid-cols-3 gap-0 w-full border-t border-neutral-200">
+  <!-- FORM PENJUALAN (LIVEWIRE) -->
+  <livewire:frontend.sell-form />
 
-      <article class="flex flex-col gap-1 px-6 md:px-8 lg:px-12 py-10 md:py-12">
-        <svg width="42" height="42" fill="none" viewBox="0 0 42 42" class="mb-2" aria-hidden="true">
-          <circle cx="21" cy="21" r="19" stroke="#1A1C1C" stroke-width="1.5" />
-          <path d="M21 13v2M21 27v2M17 17h6a2 2 0 010 4h-4a2 2 0 000 4h6" stroke="#1A1C1C" stroke-width="1.5"
-            stroke-linecap="round" />
-        </svg>
-        <h2 class="font-bold text-black text-xl md:text-2xl tracking-[0.24px] uppercase pt-3">Harga Terbaik</h2>
-        <p class="text-[#444748] text-sm md:text-base leading-6">Penilaian transparan dan objektif untuk memberikan
-          nilai maksimal bagi barang Anda.</p>
-      </article>
+  <!-- KEUNGGULAN LAYANAN (CUBERTO SCATTER EFFECT) -->
+  <section id="keunggulan" aria-label="Keunggulan layanan jual elektronik" class="section-overlap bg-brand-yellow py-32 lg:py-48 z-40 overflow-hidden">
+    <div class="max-w-[1440px] mx-auto px-6 lg:px-12 relative">
+      <div class="text-center mb-16 lg:hidden reveal-fade">
+        <h2 class="text-black text-4xl font-black uppercase font-public">Keunggulan Kami</h2>
+      </div>
 
-      <article
-        class="flex flex-col gap-1 px-6 md:px-8 lg:px-12 py-10 md:py-12 border-t-[3px] md:border-t-0 md:border-l-[3px] border-black">
-        <svg width="32" height="28" fill="none" viewBox="0 0 32 28" class="mb-2" aria-hidden="true">
-          <rect x="1" y="6" width="22" height="14" rx="1" stroke="#1A1C1C" stroke-width="1.5" />
-          <path d="M23 10h4l4 6v4h-8V10z" stroke="#1A1C1C" stroke-width="1.5" />
-          <circle cx="8" cy="24" r="3" stroke="#1A1C1C" stroke-width="1.5" />
-          <circle cx="24" cy="24" r="3" stroke="#1A1C1C" stroke-width="1.5" />
-        </svg>
-        <h2 class="font-bold text-black text-xl md:text-2xl tracking-[0.24px] uppercase pt-3">Jemput Gratis</h2>
-        <p class="text-[#444748] text-sm md:text-base leading-6">Tim kami akan menjemput barang ke lokasi Anda tanpa
-          biaya tambahan (area tertentu).</p>
-      </article>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10 relative">
+        
+        <!-- Card 1 (Kiri) -->
+        <article class="scatter-card flex flex-col bg-white rounded-3xl p-8 lg:p-10 shadow-card relative z-[2] border border-gray-100">
+          <div class="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center mb-6 border border-gray-100">
+            <i class="fa-solid fa-tags text-3xl text-black"></i>
+          </div>
+          <h3 class="font-black text-black font-public text-xl md:text-2xl tracking-tighter uppercase mb-3">Harga Terbaik</h3>
+          <p class="text-gray-600 font-inter text-base leading-relaxed">Penilaian transparan dan objektif untuk memberikan nilai maksimal bagi barang elektronik bekas Anda.</p>
+        </article>
 
-      <article
-        class="flex flex-col gap-1 px-6 md:px-8 lg:px-12 py-10 md:py-12 border-t-[3px] md:border-t-0 md:border-l-[3px] border-black">
-        <svg width="34" height="28" fill="none" viewBox="0 0 34 28" class="mb-2" aria-hidden="true">
-          <rect x="1" y="5" width="32" height="20" rx="2" stroke="#1A1C1C" stroke-width="1.5" />
-          <line x1="1" y1="11" x2="33" y2="11" stroke="#1A1C1C" stroke-width="2" />
-          <rect x="5" y="16" width="8" height="4" rx="1" fill="#1A1C1C" />
-        </svg>
-        <h2 class="font-bold text-black text-xl md:text-2xl tracking-[0.24px] uppercase pt-3">Bayar Cepat</h2>
-        <p class="text-[#444748] text-sm md:text-base leading-6">Pembayaran langsung ditransfer ke rekening Anda saat
-          barang diambil.</p>
-      </article>
+        <!-- Card 2 (Tengah) -->
+        <article class="scatter-card flex flex-col bg-white rounded-3xl p-8 lg:p-10 shadow-card relative z-[10] border border-gray-100">
+          <div class="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center mb-6 border border-gray-100">
+            <i class="fa-solid fa-truck-pickup text-3xl text-black"></i>
+          </div>
+          <h3 class="font-black text-black font-public text-xl md:text-2xl tracking-tighter uppercase mb-3">Jemput Gratis</h3>
+          <p class="text-gray-600 font-inter text-base leading-relaxed">Tim kami akan menjemput barang langsung ke lokasi Anda tanpa ada tambahan biaya sedikitpun.</p>
+        </article>
 
-    </section>
-  </main>
+        <!-- Card 3 (Kanan) -->
+        <article class="scatter-card flex flex-col bg-white rounded-3xl p-8 lg:p-10 shadow-card relative z-[1] border border-gray-100">
+          <div class="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center mb-6 border border-gray-100">
+            <i class="fa-solid fa-money-bill-wave text-3xl text-black"></i>
+          </div>
+          <h3 class="font-black text-black font-public text-xl md:text-2xl tracking-tighter uppercase mb-3">Bayar Cepat</h3>
+          <p class="text-gray-600 font-inter text-base leading-relaxed">Tidak perlu menunggu lama, pembayaran akan langsung ditransfer ke rekening Anda setelah proses deal selesai.</p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+</main>
 @endsection
+
+@push('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js"></script>
+<script>
+  // Initialize Lenis
+  const lenis = new Lenis({
+    duration: 1.2,
+    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    direction: 'vertical',
+    smooth: true,
+    mouseMultiplier: 1,
+    touchMultiplier: 2,
+  });
+
+  function raf(time) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+  }
+  requestAnimationFrame(raf);
+
+  // Sync GSAP with Lenis
+  gsap.registerPlugin(ScrollTrigger);
+  lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add((time) => { lenis.raf(time * 1000) });
+  gsap.ticker.lagSmoothing(0, 0);
+
+  /* --- OVERLAPPING SCROLL EFFECT --- */
+  const overlapSections = document.querySelectorAll('.section-overlap');
+  overlapSections.forEach((section, index) => {
+    if (index === overlapSections.length - 1) return; // Skip footer
+    ScrollTrigger.create({
+      trigger: section,
+      start: () => section.offsetHeight > window.innerHeight ? "bottom bottom" : "top top",
+      pin: true,
+      pinSpacing: false,
+    });
+  });
+
+  /* --- GSAP ANIMATIONS --- */
+  gsap.fromTo("section:first-of-type .reveal-line",
+    { y: "110%" },
+    { y: "0%", duration: 1.2, ease: "power4.out", delay: 0.2 }
+  );
+  gsap.fromTo("section:first-of-type .reveal-fade",
+    { y: 20, autoAlpha: 0 },
+    { y: 0, autoAlpha: 1, duration: 1, ease: "power3.out", delay: 0.4 }
+  );
+
+  document.querySelectorAll('.reveal-wrapper:not(section:first-of-type .reveal-wrapper)').forEach(wrapper => {
+    const line = wrapper.querySelector('.reveal-line');
+    if (line) {
+      gsap.fromTo(line,
+        { y: "110%" },
+        {
+          scrollTrigger: { trigger: wrapper, start: "top 90%" },
+          y: "0%", duration: 1.2, ease: "power4.out"
+        }
+      );
+    }
+  });
+
+  document.querySelectorAll('.reveal-fade:not(section:first-of-type .reveal-fade)').forEach(el => {
+    gsap.fromTo(el,
+      { y: 40, autoAlpha: 0 },
+      {
+        scrollTrigger: { trigger: el, start: "top 90%" },
+        y: 0, autoAlpha: 1, duration: 1, ease: "power3.out"
+      }
+    );
+  });
+
+  const staggerGroups = document.querySelectorAll('.stagger-group:not(#keunggulan .stagger-group)');
+  staggerGroups.forEach(group => {
+    const items = group.querySelectorAll('.stagger-item');
+    if (!items.length) return;
+    gsap.fromTo(items,
+      { y: 60, autoAlpha: 0 },
+      {
+        scrollTrigger: { trigger: group, start: "top 85%" },
+        y: 0, autoAlpha: 1, duration: 0.8, stagger: 0.15, ease: "power3.out"
+      }
+    );
+  });
+
+  /* --- SCATTER CARDS ANIMATION (Cuberto Style) --- */
+  let mm = gsap.matchMedia();
+
+  mm.add("(min-width: 768px)", () => {
+    const cards = document.querySelectorAll('.scatter-card');
+    if (cards.length === 3) {
+      gsap.set(cards[0], { xPercent: 104, yPercent: 6, rotation: -5 });
+      gsap.set(cards[1], { xPercent: 0, yPercent: 0, rotation: 0 }); 
+      gsap.set(cards[2], { xPercent: -104, yPercent: 6, rotation: 5 });
+
+      gsap.to(cards, {
+        scrollTrigger: {
+          trigger: "#keunggulan",
+          start: "top 45%", 
+          end: "bottom 90%", 
+          scrub: 1.5,
+        },
+        xPercent: 0,
+        yPercent: 0,
+        rotation: 0,
+        ease: "power2.out"
+      });
+    }
+  });
+
+  mm.add("(max-width: 767px)", () => {
+    const cards = document.querySelectorAll('.scatter-card');
+    cards.forEach((card, index) => {
+      const rot = index === 0 ? -12 : (index === 1 ? 12 : -10);
+      gsap.fromTo(card, 
+        { y: 120, rotation: rot, autoAlpha: 0 },
+        {
+          scrollTrigger: { trigger: card, start: "top 85%", scrub: 1, end: "top 50%" },
+          y: 0, rotation: 0, autoAlpha: 1, ease: "power2.out"
+        }
+      );
+    });
+  });
+</script>
+@endpush

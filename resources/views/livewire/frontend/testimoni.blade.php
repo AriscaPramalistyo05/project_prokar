@@ -16,26 +16,26 @@ font-public
         TESTIMONI PELANGGAN
       </h2>
       <p
-        class="mt-1 mx-auto max-w-[320px] md:max-w-none text-[12px] sm:text-sm md:text-base leading-5 md:leading-6 text-center text-stone-900 font-public">
+        class="mt-1 mx-auto max-w-[320px] md:max-w-none text-sm sm:text-base md:text-lg leading-relaxed text-center text-stone-900 font-public">
         Lihat pengalaman pelanggan yang telah membeli produk atau menggunakan layanan servis kami.
       </p>
     </header>
 
     <article class="w-full flex flex-col items-center gap-2 md:gap-6">
       <div class="flex justify-center gap-1 sm:gap-3 md:gap-4" aria-hidden="true">
-        <i class="fa-solid fa-star text-black text-[10px] sm:text-lg md:text-2xl"></i>
-        <i class="fa-solid fa-star text-black text-[10px] sm:text-lg md:text-2xl"></i>
-        <i class="fa-solid fa-star text-black text-[10px] sm:text-lg md:text-2xl"></i>
-        <i class="fa-solid fa-star text-black text-[10px] sm:text-lg md:text-2xl"></i>
-        <i class="fa-solid fa-star text-black text-[10px] sm:text-lg md:text-2xl"></i>
+        <i class="fa-solid fa-star text-black text-sm sm:text-xl md:text-3xl"></i>
+        <i class="fa-solid fa-star text-black text-sm sm:text-xl md:text-3xl"></i>
+        <i class="fa-solid fa-star text-black text-sm sm:text-xl md:text-3xl"></i>
+        <i class="fa-solid fa-star text-black text-sm sm:text-xl md:text-3xl"></i>
+        <i class="fa-solid fa-star text-black text-sm sm:text-xl md:text-3xl"></i>
       </div>
       <blockquote class="w-full text-center">
         <p id="testimoni-text"
-          class="mx-auto max-w-[260px] sm:max-w-[500px] md:max-w-[900px] text-center text-[10px] sm:text-sm md:text-xl font-extrabold italic leading-4 sm:leading-6 md:leading-[48px] font-public">
+          class="mx-auto max-w-sm sm:max-w-[500px] md:max-w-[900px] text-center text-base sm:text-xl md:text-3xl font-extrabold italic leading-relaxed font-public">
           &ldquo;{{ $this->currentTestimonial['text'] }}&rdquo;
         </p>
         <cite id="testimoni-name"
-          class="not-italic text-[10px] sm:text-xs md:text-base font-medium leading-4 md:leading-6 text-center block mt-2 text-stone-900 font-public">{{ $this->currentTestimonial['name'] }}</cite>
+          class="not-italic text-sm sm:text-base md:text-xl font-medium leading-snug md:leading-normal text-center block mt-3 md:mt-6 text-stone-900 font-public">{{ $this->currentTestimonial['name'] }}</cite>
       </blockquote>
     </article>
 

@@ -12,13 +12,19 @@ class ServiceOrder extends Model
 
     protected $fillable = [
         'service_code',
+        'user_id',
         'technician_id',
         'customer_name',
         'customer_email',
         'customer_phone',
         'service_type',
-        'customer_address',
-        'customer_city',
+        'province_id',
+        'regency_id',
+        'district_id',
+        'village_id',
+        'address_detail',
+        'latitude',
+        'longitude',
         'category_id',
         'device_brand',
         'device_model',
@@ -60,16 +66,9 @@ class ServiceOrder extends Model
     }
 
     // ── Relations ──
-    protected static function boot()
+    public function user()
     {
-        parent::boot();
-
-        static::creating(function ($model) {
-            if (empty($model->service_code)) {
-                $todayCount = self::whereDate('created_at', today())->count() + 1;
-                $model->service_code = 'SRV-' . date('Ymd') . '-' . str_pad($todayCount, 4, '0', STR_PAD_LEFT);
-            }
-        });
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function technician()
@@ -90,5 +89,40 @@ class ServiceOrder extends Model
     public function serviceStatusLogs()
     {
         return $this->hasMany(ServiceStatusLog::class);
+    }
+
+    public function serviceFees()
+    {
+        return $this->hasMany(ServiceFee::class);
+    }
+
+    public function getFullAddressAttribute()
+    {
+        if (!$this->province_id) {
+            return $this->address_detail ?: '-';
+        }
+
+        $province = \Illuminate\Support\Facades\Cache::remember("prov_{$this->province_id}", 86400, function () {
+            $res = @file_get_contents("https://www.emsifa.com/api-wilayah-indonesia/api/province/{$this->province_id}.json");
+            return $res ? json_decode($res)->name ?? '' : '';
+        });
+
+        $regency = \Illuminate\Support\Facades\Cache::remember("reg_{$this->regency_id}", 86400, function () {
+            $res = @file_get_contents("https://www.emsifa.com/api-wilayah-indonesia/api/regency/{$this->regency_id}.json");
+            return $res ? json_decode($res)->name ?? '' : '';
+        });
+
+        $district = \Illuminate\Support\Facades\Cache::remember("dist_{$this->district_id}", 86400, function () {
+            $res = @file_get_contents("https://www.emsifa.com/api-wilayah-indonesia/api/district/{$this->district_id}.json");
+            return $res ? json_decode($res)->name ?? '' : '';
+        });
+
+        $village = \Illuminate\Support\Facades\Cache::remember("vill_{$this->village_id}", 86400, function () {
+            $res = @file_get_contents("https://www.emsifa.com/api-wilayah-indonesia/api/village/{$this->village_id}.json");
+            return $res ? json_decode($res)->name ?? '' : '';
+        });
+
+        $parts = array_filter([$this->address_detail, $village, $district, $regency, $province]);
+        return implode(', ', $parts);
     }
 }

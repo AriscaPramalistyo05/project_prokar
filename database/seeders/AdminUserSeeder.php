@@ -40,12 +40,7 @@ class AdminUserSeeder extends Seeder
         );
         $teknisi->assignRole('teknisi');
 
-        // User existing Tyo_ariesca — assign super_admin role
-        $tyo = User::where('email', 'listyoblaze.uzu@gmail.com')->first();
-        if ($tyo && !$tyo->hasRole('super_admin')) {
-            $tyo->assignRole('super_admin');
-            echo "Role super_admin assigned to: {$tyo->email}\n";
-        }
+
 
         echo "========================================\n";
         echo "✅ Akun untuk testing berhasil dibuat:\n";

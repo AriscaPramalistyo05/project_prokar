@@ -2,6 +2,9 @@
 
 namespace App\Livewire\Frontend;
 
+use App\Models\Category;
+use App\Models\SellSubmission;
+use App\Models\SellSubmissionImage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -11,45 +14,155 @@ class SellForm extends Component
 
     public $nama = '';
     public $whatsapp = '';
-    public $kota = '';
+    
+    // Address Fields
+    public $province_id = '';
+    public $regency_id = '';
+    public $district_id = '';
+    public $village_id = '';
+    public $address_detail = '';
+
     public $kategori = '';
     public $merek = '';
     public $kondisi = '';
     public $deskripsi = '';
-    public $photos = [];
+    public $media = [];
     public $submitted = false;
-    public $errorMessage = null;
+    public $newServiceCode = '';
+    public $submittedWhatsapp = '';
 
-    protected $rules = [
-        'nama' => 'required|string|min:2|max:100',
-        'whatsapp' => 'required|string|min:8|max:20',
-        'kota' => 'required|string|min:2|max:100',
-        'kategori' => 'required|in:tv,kulkas,mesin-cuci,ac,lainnya',
-        'merek' => 'required|string|min:2|max:100',
-        'kondisi' => 'required|in:baik,cukup,rusak',
-        'deskripsi' => 'required|string|min:10|max:1000',
-        'photos.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
-    ];
+    protected function rules()
+    {
+        return [
+            'nama' => 'required|string|min:2|max:100',
+            'whatsapp' => ['required', 'string', new \App\Rules\IndonesianPhone()],
+            'province_id' => 'required',
+            'regency_id' => 'required',
+            'district_id' => 'required',
+            'village_id' => 'required',
+            'address_detail' => 'required|string|min:10',
+            'kategori' => 'required|exists:categories,id',
+            'merek' => 'required|string|min:2|max:100',
+            'kondisi' => 'required|in:baik,cukup,rusak',
+            'deskripsi' => 'required|string|min:10|max:1000',
+            'media' => 'nullable|array|max:5',
+            'media.*' => [
+                'required',
+                'file',
+                'max:20480', // 20MB
+                function ($attribute, $value, $fail) {
+                    $extension = strtolower($value->getClientOriginalExtension());
+                    $imageExts = ['jpg', 'jpeg', 'png', 'webp'];
+                    $videoExts = ['mp4', 'mov', 'avi', 'webm'];
+                    if (!in_array($extension, array_merge($imageExts, $videoExts))) {
+                        $fail('File harus berupa foto (jpg, png, webp) atau video (mp4, mov, avi, webm).');
+                    }
+                },
+            ],
+        ];
+    }
 
-    protected $messages = [
-        'nama.required' => 'Nama lengkap wajib diisi.',
-        'whatsapp.required' => 'Nomor WhatsApp wajib diisi.',
-        'kota.required' => 'Kota wajib diisi.',
-        'kategori.required' => 'Kategori barang wajib dipilih.',
-        'merek.required' => 'Merek dan tipe wajib diisi.',
-        'kondisi.required' => 'Kondisi barang wajib dipilih.',
-        'deskripsi.required' => 'Deskripsi wajib diisi.',
-        'deskripsi.min' => 'Deskripsi minimal 10 karakter.',
-        'photos.*.image' => 'File harus berupa gambar.',
-        'photos.*.max' => 'Ukuran foto maksimal 5MB.',
-    ];
+    protected function messages()
+    {
+        return [
+            'nama.required' => 'Nama lengkap wajib diisi.',
+            'whatsapp.required' => 'Nomor WhatsApp wajib diisi.',
+            'province_id.required' => 'Provinsi wajib dipilih.',
+            'regency_id.required' => 'Kabupaten/Kota wajib dipilih.',
+            'district_id.required' => 'Kecamatan wajib dipilih.',
+            'village_id.required' => 'Desa/Kelurahan wajib dipilih.',
+            'address_detail.required' => 'Detail alamat wajib diisi.',
+            'kategori.required' => 'Kategori barang wajib dipilih.',
+            'merek.required' => 'Merek dan tipe wajib diisi.',
+            'kondisi.required' => 'Kondisi barang wajib dipilih.',
+            'deskripsi.required' => 'Deskripsi wajib diisi.',
+            'deskripsi.min' => 'Deskripsi minimal 10 karakter.',
+            'media.max' => 'Maksimal 5 file yang dapat diupload.',
+            'media.*.max' => 'Ukuran file maksimal 20MB.',
+        ];
+    }
+
+    public function mount()
+    {
+        if (\Illuminate\Support\Facades\Auth::check()) {
+            $user = \Illuminate\Support\Facades\Auth::user();
+            $this->nama = $user->name;
+            $this->whatsapp = $user->phone ?? '';
+        }
+    }
+
+    public function removeMedia($index)
+    {
+        if (isset($this->media[$index])) {
+            unset($this->media[$index]);
+            $this->media = array_values($this->media);
+        }
+    }
+
 
     public function submit()
     {
+        $rateLimitKey = 'submit-sell:' . request()->ip();
+
+        if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($rateLimitKey, 3)) {
+            $seconds = \Illuminate\Support\Facades\RateLimiter::availableIn($rateLimitKey);
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'rate_limit' => 'Anda telah mencapai batas pengajuan. Silakan coba lagi dalam ' . ceil($seconds / 60) . ' menit.',
+            ]);
+        }
+
         $this->validate();
-        // Simulate submission
+
+        $kondisiMap = [
+            'baik' => 'good',
+            'cukup' => 'fair',
+            'rusak' => 'needs_repair',
+        ];
+        
+        // Find category ID by slug since form uses slug 'tv', 'kulkas'
+        $category = Category::where('slug', $this->kategori)->first();
+        $categoryId = $category ? $category->id : null;
+        
+        // If it's still null, try finding by id in case form was updated
+        if (!$categoryId) {
+            $categoryId = $this->kategori;
+        }
+
+        $submission = SellSubmission::create([
+            'customer_name' => $this->nama,
+            'customer_phone' => $this->whatsapp,
+            'customer_whatsapp' => $this->whatsapp,
+            'province_id' => $this->province_id,
+            'regency_id' => $this->regency_id,
+            'district_id' => $this->district_id,
+            'village_id' => $this->village_id,
+            'address_detail' => $this->address_detail,
+            'category_id' => $categoryId,
+            'device_brand' => $this->merek,
+            'device_model' => null, // Form doesn't separate brand and model
+            'condition' => $kondisiMap[$this->kondisi],
+            'description' => $this->deskripsi,
+            'status' => 'pending',
+        ]);
+
+        if (!empty($this->media)) {
+            foreach ($this->media as $file) {
+                $path = $file->store('sell-submissions', 'public');
+                $type = str_starts_with($file->getMimeType(), 'video/') ? 'video' : 'photo';
+                SellSubmissionImage::create([
+                    'sell_submission_id' => $submission->id,
+                    'path' => $path,
+                    'type' => $type,
+                ]);
+            }
+        }
+
         $this->submitted = true;
-        $this->reset(['nama', 'whatsapp', 'kota', 'kategori', 'merek', 'kondisi', 'deskripsi', 'photos']);
+        $this->newServiceCode = $submission->submission_code;
+        $this->submittedWhatsapp = $this->whatsapp;
+        $this->reset(['nama', 'whatsapp', 'province_id', 'regency_id', 'district_id', 'village_id', 'address_detail', 'kategori', 'merek', 'kondisi', 'deskripsi', 'media']);
+        
+        \Illuminate\Support\Facades\RateLimiter::hit($rateLimitKey, 3600); // 1 jam cooldown
     }
 
     public function resetForm()
@@ -60,6 +173,7 @@ class SellForm extends Component
 
     public function render()
     {
-        return view('livewire.frontend.sell-form');
+        $categories = Category::orderBy('name')->get();
+        return view('livewire.frontend.sell-form', compact('categories'));
     }
 }
