@@ -1,4 +1,5 @@
 <div>
+@section('body_class', 'bg-brand-black font-inter')
 @php
   $isOngoing = !in_array($serviceOrder->status, ['completed', 'cancelled']);
   $isDone = $serviceOrder->status === 'completed';
@@ -6,234 +7,430 @@
   $ticket = $serviceOrder->service_code;
 @endphp
 
-<div class="bg-gray-50 min-h-screen py-10 px-4">
-  <div class="max-w-5xl mx-auto flex flex-col gap-8">
-    
-    <!-- ── Hero Search Section ── -->
-    <div class="max-w-2xl mx-auto text-center flex flex-col items-center gap-4 mb-4">
-      <span class="text-[10px] font-archivo font-bold uppercase tracking-widest text-gray-500 border border-gray-300 px-3 py-1">CEK STATUS</span>
-      <h1 class="font-public font-black text-3xl md:text-5xl text-black uppercase leading-tight">
-        Lacak Servis<br class="hidden sm:block" /> Elektronikmu
-      </h1>
-      <p class="text-gray-500 text-sm md:text-base font-inter max-w-md">
-        Masukkan nomor tiket servis untuk memantau progress perbaikan secara real-time.
-      </p>
+<!-- HEADER TRACK -->
+<section class="no-print bg-brand-black pt-16 pb-24 md:pt-24 md:pb-32 z-10 relative text-center">
+  <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
+    <h1 class="text-white text-5xl md:text-7xl font-black uppercase tracking-tighter font-public mb-4 reveal-wrapper">
+      <span class="reveal-line">Lacak Servis</span>
+    </h1>
+    <p class="text-gray-400 text-sm md:text-lg font-bold tracking-widest uppercase reveal-fade">
+      Pantau progres perbaikan elektronik Anda
+    </p>
+  </div>
+</section>
 
-      <div class="w-full max-w-md mt-4 flex flex-col sm:flex-row gap-0 border-2 border-black overflow-hidden bg-white">
-        <input
-          wire:model="newTicketCode"
-          wire:keydown.enter="searchTicket"
-          type="text"
-          placeholder="Atau ketik kode: SRV-2026..."
-          class="flex-grow px-4 py-3 text-sm font-inter text-black bg-white focus:outline-none border-none"
-          aria-label="Nomor tiket servis" />
-        <button
-          type="button"
-          wire:click="searchTicket"
-          class="bg-black text-white font-public font-bold text-xs uppercase tracking-widest px-6 py-3 hover:bg-gray-800 transition-colors whitespace-nowrap no-print"
-          wire:loading.attr="disabled">
-          CEK STATUS
-        </button>
+<!-- KONTEN HASIL TRACKING -->
+<section class="section-overlap bg-brand-soft pt-16 pb-32 md:pt-24 md:pb-40 z-20 print:pt-0 print:pb-0">
+  <div class="max-w-4xl mx-auto px-6 lg:px-12 text-center">
+    
+    <!-- Form Pencarian -->
+    <div class="no-print bg-white rounded-full p-2 md:p-3 flex items-center shadow-card mb-12 reveal-fade border border-gray-200 max-w-2xl mx-auto relative z-30">
+      <div class="pl-4 md:pl-6 hidden sm:block">
+        <i class="fa-solid fa-magnifying-glass text-xl text-gray-400"></i>
       </div>
+      <input type="text" wire:model="newTicketCode" wire:keydown.enter="searchTicket" placeholder="Masukkan Nomor Tiket"
+        class="flex-1 border-none focus:ring-0 bg-transparent px-4 md:px-6 text-black font-public font-bold text-base md:text-xl focus:outline-none uppercase placeholder-gray-400" />
+      <button wire:click="searchTicket" wire:loading.attr="disabled" class="bg-black text-brand-yellow font-public font-bold text-sm md:text-base uppercase tracking-widest px-6 md:px-10 py-4 md:py-5 rounded-full hover:bg-gray-800 transition-colors shadow-card">
+        Lacak
+      </button>
     </div>
 
-    <!-- ── Summary Card ── -->
-    <section aria-label="Ringkasan tiket" class="border-2 border-black bg-white">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-4 border-b-2 border-black">
+    <!-- Result Card -->
+    <div class="no-print bg-white rounded-[2.5rem] shadow-card overflow-hidden reveal-fade border border-gray-100 text-left mb-16">
+      <!-- Header Card -->
+      <div class="bg-black p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <p class="text-[10px] font-archivo font-bold uppercase tracking-widest text-gray-400 mb-0.5">Nomor Tiket</p>
-          <h2 class="font-public font-black text-xl md:text-2xl text-black tracking-tight">{{ $ticket }}</h2>
+          <span class="text-brand-yellow font-bold text-xs uppercase tracking-widest mb-1 block font-public">Nomor Tiket</span>
+          <h2 class="text-white font-public font-black text-2xl md:text-3xl">{{ $ticket }}</h2>
         </div>
-        <span class="{{ $isDone ? 'badge-done' : ($isCancelled ? 'bg-red-500' : 'badge-ongoing') }} text-white font-public font-bold text-[10px] uppercase tracking-widest px-3 py-1.5 self-start sm:self-center whitespace-nowrap">
-          {{ $isDone ? 'SELESAI' : ($isCancelled ? 'DIBATALKAN' : 'DALAM PENGERJAAN') }}
-        </span>
-      </div>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-0 divide-x-0 md:divide-x-2 divide-gray-200">
-        <div class="px-5 py-4 border-b-2 md:border-b-0 border-gray-100">
-          <p class="text-[10px] font-archivo uppercase tracking-widest text-gray-400 mb-1">Layanan</p>
-          <p class="font-public font-bold text-sm text-black">{{ $serviceOrder->service_type === 'home_visit' ? 'Teknisi Datang' : 'Kirim Barang' }}</p>
-        </div>
-        <div class="px-5 py-4 border-b-2 md:border-b-0 border-gray-100">
-          <p class="text-[10px] font-archivo uppercase tracking-widest text-gray-400 mb-1">Kategori</p>
-          <p class="font-public font-bold text-sm text-black">{{ $serviceOrder->category->name }}</p>
-        </div>
-        <div class="px-5 py-4 border-b-2 md:border-b-0 border-gray-100">
-          <p class="text-[10px] font-archivo uppercase tracking-widest text-gray-400 mb-1">Model</p>
-          <p class="font-public font-bold text-sm text-black">{{ $serviceOrder->device_brand ?: '-' }}</p>
-        </div>
-        <div class="px-5 py-4">
-          <p class="text-[10px] font-archivo uppercase tracking-widest text-gray-400 mb-1">Tanggal Masuk</p>
-          <p class="font-public font-bold text-sm text-black">{{ $serviceOrder->created_at->format('d M Y') }}</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── Progress Timeline ── -->
-    <section aria-label="Progress servis" class="border-2 border-black bg-white px-5 md:px-8 py-6 md:py-8">
-      <h3 class="font-public font-black text-base md:text-lg uppercase tracking-wider text-black mb-6 border-b-2 border-black pb-3">
-        Progress Servis
-      </h3>
-
-      <div class="flex flex-col gap-0">
-        @foreach($logs as $index => $log)
-          @php
-             $isLast = $loop->last;
-             $isActive = $isLast; 
-             
-             $dotBgColor = ($isActive && $isOngoing) ? 'bg-[#FF5500]' : 'bg-black';
-             $dotIcon = ($isActive && $isOngoing) ? 'fa-spinner fa-spin' : 'fa-check';
-             
-             if ($log->status === 'cancelled') {
-                 $dotIcon = 'fa-xmark';
-                 $dotBgColor = 'bg-red-500';
-             }
-             if ($log->status === 'waiting_approval' && $isActive && $isOngoing) {
-                 $dotIcon = 'fa-file-invoice';
-             }
-             $logLabel = match($log->status) {
-                 'pending' => 'Pengajuan Diterima',
-                 'confirmed' => 'Pengajuan Dikonfirmasi',
-                 'diagnosing' => 'Sedang Dicek Teknisi',
-                 'waiting_approval' => 'Menunggu Persetujuan Anda',
-                 'in_progress' => 'Sedang Diperbaiki',
-                 'completed' => 'Perbaikan Selesai',
-                 'cancelled' => 'Dibatalkan',
-                 default => $log->status,
-             };
-          @endphp
-          <div class="flex gap-4">
-            <div class="flex flex-col items-center shrink-0">
-              <div class="w-7 h-7 rounded-full flex items-center justify-center shrink-0 {{ $dotBgColor }}">
-                <i class="fa-solid {{ $dotIcon }} text-white text-[11px]"></i>
-              </div>
-              @if(!$isLast || ($isLast && $isOngoing && $log->status !== 'completed' && $log->status !== 'cancelled'))
-                <div class="flex-1 mt-1 {{ $isActive ? 'bg-gray-200' : 'bg-black' }} w-[2px]" style="min-height:40px"></div>
-              @endif
-            </div>
-            <div class="{{ $isLast ? 'pb-2 w-full' : 'pb-6' }}">
-              <h4 class="font-public font-bold text-sm text-black leading-tight">{{ $logLabel }}</h4>
-              <p class="text-[11px] text-gray-400 font-inter mt-0.5">{{ $log->created_at->format('d M Y · H:i') }} WIB</p>
-              
-              @if($log->notes)
-                 <p class="text-sm text-gray-600 font-inter mt-1">{{ $log->notes }}</p>
-              @endif
-
-              @if($log->status === 'waiting_approval' && $isActive && $isOngoing)
-                <div class="bg-[#FFF5F0] border-l-4 border-[#FF5500] p-4 md:p-5 mt-4">
-                  <div class="flex justify-between items-start mb-3 pb-3 border-b border-dashed border-[#FFDBCC]">
-                    <div>
-                      <p class="font-public font-bold text-sm text-black">Estimasi Biaya Perbaikan</p>
-                      <p class="text-[11px] text-[#FF5500] font-inter mt-0.5">Belum termasuk spare part tambahan</p>
-                    </div>
-                    <span class="font-public font-black text-xl text-[#FF5500] whitespace-nowrap ml-4">Rp {{ number_format($serviceOrder->estimated_cost, 0, ',', '.') }}</span>
-                  </div>
-                  <p class="text-sm text-gray-700 font-inter mb-4 leading-relaxed">
-                    {{ $serviceOrder->diagnosis ?? 'Silakan setujui estimasi biaya untuk melanjutkan perbaikan.' }}
-                  </p>
-                  <div class="flex flex-col sm:flex-row gap-2">
-                    <button wire:click="approveCost" onclick="confirm('Yakin setuju?') || event.stopImmediatePropagation()" class="bg-black text-white font-public font-bold text-xs uppercase tracking-widest px-5 py-2.5 hover:bg-gray-800 transition-colors">
-                      SETUJU &amp; LANJUTKAN
-                    </button>
-                    <button wire:click="rejectCost" onclick="confirm('Yakin tolak?') || event.stopImmediatePropagation()" class="border-2 border-black text-black font-public font-bold text-xs uppercase tracking-widest px-5 py-2.5 hover:bg-gray-100 transition-colors">
-                      TOLAK
-                    </button>
-                  </div>
-                </div>
-              @endif
-              
-              @if($log->status === 'completed')
-                 <div class="bg-[#F0FFF4] border-l-4 border-green-500 p-4 mt-4">
-                  <p class="text-sm font-inter text-black">
-                    Biaya Servis: <strong class="font-public">Rp {{ number_format($serviceOrder->final_cost ?? $serviceOrder->estimated_cost, 0, ',', '.') }}</strong>
-                    <span class="ml-2 bg-green-100 text-green-700 text-[10px] font-bold uppercase px-2 py-0.5">LUNAS</span>
-                  </p>
-                  <p class="text-xs text-gray-500 font-inter mt-1">Perangkat siap diambil atau teknisi kami akan mengonfirmasi penyelesaian. Tunjukkan nomor tiket saat pengambilan.</p>
-                </div>
-              @endif
-            </div>
-          </div>
-        @endforeach
         
+        @if($isDone)
+          <div class="bg-green-500/20 border border-green-500 text-green-400 font-bold font-public uppercase tracking-widest text-xs px-5 py-2.5 rounded-full flex items-center gap-2">
+            <i class="fa-solid fa-check-circle text-sm"></i> Perbaikan Selesai
+          </div>
+        @elseif($isCancelled)
+          <div class="bg-red-500/20 border border-red-500 text-red-400 font-bold font-public uppercase tracking-widest text-xs px-5 py-2.5 rounded-full flex items-center gap-2">
+            <i class="fa-solid fa-times-circle text-sm"></i> Dibatalkan
+          </div>
+        @else
+          <div class="bg-[#FF7A00]/20 border border-[#FF7A00] text-[#FF7A00] font-bold font-public uppercase tracking-widest text-xs px-5 py-2.5 rounded-full flex items-center gap-3">
+            <span class="relative flex h-2.5 w-2.5">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand-orange"></span>
+            </span> 
+            {{ $serviceOrder->status === 'waiting_approval' ? 'Menunggu Persetujuan' : 'Dalam Pengerjaan' }}
+          </div>
+        @endif
+      </div>
+
+      <!-- Detail Info -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 md:p-8 border-b border-gray-100 bg-gray-50/50">
+        <div>
+          <p class="text-gray-500 text-xs font-bold uppercase tracking-wider mb-2 font-public">Layanan</p>
+          <p class="text-black font-public font-bold text-base flex items-center gap-2">
+            @if($serviceOrder->service_type === 'home_visit')
+              <i class="fa-solid fa-house-chimney text-brand-blue text-lg"></i> Teknisi Datang
+            @else
+              <i class="fa-solid fa-box text-brand-orange text-lg"></i> Kirim Barang
+            @endif
+          </p>
+        </div>
+        <div>
+          <p class="text-gray-500 text-xs font-bold uppercase tracking-wider mb-2 font-public">Perangkat</p>
+          <p class="text-black font-public font-bold text-base">{{ $serviceOrder->category->name }} {{ $serviceOrder->device_brand }}</p>
+        </div>
+        <div>
+          @if($isDone)
+            <p class="text-gray-500 text-xs font-bold uppercase tracking-wider mb-2 font-public">Status Pembayaran</p>
+            <div class="mt-1 inline-block"><span class="bg-green-100 border border-green-200 text-green-700 font-public text-xs font-black uppercase tracking-widest px-3 py-1.5 rounded-md">LUNAS</span></div>
+          @else
+            <p class="text-gray-500 text-xs font-bold uppercase tracking-wider mb-2 font-public">Lokasi Perbaikan</p>
+            <p class="text-black font-inter text-sm leading-snug">
+              {{ $serviceOrder->service_type === 'home_visit' ? 'Lokasi Pelanggan' : 'Workshop Prokar Elektronik, Jepara' }}
+            </p>
+          @endif
+        </div>
+      </div>
+
+      <!-- Progress Timeline -->
+      <div class="p-6 md:p-10">
+        <h3 class="font-public font-black text-xl md:text-2xl mb-12 text-center uppercase tracking-tighter text-black">Timeline Progres</h3>
+
+        @php
+            $logStatuses = $logs->pluck('status')->toArray();
+            // Defined steps
+            $steps = [
+                'pending' => 'Masuk',
+                'confirmed' => 'Dikonfirmasi',
+                'diagnosing' => 'Diagnosa',
+                'waiting_approval' => 'Persetujuan',
+                'in_progress' => 'Pengerjaan',
+                'completed' => 'Selesai',
+            ];
+            
+            $currentStatus = $serviceOrder->status;
+            if ($currentStatus === 'cancelled') {
+                unset($steps['completed']);
+                $steps['cancelled'] = 'Dibatalkan';
+            }
+        @endphp
+
+        <!-- Desktop View (Horizontal) -->
+        <div class="hidden md:flex relative justify-between items-start mb-16 px-4">
+          <div class="absolute top-[24px] left-[8%] right-[8%] h-[3px] bg-gray-100 z-0 rounded-full">
+             @php
+                 // calculate progress width
+                 $stepCount = count($steps);
+                 $currentIndex = 0;
+                 $i = 0;
+                 foreach($steps as $key => $label) {
+                     if (in_array($key, $logStatuses)) $currentIndex = $i;
+                     if ($currentStatus === $key) $currentIndex = $i;
+                     $i++;
+                 }
+                 $progressWidth = ($stepCount > 1) ? ($currentIndex / ($stepCount - 1)) * 100 : 0;
+             @endphp
+             <div class="h-full bg-black rounded-full transition-all duration-500" style="width: {{ $progressWidth }}%"></div>
+          </div>
+
+          @php
+             $stepIndex = 0;
+          @endphp
+          @foreach($steps as $key => $label)
+             @php
+                $stepIndex++;
+                $isDoneStep = in_array($key, $logStatuses) && $currentStatus !== $key;
+                if ($currentStatus === 'completed') $isDoneStep = true;
+                $isActiveStep = $currentStatus === $key && $currentStatus !== 'completed' && $currentStatus !== 'cancelled';
+                $isCancelledStep = $currentStatus === 'cancelled' && $key === 'cancelled';
+                
+                $icon = '';
+                $stepClass = '';
+                $textClass = '';
+                $boxClass = '';
+
+                if ($isDoneStep || ($currentStatus === 'completed' && $key === 'completed')) {
+                    $boxClass = 'bg-black text-brand-yellow';
+                    if ($key === 'completed') {
+                        $boxClass = 'bg-green-500 text-white shadow-[0_0_0_4px_rgba(34,197,94,0.2)] text-xl';
+                    }
+                    $icon = '<i class="fa-solid ' . ($key === 'completed' ? 'fa-flag-checkered' : 'fa-check') . '"></i>';
+                    $textClass = $key === 'completed' ? 'text-green-600' : 'text-black';
+                    $stepClass = 'w-24';
+                } elseif ($isActiveStep) {
+                    $boxClass = 'step-active text-base bg-[#FF7A00] text-white shadow-[0_0_0_4px_rgba(255,122,0,0.2)]';
+                    $icon = $stepIndex;
+                    $textClass = 'text-[#FF7A00]';
+                    $stepClass = 'w-32';
+                } elseif ($isCancelledStep) {
+                    $boxClass = 'bg-red-500 text-white shadow-[0_0_0_4px_rgba(239,68,68,0.2)] text-xl';
+                    $icon = '<i class="fa-solid fa-times"></i>';
+                    $textClass = 'text-red-600';
+                    $stepClass = 'w-32';
+                } else {
+                    $boxClass = 'bg-white border-2 border-gray-200 text-gray-400 text-base';
+                    $icon = $key === 'completed' ? '<i class="fa-solid fa-flag-checkered"></i>' : $stepIndex;
+                    $textClass = 'text-gray-400';
+                    $stepClass = 'w-24 opacity-40';
+                }
+             @endphp
+             <div class="relative z-10 flex flex-col items-center text-center {{ $stepClass }}">
+               <div class="w-12 h-12 rounded-full flex items-center justify-center font-bold mb-4 shadow-sm {{ $boxClass }}">{!! $icon !!}</div>
+               <h4 class="font-public {{ $isActiveStep || ($currentStatus === 'completed' && $key === 'completed') ? 'font-black text-sm' : 'font-bold text-xs' }} uppercase tracking-widest {{ $textClass }} mb-1">{{ $label }}</h4>
+               @if($isActiveStep && $key === 'waiting_approval')
+                 <p class="text-[10px] text-gray-500 font-inter uppercase tracking-wider">Tindakan Diperlukan</p>
+               @endif
+             </div>
+          @endforeach
+        </div>
+
+        <!-- Mobile View (Vertical Process List) -->
+        <div class="md:hidden relative ml-3 mb-12">
+          <div class="absolute top-[24px] bottom-[24px] left-[23px] w-[3px] bg-gray-100 z-0 rounded-full">
+             <div class="bg-black w-full rounded-full transition-all duration-500" style="height: {{ $progressWidth }}%"></div>
+          </div>
+          
+          <div class="flex flex-col gap-8 relative z-10">
+            @php $stepIndex = 0; @endphp
+            @foreach($steps as $key => $label)
+             @php
+                $stepIndex++;
+                $isDoneStep = in_array($key, $logStatuses) && $currentStatus !== $key;
+                if ($currentStatus === 'completed') $isDoneStep = true;
+                $isActiveStep = $currentStatus === $key && $currentStatus !== 'completed' && $currentStatus !== 'cancelled';
+                $isCancelledStep = $currentStatus === 'cancelled' && $key === 'cancelled';
+                
+                $icon = '';
+                $boxClass = '';
+                $textClass = '';
+                $containerClass = 'flex items-start gap-5';
+
+                if ($isDoneStep || ($currentStatus === 'completed' && $key === 'completed')) {
+                    $boxClass = 'bg-black text-brand-yellow shadow-sm text-lg';
+                    if ($key === 'completed') {
+                        $boxClass = 'bg-green-500 text-white shadow-[0_0_0_4px_rgba(34,197,94,0.2)] text-xl';
+                    }
+                    $icon = '<i class="fa-solid ' . ($key === 'completed' ? 'fa-flag-checkered' : 'fa-check') . '"></i>';
+                    $textClass = $key === 'completed' ? 'text-green-600 font-black text-base' : 'text-black font-bold text-sm';
+                } elseif ($isActiveStep) {
+                    $boxClass = 'bg-[#FF7A00] text-white shadow-[0_0_0_4px_rgba(255,122,0,0.2)] text-base';
+                    $icon = $stepIndex;
+                    $textClass = 'text-[#FF7A00] font-black text-base';
+                } elseif ($isCancelledStep) {
+                    $boxClass = 'bg-red-500 text-white shadow-[0_0_0_4px_rgba(239,68,68,0.2)] text-xl';
+                    $icon = '<i class="fa-solid fa-times"></i>';
+                    $textClass = 'text-red-600 font-black text-base';
+                } else {
+                    $containerClass .= ' opacity-40';
+                    $boxClass = 'bg-white border-2 border-gray-200 text-gray-400 text-base';
+                    $icon = $key === 'completed' ? '<i class="fa-solid fa-flag-checkered"></i>' : $stepIndex;
+                    $textClass = 'text-gray-400 font-bold text-sm';
+                }
+             @endphp
+             <div class="{{ $containerClass }}">
+               <div class="w-12 h-12 rounded-full shrink-0 flex items-center justify-center font-bold {{ $boxClass }}">{!! $icon !!}</div>
+               <div class="{{ $isActiveStep || ($currentStatus === 'completed' && $key === 'completed') || $isCancelledStep ? 'pt-1.5' : 'pt-3' }}">
+                 <h4 class="font-public uppercase tracking-widest {{ $textClass }}">{{ $label }}</h4>
+                 @if($isActiveStep && $key === 'waiting_approval')
+                   <p class="text-xs text-gray-600 font-inter mt-1.5 leading-relaxed">Tindakan Anda diperlukan untuk melanjutkan servis.</p>
+                 @endif
+                 @if($currentStatus === 'completed' && $key === 'completed')
+                   <p class="text-xs text-gray-600 font-inter mt-1.5 leading-relaxed">Garansi digital telah diterbitkan.</p>
+                 @endif
+                 @if($isCancelledStep)
+                   <p class="text-xs text-red-600 font-inter mt-1.5 leading-relaxed">Servis telah dibatalkan.</p>
+                 @endif
+               </div>
+             </div>
+            @endforeach
+          </div>
+        </div>
+
+        <!-- ACTIONS BASED ON STATUS -->
+        @if($serviceOrder->status === 'waiting_approval' && $isOngoing)
+           <div class="bg-orange-50 border border-orange-200 rounded-[2rem] p-6 md:p-10 shadow-sm max-w-3xl mx-auto">
+              <div class="flex items-center gap-4 mb-6">
+                <div class="w-14 h-14 bg-orange-100 rounded-full flex items-center justify-center shrink-0 shadow-sm">
+                  <i class="fa-solid fa-file-invoice text-[#FF7A00] text-2xl"></i>
+                </div>
+                <div>
+                  <h4 class="font-public font-black text-xl md:text-2xl uppercase text-black tracking-tight mb-1">Estimasi Biaya Tersedia</h4>
+                  <p class="text-xs md:text-sm text-gray-600 font-inter">Mohon tinjau hasil diagnosa dari teknisi kami.</p>
+                </div>
+              </div>
+              
+              <div class="bg-white rounded-2xl p-6 md:p-8 mb-8 border border-gray-100 shadow-sm">
+                <p class="text-sm md:text-base text-gray-700 font-inter mb-6 leading-relaxed">
+                  {{ $serviceOrder->diagnosis ?? 'Silakan setujui estimasi biaya di bawah ini agar teknisi dapat memproses pengerjaan perangkat Anda.' }}
+                </p>
+                <div class="flex flex-col md:flex-row md:justify-between md:items-end border-t border-dashed border-gray-200 pt-6 mt-2 gap-4">
+                  <span class="font-public font-bold text-gray-500 uppercase text-xs tracking-widest block">Total Estimasi Perbaikan</span>
+                  <span class="font-public font-black text-3xl md:text-4xl text-[#FF7A00] block">Rp {{ number_format($serviceOrder->estimated_cost, 0, ',', '.') }}</span>
+                </div>
+              </div>
+
+              <!-- Buttons Action -->
+              <div class="flex flex-col sm:flex-row gap-4">
+                <button wire:click="approveCost" onclick="confirm('Yakin setuju?') || event.stopImmediatePropagation()" class="flex-1 bg-black text-brand-yellow font-public font-bold text-sm md:text-base uppercase tracking-widest px-6 py-4 md:py-5 rounded-full hover:bg-gray-800 transition-colors btn-hover shadow-card text-center flex items-center justify-center gap-2">
+                  <i class="fa-solid fa-check"></i> Setuju & Lanjutkan
+                </button>
+                <button wire:click="rejectCost" onclick="confirm('Yakin tolak?') || event.stopImmediatePropagation()" class="sm:w-auto bg-white border border-gray-300 text-red-600 font-public font-bold text-sm md:text-base uppercase tracking-widest px-8 py-4 md:py-5 rounded-full hover:bg-red-50 transition-colors btn-hover text-center">
+                  Tolak Perbaikan
+                </button>
+              </div>
+            </div>
+        @endif
+
+        @if($isDone)
+           <div class="bg-green-50 border border-green-200 rounded-[2rem] p-8 md:p-12 shadow-sm max-w-3xl mx-auto text-center">
+              <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fa-solid fa-check text-3xl text-green-600"></i>
+              </div>
+              <h4 class="font-public font-black text-2xl md:text-3xl uppercase text-black tracking-tight mb-4">Perbaikan Berhasil</h4>
+              <p class="text-sm md:text-base text-gray-600 font-inter mb-8 leading-relaxed max-w-lg mx-auto">
+                Perbaikan telah selesai dan tes pengujian fungsi berjalan normal di lokasi Anda. Pelunasan biaya telah dikonfirmasi oleh teknisi.
+              </p>
+              
+              <div class="inline-block bg-white border border-gray-200 px-8 py-4 rounded-2xl shadow-sm text-left">
+                <p class="text-xs md:text-sm text-gray-500 font-bold uppercase tracking-widest mb-1 font-public">Total Biaya Perbaikan</p>
+                <p class="font-public font-black text-3xl md:text-4xl text-black">Rp {{ number_format($serviceOrder->final_cost ?? $serviceOrder->estimated_cost, 0, ',', '.') }}</p>
+              </div>
+            </div>
+        @endif
 
       </div>
-    </section>
+    </div> <!-- End of Result Card -->
 
-    <!-- ── GUARANTEE TICKET (only shown when done) ── -->
+    <!-- Kartu Garansi Digital -->
     @if ($isDone)
-      <section aria-label="Kartu garansi servis" class="flex flex-col items-center gap-5">
-        <div class="w-full flex items-center gap-4">
+      <div class="flex flex-col items-center gap-8 reveal-fade">
+        <div class="w-full max-w-md flex items-center gap-4 opacity-50 no-print">
           <div class="flex-1 h-px bg-black"></div>
-          <h3 class="font-public font-black text-base md:text-lg uppercase tracking-widest text-black whitespace-nowrap">Kartu Garansi Servis</h3>
+          <h3 class="font-public font-bold text-sm uppercase tracking-widest text-black whitespace-nowrap">Dokumen Anda</h3>
           <div class="flex-1 h-px bg-black"></div>
         </div>
 
-        <div class="ticket-print w-full max-w-[440px] bg-white border-2 border-black shadow-[6px_6px_0px_#111] mx-auto" style="border-radius:0">
-          <div class="bg-black px-6 py-3 flex justify-between items-center">
-            <span class="text-white font-public font-black text-base italic tracking-tight">PROKAR</span>
-            <div class="flex items-center gap-3">
-              <span class="text-[#FFCC00] text-[10px] font-archivo font-bold uppercase tracking-widest">KARTU GARANSI</span>
-              <span class="bg-green-500 text-white text-[9px] font-bold uppercase px-2 py-0.5">● AKTIF</span>
+        @php
+            $displayNo = str_replace('SRV-', '', $ticket);
+            try {
+                $barcodeGen = new \Picqer\Barcode\BarcodeGeneratorSVG();
+                $barcodeSvgWeb = $barcodeGen->getBarcode($ticket, $barcodeGen::TYPE_CODE_128, 2, 38);
+            } catch (\Throwable $e) {
+                $barcodeSvgWeb = null;
+            }
+        @endphp
+
+        <!-- Ticket Shape Design -->
+        <div class="w-full max-w-md bg-white rounded-3xl shadow-card overflow-hidden border border-gray-100 relative print:border-black print:border-2 print:shadow-none print:mt-10">
+          <!-- Header Garansi -->
+          <div class="bg-black px-8 py-6 flex justify-between items-center print:bg-white print:border-b-2 print:border-black">
+            <span class="text-white font-public font-black text-2xl tracking-tighter print:text-black">PROKAR.</span>
+            <span class="bg-green-500/20 border border-green-500 text-green-400 text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full print:text-black print:border-black">Garansi Aktif</span>
+          </div>
+          
+          <!-- Body Garansi -->
+          <div class="p-8 text-left">
+            <div class="grid grid-cols-2 gap-y-6 gap-x-4 mb-8">
+              <div>
+                <p class="text-[10px] font-public font-bold uppercase tracking-widest text-gray-400 mb-1.5">No</p>
+                <p class="font-public font-black text-base md:text-lg text-black">{{ $displayNo }}</p>
+              </div>
+              <div>
+                <p class="text-[10px] font-public font-bold uppercase tracking-widest text-gray-400 mb-1.5">Pelanggan</p>
+                <p class="font-public font-bold text-sm md:text-base text-black">{{ $serviceOrder->customer_name }}</p>
+              </div>
+              <div>
+                <p class="text-[10px] font-public font-bold uppercase tracking-widest text-gray-400 mb-1.5">Perangkat</p>
+                <p class="font-public font-bold text-sm md:text-base text-black">{{ $serviceOrder->category->name }} {{ $serviceOrder->device_brand }}</p>
+              </div>
+              <div>
+                <p class="text-[10px] font-public font-bold uppercase tracking-widest text-gray-400 mb-1.5">Garansi Berlaku Hingga</p>
+                <p class="font-public font-black text-sm md:text-base text-black">{{ $serviceOrder->completed_at ? $serviceOrder->completed_at->copy()->addDays(14)->format('d M Y') : $serviceOrder->updated_at->copy()->addDays(14)->format('d M Y') }}</p>
+              </div>
+            </div>
+            
+            <div class="bg-blue-50/50 border border-blue-100 rounded-2xl p-4 md:p-5 text-center print:border-black print:bg-white print:border">
+              <p class="text-[11px] text-gray-600 font-inter leading-relaxed">
+                <strong>PENTING:</strong> Klaim garansi ini berlaku untuk layanan perbaikan ulang jika timbul kendala yang sama pada perangkat.
+              </p>
             </div>
           </div>
 
-          <div class="px-6 pt-5 pb-4">
-            <div class="grid grid-cols-2 gap-x-6 gap-y-4 mb-4">
-              <div>
-                <p class="text-[9px] font-archivo font-bold uppercase tracking-widest text-gray-400 mb-0.5">ID Tiket</p>
-                <p class="font-public font-black text-base text-black">{{ $ticket }}</p>
-              </div>
-              <div>
-                <p class="text-[9px] font-archivo font-bold uppercase tracking-widest text-gray-400 mb-0.5">Pelanggan</p>
-                <p class="font-public font-black text-base text-black">{{ $serviceOrder->customer_name }}</p>
-              </div>
-              <div>
-                <p class="text-[9px] font-archivo font-bold uppercase tracking-widest text-gray-400 mb-0.5">Perangkat</p>
-                <p class="font-public font-bold text-sm text-black">{{ $serviceOrder->category->name }} {{ $serviceOrder->device_brand }}</p>
-              </div>
-              <div>
-                <p class="text-[9px] font-archivo font-bold uppercase tracking-widest text-gray-400 mb-0.5">Selesai Pada</p>
-                <p class="font-public font-bold text-sm text-black">{{ $serviceOrder->updated_at->format('d M Y') }}</p>
-              </div>
-            </div>
-            <div class="flex justify-between items-center bg-[#F8F8F8] border border-gray-200 px-4 py-2.5">
-              <div>
-                <p class="text-[9px] font-archivo font-bold uppercase tracking-widest text-gray-400 mb-0.5">Jenis Layanan</p>
-                <p class="font-public font-bold text-sm text-black">{{ $serviceOrder->service_type === 'home_visit' ? 'Teknisi Datang' : 'Kirim Barang' }}</p>
-              </div>
-              <div class="text-right">
-                <p class="text-[9px] font-archivo font-bold uppercase tracking-widest text-gray-400 mb-0.5">Biaya Akhir</p>
-                <p class="font-public font-black text-base text-black">Rp {{ number_format($serviceOrder->final_cost ?? $serviceOrder->estimated_cost, 0, ',', '.') }}</p>
-              </div>
-            </div>
+          <!-- Perforated Line -->
+          <div class="relative flex items-center h-5">
+            <div class="absolute -left-3 w-6 h-6 rounded-full bg-brand-soft z-10 shadow-inner print:bg-white print:border-r print:border-black"></div>
+            <div class="w-full print:border-t-2 print:border-dashed print:border-black print:bg-none" style="background-image: repeating-linear-gradient(to right, #e5e7eb 0, #e5e7eb 8px, transparent 8px, transparent 16px); height: 3px;"></div>
+            <div class="absolute -right-3 w-6 h-6 rounded-full bg-brand-soft z-10 shadow-inner print:bg-white print:border-l print:border-black"></div>
           </div>
 
-          <div class="relative flex items-center px-0 h-5">
-            <div class="absolute -left-[13px] w-6 h-6 rounded-full bg-white border-r border-black z-10"></div>
-            <div class="ticket-perforated w-full"></div>
-            <div class="absolute -right-[13px] w-6 h-6 rounded-full bg-white border-l border-black z-10"></div>
-          </div>
-          <div class="flex justify-center py-1">
-            <span class="text-[8px] text-gray-400 font-archivo uppercase tracking-widest">✂ Simpan Bagian Ini</span>
-          </div>
-
-          <div class="bg-[#FAFAFA] px-6 pt-3 pb-5 flex flex-col items-center gap-3">
-            <p class="text-[9px] font-archivo font-bold uppercase tracking-widest text-gray-400">Kode Verifikasi</p>
-            <div class="w-full h-[56px] bg-white border border-gray-200 p-2 flex items-center">
-              <div class="barcode w-full h-full"></div>
+          <!-- Barcode Area -->
+          <div class="bg-white p-8 flex flex-col items-center">
+            <div class="w-full h-16 border border-gray-200 print:border-black p-2 rounded-xl mb-4 flex items-center justify-center overflow-hidden">
+              @if($barcodeSvgWeb)
+                {!! $barcodeSvgWeb !!}
+              @else
+                <div class="w-full h-full opacity-60 print:opacity-100" style="background-image: repeating-linear-gradient(90deg, #111 0, #111 2px, transparent 2px, transparent 4px, #111 4px, #111 7px, transparent 7px, transparent 10px, #111 10px, #111 11px, transparent 11px, transparent 15px, #111 15px, #111 18px, transparent 18px, transparent 22px, #111 22px, #111 23px, transparent 23px, transparent 27px);"></div>
+              @endif
             </div>
-            <p class="font-public font-black tracking-[0.3em] text-sm text-black">{{ $ticket }}</p>
-            <p class="text-[10px] text-gray-400 font-inter text-center">Tunjukkan kode ini saat klaim garansi</p>
+            <p class="font-public font-black tracking-[0.2em] text-lg text-black">{{ $ticket }}</p>
           </div>
         </div>
 
-        <a href="{{ url('/servis/garansi/'.$ticket.'/download') }}" target="_blank"
-          class="no-print w-full max-w-[440px] bg-black text-white font-public font-bold text-xs uppercase tracking-widest py-3.5 hover:bg-gray-800 transition-colors flex items-center justify-center gap-2">
-          <i class="fa-solid fa-download text-xs"></i>
-          Download / Cetak PDF
+        <a href="{{ url('/servis/garansi/'.$ticket.'/download') }}" target="_blank" class="no-print bg-black text-brand-yellow font-public font-bold text-sm md:text-base uppercase tracking-widest px-8 py-5 rounded-full hover:bg-gray-800 transition-colors btn-hover shadow-card mt-4 flex items-center justify-center gap-3">
+          <i class="fa-solid fa-download text-lg"></i> Unduh / Cetak Garansi
         </a>
-      </section>
+      </div>
     @endif
-
+    
   </div>
-</div>
+</section>
+
+@push('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js"></script>
+<script>
+  // Initialize Lenis
+  const lenis = new Lenis({
+    duration: 1.2,
+    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    direction: 'vertical',
+    smooth: true,
+  });
+
+  function raf(time) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+  }
+  requestAnimationFrame(raf);
+
+  // Sync GSAP with Lenis
+  gsap.registerPlugin(ScrollTrigger);
+  lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add((time) => { lenis.raf(time * 1000) });
+  gsap.ticker.lagSmoothing(0, 0);
+
+  /* --- OVERLAPPING SCROLL EFFECT --- */
+  const overlapSections = document.querySelectorAll('.section-overlap');
+  overlapSections.forEach((section, index) => {
+    ScrollTrigger.create({
+      trigger: section,
+      start: () => section.offsetHeight > window.innerHeight ? "bottom bottom" : "top top",
+      pin: true,
+      pinSpacing: false,
+    });
+  });
+
+  /* --- GSAP ANIMATIONS --- */
+  gsap.fromTo("section:first-of-type .reveal-line",
+    { y: "110%" },
+    { y: "0%", duration: 1.2, ease: "power4.out", delay: 0.2 }
+  );
+  
+  gsap.fromTo(".reveal-fade",
+    { y: 30, autoAlpha: 0 },
+    { y: 0, autoAlpha: 1, duration: 1, stagger: 0.15, ease: "power3.out", delay: 0.4 }
+  );
+</script>
+@endpush
 </div>

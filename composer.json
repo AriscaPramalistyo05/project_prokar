@@ -19,6 +19,7 @@
         "laravel/socialite": "^5.28",
         "laravel/tinker": "^3.0",
         "livewire/livewire": "*",
+        "picqer/php-barcode-generator": "^3.2",
         "robsontenorio/mary": "*",
         "spatie/laravel-activitylog": "^4.12",
         "spatie/laravel-medialibrary": "^11.23",

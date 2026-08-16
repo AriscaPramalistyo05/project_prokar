@@ -25,62 +25,19 @@
     '@context' => 'https://schema.org',
     '@type' => 'Product',
     'name' => $product->name,
-    'image' => $product->productImages->pluck('path')->toArray(),
+    'image' => $product->productImages->pluck('path')->map(fn($p) => asset('storage/'.$p))->toArray(),
     'description' => strip_tags($product->description ?? ''),
     'sku' => (string) $product->id,
     'mpn' => (string) $product->id,
-    'brand' => [
-        '@type' => 'Brand',
-        'name' => $product->brand ?? 'Prokar Elektronik',
-    ],
+    'brand' => ['@type' => 'Brand', 'name' => $product->brand ?? 'Prokar Elektronik'],
     'category' => $product->category?->name ?? 'Lainnya',
-    'itemCondition' => [
-        '@type' => 'OfferItemCondition',
-        'condition' => 'https://schema.org/UsedCondition',
-        'name' => $product->condition_notes ?? 'Baik',
-    ],
     'offers' => [
         '@type' => 'Offer',
         'url' => url('produk/' . $product->slug),
         'priceCurrency' => 'IDR',
         'price' => number_format($product->price, 2, '.', ''),
         'availability' => $product->status === 'available' ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-        'seller' => [
-            '@type' => 'Organization',
-            'name' => 'Prokar Elektronik',
-        ],
-    ],
-], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
-</script>
-<script type="application/ld+json">
-{!! json_encode([
-    '@context' => 'https://schema.org',
-    '@type' => 'BreadcrumbList',
-    'itemListElement' => [
-        [
-            '@type' => 'ListItem',
-            'position' => 1,
-            'name' => 'Home',
-            'item' => url('/'),
-        ],
-        [
-            '@type' => 'ListItem',
-            'position' => 2,
-            'name' => 'Produk',
-            'item' => url('produk'),
-        ],
-        [
-            '@type' => 'ListItem',
-            'position' => 3,
-            'name' => $product->category?->name ?? 'Lainnya',
-            'item' => url('produk?kategori=' . ($product->category?->slug ?? '')),
-        ],
-        [
-            '@type' => 'ListItem',
-            'position' => 4,
-            'name' => $product->name,
-            'item' => url('produk/' . $product->slug),
-        ],
+        'seller' => ['@type' => 'Organization', 'name' => 'Prokar Elektronik'],
     ],
 ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
 </script>
@@ -88,311 +45,443 @@
 
 @push('styles')
 <style>
-  .card-img {
-    width: 100%;
-    aspect-ratio: 4/3;
-    object-fit: cover;
-    display: block;
-  }
-
-  .card-bg-img {
-    width: 100%;
-    aspect-ratio: 4/3;
-    background-size: cover;
-    background-position: center;
-  }
-
-  .main-product-img {
-    width: 100%;
-    aspect-ratio: 4/3;
-    object-fit: cover;
-    display: block;
-  }
-
-  .thumb-img {
-    width: 100%;
-    aspect-ratio: 1/1;
-    object-fit: cover;
-    display: block;
-    cursor: pointer;
-  }
-
   .thumb-active {
-    outline: 2px solid #111;
-    outline-offset: 0px;
-  }
-
-  .btn-primary {
-    background: #111;
-    color: #fff;
-    font-weight: 700;
-    font-size: 14px;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    padding: 12px 24px;
-    transition: background 0.2s ease;
-    border: 2px solid #111;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-  }
-
-  .btn-primary:hover {
-    background: #333;
-  }
-
-  .btn-secondary {
-    background: #fff;
-    color: #111;
-    font-weight: 700;
-    font-size: 14px;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    padding: 12px 24px;
-    border: 2px solid #111;
-    transition: background 0.2s ease, color 0.2s ease;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-  }
-
-  .btn-secondary:hover {
-    background: #111;
-    color: #fff;
-  }
-
-  .divider {
-    border: none;
-    border-top: 1px solid #e5e5e5;
+    border-color: #000 !important;
+    opacity: 1 !important;
   }
 </style>
 @endpush
 
 @section('content')
-<main class="px-4 md:px-[68px] mb-10 md:mb-14">
+<main class="bg-brand-black">
 
-    <!-- Breadcrumb (visually hidden but crawlable) -->
-    <nav aria-label="Breadcrumb" class="sr-only">
-      <ol>
-        <li><a href="{{ route('home') }}">Home</a></li>
-        <li><a href="{{ route('produk.index') }}">Produk</a></li>
-        <li><a href="{{ route('produk.index') }}?kategori={{ $product->category?->slug ?? 'lainnya' }}">{{ $product->category?->name ?? 'Lainnya' }}</a></li>
-        <li aria-current="page">{{ $product->name }}</li>
-      </ol>
-    </nav>
+  <!-- HEADER OVERLAP (BREADCRUMB & BG) -->
+  <section class="bg-brand-black py-8 md:py-12 z-10 relative">
+    <div class="max-w-[1440px] mx-auto px-6 lg:px-12 text-center md:text-left">
+      <nav aria-label="Breadcrumb" class="sr-only">
+        <ol>
+          <li><a href="{{ route('home') }}">Home</a></li>
+          <li><a href="{{ route('produk.index') }}">Produk</a></li>
+          <li><a href="{{ route('produk.index') }}?kategori={{ $product->category?->slug ?? 'lainnya' }}">{{ $product->category?->name ?? 'Lainnya' }}</a></li>
+          <li aria-current="page">{{ $product->name }}</li>
+        </ol>
+      </nav>
+      <nav aria-label="Breadcrumb" class="reveal-fade">
+        <ol class="flex justify-center md:justify-start text-xs md:text-sm font-public font-bold uppercase tracking-widest text-gray-500 flex-wrap gap-2">
+          <li><a href="{{ route('home') }}" class="hover:text-brand-yellow transition-colors">Home</a></li>
+          <li>/</li>
+          <li><a href="{{ route('produk.index') }}" class="hover:text-brand-yellow transition-colors">Produk</a></li>
+          <li>/</li>
+          <li><a href="{{ route('produk.index') }}?kategori={{ $product->category?->slug ?? 'lainnya' }}" class="hover:text-brand-yellow transition-colors">{{ $product->category?->name ?? 'Lainnya' }}</a></li>
+          <li>/</li>
+          <li aria-current="page" class="text-white truncate max-w-[150px] sm:max-w-none">{{ $product->name }}</li>
+        </ol>
+      </nav>
+    </div>
+  </section>
 
-    <!-- Breadcrumb (visual) -->
-    <nav aria-label="Breadcrumb" class="flex items-center gap-1.5 mb-5 md:mb-7 flex-wrap">
-      <a href="{{ route('home') }}" class="text-[11px] md:text-xs text-gray-400 hover:text-gray-600 transition-colors">Home</a>
-      <span class="text-[11px] md:text-xs text-gray-300" aria-hidden="true">/</span>
-      <a href="{{ route('produk.index') }}" class="text-[11px] md:text-xs text-gray-400 hover:text-gray-600 transition-colors">Produk</a>
-      <span class="text-[11px] md:text-xs text-gray-300" aria-hidden="true">/</span>
-      <a href="{{ route('produk.index') }}?kategori={{ $product->category?->slug ?? 'lainnya' }}"
-        class="text-[11px] md:text-xs text-gray-400 hover:text-gray-600 transition-colors">{{ $product->category?->name ?? 'Lainnya' }}</a>
-      <span class="text-[11px] md:text-xs text-gray-300" aria-hidden="true">/</span>
-      <span class="text-[11px] md:text-xs text-black font-semibold truncate max-w-[160px] md:max-w-none"
-        aria-current="page">{{ $product->name }}</span>
-    </nav>
+  <!-- KONTEN DETAIL PRODUK (OVERLAPPING SECTION) -->
+  <section class="section-overlap bg-white pt-10 pb-24 z-20">
+    <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
+      <article class="flex flex-col lg:flex-row gap-8 lg:gap-14" itemscope itemtype="https://schema.org/Product">
 
-    <!-- Detail Produk Layout -->
-    <article class="flex flex-col md:flex-row gap-6 md:gap-10 lg:gap-14" itemscope
-      itemtype="https://schema.org/Product">
-
-      <!-- KOLOM KIRI: Galeri Gambar -->
-      <div class="w-full md:w-[52%] lg:w-[55%] flex-shrink-0">
-        @if ($product->productImages->isNotEmpty())
-        <div class="relative bg-[#F3F3F3]" style="box-shadow: 0px 2px 4px #0000001a;">
-          @if ($product->is_promo)
-          <div class="absolute top-2 left-2 md:top-3 md:left-3 bg-[#FF383C] py-1 px-2.5 z-10">
-            <span class="text-white font-bold text-[10px] md:text-xs">SALE</span>
-          </div>
-          @endif
-          <img id="mainImage"
-            src="{{ $product->productImages->first()->path }}"
-            class="main-product-img" alt="{{ $product->name }}" itemprop="image" />
-        </div>
-
-        <div class="grid grid-cols-5 gap-2 mt-2" role="tablist" aria-label="Galeri produk">
-          @foreach ($product->productImages as $index => $image)
-          <button role="tab" aria-selected="{{ $loop->first ? 'true' : 'false' }}" aria-label="Tampilkan foto {{ $loop->iteration }}"
-            class="{{ $loop->first ? 'thumb-active' : '' }} bg-[#F3F3F3]" style="box-shadow: 0px 1px 3px #0000001a;"
-            data-src="{{ $image->path }}">
-            <img
-              src="{{ $image->path }}"
-              class="thumb-img" alt="Thumbnail {{ $loop->iteration }} – {{ $product->name }}" />
-          </button>
-          @endforeach
-        </div>
-        @else
-        <div class="relative bg-[#F3F3F3] flex items-center justify-center" style="box-shadow: 0px 2px 4px #0000001a;">
-          <p class="text-gray-500">Tidak ada gambar</p>
-        </div>
-        @endif
-      </div>
-
-      <!-- KOLOM KANAN: Info Produk -->
-      <div class="w-full md:flex-1 flex flex-col">
-        <span class="text-[#4C4546] md:text-gray-500 text-xs md:text-sm mb-1.5" itemprop="category">{{ $product->category?->name ?? 'Lainnya' }}</span>
-
-        <h1 class="text-black font-bold text-xl md:text-2xl lg:text-3xl leading-tight mb-3" itemprop="name">
-          {{ $product->name }}
-        </h1>
-
-        <meta itemprop="sku" content="{{ $product->id }}" />
-        <meta itemprop="mpn" content="{{ $product->id }}" />
-        <meta itemprop="brand" content="{{ $product->brand ?? 'Prokar Elektronik' }}" />
-
-        <div class="flex items-center mb-4">
-          <div class="inline-block bg-[#34C759] py-1 px-3">
-            <span class="text-white font-bold text-xs">{{ $product->condition_notes ?? 'Baik' }}</span>
-          </div>
-        </div>
-
-        <hr class="divider mb-4" />
-
-        <div class="mb-5" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
-          <link itemprop="url" href="{{ url('produk/' . $product->slug) }}" />
-          <meta itemprop="priceCurrency" content="IDR" />
-          <meta itemprop="price" content="{{ $product->price }}" />
-          <meta itemprop="availability" content="https://schema.org/{{ $product->status === 'available' ? 'InStock' : 'OutOfStock' }}" />
-          <meta itemprop="priceValidUntil" content="{{ now()->addYear()->format('Y-m-d') }}" />
-          <div itemprop="itemCondition" itemscope itemtype="https://schema.org/OfferItemCondition" class="hidden">
-            <meta itemprop="condition" content="https://schema.org/UsedCondition" />
-          </div>
-          @if ($product->promo_price)
-          <p class="text-[#7E7576] text-sm line-through leading-tight mb-0.5" aria-label="Harga sebelum diskon">
-            Rp {{ number_format($product->promo_price, 0, ',', '.') }}
-          </p>
-          @endif
-          <div class="flex items-center gap-3">
-            <p class="text-black font-bold text-2xl md:text-3xl" itemprop="price" content="{{ $product->price }}">
-              Rp {{ number_format($product->price, 0, ',', '.') }}
-            </p>
+        <!-- ════ KOLOM KIRI: Galeri Gambar ════ -->
+        <div class="w-full lg:w-1/2 flex-shrink-0 stagger-group">
+          <!-- Gambar Utama -->
+          <div class="stagger-item relative w-full aspect-[4/3] bg-gray-50 rounded-[2rem] overflow-hidden mb-4 border border-gray-100 shadow-sm flex items-center justify-center group">
             @if ($product->is_promo)
-            <div class="bg-[#FF383C] py-1 px-2.5">
-              <span class="text-white font-bold text-xs">SALE</span>
+            <div class="absolute top-4 left-4 bg-red-600 z-10 px-3 py-1.5 rounded-full">
+              <span class="text-white font-public font-black text-xs uppercase tracking-widest">SALE</span>
             </div>
             @endif
-          </div>
-        </div>
-
-        <hr class="divider mb-4" />
-
-        <section aria-labelledby="deskripsi-heading" class="mb-6">
-          <h2 id="deskripsi-heading" class="text-black font-bold text-sm mb-2">Deskripsi Produk</h2>
-          <p class="sr-only" itemprop="description">
-            {{ strip_tags($product->description) }}
-          </p>
-          <ul class="flex flex-col gap-1.5">
-            @foreach (explode(PHP_EOL, strip_tags($product->description ?? '')) as $line)
-              @if (trim($line))
-              <li class="flex items-start gap-2">
-                <i class="fa-solid fa-check text-[11px] text-black mt-0.5 flex-shrink-0" aria-hidden="true"></i>
-                <span class="text-[#4C4546] text-sm leading-snug">{{ trim($line) }}</span>
-              </li>
-              @endif
-            @endforeach
-          </ul>
-        </section>
-
-        <!-- Status & Tombol -->
-        <div class="flex flex-col gap-2.5 mt-auto">
-          @if ($product->status === 'available')
-            <button type="button" class="btn-primary" onclick="window.location.href='{{ route('keranjang.index') }}'">
-              <i class="fa-solid fa-bolt text-sm" aria-hidden="true"></i>
-              Beli Sekarang
-            </button>
-            <button type="button" class="btn-secondary" onclick="window.location.href='{{ route('checkout.address') }}'">
-              <i class="fa-solid fa-cart-shopping text-sm" aria-hidden="true"></i>
-              Tambah ke Keranjang
-            </button>
-          @elseif ($product->status === 'sold')
-            <div class="bg-gray-200 py-3 px-4 text-center">
-              <span class="text-gray-600 font-bold text-sm">Sudah Terjual</span>
-            </div>
-          @else
-            <div class="bg-gray-200 py-3 px-4 text-center">
-              <span class="text-gray-600 font-bold text-sm">Tidak Tersedia</span>
-            </div>
-          @endif
-        </div>
-      </div>
-    </article>
-
-    <!-- SECTION: Produk Serupa -->
-    @if ($relatedProducts->isNotEmpty())
-    <section aria-labelledby="produk-serupa-heading" class="mt-14 md:mt-20">
-      <div class="flex items-center gap-4 mb-6 md:mb-8">
-        <h2 id="produk-serupa-heading" class="text-black font-bold text-xl md:text-2xl lg:text-3xl">Produk Serupa</h2>
-        <div class="flex-1 border-t border-gray-200" aria-hidden="true"></div>
-      </div>
-
-      <div class="grid grid-cols-2 tablet:grid-cols-2 md:grid-cols-4 gap-3 md:gap-0 md:items-stretch"
-        role="list">
-
-        @foreach ($relatedProducts as $related)
-        <article class="flex flex-col bg-[#F3F3F3] md:bg-white md:mx-4 md:mb-8 border border-transparent md:border-0"
-          style="box-shadow: 0px 2px 4px #0000001a" role="listitem">
-          <a href="{{ route('produk.show', $related->slug) }}" aria-label="Lihat detail {{ $related->name }}" class="block">
-            @if ($related->primaryImage)
-            <img src="{{ $related->primaryImage->path }}" alt="{{ $related->name }}" class="card-img" loading="lazy" />
+            @if ($product->productImages->isNotEmpty())
+            <img id="mainImage"
+              src="{{ asset('storage/' . $product->productImages->first()->path) }}"
+              class="w-full h-full object-cover" alt="{{ $product->name }}" itemprop="image"
+              onerror="this.src='https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=800&q=80'" />
             @else
-            <div class="card-bg-img bg-gray-200 flex items-center justify-center">
-              <span class="text-gray-400 text-sm">Tidak ada gambar</span>
-            </div>
+            <img id="mainImage"
+              src="https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=800&q=80"
+              class="w-full h-full object-cover" alt="{{ $product->name }}" itemprop="image" />
             @endif
-          </a>
-          <div class="flex flex-col p-2 tablet:p-2.5 md:flex-1 md:py-2.5 md:pr-4 md:pl-0">
-            <div class="flex flex-col md:flex-1 md:ml-4">
-              <span class="text-[#4C4546] md:text-gray-500 text-[10px] md:text-sm block mb-0.5 md:mb-1">{{ $related->category?->name ?? 'Lainnya' }}</span>
-              <h3 class="text-black md:text-gray-800 font-bold text-sm md:text-lg line-clamp-2 min-h-[2rem] tablet:min-h-[2.25rem] md:h-14 mb-1 md:mb-1.5 overflow-hidden">
-                {{ $related->name }}
-              </h3>
-              <div class="flex items-start mb-1 md:mb-2 md:h-8">
-                <div class="inline-block bg-[#0356FF] md:bg-emerald-500 py-0.5 md:py-1 px-2 md:px-3 min-w-[60px] text-center">
-                  <span class="text-white font-bold text-[9px] md:text-xs">{{ $related->condition_notes ?? 'Baik' }}</span>
-                </div>
-              </div>
-              <div class="md:mt-auto">
-                @if ($related->is_promo && $related->promo_price)
-                <p class="text-[#7E7576] md:text-gray-500 text-[10px] md:text-sm line-through leading-tight min-h-[1rem] md:h-5">
-                  Rp {{ number_format($related->promo_price, 0, ',', '.') }}
-                </p>
-                @else
-                <p class="min-h-[1rem] md:h-5" aria-hidden="true"></p>
-                @endif
-                <p class="text-black font-bold text-sm md:text-xl">Rp {{ number_format($related->price, 0, ',', '.') }}</p>
-              </div>
+          </div>
+
+          <!-- Thumbnail (Selalu Sediakan Minimal 2 Gambar Dummy/Foto) -->
+          @php
+            $images = $product->productImages;
+          @endphp
+          <div class="stagger-item flex gap-3 overflow-x-auto scrollbar-hide py-2 px-1" role="tablist" aria-label="Galeri produk">
+            @if ($images->count() >= 2)
+              @foreach ($images as $index => $image)
+              <button role="tab" type="button" aria-selected="{{ $loop->first ? 'true' : 'false' }}" aria-label="Tampilkan foto {{ $loop->iteration }}"
+                onclick="setMain(this, this.dataset.src)"
+                class="{{ $loop->first ? 'thumb-active opacity-100' : 'opacity-60 hover:opacity-100' }} w-20 h-20 md:w-24 md:h-24 shrink-0 rounded-2xl overflow-hidden border-2 border-transparent bg-gray-50 transition-all cursor-pointer"
+                data-src="{{ asset('storage/' . $image->path) }}">
+                <img src="{{ asset('storage/' . $image->path) }}" class="w-full h-full object-cover" alt="Thumbnail {{ $loop->iteration }} - {{ $product->name }}"
+                  onerror="this.src='https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=300&q=80'" />
+              </button>
+              @endforeach
+            @elseif ($images->count() == 1)
+              <button role="tab" type="button" aria-selected="true" aria-label="Tampilkan foto 1"
+                onclick="setMain(this, this.dataset.src)"
+                class="thumb-active opacity-100 w-20 h-20 md:w-24 md:h-24 shrink-0 rounded-2xl overflow-hidden border-2 border-transparent bg-gray-50 transition-all cursor-pointer"
+                data-src="{{ asset('storage/' . $images->first()->path) }}">
+                <img src="{{ asset('storage/' . $images->first()->path) }}" class="w-full h-full object-cover" alt="Thumbnail 1 - {{ $product->name }}"
+                  onerror="this.src='https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=300&q=80'" />
+              </button>
+              <button role="tab" type="button" aria-selected="false" aria-label="Tampilkan foto 2"
+                onclick="setMain(this, this.dataset.src)"
+                class="w-20 h-20 md:w-24 md:h-24 shrink-0 rounded-2xl overflow-hidden border-2 border-transparent bg-gray-50 opacity-60 hover:opacity-100 transition-all cursor-pointer"
+                data-src="https://images.unsplash.com/photo-1552861543-987545938f32?w=800&q=80">
+                <img src="https://images.unsplash.com/photo-1552861543-987545938f32?w=300&q=80" class="w-full h-full object-cover" alt="Thumbnail 2" />
+              </button>
+            @else
+              <!-- Dummy 2 Gambar -->
+              <button role="tab" type="button" aria-selected="true" aria-label="Tampilkan foto 1"
+                onclick="setMain(this, this.dataset.src)"
+                class="thumb-active opacity-100 w-20 h-20 md:w-24 md:h-24 shrink-0 rounded-2xl overflow-hidden border-2 border-transparent bg-gray-50 transition-all cursor-pointer"
+                data-src="https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=800&q=80">
+                <img src="https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=300&q=80" class="w-full h-full object-cover" alt="Thumbnail 1" />
+              </button>
+              <button role="tab" type="button" aria-selected="false" aria-label="Tampilkan foto 2"
+                onclick="setMain(this, this.dataset.src)"
+                class="w-20 h-20 md:w-24 md:h-24 shrink-0 rounded-2xl overflow-hidden border-2 border-transparent bg-gray-50 opacity-60 hover:opacity-100 transition-all cursor-pointer"
+                data-src="https://images.unsplash.com/photo-1552861543-987545938f32?w=800&q=80">
+                <img src="https://images.unsplash.com/photo-1552861543-987545938f32?w=300&q=80" class="w-full h-full object-cover" alt="Thumbnail 2" />
+              </button>
+            @endif
+          </div>
+        </div>
+
+        <!-- ════ KOLOM KANAN: Info Produk ════ -->
+        <div class="w-full lg:w-1/2 flex flex-col justify-center stagger-group">
+          <div class="stagger-item">
+            <span class="text-gray-500 font-inter font-bold text-xs md:text-sm uppercase tracking-widest block mb-3" itemprop="category">{{ $product->category?->name ?? 'Lainnya' }}</span>
+            <h1 class="text-black font-public font-black text-3xl md:text-4xl lg:text-5xl leading-[1.1] tracking-tighter mb-4" itemprop="name">
+              {{ $product->name }}
+            </h1>
+            <meta itemprop="sku" content="{{ $product->id }}" />
+            <meta itemprop="mpn" content="{{ $product->id }}" />
+            <meta itemprop="brand" content="{{ $product->brand ?? 'Prokar Elektronik' }}" />
+            <div class="flex items-center mb-8">
+              <span class="inline-block bg-[#0356FF] text-white font-public font-bold text-[10px] md:text-xs px-3 py-1.5 rounded-md uppercase tracking-widest">{{ $product->condition_notes ?? 'Baik' }}</span>
             </div>
           </div>
-        </article>
-        @endforeach
 
+          <!-- Harga -->
+          <div class="stagger-item mb-10" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+            <link itemprop="url" href="{{ url('produk/' . $product->slug) }}" />
+            <meta itemprop="priceCurrency" content="IDR" />
+            <meta itemprop="price" content="{{ $product->price }}" />
+            <meta itemprop="availability" content="https://schema.org/{{ $product->status === 'available' ? 'InStock' : 'OutOfStock' }}" />
+            <meta itemprop="priceValidUntil" content="{{ now()->addYear()->format('Y-m-d') }}" />
+            <div itemprop="itemCondition" itemscope itemtype="https://schema.org/OfferItemCondition" class="hidden">
+              <meta itemprop="condition" content="https://schema.org/UsedCondition" />
+            </div>
+            @if ($product->promo_price)
+            <p class="text-gray-400 font-inter font-semibold text-base md:text-lg line-through mb-1">
+              Rp {{ number_format($product->promo_price, 0, ',', '.') }}
+            </p>
+            @endif
+            <div class="flex items-end gap-4">
+              <p class="text-black font-public font-black text-4xl" itemprop="price" content="{{ $product->price }}">
+                Rp {{ number_format($product->price, 0, ',', '.') }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Catatan Kondisi -->
+          <section aria-labelledby="deskripsi-heading" class="stagger-item bg-gray-50 rounded-[2rem] p-6 md:p-8 mb-10 border border-gray-100">
+            <h2 id="deskripsi-heading" class="text-black font-public font-extrabold text-lg md:text-xl mb-4 uppercase tracking-tight">Catatan Kondisi</h2>
+            <p class="sr-only" itemprop="description">{{ strip_tags($product->description) }}</p>
+            <ul class="flex flex-col gap-3">
+              @forelse (explode(PHP_EOL, strip_tags($product->description ?? '')) as $line)
+                @if (trim($line))
+                <li class="flex items-start gap-3">
+                  <div class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center shrink-0 mt-0.5">
+                    <i class="fa-solid fa-check text-[10px] text-green-600" aria-hidden="true"></i>
+                  </div>
+                  <span class="text-gray-700 font-inter text-sm md:text-base leading-relaxed">{{ trim($line) }}</span>
+                </li>
+                @endif
+              @empty
+              <li class="flex items-start gap-3">
+                <div class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center shrink-0 mt-0.5">
+                  <i class="fa-solid fa-check text-[10px] text-green-600" aria-hidden="true"></i>
+                </div>
+                <span class="text-gray-700 font-inter text-sm md:text-base leading-relaxed">Telah dicek menyeluruh oleh teknisi profesional.</span>
+              </li>
+              @endforelse
+            </ul>
+          </section>
+
+          <!-- CTA Buttons -->
+          <div class="stagger-item flex flex-col sm:flex-row gap-4 mt-auto">
+            @if ($product->status === 'available')
+              <button type="button" onclick="window.location.href='{{ route('keranjang.index') }}'" class="btn-hover flex-1 bg-black text-brand-yellow font-public font-bold text-base md:text-lg uppercase tracking-widest py-4 rounded-full flex items-center justify-center gap-2">
+                <i class="fa-solid fa-bolt text-lg" aria-hidden="true"></i>
+                Beli Sekarang
+              </button>
+              <button type="button" onclick="window.location.href='{{ route('checkout.address') }}'" class="btn-hover flex-1 bg-white border border-gray-300 text-black font-public font-bold text-base md:text-lg uppercase tracking-widest py-4 rounded-full flex items-center justify-center gap-2 hover:bg-gray-50">
+                <i class="fa-solid fa-cart-shopping text-lg" aria-hidden="true"></i>
+                Tambah Keranjang
+              </button>
+            @elseif ($product->status === 'sold')
+              <div class="flex-1 bg-gray-200 py-4 text-center rounded-full">
+                <span class="text-gray-600 font-public font-bold text-lg uppercase tracking-widest">Sudah Terjual</span>
+              </div>
+            @else
+              <div class="flex-1 bg-gray-200 py-4 text-center rounded-full">
+                <span class="text-gray-600 font-public font-bold text-lg uppercase tracking-widest">Tidak Tersedia</span>
+              </div>
+            @endif
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ════ SECTION: Produk Serupa (OVERLAPPING SECTION) ════ -->
+  <section aria-labelledby="produk-serupa-heading" class="section-overlap bg-brand-soft py-20 lg:py-24 z-30">
+    <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
+      <div class="text-center mb-12">
+        <h2 id="produk-serupa-heading" class="text-black text-3xl md:text-5xl font-black uppercase tracking-tighter font-public reveal-wrapper">
+          <span class="reveal-line">Produk Serupa</span>
+        </h2>
       </div>
-    </section>
-    @endif
-  </main>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8 stagger-group" role="list">
+        @forelse ($relatedProducts as $related)
+        <article class="stagger-item bg-white rounded-3xl p-4 md:p-6 border border-gray-100 hover:shadow-card transition-all duration-300 group flex flex-col h-full" role="listitem">
+          <a href="{{ route('produk.show', $related->slug) }}" aria-label="Lihat detail {{ $related->name }}" class="flex flex-col h-full w-full outline-none">
+            <div class="relative w-full aspect-[4/3] bg-gray-50 rounded-2xl overflow-hidden mb-4 flex items-center justify-center">
+              @if ($related->primaryImage)
+              <img src="{{ asset('storage/' . $related->primaryImage->path) }}"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                alt="{{ $related->name }}" loading="lazy"
+                onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&q=80'">
+              @else
+              <img src="https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&q=80"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                alt="{{ $related->name }}" loading="lazy">
+              @endif
+              @if ($related->is_promo)
+              <span class="absolute top-3 left-3 bg-red-600 text-white text-[10px] md:text-xs font-black px-3 py-1.5 rounded-full uppercase tracking-wider">SALE</span>
+              @endif
+            </div>
+            <div class="flex flex-col flex-1">
+              <span class="text-gray-500 font-inter font-bold text-[10px] md:text-xs uppercase tracking-wider mb-1 block">{{ $related->category?->name ?? 'Lainnya' }}</span>
+              <h3 class="text-base md:text-xl font-black font-public leading-tight mb-2 text-black line-clamp-2">{{ $related->name }}</h3>
+              <div class="mb-3">
+                <span class="inline-block bg-emerald-500 text-white font-public font-bold text-[10px] md:text-xs px-2.5 py-1 rounded-sm uppercase tracking-wide">{{ $related->condition_notes ?? 'Baik' }}</span>
+              </div>
+              <div class="mt-auto flex flex-col">
+                @if ($related->is_promo && $related->promo_price)
+                <span class="text-gray-400 font-inter font-semibold text-xs md:text-sm line-through">Rp {{ number_format($related->promo_price, 0, ',', '.') }}</span>
+                @else
+                <span class="text-transparent font-inter font-semibold text-xs md:text-sm select-none" aria-hidden="true">-</span>
+                @endif
+                <span class="text-lg md:text-2xl font-black text-black">Rp {{ number_format($related->price, 0, ',', '.') }}</span>
+              </div>
+            </div>
+          </a>
+        </article>
+        @empty
+        <!-- ── DUMMY CARD 1 ── -->
+        <article class="stagger-item bg-white rounded-3xl p-4 md:p-6 border border-gray-100 hover:shadow-card transition-all duration-300 group flex flex-col h-full" role="listitem">
+          <a href="#" class="flex flex-col h-full w-full outline-none">
+            <div class="relative w-full aspect-[4/3] bg-gray-50 rounded-2xl overflow-hidden mb-4 flex items-center justify-center">
+              <img src="https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Kulkas" loading="lazy">
+            </div>
+            <div class="flex flex-col flex-1">
+              <span class="text-gray-500 font-inter font-bold text-[10px] md:text-xs uppercase tracking-wider mb-1 block">Kulkas</span>
+              <h3 class="text-base md:text-xl font-black font-public leading-tight mb-2 text-black line-clamp-2">Kulkas 2 Pintu Inverter</h3>
+              <div class="mb-3"><span class="inline-block bg-emerald-500 text-white font-public font-bold text-[10px] md:text-xs px-2.5 py-1 rounded-sm uppercase tracking-wide">Kondisi Prima</span></div>
+              <div class="mt-auto flex flex-col">
+                <span class="text-transparent font-inter font-semibold text-xs md:text-sm select-none" aria-hidden="true">-</span>
+                <span class="text-lg md:text-2xl font-black text-black">Rp 3.199.000</span>
+              </div>
+            </div>
+          </a>
+        </article>
+        <!-- ── DUMMY CARD 2 ── -->
+        <article class="stagger-item bg-white rounded-3xl p-4 md:p-6 border border-gray-100 hover:shadow-card transition-all duration-300 group flex flex-col h-full" role="listitem">
+          <a href="#" class="flex flex-col h-full w-full outline-none">
+            <div class="relative w-full aspect-[4/3] bg-gray-50 rounded-2xl overflow-hidden mb-4 flex items-center justify-center">
+              <img src="https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=400&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Mesin Cuci" loading="lazy">
+            </div>
+            <div class="flex flex-col flex-1">
+              <span class="text-gray-500 font-inter font-bold text-[10px] md:text-xs uppercase tracking-wider mb-1 block">Mesin Cuci</span>
+              <h3 class="text-base md:text-xl font-black font-public leading-tight mb-2 text-black line-clamp-2">Mesin Cuci Tabung 1 8kg</h3>
+              <div class="mb-3"><span class="inline-block bg-emerald-500 text-white font-public font-bold text-[10px] md:text-xs px-2.5 py-1 rounded-sm uppercase tracking-wide">Kondisi Prima</span></div>
+              <div class="mt-auto flex flex-col">
+                <span class="text-transparent font-inter font-semibold text-xs md:text-sm select-none" aria-hidden="true">-</span>
+                <span class="text-lg md:text-2xl font-black text-black">Rp 4.500.000</span>
+              </div>
+            </div>
+          </a>
+        </article>
+        <!-- ── DUMMY CARD 3 ── -->
+        <article class="stagger-item bg-white rounded-3xl p-4 md:p-6 border border-gray-100 hover:shadow-card transition-all duration-300 group flex flex-col h-full" role="listitem">
+          <a href="#" class="flex flex-col h-full w-full outline-none">
+            <div class="relative w-full aspect-[4/3] bg-gray-50 rounded-2xl overflow-hidden mb-4 flex items-center justify-center">
+              <img src="https://images.unsplash.com/photo-1631545806609-947f38b3f6ea?w=400&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="AC" loading="lazy">
+              <span class="absolute top-3 left-3 bg-red-600 text-white text-[10px] md:text-xs font-black px-3 py-1.5 rounded-full uppercase tracking-wider">SALE</span>
+            </div>
+            <div class="flex flex-col flex-1">
+              <span class="text-gray-500 font-inter font-bold text-[10px] md:text-xs uppercase tracking-wider mb-1 block">AC</span>
+              <h3 class="text-base md:text-xl font-black font-public leading-tight mb-2 text-black line-clamp-2">AC Split 1 PK Low Watt</h3>
+              <div class="mb-3"><span class="inline-block bg-blue-500 text-white font-public font-bold text-[10px] md:text-xs px-2.5 py-1 rounded-sm uppercase tracking-wide">Kondisi Baik</span></div>
+              <div class="mt-auto flex flex-col">
+                <span class="text-gray-400 font-inter font-semibold text-xs md:text-sm line-through">Rp 3.800.000</span>
+                <span class="text-lg md:text-2xl font-black text-black">Rp 3.450.000</span>
+              </div>
+            </div>
+          </a>
+        </article>
+        <!-- ── DUMMY CARD 4 ── -->
+        <article class="stagger-item bg-white rounded-3xl p-4 md:p-6 border border-gray-100 hover:shadow-card transition-all duration-300 group flex flex-col h-full" role="listitem">
+          <a href="#" class="flex flex-col h-full w-full outline-none">
+            <div class="relative w-full aspect-[4/3] bg-gray-50 rounded-2xl overflow-hidden mb-4 flex items-center justify-center">
+              <img src="https://images.unsplash.com/photo-1585659722983-3a675dabf23d?w=400&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Microwave" loading="lazy">
+            </div>
+            <div class="flex flex-col flex-1">
+              <span class="text-gray-500 font-inter font-bold text-[10px] md:text-xs uppercase tracking-wider mb-1 block">Lainnya</span>
+              <h3 class="text-base md:text-xl font-black font-public leading-tight mb-2 text-black line-clamp-2">Microwave Digital 20L</h3>
+              <div class="mb-3"><span class="inline-block bg-[#0356FF] text-white font-public font-bold text-[10px] md:text-xs px-2.5 py-1 rounded-sm uppercase tracking-wide">Seperti Baru</span></div>
+              <div class="mt-auto flex flex-col">
+                <span class="text-transparent font-inter font-semibold text-xs md:text-sm select-none" aria-hidden="true">-</span>
+                <span class="text-lg md:text-2xl font-black text-black">Rp 1.200.000</span>
+              </div>
+            </div>
+          </a>
+        </article>
+        @endforelse
+      </div>
+    </div>
+  </section>
+
+</main>
 @endsection
 
 @push('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js"></script>
 <script>
-  function setMain(thumbEl, src) {
-    document.getElementById('mainImage').src = src;
-    document.querySelectorAll('[role=\"tab\"]').forEach(function (el) {
-      el.classList.remove('thumb-active');
+  // Initialize Lenis (sama persis dengan detail-produk_v1.html)
+  const lenis = new Lenis({
+    duration: 1.2,
+    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    direction: 'vertical',
+    smooth: true,
+    mouseMultiplier: 1,
+    touchMultiplier: 2,
+  });
+
+  function raf(time) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+  }
+  requestAnimationFrame(raf);
+
+  // Sync GSAP with Lenis
+  gsap.registerPlugin(ScrollTrigger);
+  lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add((time) => { lenis.raf(time * 1000) });
+  gsap.ticker.lagSmoothing(0, 0);
+
+  /* --- OVERLAPPING SCROLL EFFECT (sama dengan detail-produk_v1.html) --- */
+  const overlapSections = document.querySelectorAll('.section-overlap');
+  overlapSections.forEach((section, index) => {
+    if (index === overlapSections.length - 1) return; // Skip last
+    ScrollTrigger.create({
+      trigger: section,
+      start: () => section.offsetHeight > window.innerHeight ? "bottom bottom" : "top top",
+      pin: true,
+      pinSpacing: false,
+    });
+  });
+
+  /* --- GSAP ANIMATIONS --- */
+  gsap.fromTo("section:first-of-type .reveal-fade",
+    { y: 20, autoAlpha: 0 },
+    { y: 0, autoAlpha: 1, duration: 1, ease: "power3.out", delay: 0.4 }
+  );
+
+  document.querySelectorAll('.reveal-fade:not(section:first-of-type .reveal-fade)').forEach(el => {
+    gsap.fromTo(el,
+      { y: 40, autoAlpha: 0 },
+      {
+        scrollTrigger: { trigger: el, start: "top 90%" },
+        y: 0, autoAlpha: 1, duration: 1, ease: "power3.out"
+      }
+    );
+  });
+
+  document.querySelectorAll('.reveal-wrapper').forEach(wrapper => {
+    const line = wrapper.querySelector('.reveal-line');
+    if (line) {
+      gsap.fromTo(line,
+        { y: "110%" },
+        {
+          scrollTrigger: { trigger: wrapper, start: "top 90%" },
+          y: "0%", duration: 1.2, ease: "power4.out"
+        }
+      );
+    }
+  });
+
+  const staggerGroups = document.querySelectorAll('.stagger-group');
+  staggerGroups.forEach(group => {
+    const items = group.querySelectorAll('.stagger-item');
+    if (!items.length) return;
+    gsap.fromTo(items,
+      { y: 60, autoAlpha: 0 },
+      {
+        scrollTrigger: { trigger: group, start: "top 85%" },
+        y: 0, autoAlpha: 1, duration: 0.8, stagger: 0.15, ease: "power3.out"
+      }
+    );
+  });
+
+  /* --- THUMBNAIL ANIMATION SCRIPT (GSAP) --- */
+  window.setMain = function(thumbEl, src) {
+    const mainImg = document.getElementById('mainImage');
+    if (!mainImg) return;
+
+    if (typeof gsap !== 'undefined') {
+      gsap.to(mainImg, {
+        opacity: 0,
+        scale: 0.95,
+        duration: 0.2,
+        ease: "power2.inOut",
+        onComplete: () => {
+          mainImg.src = src;
+          gsap.to(mainImg, {
+            opacity: 1,
+            scale: 1,
+            duration: 0.4,
+            ease: "power3.out"
+          });
+        }
+      });
+    } else {
+      mainImg.src = src;
+    }
+
+    document.querySelectorAll('[role="tab"]').forEach(function (el) {
+      el.classList.remove('thumb-active', 'opacity-100');
+      el.classList.add('opacity-60');
       el.setAttribute('aria-selected', 'false');
     });
-    thumbEl.classList.add('thumb-active');
+    thumbEl.classList.add('thumb-active', 'opacity-100');
+    thumbEl.classList.remove('opacity-60');
     thumbEl.setAttribute('aria-selected', 'true');
-  }
+  };
 
-  document.querySelectorAll('[role=\"tab\"]').forEach(function (tab) {
+  document.querySelectorAll('[role="tab"]').forEach(function (tab) {
     tab.addEventListener('click', function () {
-      setMain(this, this.dataset.src);
+      window.setMain(this, this.dataset.src);
     });
   });
 </script>

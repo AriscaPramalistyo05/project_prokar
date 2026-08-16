@@ -113,8 +113,13 @@
               yellow: "#FFCC00",
               orange: "#FF7A00",
               blue: "#3B82F6",
-              soft: "#E8F4F8"
+              soft: "#E8F4F8",
+              black: "#0A0A0A"
             }
+          },
+          boxShadow: {
+            'cuberto': '0 -15px 40px -10px rgba(0,0,0,0.2)',
+            'card': '0 20px 40px -10px rgba(0,0,0,0.15)'
           },
           borderRadius: {
             DEFAULT: "0.25rem",
@@ -169,16 +174,24 @@
       box-sizing: border-box;
     }
 
+    :root {
+      --radius-overlap: 3rem;
+    }
+
     html,
     body {
       margin: 0;
       padding: 0;
       overflow-x: hidden;
+      scroll-behavior: initial;
     }
 
     body {
-      background: #fff;
+      background: #0A0A0A;
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      font-size: 16px;
+      color: #111;
     }
 
     .material-symbols-outlined {
@@ -196,48 +209,263 @@
       font-family: "Font Awesome 6 Brands" !important;
     }
 
-    /* ── Navbar — ── */
+    /* ── Navbar ── */
     .nav-link {
       position: relative;
-      color: #a3a3a3;
-      font-size: 14px;
+      color: #555;
+      font-size: 1.1rem;
       font-weight: 600;
-      letter-spacing: 0.3px;
-      text-transform: uppercase;
-      transition: color 0.3s ease;
+      transition: color 0.3s ease, transform 0.3s ease;
     }
-
-    .nav-link:hover {
-      color: #111;
-    }
-
+    .nav-link:hover { color: #000; }
     .nav-link.active {
-      color: #111;
+      color: #000;
       font-weight: 700;
-      position: relative;
-      transform: translateY(-6px);
-      display: inline-flex;
-      align-items: center;
     }
-
     .nav-link.active::after {
       content: "";
       position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      bottom: -10px;
-      width: calc(100% + 4px);
-      height: 2px;
-      background: #111;
+      left: 0;
+      bottom: -6px;
+      width: 100%;
+      height: 3px;
+      background: #FFCC00;
+      border-radius: 2px;
     }
 
-    /* ── Footer brand image ── */
-    .footer-brand {
-      width: 100%;
-      max-width: 464px;
-      height: auto;
-      object-fit: contain;
+    /* ── Overlapping Sections ── */
+    .section-overlap {
+      position: relative;
+      border-radius: var(--radius-overlap) var(--radius-overlap) 0 0;
+      box-shadow: 0 -15px 40px -10px rgba(0,0,0,0.2);
+      will-change: transform;
     }
+    .section-overlap:first-of-type {
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    /* ── Text Animation Classes ── */
+    .reveal-wrapper {
+      overflow: hidden;
+      display: inline-flex;
+      vertical-align: top;
+    }
+    .reveal-line {
+      display: inline-block;
+      will-change: transform;
+      transform-origin: left top;
+    }
+    .reveal-fade {
+      will-change: transform, opacity;
+      visibility: hidden;
+    }
+    .stagger-item {
+      visibility: hidden;
+    }
+
+    /* ── Marquee ── */
+    .marquee-container {
+      overflow: hidden;
+      white-space: nowrap;
+      mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+      -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+    }
+    .marquee-content {
+      display: inline-flex;
+      gap: 2rem;
+      align-items: center;
+      animation: marquee 20s linear infinite;
+    }
+    @keyframes marquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ── Hero bottom ticker ── */
+    .ticker-wrap {
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .ticker-content {
+      display: inline-flex;
+      gap: 1.75rem;
+      align-items: center;
+      animation: marquee 22s linear infinite;
+    }
+    .ticker-content span {
+      font-family: "Archivo Narrow", sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #0A0A0A;
+      white-space: nowrap;
+    }
+    .ticker-content i { color: #0A0A0A; font-size: 0.35rem; }
+
+    /* ── Brand logos carousel ── */
+    .brand-carousel-wrap {
+      overflow: hidden;
+      position: relative;
+    }
+    .brand-track {
+      display: flex;
+      align-items: center;
+      animation: brandScroll 26s linear infinite;
+      width: max-content;
+      flex-wrap: nowrap;
+    }
+    .brand-carousel-wrap:hover .brand-track {
+      animation-play-state: paused;
+    }
+    .brand-logo {
+      font-family: Arial, Helvetica, sans-serif;
+      filter: grayscale(100%) brightness(0.4);
+      user-select: none;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    @keyframes brandScroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ── Hero diagonal parallax ── */
+    .hero-visual {
+      perspective: 1000px;
+    }
+    .hero-visual-grid {
+      transform: rotate(-7deg) scale(1.08);
+    }
+    .hero-parallax-col {
+      will-change: transform;
+    }
+    .hero-tile {
+      display: block;
+      position: relative;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      background: #f3f4f6;
+      box-shadow: 0 20px 40px -15px rgba(0,0,0,0.25);
+      border: 1px solid rgba(0,0,0,0.06);
+    }
+    .hero-tile img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .hero-tile .hero-tile-label {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.75), transparent);
+      color: #fff;
+      font-family: "Public Sans", sans-serif;
+      font-weight: 800;
+      font-size: 0.9rem;
+      padding: 0.6rem 0.75rem 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    /* ── Mobile hero gallery ── */
+    .hero-tile-mobile {
+      display: block;
+      position: relative;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      background: #f3f4f6;
+      box-shadow: 0 10px 25px -10px rgba(0,0,0,0.2);
+      border: 1px solid rgba(0,0,0,0.06);
+      aspect-ratio: 4 / 5;
+    }
+    .hero-tile-mobile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .hero-tile-mobile .hero-tile-label {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
+      color: #fff;
+      font-family: "Public Sans", sans-serif;
+      font-weight: 800;
+      font-size: 0.85rem;
+      text-align: left;
+      padding: 1.5rem 0.5rem 0.4rem;
+      text-transform: uppercase;
+      line-height: 1.1;
+    }
+
+    /* ── Readability ── */
+    #hero p.hero-desc-text {
+      letter-spacing: 0.1px;
+      line-height: 1.5;
+    }
+    #hero h1 {
+      letter-spacing: -0.01em;
+    }
+
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* ── Modal Cart ── */
+    #cart-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    #cart-modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+    #cart-modal {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: min(450px, 100vw);
+      background: #fff;
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: -10px 0 30px rgba(0, 0, 0, 0.2);
+    }
+    #cart-modal.open { transform: translateX(0); }
+    .color-swatch {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .color-swatch.selected { border-color: #111; transform: scale(1.1); }
+
+    .btn-hover {
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    .btn-hover:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 10px 20px -10px rgba(0,0,0,0.3);
+    }
+
+    /* ── FAQ ── */
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+      opacity: 0;
+    }
+    .faq-item.open .faq-answer {
+      max-height: 400px;
+      opacity: 1;
+    }
+    .faq-item.open .faq-icon { transform: rotate(45deg); }
   </style>
 
   @stack('styles')

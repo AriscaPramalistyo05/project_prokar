@@ -109,7 +109,7 @@
                             </table>
 
                             <p style="margin:20px 0 0 0; color:#bbbbbb; font-size:12px; line-height:1.6;">
-                                Tidak merasa mendaftar di Prokar Elektronik? Abaikan email ini —
+                                Tidak merasa mendaftar di Prokar Elektronik? Abaikan email ini
                                 tidak ada tindakan lebih lanjut yang diperlukan.
                             </p>
                         </td>

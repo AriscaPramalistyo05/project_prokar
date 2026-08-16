@@ -9,7 +9,7 @@
 @section('og_description', 'Jelajahi koleksi produk elektronik bekas berkualitas: TV, kulkas, mesin cuci, AC, dan lainnya. Kondisi prima, harga terbaik, bergaransi.')
 @section('twitter_title', 'Produk Elektronik Bekas Berkualitas | Prokar Elektronik')
 @section('twitter_description', 'Jelajahi koleksi produk elektronik bekas berkualitas: TV, kulkas, mesin cuci, AC, dan lainnya. Kondisi prima, harga terbaik, bergaransi.')
-@section('body_class', 'bg-white')
+@section('body_class', 'bg-brand-black')
 
 @push('schema')
 <script type="application/ld+json">
@@ -212,61 +212,62 @@
 @endpush
 
 @section('content')
-<main>
-    <!-- Breadcrumb (visually hidden but crawlable) -->
-    <nav aria-label="Breadcrumb" class="sr-only">
-      <ol>
-        <li><a href="{{ route('home') }}">Home</a></li>
-        <li aria-current="page">Produk</li>
-      </ol>
-    </nav>
+  <main class="bg-brand-black">
 
-    <!-- ── Title ── -->
-    <section aria-labelledby="produk-heading" class="px-4 md:px-[68px] pb-4">
-      <h1 id="produk-heading" class="text-black font-bold text-2xl sm:text-3xl md:text-5xl text-center">
-        Produk Kami
-      </h1>
+    <!-- HEADER PRODUK -->
+    <section class="bg-brand-black py-12 md:py-20 z-10 relative">
+      <div class="max-w-[1440px] mx-auto px-6 lg:px-12 text-center">
+        <nav aria-label="Breadcrumb" class="mb-4">
+          <ol class="flex justify-center text-sm font-public font-bold uppercase tracking-widest text-gray-500">
+            <li><a href="{{ route('home') }}" class="hover:text-brand-yellow transition-colors">Home</a></li>
+            <li class="mx-2">/</li>
+            <li aria-current="page" class="text-white">Produk</li>
+          </ol>
+        </nav>
+        <h1 class="text-white text-5xl md:text-7xl font-black uppercase tracking-tighter font-public mb-8">
+          <span>Koleksi Produk</span>
+        </h1>
+      </div>
     </section>
 
-    <!-- ── Category Filter (Livewire) ── -->
-    <livewire:frontend.product-filter />
+    <!-- KONTEN PRODUK (OVERLAPPING SECTION) -->
+    <section class="section-overlap bg-white pt-12 pb-24 z-20">
+      <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
 
-    <!-- ── Product Grid (Livewire) ── -->
-    <livewire:frontend.product-grid />
+        <!-- ── Category Filter (Livewire) ── -->
+        <livewire:frontend.product-filter />
 
+        <!-- ── Product Grid (Livewire) ── -->
+        <livewire:frontend.product-grid />
     <!-- ── Pagination ── -->
-    <nav aria-label="Navigasi halaman produk" class="px-4 md:px-[68px] py-4 mb-16">
-      <div class="flex justify-center items-center gap-1 md:gap-0 flex-wrap">
-        <button aria-label="Halaman sebelumnya"
-          class="h-10 w-10 object-contain mr-1 md:mr-[7px] flex items-center justify-center">
-          <i class="fa-solid fa-chevron-left text-black" aria-hidden="true"></i>
+    <nav aria-label="Navigasi halaman produk" class="pt-12">
+      <div class="flex justify-center items-center gap-1 md:gap-2 flex-wrap">
+        <button aria-label="Halaman sebelumnya" class="w-12 h-12 rounded-full border border-gray-300 flex items-center justify-center hover:border-black transition-colors bg-white hover:bg-black hover:text-white group">
+          <i class="fa-solid fa-arrow-left text-gray-500 group-hover:text-white transition-colors" aria-hidden="true"></i>
         </button>
 
-        <a href="{{ route('produk.index') }}?page=1" aria-label="Halaman 1" aria-current="page"
-          class="flex items-center justify-center bg-black py-[7px] px-[15px] md:px-[17px] mr-2 text-white">
+        <a href="{{ route('produk.index') }}?page=1" aria-label="Halaman 1" aria-current="page" class="w-12 h-12 rounded-full bg-brand-yellow text-black font-bold font-public flex items-center justify-center shadow-[2px_2px_0px_#000]">
           1
         </a>
-        <a href="{{ route('produk.index') }}?page=2" aria-label="Halaman 2"
-          class="flex items-center justify-center py-[7px] px-[15px] mr-2 border border-solid border-[#7E7576] text-[#1A1C1C]">
+        <a href="{{ route('produk.index') }}?page=2" aria-label="Halaman 2" class="w-12 h-12 rounded-full bg-white border border-gray-300 hover:border-black text-black font-bold font-public flex items-center justify-center transition-colors">
           2
         </a>
-        <a href="{{ route('produk.index') }}?page=3" aria-label="Halaman 3"
-          class="flex items-center justify-center py-[7px] px-[15px] mr-2 border border-solid border-[#7E7576] text-[#1A1C1C]">
+        <a href="{{ route('produk.index') }}?page=3" aria-label="Halaman 3" class="w-12 h-12 rounded-full bg-white border border-gray-300 hover:border-black text-black font-bold font-public flex items-center justify-center transition-colors">
           3
         </a>
-        <span class="flex items-center justify-center px-2 mr-2" aria-hidden="true">
-          <span class="text-[#1A1C1C] text-base">...</span>
+        <span class="flex items-center justify-center px-2" aria-hidden="true">
+          <span class="text-black font-bold">...</span>
         </span>
-        <a href="{{ route('produk.index') }}?page=10" aria-label="Halaman 10"
-          class="flex items-center justify-center py-[7px] px-3 mr-2 border border-solid border-[#7E7576] text-[#1A1C1C]">
+        <a href="{{ route('produk.index') }}?page=10" aria-label="Halaman 10" class="w-12 h-12 rounded-full bg-white border border-gray-300 hover:border-black text-black font-bold font-public flex items-center justify-center transition-colors">
           10
         </a>
 
-        <button aria-label="Halaman berikutnya"
-          class="h-10 w-10 object-contain flex items-center justify-center">
-          <i class="fa-solid fa-chevron-right text-black" aria-hidden="true"></i>
+        <button aria-label="Halaman berikutnya" class="w-12 h-12 rounded-full border border-gray-300 flex items-center justify-center hover:border-black transition-colors bg-white hover:bg-black hover:text-white group">
+          <i class="fa-solid fa-arrow-right text-gray-500 group-hover:text-white transition-colors" aria-hidden="true"></i>
         </button>
       </div>
     </nav>
+      </div>
+    </section>
   </main>
 @endsection

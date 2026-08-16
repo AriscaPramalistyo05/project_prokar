@@ -46,6 +46,7 @@ class ServiceDetail extends Component
         }
 
         $this->serviceOrder = $serviceOrder;
+        $this->photo_type = in_array($serviceOrder->status, ['in_progress', 'completed']) ? 'after' : 'before';
     }
 
     private function logStatusChange(string $note)
@@ -69,13 +70,15 @@ class ServiceDetail extends Component
         // Let's just set to 'confirmed' for both, but for drop off it means "Menunggu Barang & Teknisi".
         
         $this->serviceOrder->update(['status' => 'confirmed']);
+        $this->serviceOrder->refresh();
         $this->logStatusChange('Pesanan disetujui oleh Admin. Menunggu penugasan teknisi.');
         $this->success('Pesanan berhasil disetujui.');
     }
 
     public function openAssignModal()
     {
-        $this->new_technician_id = $this->serviceOrder->technician_id;
+        $firstTechId = User::role('teknisi')->first()?->id;
+        $this->new_technician_id = $this->serviceOrder->technician_id ?? $firstTechId;
         $this->assign_modal = true;
     }
 
@@ -89,6 +92,7 @@ class ServiceDetail extends Component
             'technician_id' => $this->new_technician_id,
             'status' => 'confirmed' // Ensures it stays or moves to confirmed
         ]);
+        $this->serviceOrder->refresh();
         
         $tech = User::find($this->new_technician_id);
         $this->logStatusChange('Ditugaskan kepada teknisi: ' . $tech->name);
@@ -104,6 +108,7 @@ class ServiceDetail extends Component
             'customer_approval' => 'approved',
             'approved_at' => now(),
         ]);
+        $this->serviceOrder->refresh();
         $this->logStatusChange('Pelanggan menyetujui estimasi harga. Lanjut perbaikan.');
         $this->success('Status diubah: Lanjut Perbaikan.');
     }
@@ -114,6 +119,7 @@ class ServiceDetail extends Component
             'status' => 'cancelled',
             'customer_approval' => 'rejected',
         ]);
+        $this->serviceOrder->refresh();
         $this->logStatusChange('Pelanggan menolak estimasi harga. Servis dibatalkan.');
         $this->success('Servis dibatalkan.');
     }
@@ -121,6 +127,7 @@ class ServiceDetail extends Component
     public function cancelService()
     {
         $this->serviceOrder->update(['status' => 'cancelled']);
+        $this->serviceOrder->refresh();
         $this->logStatusChange('Servis dibatalkan oleh Admin.');
         $this->success('Servis berhasil dibatalkan.');
     }
@@ -130,6 +137,7 @@ class ServiceDetail extends Component
     public function startDiagnosing()
     {
         $this->serviceOrder->update(['status' => 'diagnosing']);
+        $this->serviceOrder->refresh();
         $this->logStatusChange('Teknisi mulai melakukan pengecekan.');
         $this->success('Pengecekan dimulai.');
     }
@@ -143,9 +151,15 @@ class ServiceDetail extends Component
 
     public function submitEstimate()
     {
+        $this->new_estimated_cost = (float) preg_replace('/[^0-9.]/', '', (string) $this->new_estimated_cost);
+
         $this->validate([
             'new_diagnosis' => 'required|string',
             'new_estimated_cost' => 'required|numeric|min:0'
+        ], [
+            'new_diagnosis.required' => 'Hasil diagnosa wajib diisi.',
+            'new_estimated_cost.required' => 'Estimasi biaya wajib diisi.',
+            'new_estimated_cost.numeric' => 'Estimasi biaya harus berupa angka.',
         ]);
 
         $this->serviceOrder->update([
@@ -153,6 +167,7 @@ class ServiceDetail extends Component
             'estimated_cost' => $this->new_estimated_cost,
             'status' => 'waiting_approval'
         ]);
+        $this->serviceOrder->refresh();
         
         $this->logStatusChange('Teknisi mengirimkan hasil diagnosa dan estimasi harga.');
         $this->diagnose_modal = false;
@@ -168,22 +183,51 @@ class ServiceDetail extends Component
 
     public function completeService()
     {
+        $this->new_final_cost = (float) preg_replace('/[^0-9.]/', '', (string) $this->new_final_cost);
+
         $this->validate([
             'new_final_cost' => 'required|numeric|min:0'
+        ], [
+            'new_final_cost.required' => 'Biaya final wajib diisi.',
+            'new_final_cost.numeric' => 'Biaya final harus berupa angka.',
         ]);
 
         $warrantyDays = (int) setting('warranty_duration_days', 30);
         
-        $this->serviceOrder->update([
+        $updates = [
             'final_cost' => $this->new_final_cost,
             'status' => 'completed',
             'completed_at' => now(),
             'warranty_until' => now()->addDays($warrantyDays),
-        ]);
+        ];
 
-        $this->logStatusChange('Pekerjaan selesai. Menunggu pengambilan/pengiriman.');
+        if ($this->serviceOrder->service_type === 'home_visit') {
+            $updates['payment_status'] = 'paid';
+            $updates['paid_at'] = now();
+            $logNote = 'Pekerjaan selesai dan pembayaran lunas diterima oleh teknisi di lokasi.';
+        } else {
+            $updates['payment_status'] = 'unpaid';
+            $logNote = 'Pekerjaan selesai. Menunggu pengambilan dan pembayaran di toko.';
+        }
+
+        $this->serviceOrder->update($updates);
+        $this->serviceOrder->refresh();
+
+        $this->logStatusChange($logNote);
         $this->final_modal = false;
         $this->success('Servis berhasil diselesaikan!');
+    }
+
+    public function markAsPaid()
+    {
+        $this->serviceOrder->update([
+            'payment_status' => 'paid',
+            'paid_at' => now(),
+        ]);
+        $this->serviceOrder->refresh();
+        
+        $this->logStatusChange('Pembayaran lunas diterima oleh Admin/Kasir.');
+        $this->success('Status pembayaran berhasil diubah menjadi Lunas.');
     }
 
     // ─── BIAYA TAMBAHAN ───
@@ -207,9 +251,15 @@ class ServiceDetail extends Component
 
     public function addExtraFee()
     {
+        $this->fee_amount = (float) preg_replace('/[^0-9.]/', '', (string) $this->fee_amount);
+
         $this->validate([
             'fee_name' => 'required|string',
             'fee_amount' => 'required|numeric|min:1'
+        ], [
+            'fee_name.required' => 'Nama biaya wajib diisi.',
+            'fee_amount.required' => 'Nominal biaya wajib diisi.',
+            'fee_amount.numeric' => 'Nominal biaya harus berupa angka.',
         ]);
 
         $this->serviceOrder->serviceFees()->create([
@@ -229,6 +279,62 @@ class ServiceDetail extends Component
 
     // ─── FOTO ───
 
+    private function compressAndStoreImage($file)
+    {
+        $extension = strtolower($file->getClientOriginalExtension());
+        $imageExtensions = ['jpeg', 'jpg', 'png', 'webp'];
+
+        if (!in_array($extension, $imageExtensions)) {
+            return $file->store('service_images', 'public');
+        }
+
+        $filename = 'service_images/' . \Illuminate\Support\Str::random(40) . '.webp';
+        $fullPath = storage_path('app/public/' . $filename);
+
+        if (!file_exists(storage_path('app/public/service_images'))) {
+            mkdir(storage_path('app/public/service_images'), 0755, true);
+        }
+
+        try {
+            $sourcePath = $file->getRealPath();
+            list($width, $height) = getimagesize($sourcePath);
+
+            $maxDim = 1600;
+            if ($width > $maxDim || $height > $maxDim) {
+                $ratio = min($maxDim / $width, $maxDim / $height);
+                $newWidth = (int) ($width * $ratio);
+                $newHeight = (int) ($height * $ratio);
+            } else {
+                $newWidth = $width;
+                $newHeight = $height;
+            }
+
+            $srcImage = match($extension) {
+                'png' => imagecreatefrompng($sourcePath),
+                'webp' => imagecreatefromwebp($sourcePath),
+                default => imagecreatefromjpeg($sourcePath),
+            };
+
+            if ($srcImage) {
+                $dstImage = imagecreatetruecolor($newWidth, $newHeight);
+                imagealphablending($dstImage, false);
+                imagesavealpha($dstImage, true);
+
+                imagecopyresampled($dstImage, $srcImage, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+                imagewebp($dstImage, $fullPath, 75);
+
+                imagedestroy($srcImage);
+                imagedestroy($dstImage);
+
+                return $filename;
+            }
+        } catch (\Throwable $e) {
+            // Fallback to standard store if GD fails
+        }
+
+        return $file->store('service_images', 'public');
+    }
+
     public function uploadPhoto()
     {
         $this->validate([
@@ -236,7 +342,7 @@ class ServiceDetail extends Component
             'photo_type' => 'required|in:before,after',
         ]);
 
-        $path = $this->new_photo->store('service_images', 'public');
+        $path = $this->compressAndStoreImage($this->new_photo);
 
         $extension = strtolower($this->new_photo->getClientOriginalExtension());
         $videoExts = ['mp4', 'mov', 'avi', 'webm'];
@@ -255,6 +361,8 @@ class ServiceDetail extends Component
 
     public function render()
     {
+        $this->serviceOrder->refresh();
+        
         $technicians = User::role('teknisi')->get();
         $masterFees = AdditionalFee::where('is_active', true)->get();
 

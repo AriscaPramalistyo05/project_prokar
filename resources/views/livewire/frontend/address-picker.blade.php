@@ -1,10 +1,18 @@
-<div x-data="addressPicker()" x-init="initData()" class="space-y-4">
+<div x-data="addressPickerData(
+        '{{ $province_id ?? '' }}',
+        '{{ $regency_id ?? '' }}',
+        '{{ $district_id ?? '' }}',
+        '{{ $village_id ?? '' }}',
+        '{{ addslashes($address_detail ?? '') }}'
+    )"
+     x-init="init()"
+     class="space-y-4">
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <!-- Provinsi -->
         <div>
             <label class="{{ $labelClass }}">Provinsi <span class="text-red-500">*</span></label>
             <div class="relative">
-                <select x-model="province" @change="fetchRegencies()" class="{{ $inputClass }} appearance-none bg-transparent" required>
+                <select x-model="province" @change="onProvinceChange()" class="{{ $inputClass }} appearance-none bg-transparent cursor-pointer">
                     <option value="">-- Pilih Provinsi --</option>
                     <template x-for="p in provinces" :key="p.id">
                         <option :value="p.id" x-text="p.name" :selected="p.id == province"></option>
@@ -20,7 +28,7 @@
         <div>
             <label class="{{ $labelClass }}">Kabupaten/Kota <span class="text-red-500">*</span></label>
             <div class="relative">
-                <select x-model="regency" @change="fetchDistricts()" :disabled="!province" class="{{ $inputClass }} appearance-none bg-transparent disabled:opacity-50" required>
+                <select x-model="regency" @change="onRegencyChange()" :disabled="!province" class="{{ $inputClass }} appearance-none bg-transparent disabled:opacity-50 cursor-pointer">
                     <option value="">-- Pilih Kab/Kota --</option>
                     <template x-for="r in regencies" :key="r.id">
                         <option :value="r.id" x-text="r.name" :selected="r.id == regency"></option>
@@ -36,7 +44,7 @@
         <div>
             <label class="{{ $labelClass }}">Kecamatan <span class="text-red-500">*</span></label>
             <div class="relative">
-                <select x-model="district" @change="fetchVillages()" :disabled="!regency" class="{{ $inputClass }} appearance-none bg-transparent disabled:opacity-50" required>
+                <select x-model="district" @change="onDistrictChange()" :disabled="!regency" class="{{ $inputClass }} appearance-none bg-transparent disabled:opacity-50 cursor-pointer">
                     <option value="">-- Pilih Kecamatan --</option>
                     <template x-for="d in districts" :key="d.id">
                         <option :value="d.id" x-text="d.name" :selected="d.id == district"></option>
@@ -52,7 +60,7 @@
         <div>
             <label class="{{ $labelClass }}">Desa/Kelurahan <span class="text-red-500">*</span></label>
             <div class="relative">
-                <select x-model="village" @change="updateNames()" :disabled="!district" class="{{ $inputClass }} appearance-none bg-transparent disabled:opacity-50" required>
+                <select x-model="village" @change="syncToParent()" :disabled="!district" class="{{ $inputClass }} appearance-none bg-transparent disabled:opacity-50 cursor-pointer">
                     <option value="">-- Pilih Desa/Kelurahan --</option>
                     <template x-for="v in villages" :key="v.id">
                         <option :value="v.id" x-text="v.name" :selected="v.id == village"></option>
@@ -67,87 +75,121 @@
 
     <div>
         <label class="{{ $labelClass }}">Detail Alamat (Jalan, RT/RW, Patokan) <span class="text-red-500">*</span></label>
-        <textarea x-model="address_detail" @input="updateNames()" rows="3" class="{{ $inputClass }}" placeholder="Contoh: Jl. Diponegoro No.10, RT 01/RW 02, Samping Masjid" required></textarea>
+        <textarea x-model="address_detail" @input="syncToParent()" rows="3" class="{{ $inputClass }}" placeholder="Contoh: Jl. Diponegoro No.10, RT 01/RW 02, Samping Masjid"></textarea>
     </div>
     
     <script>
-        document.addEventListener('alpine:init', () => {
-            Alpine.data('addressPicker', () => ({
-                province: @entangle('province_id').live,
-                regency: @entangle('regency_id').live,
-                district: @entangle('district_id').live,
-                village: @entangle('village_id').live,
-                address_detail: @entangle('address_detail').live,
-                province_name: @entangle('province_name').live,
-                regency_name: @entangle('regency_name').live,
-                district_name: @entangle('district_name').live,
-                village_name: @entangle('village_name').live,
-                
-                provinces: [],
-                regencies: [],
-                districts: [],
-                villages: [],
-                
-                async initData() {
-                    await this.fetchProvinces();
-                    if (this.province) await this.fetchRegencies();
-                    if (this.regency) await this.fetchDistricts();
-                    if (this.district) await this.fetchVillages();
-                },
-                
-                async fetchProvinces() {
-                    const res = await fetch('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json');
-                    this.provinces = await res.json();
-                },
-                
-                async fetchRegencies() {
-                    this.regency = '';
-                    this.district = '';
-                    this.village = '';
-                    this.regencies = [];
-                    this.districts = [];
-                    this.villages = [];
-                    this.updateNames();
-                    if (!this.province) return;
-                    
-                    const res = await fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${this.province}.json`);
-                    this.regencies = await res.json();
-                },
-                
-                async fetchDistricts() {
-                    this.district = '';
-                    this.village = '';
-                    this.districts = [];
-                    this.villages = [];
-                    this.updateNames();
-                    if (!this.regency) return;
-                    
-                    const res = await fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/districts/${this.regency}.json`);
-                    this.districts = await res.json();
-                },
-                
-                async fetchVillages() {
-                    this.village = '';
-                    this.villages = [];
-                    this.updateNames();
-                    if (!this.district) return;
-                    
-                    const res = await fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/villages/${this.district}.json`);
-                    this.villages = await res.json();
-                },
-                
-                updateNames() {
-                    const p = this.provinces.find(x => x.id == this.province);
-                    const r = this.regencies.find(x => x.id == this.regency);
-                    const d = this.districts.find(x => x.id == this.district);
-                    const v = this.villages.find(x => x.id == this.village);
-                    
-                    this.province_name = p ? p.name : '';
-                    this.regency_name = r ? r.name : '';
-                    this.district_name = d ? d.name : '';
-                    this.village_name = v ? v.name : '';
-                }
-            }));
-        });
+        (function() {
+            window.emsifaCache = window.emsifaCache || {};
+
+            if (typeof window.addressPickerDataFn === 'undefined') {
+                window.addressPickerDataFn = true;
+
+                window.addressPickerData = function(initProvince, initRegency, initDistrict, initVillage, initDetail) {
+                    return {
+                        province: initProvince || '',
+                        regency: initRegency || '',
+                        district: initDistrict || '',
+                        village: initVillage || '',
+                        address_detail: initDetail || '',
+
+                        provinces: [],
+                        regencies: [],
+                        districts: [],
+                        villages: [],
+
+                        async init() {
+                            await this.fetchProvinces();
+                            if (this.province) await this.fetchRegenciesLoad();
+                            if (this.regency) await this.fetchDistrictsLoad();
+                            if (this.district) await this.fetchVillagesLoad();
+                        },
+
+                        syncToParent() {
+                            const payload = {
+                                province_id: this.province || '',
+                                regency_id: this.regency || '',
+                                district_id: this.district || '',
+                                village_id: this.village || '',
+                                address_detail: this.address_detail || '',
+                            };
+                            // Dispatch globally so parent ServiceForm/SellForm can listen via #[On('address-updated')]
+                            if (typeof Livewire !== 'undefined') {
+                                Livewire.dispatch('address-updated', payload);
+                            }
+                        },
+
+                        async onProvinceChange() {
+                            this.regency = ''; this.district = ''; this.village = '';
+                            this.regencies = []; this.districts = []; this.villages = [];
+                            this.syncToParent();
+                            if (this.province) await this.fetchRegencies();
+                        },
+
+                        async onRegencyChange() {
+                            this.district = ''; this.village = '';
+                            this.districts = []; this.villages = [];
+                            this.syncToParent();
+                            if (this.regency) await this.fetchDistricts();
+                        },
+
+                        async onDistrictChange() {
+                            this.village = ''; this.villages = [];
+                            this.syncToParent();
+                            if (this.district) await this.fetchVillages();
+                        },
+
+                        async fetchProvinces() {
+                            const key = 'provinces';
+                            if (window.emsifaCache[key]) { this.provinces = window.emsifaCache[key]; return; }
+                            try {
+                                const res = await fetch('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json');
+                                if (res.ok) { const d = await res.json(); window.emsifaCache[key] = d; this.provinces = d; }
+                            } catch(e) { console.error('provinces err', e); }
+                        },
+
+                        async fetchRegencies() {
+                            const key = `regencies_${this.province}`;
+                            if (window.emsifaCache[key]) { this.regencies = window.emsifaCache[key]; return; }
+                            try {
+                                const res = await fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${this.province}.json`);
+                                if (res.ok) { const d = await res.json(); window.emsifaCache[key] = d; this.regencies = d; }
+                            } catch(e) { console.error('regencies err', e); }
+                        },
+
+                        async fetchRegenciesLoad() {
+                            await this.fetchRegencies();
+                        },
+
+                        async fetchDistricts() {
+                            const key = `districts_${this.regency}`;
+                            if (window.emsifaCache[key]) { this.districts = window.emsifaCache[key]; return; }
+                            try {
+                                const res = await fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/districts/${this.regency}.json`);
+                                if (res.ok) { const d = await res.json(); window.emsifaCache[key] = d; this.districts = d; }
+                            } catch(e) { console.error('districts err', e); }
+                        },
+
+                        async fetchDistrictsLoad() {
+                            await this.fetchDistricts();
+                        },
+
+                        async fetchVillages() {
+                            const key = `villages_${this.district}`;
+                            if (window.emsifaCache[key]) { this.villages = window.emsifaCache[key]; return; }
+                            try {
+                                const res = await fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/villages/${this.district}.json`);
+                                if (res.ok) { const d = await res.json(); window.emsifaCache[key] = d; this.villages = d; }
+                            } catch(e) { console.error('villages err', e); }
+                        },
+
+                        async fetchVillagesLoad() {
+                            await this.fetchVillages();
+                        },
+                    };
+                };
+            }
+        })();
     </script>
 </div>
+

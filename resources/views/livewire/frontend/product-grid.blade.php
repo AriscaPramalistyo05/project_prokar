@@ -1,47 +1,45 @@
 <div wire:ignore.self>
-    <section aria-label="Daftar produk elektronik" class="px-4 md:px-[68px] py-6 md:py-8">
-        <div class="grid grid-cols-2 tablet:grid-cols-3 md:grid-cols-4 gap-3 md:gap-0 md:items-stretch" role="list">
+    <section aria-label="Daftar produk elektronik" class="py-6 md:py-8">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8 relative z-10" role="list">
             @foreach ($products as $p)
-                <article class="flex flex-col bg-[#F3F3F3] md:bg-white md:mx-4 md:mb-8 border border-transparent md:border-0"
-                    style="box-shadow: 0px 2px 4px #0000001a" role="listitem">
+                <article class="onsale-card bg-gray-50 rounded-3xl p-4 md:p-6 border border-gray-100 hover:shadow-card transition-all duration-300 group flex flex-col h-full" role="listitem">
                     <a href="{{ route('produk.show', $p['slug']) }}"
-                        aria-label="Lihat detail {{ $p['name'] }}" class="block">
-                        <div class="card-bg-img relative"
-                            style="background-image: url('{{ $p['image'] }}');">
+                        aria-label="Lihat detail {{ $p['name'] }}" class="flex flex-col h-full w-full outline-none block">
+                        <div class="relative w-full aspect-[4/3] bg-white rounded-2xl overflow-hidden mb-4 flex items-center justify-center">
+                            <img src="{{ $p['image'] }}"
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                alt="{{ $p['name'] }}" loading="lazy"
+                                onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&q=80'">
                             @if ($p['on_sale'])
-                                <div class="absolute top-1.5 left-1 md:top-3 md:left-3 bg-[#F9362C] md:bg-[#FF383C] py-1 px-2">
-                                    <span class="text-white font-bold text-[10px] md:text-xs">SALE</span>
-                                </div>
+                                <span class="absolute top-3 left-3 bg-red-600 text-white text-[10px] md:text-xs font-black px-3 py-1.5 rounded-full uppercase tracking-wider">SALE</span>
                             @endif
                         </div>
-                    </a>
-                    <div class="flex flex-col p-2 tablet:p-2.5 md:flex-1 md:py-2.5 md:pr-4 md:pl-0">
-                        <div class="flex flex-col md:flex-1 md:ml-4">
-                            <span class="text-[#4C4546] md:text-gray-500 text-[10px] md:text-sm block mb-0.5 md:mb-1">
+                        <div class="flex flex-col flex-1">
+                            <span class="text-gray-500 font-inter font-bold text-[10px] md:text-xs uppercase tracking-wider mb-1 block">
                                 {{ $p['category_label'] }}
                             </span>
-                            <h2 class="text-black md:text-gray-800 font-bold text-sm md:text-lg line-clamp-2 min-h-[2rem] tablet:min-h-[2.25rem] md:h-14 mb-1 md:mb-1.5 overflow-hidden">
+                            <h3 class="text-base md:text-xl font-black font-public leading-tight mb-2 text-black line-clamp-2">
                                 {{ $p['name'] }}
-                            </h2>
-                            <div class="flex items-start mb-1 md:mb-2 md:h-8">
-                                <div class="inline-block {{ $p['condition_class'] }} py-0.5 md:py-1 px-2 md:px-3 min-w-[60px] text-center">
-                                    <span class="text-white font-bold text-[9px] md:text-xs">{{ $p['condition'] }}</span>
-                                </div>
+                            </h3>
+                            <div class="mb-3">
+                                <span class="inline-block {{ $p['condition_class'] }} text-white font-public font-bold text-[10px] md:text-xs px-2.5 py-1 rounded-sm uppercase tracking-wide">
+                                    {{ $p['condition'] }}
+                                </span>
                             </div>
-                            <div class="md:mt-auto">
+                            <div class="mt-auto flex flex-col">
                                 @if ($p['original_price'])
-                                    <p class="text-[#7E7576] md:text-gray-500 text-[10px] md:text-sm line-through leading-tight min-h-[1rem] md:h-5">
+                                    <span class="text-gray-400 font-inter font-semibold text-xs md:text-sm line-through">
                                         Rp {{ number_format($p['original_price'], 0, ',', '.') }}
-                                    </p>
+                                    </span>
                                 @else
-                                    <p class="min-h-[1rem] md:h-5" aria-hidden="true"></p>
+                                    <span class="text-transparent font-inter font-semibold text-xs md:text-sm select-none" aria-hidden="true">-</span>
                                 @endif
-                                <p class="text-black font-bold text-sm md:text-xl">
+                                <span class="text-lg md:text-2xl font-black text-black">
                                     Rp {{ number_format($p['price'], 0, ',', '.') }}
-                                </p>
+                                </span>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </article>
             @endforeach
         </div>

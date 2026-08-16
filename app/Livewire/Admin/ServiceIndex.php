@@ -20,6 +20,13 @@ class ServiceIndex extends Component
 
     public array $sortBy = ['column' => 'created_at', 'direction' => 'desc'];
 
+    public function mount()
+    {
+        if (Auth::user()->hasRole('teknisi') && $this->tab === 'baru') {
+            $this->tab = 'proses';
+        }
+    }
+
     public function updatedSearch()
     {
         $this->resetPage();
@@ -32,6 +39,10 @@ class ServiceIndex extends Component
 
     public function render()
     {
+        if (Auth::user()->hasRole('teknisi') && $this->tab === 'baru') {
+            $this->tab = 'proses';
+        }
+
         $query = ServiceOrder::query()->with(['category', 'technician']);
 
         // Role-based access

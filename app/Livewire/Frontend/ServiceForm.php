@@ -32,6 +32,7 @@ class ServiceForm extends Component
     public $media = [];
     public $submitted = false;
     public $newServiceCode = '';
+    public $submittedWhatsapp = '';
     public $userServices = [];
 
     #[Livewire\Attributes\On('serviceTypeChanged')]
@@ -39,6 +40,7 @@ class ServiceForm extends Component
     {
         $this->serviceType = $type;
     }
+
 
     public function mount()
     {
@@ -67,6 +69,14 @@ class ServiceForm extends Component
             \App\Models\ServiceOrder::whereIn('service_code', $codes)
                 ->whereNull('user_id')
                 ->update(['user_id' => $userId]);
+        }
+    }
+
+    public function removeMedia($index)
+    {
+        if (isset($this->media[$index])) {
+            unset($this->media[$index]);
+            $this->media = array_values($this->media);
         }
     }
 
@@ -116,6 +126,15 @@ class ServiceForm extends Component
 
     public function submit()
     {
+        $rateLimitKey = 'submit-service:' . request()->ip();
+
+        if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($rateLimitKey, 3)) {
+            $seconds = \Illuminate\Support\Facades\RateLimiter::availableIn($rateLimitKey);
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'rate_limit' => 'Anda telah mencapai batas pengajuan. Silakan coba lagi dalam ' . ceil($seconds / 60) . ' menit.',
+            ]);
+        }
+
         $this->validate();
 
         \Illuminate\Support\Facades\DB::transaction(function () {
@@ -155,10 +174,20 @@ class ServiceForm extends Component
             event(new \App\Events\ServiceOrderCreated($serviceOrder));
 
             $this->newServiceCode = $serviceOrder->service_code;
+
+            if (\Illuminate\Support\Facades\Auth::check()) {
+                $this->userServices = \App\Models\ServiceOrder::where('user_id', \Illuminate\Support\Facades\Auth::id())
+                    ->latest()
+                    ->get()
+                    ->toArray();
+            }
         });
 
         $this->submitted = true;
+        $this->submittedWhatsapp = $this->whatsapp;
         $this->reset(['nama', 'email', 'whatsapp', 'kategori', 'merek', 'deskripsi', 'province_id', 'regency_id', 'district_id', 'village_id', 'address_detail', 'media']);
+        
+        \Illuminate\Support\Facades\RateLimiter::hit($rateLimitKey, 3600); // 1 jam cooldown
     }
 
     public function resetForm()

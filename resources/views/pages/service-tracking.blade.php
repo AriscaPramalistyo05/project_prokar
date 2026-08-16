@@ -5,8 +5,7 @@
 @section('robots', 'noindex, nofollow')
 @section('theme_color', '#FFCC00')
 @section('og_type', 'website')
-@section('body_class', 'bg-white font-inter')
-
+@section('body_class', 'bg-brand-black font-inter')
 @push('styles')
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -67,7 +66,7 @@
 @endpush
 
 @section('content')
-<main>
+<main class="bg-brand-black flex flex-col min-h-screen">
 
     <!-- ── Hero / Search (Livewire) ── -->
     <livewire:frontend.tracking-search />
@@ -77,3 +76,53 @@
 
   </main>
 @endsection
+
+@push('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js"></script>
+<script>
+  // Initialize Lenis
+  const lenis = new Lenis({
+    duration: 1.2,
+    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    direction: 'vertical',
+    smooth: true,
+  });
+
+  function raf(time) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+  }
+  requestAnimationFrame(raf);
+
+  // Sync GSAP with Lenis
+  gsap.registerPlugin(ScrollTrigger);
+  lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add((time) => { lenis.raf(time * 1000) });
+  gsap.ticker.lagSmoothing(0, 0);
+
+  /* --- OVERLAPPING SCROLL EFFECT --- */
+  const overlapSections = document.querySelectorAll('.section-overlap');
+  overlapSections.forEach((section, index) => {
+    // skip if it's not a section we want to pin, but here we can just pin the .section-overlap
+    ScrollTrigger.create({
+      trigger: section,
+      start: () => section.offsetHeight > window.innerHeight ? "bottom bottom" : "top top",
+      pin: true,
+      pinSpacing: false,
+    });
+  });
+
+  /* --- GSAP ANIMATIONS --- */
+  gsap.fromTo("section:first-of-type .reveal-line",
+    { y: "110%" },
+    { y: "0%", duration: 1.2, ease: "power4.out", delay: 0.2 }
+  );
+  
+  gsap.fromTo(".reveal-fade",
+    { y: 30, autoAlpha: 0 },
+    { y: 0, autoAlpha: 1, duration: 1, stagger: 0.15, ease: "power3.out", delay: 0.4 }
+  );
+</script>
+@endpush

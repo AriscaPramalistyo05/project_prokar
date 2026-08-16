@@ -56,7 +56,7 @@ class ProductGrid extends Component
                 'price' => $product->promo_price ? (float) $product->promo_price : (float) $product->price,
                 'original_price' => $product->promo_price ? (float) $product->price : null,
                 'on_sale' => $product->is_promo,
-                'image' => $product->primaryImage?->path ?? 'https://via.placeholder.com/400x300',
+                'image' => $product->primaryImage ? asset('storage/' . $product->primaryImage->path) : 'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&q=80',
             ];
         })->toArray();
 

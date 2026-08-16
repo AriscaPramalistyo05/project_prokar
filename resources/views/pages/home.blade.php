@@ -1,974 +1,672 @@
 @extends('layouts.app')
 
-@php
-$openingEnabled = (bool) (setting('opening_enabled') ?? true);
-$openingConfig = json_decode(setting('opening_config') ?? '{}', true);
-
-$defaultMessages = [
-    ['type' => 'line', 'text' => 'Elektronik rusak bukan akhir dari masa pakainya.', 'duration' => 1900],
-    ['type' => 'line', 'text' => 'Perbaiki. Jual. Beli. Dalam satu platform.', 'duration' => 1900],
-    ['type' => 'logo', 'text' => 'PROKAR ELEKTRONIK', 'duration' => 2400]
-];
-
-$messages = $openingConfig['messages'] ?? $defaultMessages;
-$textColor = $openingConfig['text_color'] ?? '#FFFFFF';
-$bgColor = $openingConfig['bg_color'] ?? '#000000';
-$accentColor = $openingConfig['accent_color'] ?? '#FECB00';
-$fadeDuration = $openingConfig['fade_duration'] ?? 900;
-@endphp
-
 @section('title', 'Prokar Elektronik – Jual, Beli & Servis Elektronik Bekas Terpercaya di Jepara')
 @section('description', 'Prokar Elektronik: jual beli dan servis elektronik bekas berkualitas di Jepara. Kulkas, TV, mesin cuci, AC, dispenser bergaransi dengan harga terjangkau. Teknisi berpengalaman.')
 @section('keywords', 'elektronik bekas Jepara, jual kulkas second, servis TV, servis mesin cuci, servis kulkas, AC second, toko elektronik Mlonggo, jual beli elektronik, Prokar Elektronik')
-@section('canonical', 'https://prokarelektronik.com/')
-@section('og_title', 'Prokar Elektronik – Jual, Beli & Servis Elektronik Bekas Terpercaya')
-@section('og_description', 'Toko elektronik bekas berkualitas di Jepara. Jual, beli, dan servis TV, kulkas, mesin cuci, AC, dispenser bergaransi dengan harga terjangkau.')
-@section('og_url', 'https://prokarelektronik.com/')
-@section('og_image', 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/mfbi92py_expires_30_days.png')
-
-@push('schema')
-<script type="application/ld+json">
-@verbatim
-    {
-      "@context": "https://schema.org",
-      "@type": "ElectronicsStore",
-      "name": "Prokar Elektronik",
-      "alternateName": "Prokar",
-      "description": "Jual beli dan servis elektronik bekas berkualitas bergaransi di Jepara.",
-      "url": "https://prokarelektronik.com/",
-      "logo": "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/rui8atrf_expires_30_days.png",
-      "image": "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/mfbi92py_expires_30_days.png",
-      "telephone": "+62-895-0484-1279",
-      "email": "Prokarelektronik@gmail.com",
-      "priceRange": "Rp",
-      "currenciesAccepted": "IDR",
-      "paymentAccepted": "Cash, Transfer",
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "Karanggondang, Rt4 Rw2, Mlonggo",
-        "addressLocality": "Jepara",
-        "addressRegion": "Jawa Tengah",
-        "postalCode": "59452",
-        "addressCountry": "ID"
-      },
-      "geo": {
-        "@type": "GeoCoordinates",
-        "latitude": -6.514774,
-        "longitude": 110.712282
-      },
-      "openingHoursSpecification": [{
-        "@type": "OpeningHoursSpecification",
-        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-        "opens": "08:00",
-        "closes": "21:00"
-      }],
-      "sameAs": ["https://wa.me/6285225559860"],
-      "hasOfferCatalog": {
-        "@type": "OfferCatalog",
-        "name": "Produk Elektronik Bekas",
-        "itemListElement": [
-          {"@type": "OfferCatalog", "name": "Kulkas"},
-          {"@type": "OfferCatalog", "name": "TV"},
-          {"@type": "OfferCatalog", "name": "Mesin Cuci"},
-          {"@type": "OfferCatalog", "name": "AC"},
-          {"@type": "OfferCatalog", "name": "Dispenser"},
-          {"@type": "OfferCatalog", "name": "Microwave"}
-        ]
-      }
-    }
-@endverbatim
-</script>
-@endpush
-
-@push('styles')
-<style>
-    /* ── Opening Animation Styles ── */
-    @keyframes logo-pop {
-      0%   { opacity: 0; transform: scale(0.85); }
-      60%  { opacity: 1; transform: scale(1.03); }
-      100% { opacity: 1; transform: scale(1); }
-    }
-    .logo-pop { animation: logo-pop 480ms cubic-bezier(.22,1,.36,1) forwards; }
-
-    .hazard-stripe {
-      background-image: repeating-linear-gradient(45deg, {{ $accentColor }} 0 14px, #1b1c1c 14px 28px);
-    }
-
-    /* Overlay fade-out: dikontrol via class, transisi pakai CSS biasa (bukan library JS) */
-    .opening-overlay {
-      transition: opacity {{ $fadeDuration }}ms ease, visibility 0ms {{ $fadeDuration }}ms;
-    }
-    .opening-overlay.is-hidden {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-
-    [x-cloak] { display: none !important; }
-
-    /* ── Announcement bar marquee ── */
-    .marquee-container {
-      overflow: hidden;
-      white-space: nowrap;
-      mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
-      -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
-    }
-
-    .marquee-content {
-      display: inline-flex;
-      gap: 1.5rem;
-      align-items: center;
-      animation: marquee 28s linear infinite;
-    }
-
-    .marquee-content span {
-      color: #fff;
-      font-family: "Archivo Narrow", sans-serif;
-      font-size: 0.72rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1.3px;
-      white-space: nowrap;
-    }
-
-    .marquee-content i { color: #fff; font-size: 0.3rem; }
-
-    @keyframes marquee {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
-
-    /* ── Brand carousel ── */
-    .brand-carousel-wrap { overflow: hidden; position: relative; }
-    .brand-track { display: flex; align-items: center; animation: brandScroll 24s linear infinite; width: max-content; }
-    .brand-carousel-wrap:hover .brand-track { animation-play-state: paused; }
-    .brand-logo { filter: grayscale(100%) brightness(0.35); user-select: none; pointer-events: none; }
-
-    @keyframes brandScroll {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
-
-    /* ── Hero bottom ticker ── */
-    .ticker-wrap { overflow: hidden; white-space: nowrap; }
-    .ticker-content { display: inline-flex; gap: 1.5rem; align-items: center; animation: ticker 22s linear infinite; }
-    .ticker-content span {
-      font-family: "Archivo Narrow", sans-serif;
-      font-size: 0.7rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      color: #000;
-      white-space: nowrap;
-    }
-    .ticker-content i { color: #000; font-size: 0.3rem; }
-
-    @keyframes ticker {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
-
-    /* ── On Sale slider ── */
-    #onsale-wrapper { overflow: hidden; position: relative; }
-    #onsale-track { display: flex; gap: 1rem; transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1); }
-    .onsale-card { flex: 0 0 auto; position: relative; }
-
-    .onsale-btn {
-      width: 2.5rem !important;
-      height: 2.5rem !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      border: 2px solid #000 !important;
-      background: transparent !important;
-      cursor: pointer !important;
-      padding: 0 !important;
-      flex-shrink: 0 !important;
-      transition: background 0.2s ease;
-    }
-
-    .onsale-btn:hover:not(:disabled) { background: #111 !important; }
-    .onsale-btn:hover:not(:disabled) i { color: #fff !important; }
-    .onsale-btn:disabled { opacity: 0.3 !important; cursor: not-allowed !important; }
-    .onsale-btn:disabled i { color: #000 !important; }
-
-    @media (max-width:767px) {
-      .onsale-card { width: calc(50% - 8px) !important; flex-basis: calc(50% - 8px) !important; }
-    }
-    @media (min-width:768px) and (max-width:1023px) {
-      .onsale-card { width: calc(25% - 12px) !important; flex-basis: calc(25% - 12px) !important; }
-      .onsale-card img { height: 120px !important; }
-      .onsale-card h3 { font-size: 12px !important; line-height: 16px !important; }
-    }
-    @media (min-width:1024px) {
-      .onsale-card { width: calc(25% - 12px) !important; flex-basis: calc(25% - 12px) !important; }
-    }
-
-    /* ── FAQ accordion ── */
-    .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
-    .faq-item.open .faq-answer { max-height: 300px; }
-    .faq-item.open .faq-icon { transform: rotate(45deg); }
-    .faq-icon { transition: transform 0.25s ease; display: inline-block; }
-
-    /* ── Testimoni buttons ── */
-    .testimoni-btn {
-      width: 1rem; height: 1rem;
-      border: 1px solid #000;
-      background: transparent;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.2s ease;
-      flex-shrink: 0;
-    }
-    .testimoni-btn i { font-size: 6px; }
-    .testimoni-btn:hover:not(:disabled) { background: #111; }
-    .testimoni-btn:hover:not(:disabled) i { color: #fff; }
-    .testimoni-btn:disabled { opacity: 0.3; cursor: not-allowed; border-color: rgba(0,0,0,0.2); }
-    .testimoni-btn:disabled i { color: rgba(0,0,0,0.2); }
-    @media (min-width: 640px) { .testimoni-btn { width: 2rem; height: 2rem; } .testimoni-btn i { font-size: 0.875rem; } }
-    @media (min-width: 768px) { .testimoni-btn { width: 2.5rem; height: 2.5rem; } .testimoni-btn i { font-size: 1.125rem; } }
-
-    .testimoni-dot {
-      width: 2px; height: 2px;
-      border-radius: 9999px;
-      background: rgba(0, 0, 0, 0.2);
-      cursor: pointer;
-      transition: background 0.2s ease;
-    }
-    .testimoni-dot.active { background: #000; }
-    @media (min-width: 640px) { .testimoni-dot { width: 5px; height: 5px; } }
-    @media (min-width: 768px) { .testimoni-dot { width: 1rem; height: 1rem; } }
-
-    /* ── Hero title fonts ── */
-    .hero-title-1 {
-      font-family: Arial, sans-serif;
-      font-weight: 700;
-      font-size: clamp(1.9rem, 7.5vw, 3.75rem);
-      line-height: 1.2;
-      display: block;
-    }
-    .hero-title-2 {
-      font-family: "Public Sans", sans-serif;
-      font-weight: 700;
-      color: #3b82f6;
-      font-size: clamp(1.78rem, 7vw, 3.5rem);
-      line-height: 1.2;
-      display: block;
-      margin-top: 2px;
-    }
-    .hero-desc { font-family: Inter, sans-serif; font-weight: 600; text-wrap: balance; }
-    .hero-btn { font-family: Inter, sans-serif; font-weight: 600; }
-    .cat-label { font-family: Inter, sans-serif; font-weight: 600; }
-
-    .cat-card {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background: #fff;
-      border: 1px solid #f3f4f6;
-      width: 120px;
-      overflow: hidden;
-      flex-shrink: 0;
-      text-decoration: none;
-      transition: border-color 0.2s ease;
-    }
-    .cat-card:hover { border-color: #d1d5db; }
-    .cat-card img { transition: transform 0.3s ease; }
-    .cat-card:hover img { transform: scale(1.03); }
-    @media (min-width: 768px) { .cat-card { width: 200px; } }
-    @media (min-width: 1024px) { .cat-card { width: 140px; } .cat-card--tall { width: 110px; } }
-    @media (min-width: 768px) and (max-width: 1023px) { .cat-card--tall { width: 155px; } }
-    @media (max-width: 767px) { .cat-card--tall { width: 100px; } }
-
-    .ticker-font { font-family: "Archivo Narrow", sans-serif; }
-    .section-public { font-family: "Public Sans", sans-serif; }
-    .font-public { font-family: "Public Sans", sans-serif; }
-    .font-archivo { font-family: "Archivo Narrow", sans-serif; }
-    .font-inter { font-family: Inter, sans-serif; }
-
-    .shadow-soft { box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); }
-    .shadow-card { box-shadow: 15px 17px 4px rgba(0, 0, 0, 0.25); }
-
-    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-    .scrollbar-hide::-webkit-scrollbar { display: none; }
-
-    @media (prefers-reduced-motion: reduce) {
-      .marquee-content, .brand-track, .ticker-content { animation-duration: 0.001s !important; }
-    }
-
-    /* ── On Sale Card hover button ── */
-    .onsale-card .quick-add-btn {
-      position: absolute;
-      bottom: 6px; right: 6px; left: auto;
-      width: auto;
-      background: rgba(0, 0, 0, 0.88);
-      color: #fff;
-      font-family: "Public Sans", sans-serif;
-      font-size: 7px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      padding: 5px 8px;
-      text-align: center;
-      border: none;
-      border-radius: 0;
-      cursor: pointer;
-      white-space: nowrap;
-      opacity: 0;
-      transform: translateY(4px);
-      transition: opacity 0.22s ease, transform 0.22s ease;
-      z-index: 10;
-    }
-    @media (min-width: 1024px) {
-      .onsale-card .quick-add-btn { font-size: 8px; padding: 15px 10px; border-radius: 0; }
-    }
-    @media (min-width: 1025px) {
-      .onsale-card:hover .quick-add-btn { opacity: 1; transform: translateY(0); }
-    }
-    .onsale-card .mobile-cart-btn {
-      display: none;
-      position: absolute;
-      bottom: 6px; right: 6px;
-      width: 28px; height: 28px;
-      background: #111; color: #fff;
-      border: none; border-radius: 0;
-      align-items: center; justify-content: center;
-      cursor: pointer; z-index: 10;
-      transition: background 0.2s;
-      font-size: 11px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-    }
-    .onsale-card .mobile-cart-btn:active { background: #444; }
-    @media (max-width: 1024px) {
-      .onsale-card .quick-add-btn { display: none !important; }
-      .onsale-card .mobile-cart-btn { display: flex !important; }
-    }
-
-    /* ── Cart Modal ── */
-    #cart-modal-overlay {
-      position: fixed; inset: 0;
-      background: rgba(0, 0, 0, 0.35);
-      z-index: 999;
-      opacity: 0; pointer-events: none;
-      transition: opacity 0.22s ease;
-    }
-    #cart-modal-overlay.open { opacity: 1; pointer-events: all; }
-    #cart-modal {
-      position: fixed;
-      top: 0; right: 0; bottom: 0;
-      width: min(420px, 100vw);
-      background: #fff;
-      z-index: 1000;
-      display: flex; flex-direction: column;
-      transform: translateX(100%);
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: -4px 0 24px rgba(0, 0, 0, 0.12);
-    }
-    #cart-modal.open { transform: translateX(0); }
-    #cart-added-bar {
-      display: none;
-      background: #f0fdf4;
-      border-bottom: 1px solid #bbf7d0;
-      padding: 10px 16px;
-      gap: 8px;
-      align-items: center;
-    }
-    #cart-added-bar.show { display: flex; }
-    .color-swatch {
-      width: 26px; height: 26px;
-      border-radius: 50%;
-      border: 2px solid transparent;
-      cursor: pointer;
-      transition: border-color 0.15s;
-    }
-    .color-swatch.selected { border-color: #111; }
-    .color-swatch:hover { border-color: #666; }
-</style>
-@endpush
+@section('body_class', 'bg-brand-black')
 
 @section('content')
-<div x-data="openingAnimation({
-    enabled: {{ $openingEnabled ? 'true' : 'false' }},
-    fadeDuration: {{ $fadeDuration }},
-    messages: {{ json_encode($messages) }}
-})" x-init="init()" class="relative min-h-screen w-full overflow-hidden">
+<main class="bg-brand-black">
 
-    <!-- ===================== Overlay Opening Animation (Brutalist) ===================== -->
-    <div
-      x-cloak
-      x-show="!skip && enabled"
-      class="opening-overlay fixed inset-0 z-50 flex flex-col"
-      :class="{ 'is-hidden': phase === 'reveal' || phase === 'done' }"
-      style="background-color: {{ $bgColor }}; transition: opacity {{ $fadeDuration }}ms ease, visibility 0ms {{ $fadeDuration }}ms; --opening-accent: {{ $accentColor }}; --opening-text: {{ $textColor }};"
-    >
-      <!-- Hazard stripe atas, signature element yang sama dengan panel login/register -->
-      <div class="hazard-stripe h-2.5 w-full shrink-0" aria-hidden="true"></div>
+  <!-- HERO SECTION -->
+  <section id="hero" class="section-overlap bg-white pt-10 pb-16 lg:pt-16 lg:pb-24 z-10">
 
-      <!-- Frame brutalist: bracket sudut kuning ala viewfinder -->
-      <div class="relative flex-grow flex items-center justify-center px-6">
-        <span class="absolute top-6 left-6 w-8 h-8 border-t-4 border-l-4" style="border-color: {{ $accentColor }};" aria-hidden="true"></span>
-        <span class="absolute top-6 right-6 w-8 h-8 border-t-4 border-r-4" style="border-color: {{ $accentColor }};" aria-hidden="true"></span>
-        <span class="absolute bottom-6 left-6 w-8 h-8 border-b-4 border-l-4" style="border-color: {{ $accentColor }};" aria-hidden="true"></span>
-        <span class="absolute bottom-6 right-6 w-8 h-8 border-b-4 border-r-4" style="border-color: {{ $accentColor }};" aria-hidden="true"></span>
+    <!-- Text + Diagonal Parallax Visual -->
+    <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-8 items-center">
 
-        <!-- Teks/logo yang di-cycle -->
-        <template x-for="(msg, i) in messages" :key="i">
-          <div x-show="index === i" x-transition:enter="transition ease-out duration-700" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-500" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="text-center max-w-2xl">
+        <!-- LEFT: Copy -->
+        <div class="text-center lg:text-left">
+          <div class="reveal-fade inline-flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-full px-5 py-2.5 mb-8 shadow-sm">
+            <span class="material-symbols-outlined text-brand-blue text-2xl">verified</span>
+            <span class="text-gray-800 text-base font-bold font-public tracking-wide">Bergaransi &amp; Berkualitas</span>
+          </div>
 
-            <template x-if="msg.type === 'line'">
-              <p class="font-body-md text-xl sm:text-2xl md:text-3xl font-bold leading-snug px-4" x-text="msg.text" style="color: {{ $textColor }};"></p>
-            </template>
+          <h1 class="font-public font-black text-[13vw] sm:text-6xl md:text-7xl lg:text-6xl xl:text-7xl leading-[0.95] text-black mb-6">
+            <span class="reveal-wrapper block"><span class="block reveal-line">JUAL, BELI &amp;</span></span>
+            <span class="reveal-wrapper block"><span class="block reveal-line">SERVIS</span></span>
+            <span class="reveal-wrapper block"><span class="block text-brand-yellow drop-shadow-sm reveal-line">ELEKTRONIK BEKAS</span></span>
+            <span class="reveal-wrapper block"><span class="block reveal-line">TERPERCAYA</span></span>
+          </h1>
 
-            <template x-if="msg.type === 'logo'">
-              <div class="logo-pop flex flex-col items-center gap-2">
-                <span class="font-brand-display font-black uppercase tracking-tight text-4xl sm:text-5xl md:text-6xl border-4 px-6 py-3" x-text="msg.text" style="color: {{ $accentColor }}; border-color: {{ $accentColor }};"></span>
-                <span class="font-label-mono text-[11px] uppercase tracking-[0.3em] text-tertiary-fixed-dim mt-2">Mlonggo &middot; Jepara</span>
-              </div>
-            </template>
+          <p class="hero-desc-text reveal-fade text-gray-700 text-lg md:text-xl lg:text-xl font-medium max-w-xl mx-auto lg:mx-0 mb-10">
+            Beragam elektronik rumah tangga berkualitas yang siap digunakan dan telah melalui proses pengecekan teknisi profesional.
+          </p>
+
+          <div class="reveal-fade flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-4">
+            <a href="{{ route('produk.index') }}" class="btn-hover inline-flex items-center gap-3 bg-black text-white text-lg md:text-xl font-bold px-10 py-5 rounded-full font-public tracking-wide">
+              Lihat Produk <i class="fa-solid fa-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- RIGHT: Diagonal Parallax Gallery (desktop) -->
+        <div class="hero-visual hidden lg:block relative h-[520px] xl:h-[560px] overflow-hidden stagger-group">
+          <div class="hero-visual-grid absolute inset-0 flex items-center justify-center gap-5">
+
+            <!-- Kolom 1 -->
+            <div class="hero-parallax-col flex flex-col gap-5" data-speed="-70">
+              <a href="{{ route('produk.index') }}?kategori=kulkas" class="hero-tile stagger-item w-[150px] xl:w-[170px] h-[180px] xl:h-[200px]">
+                <img src="{{ asset('assets/images/kulkas0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&h=400&fit=crop'" alt="Kulkas">
+                <span class="hero-tile-label">Kulkas</span>
+              </a>
+              <a href="{{ route('produk.index') }}?kategori=dispenser" class="hero-tile stagger-item w-[150px] xl:w-[170px] h-[180px] xl:h-[200px]">
+                <img src="{{ asset('assets/images/dispenser0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400&h=400&fit=crop'" alt="Dispenser">
+                <span class="hero-tile-label">Dispenser</span>
+              </a>
+            </div>
+
+            <!-- Kolom 2 -->
+            <div class="hero-parallax-col flex flex-col gap-5 mt-16" data-speed="90">
+              <a href="{{ route('produk.index') }}?kategori=tv" class="hero-tile stagger-item w-[150px] xl:w-[170px] h-[180px] xl:h-[200px]">
+                <img src="{{ asset('assets/images/tv0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&h=400&fit=crop'" alt="TV">
+                <span class="hero-tile-label">TV</span>
+              </a>
+              <a href="{{ route('produk.index') }}?kategori=microwave" class="hero-tile stagger-item w-[150px] xl:w-[170px] h-[180px] xl:h-[200px]">
+                <img src="{{ asset('assets/images/microwave0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1585659722983-3a675dabf23d?w=400&h=400&fit=crop'" alt="Microwave">
+                <span class="hero-tile-label">Microwave</span>
+              </a>
+            </div>
+
+            <!-- Kolom 3 -->
+            <div class="hero-parallax-col flex flex-col gap-5" data-speed="-50">
+              <a href="{{ route('produk.index') }}?kategori=mesin-cuci" class="hero-tile stagger-item w-[150px] xl:w-[170px] h-[180px] xl:h-[200px]">
+                <img src="{{ asset('assets/images/mesin-cuci0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=400&h=400&fit=crop'" alt="Mesin Cuci">
+                <span class="hero-tile-label">Mesin Cuci</span>
+              </a>
+              <a href="{{ route('produk.index') }}?kategori=ac" class="hero-tile stagger-item w-[150px] xl:w-[170px] h-[180px] xl:h-[200px]">
+                <img src="{{ asset('assets/images/ac0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1631545806609-947f38b3f6ea?w=400&h=400&fit=crop'" alt="AC">
+                <span class="hero-tile-label">AC</span>
+              </a>
+            </div>
 
           </div>
-        </template>
-      </div>
+        </div>
 
-      <div class="hazard-stripe h-2.5 w-full shrink-0" aria-hidden="true"></div>
+        <!-- Mobile gallery (simplified, non-tilted) -->
+        <div class="lg:hidden stagger-group">
+          <p class="text-center font-bold text-gray-400 mb-5 tracking-widest uppercase text-sm reveal-fade">Kategori Pilihan</p>
+          <ul class="grid grid-cols-3 gap-3">
+            <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=kulkas" class="hero-tile-mobile"><img src="{{ asset('assets/images/kulkas0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=300&h=300&fit=crop'" alt="Kulkas"><span class="hero-tile-label">Kulkas</span></a></li>
+            <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=tv" class="hero-tile-mobile"><img src="{{ asset('assets/images/tv0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=300&h=300&fit=crop'" alt="TV"><span class="hero-tile-label">TV</span></a></li>
+            <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=mesin-cuci" class="hero-tile-mobile"><img src="{{ asset('assets/images/mesin-cuci0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=300&h=300&fit=crop'" alt="Mesin Cuci"><span class="hero-tile-label">Mesin Cuci</span></a></li>
+            <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=ac" class="hero-tile-mobile"><img src="{{ asset('assets/images/ac0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1631545806609-947f38b3f6ea?w=300&h=300&fit=crop'" alt="AC"><span class="hero-tile-label">AC</span></a></li>
+            <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=dispenser" class="hero-tile-mobile"><img src="{{ asset('assets/images/dispenser0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=300&h=300&fit=crop'" alt="Dispenser"><span class="hero-tile-label">Dispenser</span></a></li>
+            <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=microwave" class="hero-tile-mobile"><img src="{{ asset('assets/images/microwave0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1585659722983-3a675dabf23d?w=300&h=300&fit=crop'" alt="Microwave"><span class="hero-tile-label">Microwave</span></a></li>
+          </ul>
+        </div>
+
+      </div>
     </div>
 
-  <main>
-    <!-- HERO -->
-    <section id="hero" class="bg-white w-full overflow-hidden">
-      <div class="flex flex-col items-center justify-center pt-10 pb-8 md:pt-16 md:pb-10 px-6 gap-5">
-        <div class="flex items-center gap-2 bg-white border border-gray-200 rounded-full px-4 py-2 shadow-soft">
-          <span class="material-symbols-outlined text-[#1a73e8] text-xl">verified</span>
-          <span class="text-[#1f2937] text-sm font-inter font-medium">Bergaransi &amp; Berkualitas</span>
+    <!-- Brand Logos Carousel -->
+    <div class="brand-carousel-wrap relative h-16 border-t border-b border-gray-100 mt-16 lg:mt-20">
+      <div class="absolute inset-y-0 left-0 w-16 md:w-20 z-10 pointer-events-none bg-gradient-to-r from-white to-transparent"></div>
+      <div class="absolute inset-y-0 right-0 w-16 md:w-20 z-10 pointer-events-none bg-gradient-to-l from-white to-transparent"></div>
+      <div class="brand-track h-full text-gray-700 font-bold">
+        <span class="brand-logo text-2xl tracking-[1.2px] px-8 md:px-10 shrink-0">SHARP</span>
+        <span class="brand-logo text-xl tracking-[2px] px-8 md:px-10 shrink-0">POLYTRON</span>
+        <span class="brand-logo text-2xl tracking-[2.4px] px-8 md:px-10 shrink-0 flex items-center gap-1"><span class="material-symbols-outlined text-3xl">tv</span>LG</span>
+        <span class="brand-logo text-2xl tracking-[2.4px] px-8 md:px-10 shrink-0">AQUA</span>
+        <span class="brand-logo text-2xl tracking-[-1.2px] px-8 md:px-10 shrink-0">SAMSUNG</span>
+        <span class="brand-logo text-xl tracking-[0.5px] px-8 md:px-10 shrink-0">Panasonic</span>
+        <span class="brand-logo text-xl tracking-[2px] italic px-8 md:px-10 shrink-0">TOSHIBA</span>
+        <span class="brand-logo text-2xl px-8 md:px-10 shrink-0">Hisense</span>
+        <span class="brand-logo text-2xl tracking-[1.2px] px-8 md:px-10 shrink-0" aria-hidden="true">SHARP</span>
+        <span class="brand-logo text-xl tracking-[2px] px-8 md:px-10 shrink-0" aria-hidden="true">POLYTRON</span>
+        <span class="brand-logo text-2xl tracking-[2.4px] px-8 md:px-10 shrink-0 flex items-center gap-1" aria-hidden="true"><span class="material-symbols-outlined text-3xl">tv</span>LG</span>
+        <span class="brand-logo text-2xl tracking-[2.4px] px-8 md:px-10 shrink-0" aria-hidden="true">AQUA</span>
+        <span class="brand-logo text-2xl tracking-[-1.2px] px-8 md:px-10 shrink-0" aria-hidden="true">SAMSUNG</span>
+        <span class="brand-logo text-xl tracking-[0.5px] px-8 md:px-10 shrink-0" aria-hidden="true">Panasonic</span>
+        <span class="brand-logo text-xl tracking-[2px] italic px-8 md:px-10 shrink-0" aria-hidden="true">TOSHIBA</span>
+        <span class="brand-logo text-2xl px-8 md:px-10 shrink-0" aria-hidden="true">Hisense</span>
+      </div>
+    </div>
+
+    <!-- Bottom Ticker (Marquee Biru) -->
+    <div class="bg-brand-soft border-t-2 border-b-2 border-black py-3 mt-6 ticker-wrap">
+      <div class="ticker-content">
+        <span>tersedia berbagai produk elektronik rumah tangga</span>
+        <i class="fa-solid fa-circle text-[6px]"></i>
+        <span>harga ramah barang berkualitas</span>
+        <i class="fa-solid fa-circle text-[6px]"></i>
+        <span>tersedia berbagai produk elektronik rumah tangga</span>
+        <i class="fa-solid fa-circle text-[6px]"></i>
+        <span>harga ramah barang berkualitas</span>
+        <i class="fa-solid fa-circle text-[6px]"></i>
+        <span>tersedia berbagai produk elektronik rumah tangga</span>
+        <i class="fa-solid fa-circle text-[6px]"></i>
+        <span>harga ramah barang berkualitas</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVIS SECTION -->
+  <section class="section-overlap bg-brand-yellow py-24 lg:py-32 z-20">
+    <div class="max-w-[1440px] mx-auto px-6 md:px-12">
+      <h2 class="text-black text-4xl md:text-6xl font-black uppercase tracking-tighter font-public mb-16 text-center">
+        <span class="reveal-wrapper"><span class="reveal-line">Layanan Servis Kami</span></span>
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-10 stagger-group">
+        <div class="stagger-item">
+          <a href="{{ route('servis.index') }}" class="group relative block h-[400px] lg:h-[500px] rounded-[2rem] overflow-hidden bg-black shadow-card transform hover:-translate-y-2 transition-all duration-500">
+            <img src="{{ asset('assets/images/service-tv.jpg') }}" onerror="this.src='https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=800&q=80'" alt="Service TV" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-8">
+              <h3 class="text-white text-3xl lg:text-4xl font-bold font-public uppercase leading-none">Service<br><span class="text-brand-yellow">TV</span></h3>
+            </div>
+          </a>
         </div>
-        <h1 class="text-center m-0 p-0 max-w-[700px]">
-          <span class="hero-title-1 text-black">Jual, Beli &amp; Servis</span>
-          <span class="hero-title-2">elektronik bekas terpercaya</span>
-        </h1>
-        <p class="hero-desc text-black text-xs sm:text-sm md:text-base lg:text-xl text-center max-w-2xl leading-snug">
-          Beragam elektronik rumah tangga berkualitas yang siap<br />
-          digunakan dan telah melalui proses pengecekan teknisi.
-        </p>
-        <a href="{{ route('produk.index') }}"
-          class="hero-btn inline-flex items-center gap-2 bg-[#FFCC00] text-black text-sm md:text-base font-semibold px-8 py-3 rounded-[5px] hover:bg-[#f0c000] transition-colors">
-          Lihat Produk
-          <i class="fa-solid fa-arrow-right"></i>
+        <div class="stagger-item md:mt-12">
+          <a href="{{ route('servis.index') }}" class="group relative block h-[400px] lg:h-[500px] rounded-[2rem] overflow-hidden bg-black shadow-card transform hover:-translate-y-2 transition-all duration-500">
+            <img src="{{ asset('assets/images/service-mesin-cuci.jpg') }}" onerror="this.src='https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=800&q=80'" alt="Service Mesin Cuci" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-8">
+              <h3 class="text-white text-3xl lg:text-4xl font-bold font-public uppercase leading-none">Service<br><span class="text-brand-yellow">Mesin Cuci</span></h3>
+            </div>
+          </a>
+        </div>
+        <div class="stagger-item">
+          <a href="{{ route('servis.index') }}" class="group relative block h-[400px] lg:h-[500px] rounded-[2rem] overflow-hidden bg-black shadow-card transform hover:-translate-y-2 transition-all duration-500">
+            <img src="{{ asset('assets/images/service-kulkas.jpg') }}" onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=800&q=80'" alt="Service Kulkas" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-8">
+              <h3 class="text-white text-3xl lg:text-4xl font-bold font-public uppercase leading-none">Service<br><span class="text-brand-yellow">Kulkas</span></h3>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <div class="reveal-fade mt-16 bg-brand-black border border-gray-800 rounded-3xl p-8 md:p-12 shadow-card flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="text-center md:text-left">
+          <h4 class="text-2xl font-black font-public uppercase mb-2 text-white">Layanan Lainnya</h4>
+          <p class="text-gray-400 text-lg">Kami juga menerima reparasi AC, Setrika, Speaker, dan peralatan elektronik lainnya.</p>
+        </div>
+        <a href="https://wa.me/6289504841279" target="_blank" class="btn-hover bg-brand-yellow text-black px-8 py-4 rounded-full font-bold text-lg whitespace-nowrap flex items-center gap-2">
+          <i class="fa-brands fa-whatsapp text-2xl"></i> Konsultasi Gratis
         </a>
       </div>
+    </div>
+  </section>
 
-      <!-- Brand Logos -->
-      <div class="brand-carousel-wrap relative h-16 border-t border-b border-gray-100">
-        <div class="absolute inset-y-0 left-0 w-16 md:w-20 z-10 pointer-events-none bg-gradient-to-r from-white to-transparent"></div>
-        <div class="absolute inset-y-0 right-0 w-16 md:w-20 z-10 pointer-events-none bg-gradient-to-l from-white to-transparent"></div>
-        <div class="brand-track h-full font-arial text-gray-700 font-bold">
-          <span class="brand-logo text-2xl tracking-[1.2px] px-8 md:px-10 shrink-0">SHARP</span>
-          <span class="brand-logo text-xl tracking-[2px] px-8 md:px-10 shrink-0">POLYTRON</span>
-          <span class="brand-logo text-2xl tracking-[2.4px] px-8 md:px-10 shrink-0 flex items-center gap-1"><span class="material-symbols-outlined text-3xl">tv</span>LG</span>
-          <span class="brand-logo text-2xl tracking-[2.4px] px-8 md:px-10 shrink-0">AQUA</span>
-          <span class="brand-logo text-2xl tracking-[-1.2px] px-8 md:px-10 shrink-0">SAMSUNG</span>
-          <span class="brand-logo text-xl tracking-[0.5px] px-8 md:px-10 shrink-0">Panasonic</span>
-          <span class="brand-logo text-xl tracking-[2px] italic px-8 md:px-10 shrink-0">TOSHIBA</span>
-          <span class="brand-logo text-2xl px-8 md:px-10 shrink-0">Hisense</span>
-          <span class="brand-logo text-2xl tracking-[1.2px] px-8 md:px-10 shrink-0" aria-hidden="true">SHARP</span>
-          <span class="brand-logo text-xl tracking-[2px] px-8 md:px-10 shrink-0" aria-hidden="true">POLYTRON</span>
-          <span class="brand-logo text-2xl tracking-[2.4px] px-8 md:px-10 shrink-0 flex items-center gap-1" aria-hidden="true"><span class="material-symbols-outlined text-3xl">tv</span>LG</span>
-          <span class="brand-logo text-2xl tracking-[2.4px] px-8 md:px-10 shrink-0" aria-hidden="true">AQUA</span>
-          <span class="brand-logo text-2xl tracking-[-1.2px] px-8 md:px-10 shrink-0" aria-hidden="true">SAMSUNG</span>
-          <span class="brand-logo text-xl tracking-[0.5px] px-8 md:px-10 shrink-0" aria-hidden="true">Panasonic</span>
-          <span class="brand-logo text-xl tracking-[2px] italic px-8 md:px-10 shrink-0" aria-hidden="true">TOSHIBA</span>
-          <span class="brand-logo text-2xl px-8 md:px-10 shrink-0" aria-hidden="true">Hisense</span>
+  <!-- ON SALE SECTION -->
+  <section id="on-sale" class="section-overlap bg-white py-24 lg:py-32 z-30">
+    <div class="max-w-[1440px] mx-auto px-6 md:px-12">
+      <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+        <div>
+          <h2 class="text-black text-4xl md:text-6xl font-black uppercase tracking-tighter font-public mb-2">
+            <span class="reveal-wrapper"><span class="reveal-line">On Sale <span class="text-red-600">🔥</span></span></span>
+          </h2>
+          <p class="reveal-fade text-gray-500 text-lg font-medium">Checkout Sekarang Sebelum Kehabisan</p>
+        </div>
+        <div class="flex gap-4 reveal-fade">
+          <button id="onsale-prev" class="w-14 h-14 rounded-full border-2 border-black flex items-center justify-center hover:bg-black hover:text-white transition-colors">
+            <i class="fa-solid fa-arrow-left text-xl"></i>
+          </button>
+          <button id="onsale-next" class="w-14 h-14 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800 transition-colors">
+            <i class="fa-solid fa-arrow-right text-xl"></i>
+          </button>
         </div>
       </div>
 
-      <!-- Category Cards -->
-      <nav aria-label="Kategori produk" class="max-w-6xl mx-auto px-6 md:px-16 pt-6">
-        <ul class="flex flex-row gap-2 md:gap-5 items-end justify-start lg:justify-center list-none m-0 p-0 overflow-x-auto scrollbar-hide">
-          <li class="shrink-0"><a href="{{ route('produk.index') }}?kategori=kulkas" class="cat-card shadow-soft">
-              <div class="bg-gray-50 w-full"><img src="{{ asset('assets/images/kulkas0.png') }}" class="w-full h-[120px] md:h-[185px] lg:h-[130px] object-cover" alt="Kulkas bekas berkualitas" loading="lazy" /></div>
-              <div class="py-3 px-2 w-full border-t border-gray-50"><span class="cat-label text-[#111827] text-center text-xs md:text-sm block">Kulkas</span></div>
-            </a></li>
-          <li class="shrink-0"><a href="{{ route('produk.index') }}?kategori=tv" class="cat-card cat-card--tall shadow-soft">
-              <div class="bg-gray-50 w-full"><img src="{{ asset('assets/images/tv0.png') }}" class="w-full h-[140px] md:h-[215px] lg:h-[155px] object-cover" alt="TV bekas berkualitas" loading="lazy" /></div>
-              <div class="py-3 px-2 w-full border-t border-gray-50"><span class="cat-label text-[#111827] text-center text-xs md:text-sm block">TV</span></div>
-            </a></li>
-          <li class="shrink-0"><a href="{{ route('produk.index') }}?kategori=mesin-cuci" class="cat-card shadow-soft">
-              <div class="bg-gray-50 w-full"><img src="{{ asset('assets/images/mesin-cuci0.png') }}" class="w-full h-[120px] md:h-[185px] lg:h-[130px] object-cover" alt="Mesin Cuci bekas berkualitas" loading="lazy" /></div>
-              <div class="py-3 px-2 w-full border-t border-gray-50"><span class="cat-label text-[#111827] text-center text-xs md:text-sm block">Mesin Cuci</span></div>
-            </a></li>
-          <li class="shrink-0"><a href="{{ route('produk.index') }}?kategori=ac" class="cat-card cat-card--tall shadow-soft">
-              <div class="bg-gray-50 w-full"><img src="{{ asset('assets/images/ac0.png') }}" class="w-full h-[140px] md:h-[215px] lg:h-[155px] object-cover" alt="AC bekas berkualitas" loading="lazy" /></div>
-              <div class="py-3 px-2 w-full border-t border-gray-50"><span class="cat-label text-[#111827] text-center text-xs md:text-sm block">AC</span></div>
-            </a></li>
-          <li class="shrink-0"><a href="{{ route('produk.index') }}?kategori=dispenser" class="cat-card shadow-soft">
-              <div class="bg-gray-50 w-full"><img src="{{ asset('assets/images/dispenser0.png') }}" class="w-full h-[120px] md:h-[185px] lg:h-[130px] object-cover" alt="Dispenser bekas berkualitas" loading="lazy" /></div>
-              <div class="py-3 px-2 w-full border-t border-gray-50"><span class="cat-label text-[#111827] text-center text-xs md:text-sm block">Dispenser</span></div>
-            </a></li>
-          <li class="shrink-0"><a href="{{ route('produk.index') }}?kategori=microwave" class="cat-card cat-card--tall shadow-soft">
-              <div class="bg-gray-50 w-full"><img src="{{ asset('assets/images/microwave0.png') }}" class="w-full h-[140px] md:h-[215px] lg:h-[155px] object-cover" alt="Microwave bekas berkualitas" loading="lazy" /></div>
-              <div class="py-3 px-2 w-full border-t border-gray-50"><span class="cat-label text-[#111827] text-center text-xs md:text-sm block">Microwave</span></div>
-            </a></li>
-        </ul>
-      </nav>
-
-      <!-- Bottom Ticker -->
-      <div class="bg-[#E8F4F8] border-t-2 border-b-2 border-black py-3 mt-6 ticker-wrap">
-        <div class="ticker-content">
-          <span>tersedia berbagai produk elektronik rumah tangga</span>
-          <i class="fa-solid fa-circle text-[6px]"></i>
-          <span>harga ramah barang berkualitas</span>
-          <i class="fa-solid fa-circle text-[6px]"></i>
-          <span>tersedia berbagai produk elektronik rumah tangga</span>
-          <i class="fa-solid fa-circle text-[6px]"></i>
-          <span>harga ramah barang berkualitas</span>
-          <i class="fa-solid fa-circle text-[6px]"></i>
-          <span>tersedia berbagai produk elektronik rumah tangga</span>
-          <i class="fa-solid fa-circle text-[6px]"></i>
-          <span>harga ramah barang berkualitas</span>
-        </div>
-      </div>
-    </section>
-
-    {{-- LAYANAN SERVIS --}}
-    <section class="bg-[#FFCC00] py-12 md:py-16 lg:py-20">
-      <div class="max-w-6xl mx-auto px-6 md:px-16 flex flex-col gap-10 md:gap-14">
-        <div class="text-center">
-          <h2 class="text-black text-2xl sm:text-3xl md:text-4xl font-bold uppercase tracking-tight font-public">LAYANAN SERVIS KAMI</h2>
-        </div>
-        <div class="flex flex-col gap-8">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6 lg:gap-8">
-            <a href="https://wa.me/6289504841279" target="_blank" rel="noopener noreferrer" class="relative overflow-hidden border-[3px] border-black h-[240px] md:h-[280px] lg:h-[320px] group bg-black">
-              <img src="{{ asset('assets/images/service-tv.jpg') }}" alt="Service TV" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex justify-start items-end p-6 md:p-8">
-                <h3 class="text-white text-xl md:text-lg lg:text-xl xl:text-2xl font-bold font-public uppercase leading-8 whitespace-nowrap">Service tv</h3>
-              </div>
-            </a>
-            <a href="https://wa.me/6289504841279" target="_blank" rel="noopener noreferrer" class="relative overflow-hidden border-[3px] border-black h-[240px] md:h-[280px] lg:h-[320px] group bg-black">
-              <img src="{{ asset('assets/images/service-mesin-cuci.jpg') }}" alt="Service Mesin Cuci" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex justify-start items-end p-6 md:p-8">
-                <h3 class="text-white text-xl md:text-lg lg:text-xl xl:text-2xl font-bold font-public uppercase leading-8 whitespace-nowrap">Service mesin cuci</h3>
-              </div>
-            </a>
-            <a href="https://wa.me/6289504841279" target="_blank" rel="noopener noreferrer" class="relative overflow-hidden border-[3px] border-black h-[240px] md:h-[280px] lg:h-[320px] group bg-black">
-              <img src="{{ asset('assets/images/service-kulkas.jpg') }}" alt="Service Kulkas" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex justify-start items-end p-6 md:p-8">
-                <h3 class="text-white text-xl md:text-lg lg:text-xl xl:text-2xl font-bold font-public uppercase leading-8 whitespace-nowrap">service kulkas</h3>
-              </div>
-            </a>
-          </div>
-          <div class="w-full bg-black border-[3px] border-black p-6 md:p-8 flex items-center justify-center">
-            <div class="text-white text-center text-xs sm:text-sm md:text-base font-bold uppercase leading-relaxed font-public w-full flex flex-col items-center gap-3 md:gap-2">
-              <p class="lg:whitespace-nowrap"><span class="font-inter">Layanan Lainnya</span>: Kami juga menerima reparasi AC, Setrika, Speaker, dan peralatan elektronik lainnya.</p>
-              <p class="lg:whitespace-nowrap">Hubungi <a href="https://wa.me/6289504841279" target="_blank" rel="noopener noreferrer" class="text-[#FFCC00] hover:underline font-inter">admin</a> via WhatsApp untuk konsultasi gratis.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    {{-- ON SALE section — ambil dari DB via HomeController --}}
-    <section id="on-sale" aria-labelledby="onsale-heading" class="section-public bg-white border-t-2 border-b-2 border-black py-12 md:py-20 px-6 md:px-16">
-      <div class="max-w-6xl mx-auto">
-        <h2 id="onsale-heading" class="text-black text-center text-2xl sm:text-3xl md:text-4xl font-bold uppercase tracking-tight font-public">ON SALE</h2>
-        <p class="text-stone-900 text-center text-sm md:text-base mb-8 md:mb-10">Checkout Sekarang Sebelum Kehabisan</p>
-        <div id="onsale-wrapper" class="relative pt-2" aria-label="Produk on sale">
-          <div id="onsale-track" class="flex gap-4 pb-2" role="list">
-            @forelse($promoProducts as $product)
-            @php
-              $img = $product->primaryImage?->path ?? 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/burs3wxx_expires_30_days.png';
-              $oldPrice = $product->promo_price < $product->price ? 'Rp ' . number_format($product->price, 0, ',', '.') : null;
-              $price = 'Rp ' . number_format($product->promo_price ?? $product->price, 0, ',', '.');
-            @endphp
-            <article class="onsale-card bg-stone-50 border border-[#e8e8e8] p-2 md:p-2 lg:p-3 flex flex-col" role="listitem" data-id="{{ $product->id }}" data-name="{{ $product->name }}" data-price="{{ $price }}" data-oldprice="{{ $oldPrice }}" data-badge="SALE" data-img="{{ $img }}" data-colors='[]'>
-              <div class="relative w-full mb-2 md:mb-2 lg:mb-3">
-                <a href="{{ route('produk.show', $product->slug) }}" class="block">
-                  <div class="bg-rose-50 w-full overflow-hidden"><img src="{{ $img }}" alt="{{ $product->name }}" loading="lazy" class="w-full h-[130px] md:h-[120px] lg:h-[180px] object-cover"></div>
-                </a>
-                <div class="absolute left-2 top-2 bg-red-600 border border-black px-2 py-1"><span class="text-white text-[8px] md:text-[8px] lg:text-[10px] font-bold uppercase">SALE</span></div>
-                <button class="quick-add-btn" onclick="openCartModal(this.closest('.onsale-card'))">+ Tambah Keranjang</button>
-                <button class="mobile-cart-btn" onclick="openCartModal(this.closest('.onsale-card'))" aria-label="Tambah ke keranjang"><i class="fa-solid fa-cart-shopping text-[11px]"></i></button>
-              </div>
-              <div class="w-full px-1">
-                <a href="{{ route('produk.show', $product->slug) }}"><h3 class="text-[12px] md:text-[11px] lg:text-sm font-bold uppercase leading-tight line-clamp-2">{{ $product->name }}</h3></a>
-                <div class="flex flex-wrap items-center gap-1 mt-1">
-                  <span class="text-red-600 text-[13px] md:text-[12px] lg:text-base whitespace-nowrap">{{ $price }}</span>
-                  @if($oldPrice)
-                  <span class="text-zinc-600 text-[10px] md:text-[10px] lg:text-sm line-through whitespace-nowrap">{{ $oldPrice }}</span>
-                  @endif
+      <div class="relative w-full overflow-hidden stagger-group">
+        <div id="onsale-track" class="flex gap-6 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-10" style="scroll-behavior: smooth;">
+          @forelse($promoProducts as $product)
+          <div class="stagger-item shrink-0 snap-center">
+            {{-- Card produk promo - klik area card mengarahkan ke detail produk --}}
+            <article class="onsale-card w-[280px] md:w-[350px] bg-gray-50 rounded-3xl p-4 md:p-6 border border-gray-100 hover:shadow-card transition-all duration-300 group flex flex-col"
+              data-name="{{ $product->name }}"
+              data-price="{{ 'Rp ' . number_format($product->price, 0, ',', '.') }}"
+              data-img="{{ $product->primaryImage ? asset('storage/' . $product->primaryImage->path) : 'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&h=400&fit=crop' }}"
+              data-colors='[{"label":"Hitam","hex":"#111111"}]'>
+              <a href="{{ route('produk.show', $product->slug) }}" class="flex flex-col h-full w-full outline-none">
+                <div class="relative h-[250px] md:h-[300px] w-full bg-white rounded-2xl overflow-hidden mb-6 flex items-center justify-center">
+                  <img src="{{ $product->primaryImage ? asset('storage/' . $product->primaryImage->path) : 'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&h=400&fit=crop' }}"
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    alt="{{ $product->name }}"
+                    onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&h=400&fit=crop'">
+                  <span class="absolute top-4 left-4 bg-red-600 text-white text-xs font-black px-3 py-1.5 rounded-full uppercase">Promo</span>
+                  <button type="button"
+                    onclick="event.preventDefault(); event.stopPropagation(); openCartModal(this.closest('.onsale-card'))"
+                    class="absolute bottom-4 right-4 w-12 h-12 bg-black text-white rounded-full flex items-center justify-center hover:bg-brand-yellow hover:text-black transition-colors z-10 btn-hover">
+                    <i class="fa-solid fa-cart-plus text-xl"></i>
+                  </button>
                 </div>
-                <div class="flex gap-1 mt-2"></div>
+                <h3 class="text-xl font-bold font-public leading-tight mb-2 text-black">{{ $product->name }}</h3>
+                <div class="flex items-end gap-3 mb-4">
+                  <span class="text-2xl font-black text-red-600">{{ 'Rp ' . number_format($product->price, 0, ',', '.') }}</span>
+                </div>
+              </a>
+            </article>
+          </div>
+          @empty
+          {{-- Dummy cards ketika tidak ada produk promo --}}
+          @foreach([
+            ['name'=>'TV LED 32 Inch Sharp','price'=>'Rp 1.200.000','img'=>'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&h=400&fit=crop'],
+            ['name'=>'Kulkas 2 Pintu Samsung','price'=>'Rp 2.500.000','img'=>'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&h=400&fit=crop'],
+            ['name'=>'Mesin Cuci Polytron','price'=>'Rp 1.800.000','img'=>'https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=400&h=400&fit=crop'],
+            ['name'=>'AC Split 1PK Panasonic','price'=>'Rp 2.100.000','img'=>'https://images.unsplash.com/photo-1631545806609-947f38b3f6ea?w=400&h=400&fit=crop'],
+          ] as $dummy)
+          <div class="stagger-item shrink-0 snap-center">
+            <article class="onsale-card w-[280px] md:w-[350px] bg-gray-50 rounded-3xl p-4 md:p-6 border border-gray-100 hover:shadow-card transition-all duration-300 group flex flex-col">
+              <div class="flex flex-col h-full w-full outline-none">
+                <div class="relative h-[250px] md:h-[300px] w-full bg-white rounded-2xl overflow-hidden mb-6 flex items-center justify-center">
+                  <img src="{{ $dummy['img'] }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="{{ $dummy['name'] }}">
+                  <span class="absolute top-4 left-4 bg-red-600 text-white text-xs font-black px-3 py-1.5 rounded-full uppercase">Promo</span>
+                </div>
+                <h3 class="text-xl font-bold font-public leading-tight mb-2 text-black">{{ $dummy['name'] }}</h3>
+                <div class="flex items-end gap-3 mb-4">
+                  <span class="text-2xl font-black text-red-600">{{ $dummy['price'] }}</span>
+                </div>
               </div>
             </article>
-            @empty
-            <p class="text-stone-500 text-center text-sm py-8">Tidak ada produk promo saat ini.</p>
-            @endforelse
           </div>
+          @endforeach
+          @endforelse
         </div>
-        @if($promoProducts->count() > 4)
-        <div class="flex gap-2 justify-end mt-4">
-          <button id="onsale-prev" class="onsale-btn" onclick="onsaleSlide(-1)" disabled aria-label="Produk sebelumnya"><i class="fa-solid fa-chevron-left text-black text-xs"></i></button>
-          <button id="onsale-next" class="onsale-btn" onclick="onsaleSlide(1)" aria-label="Produk berikutnya"><i class="fa-solid fa-chevron-right text-black text-xs"></i></button>
-        </div>
-        @endif
-      </div>
-    </section>
-
-
-    {{-- Testimoni: dimigrasi ke Livewire --}}
-    @livewire('frontend.testimoni')
-
-    {{-- Kontak --}}
-    <section id="kontak" aria-labelledby="kontak-heading" class="section-public bg-white border-t-2 border-b-2 border-black py-12 md:py-20 px-6 md:px-16">
-      <div class="max-w-6xl mx-auto">
-        <h2 id="kontak-heading" class="text-black text-2xl sm:text-3xl md:text-4xl font-bold text-center uppercase tracking-tight font-public mb-8 md:mb-10">Kontak Kami</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-stretch">
-          <address id="kontak-card" class="not-italic bg-white border border-zinc-500/60 rounded-[20px] p-6 md:p-8 lg:p-10 flex flex-col gap-6 h-full shadow-card font-public">
-            <strong class="text-black text-lg md:text-xl font-bold block">Informasi Kontak</strong>
-            <div class="flex flex-col gap-5">
-              <div class="flex gap-3 items-start">
-                <span class="material-symbols-outlined text-black text-2xl shrink-0" aria-hidden="true">location_on</span>
-                <div>
-                  <strong class="text-black text-sm md:text-base font-semibold block">Alamat Kami</strong>
-                  <span class="text-black text-sm mt-1 leading-snug block">Karanggondang, Rt4 Rw2, Mlonggo, Jepara Regency, Central Java 59452</span>
-                </div>
-              </div>
-              <div class="flex gap-3 items-start">
-                <span class="material-symbols-outlined text-black text-2xl shrink-0" aria-hidden="true">schedule</span>
-                <div>
-                  <strong class="text-black text-sm md:text-base font-semibold block">Jam Kerja</strong>
-                  <time class="text-black text-sm mt-1 block">Senin &ndash; Sabtu : 08.00 &ndash; 21.00</time>
-                </div>
-              </div>
-              <div class="flex gap-3 items-start">
-                <span class="material-symbols-outlined text-black text-2xl shrink-0" aria-hidden="true">call</span>
-                <div>
-                  <strong class="text-black text-sm md:text-base font-semibold block">Telepon / WhatsApp</strong>
-                  <a href="tel:+6289504841279" class="text-black text-sm mt-1 block hover:underline">0895-0484-1279</a>
-                </div>
-              </div>
-              <div class="flex gap-3 items-start">
-                <span class="material-symbols-outlined text-black text-2xl shrink-0" aria-hidden="true">mail</span>
-                <div>
-                  <strong class="text-black text-sm md:text-base font-semibold block">Email</strong>
-                  <a href="mailto:Prokarelektronik@gmail.com" class="text-black text-sm mt-1 block hover:underline">Prokarelektronik@gmail.com</a>
-                </div>
-              </div>
-            </div>
-          </address>
-          <div id="maps-wrap" class="rounded-[20px] overflow-hidden h-[300px] sm:h-[350px] md:h-full self-stretch shadow-card">
-            <iframe id="maps-iframe" title="Lokasi Prokar Elektronik di Google Maps" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.0545985815284!2d110.71228237499275!3d-6.514773893477648!2m3!1f0!2f0!3f0!2m3!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7123e1adf86edb%3A0xc0e7d2d2ad9056d3!2sProkar%20Elektronik!5e0!3m2!1sen!2sid!4v1780388610597!5m2!1sen!2sid" class="w-full h-full min-h-full border-0 block" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    {{-- FAQ: dimigrasi ke Livewire --}}
-    @livewire('frontend.faq')
-
-  </main>
-
-  {{-- CART MODAL (komponen blade, interaksi via JS) --}}
-  <div id="cart-modal-overlay" onclick="closeCartModal()" aria-hidden="true"></div>
-
-  <div id="cart-modal" role="dialog" aria-modal="true" aria-labelledby="cart-modal-title">
-    <div id="cart-step-select">
-      <div class="flex items-center gap-3 px-4 py-4 border-b border-gray-100">
-        <img id="modal-img" src="" alt="" class="w-16 h-16 object-cover border border-gray-200 rounded">
-        <div class="flex-1 min-w-0">
-          <p id="modal-name" class="font-bold text-sm uppercase leading-tight font-public line-clamp-2"></p>
-          <p id="modal-price" class="text-sm font-semibold mt-0.5 font-inter"></p>
-        </div>
-        <button onclick="closeCartModal()" aria-label="Tutup" class="ml-auto text-gray-400 hover:text-black transition-colors flex-shrink-0">
-          <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
-      </div>
-      <div class="px-4 pt-4 pb-2">
-        <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 font-inter mb-2">Warna: <span id="modal-color-label" class="text-black normal-case"></span></p>
-        <div id="modal-color-swatches" class="flex gap-2 flex-wrap"></div>
-      </div>
-      <div class="flex-1"></div>
-      <div class="px-4 pb-4 pt-4 border-t border-gray-100 mt-4">
-        <button onclick="addToCart()" class="w-full bg-black text-white font-bold text-sm uppercase tracking-wider py-3 px-4 hover:bg-gray-800 transition-colors font-public">TAMBAH KE KERANJANG</button>
-        <a href="{{ route('produk.index') }}" class="block text-center text-xs text-gray-500 mt-2 hover:text-black font-inter underline">Lihat Detail Produk</a>
       </div>
     </div>
-    <div id="cart-step-added" style="display:none; flex-direction:column;">
-      <div class="flex justify-end px-4 pt-4">
-        <button onclick="closeCartModal()" aria-label="Tutup" class="text-gray-400 hover:text-black transition-colors">
-          <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
-      </div>
-      <div id="cart-added-bar" class="show mx-4 rounded-md mb-4">
-        <i class="fa-solid fa-circle-check text-green-600 text-lg flex-shrink-0"></i>
-        <span class="text-green-700 text-sm font-semibold font-inter">Berhasil ditambahkan ke keranjang!</span>
-      </div>
-      <div class="flex items-center gap-3 px-4 pb-4 border-b border-gray-100">
-        <img id="added-img" src="" alt="" class="w-16 h-16 object-cover border border-gray-200 rounded">
-        <div class="flex-1">
-          <p id="added-name" class="font-bold text-sm uppercase leading-tight font-public"></p>
-          <p id="added-price" class="text-sm text-red-600 font-semibold mt-0.5 font-inter"></p>
-          <p id="added-color" class="text-xs text-gray-500 font-inter mt-0.5"></p>
+  </section>
+
+  <!-- TESTIMONI SECTION -->
+  <section id="testimonials" class="section-overlap bg-black py-24 lg:py-40 z-40">
+    <div class="max-w-[1000px] mx-auto px-6 text-center">
+      <h2 class="text-white text-4xl md:text-6xl font-black uppercase tracking-tighter font-public mb-6">
+        <span class="reveal-wrapper"><span class="reveal-line">Kata Pelanggan</span></span>
+      </h2>
+      <p class="reveal-fade text-gray-400 text-lg md:text-xl font-medium mb-16">Lihat pengalaman nyata dari pelanggan setia kami.</p>
+
+      <div class="reveal-fade bg-gray-900/50 rounded-[3rem] p-8 md:p-16 border border-gray-800 backdrop-blur-sm relative">
+        <div class="flex justify-center gap-2 mb-8">
+          <i class="fa-solid fa-star text-brand-yellow text-2xl"></i>
+          <i class="fa-solid fa-star text-brand-yellow text-2xl"></i>
+          <i class="fa-solid fa-star text-brand-yellow text-2xl"></i>
+          <i class="fa-solid fa-star text-brand-yellow text-2xl"></i>
+          <i class="fa-solid fa-star text-brand-yellow text-2xl"></i>
+        </div>
+        <blockquote class="min-h-[160px] flex flex-col justify-center">
+          <p id="testimoni-text" class="text-white text-2xl md:text-4xl font-black font-public leading-tight italic">
+            "TV yang saya beli kondisinya masih sangat bagus dan sesuai deskripsi. Pengiriman cepat!"
+          </p>
+          <cite id="testimoni-name" class="block text-brand-yellow text-xl font-bold mt-8 font-inter not-italic">
+            — Ahmad Fauzi
+          </cite>
+        </blockquote>
+        <div class="flex items-center justify-center gap-8 mt-12">
+          <button id="btn-prev" onclick="changeTestimoni(-1)" class="w-12 h-12 rounded-full border border-gray-600 flex items-center justify-center text-gray-600 transition-colors"><i class="fa-solid fa-arrow-left"></i></button>
+          <div id="testimoni-dots" class="flex items-center gap-3"></div>
+          <button id="btn-next" onclick="changeTestimoni(1)" class="w-12 h-12 rounded-full bg-white text-black flex items-center justify-center hover:bg-brand-yellow transition-colors"><i class="fa-solid fa-arrow-right"></i></button>
         </div>
       </div>
-      <div class="px-4 pt-5 pb-4 flex flex-col gap-3 mt-auto">
-        <button onclick="closeCartModal()" class="w-full border-2 border-black text-black font-bold text-sm uppercase tracking-wider py-3 hover:bg-black hover:text-white transition-colors font-public">LANJUT BELANJA</button>
-        <a href="{{ route('keranjang.index') }}" class="w-full block text-center bg-black text-white font-bold text-sm uppercase tracking-wider py-3 hover:bg-gray-800 transition-colors font-public">LIHAT KERANJANG</a>
-        <a href="{{ route('checkout.address') }}" class="w-full block text-center bg-[#FFCC00] text-black font-bold text-sm uppercase tracking-wider py-3 hover:bg-[#f0c000] transition-colors font-public">CHECKOUT</a>
+    </div>
+  </section>
+
+  <!-- FAQ SECTION -->
+  <section class="section-overlap bg-brand-soft py-24 lg:py-32 z-50">
+    <div class="max-w-[1000px] mx-auto px-6 md:px-12">
+      <h2 class="text-black text-4xl md:text-6xl font-black uppercase tracking-tighter font-public mb-12 text-center">
+        <span class="reveal-wrapper"><span class="reveal-line">Pertanyaan Umum</span></span>
+      </h2>
+      <div class="w-full border-t-2 border-black stagger-group">
+        <div class="stagger-item faq-item border-b-2 border-black">
+          <button onclick="toggleFaq(this)" class="w-full py-8 flex items-center justify-between text-left gap-4 bg-transparent group">
+            <span class="text-black text-xl md:text-2xl font-bold font-public group-hover:text-brand-blue transition-colors">Bagaimana kondisi elektronik bekas yang dijual?</span>
+            <div class="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center shrink-0 group-hover:bg-black group-hover:text-white transition-colors">
+              <i class="fa-solid fa-plus text-lg faq-icon transition-transform duration-300"></i>
+            </div>
+          </button>
+          <div class="faq-answer">
+            <p class="text-gray-700 text-lg pb-8 leading-relaxed font-inter">Semua produk telah melalui pengecekan teknisi berpengalaman. Kondisi tertera jelas dengan kategori: Seperti Baru, Kondisi Prima, Kondisi Baik, Lecet Pemakaian, atau Kondisi Minus Body.</p>
+          </div>
+        </div>
+        <div class="stagger-item faq-item border-b-2 border-black">
+          <button onclick="toggleFaq(this)" class="w-full py-8 flex items-center justify-between text-left gap-4 bg-transparent group">
+            <span class="text-black text-xl md:text-2xl font-bold font-public group-hover:text-brand-blue transition-colors">Bagaimana proses menjual elektronik saya?</span>
+            <div class="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center shrink-0 group-hover:bg-black group-hover:text-white transition-colors">
+              <i class="fa-solid fa-plus text-lg faq-icon transition-transform duration-300"></i>
+            </div>
+          </button>
+          <div class="faq-answer">
+            <p class="text-gray-700 text-lg pb-8 leading-relaxed font-inter">Isi formulir di halaman Jual, tim kami menghubungi Anda dengan penawaran. Jika deal, kami jemput gratis ke lokasi dan bayar langsung di tempat.</p>
+          </div>
+        </div>
+        <div class="stagger-item faq-item border-b-2 border-black">
+          <button onclick="toggleFaq(this)" class="w-full py-8 flex items-center justify-between text-left gap-4 bg-transparent group">
+            <span class="text-black text-xl md:text-2xl font-bold font-public group-hover:text-brand-blue transition-colors">Apakah garansi berlaku untuk jasa servis?</span>
+            <div class="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center shrink-0 group-hover:bg-black group-hover:text-white transition-colors">
+              <i class="fa-solid fa-plus text-lg faq-icon transition-transform duration-300"></i>
+            </div>
+          </button>
+          <div class="faq-answer">
+            <p class="text-gray-700 text-lg pb-8 leading-relaxed font-inter">Ya, setiap jasa servis dilengkapi garansi pengerjaan. Jika kerusakan yang sama muncul kembali dalam masa garansi, kami perbaiki tanpa biaya tambahan.</p>
+          </div>
+        </div>
       </div>
+    </div>
+  </section>
+
+  <!-- LOKASI SECTION -->
+  <section class="section-overlap bg-white py-24 lg:py-32 z-[60]">
+    <div class="max-w-[1440px] mx-auto px-6 md:px-12">
+      <h2 class="text-black text-4xl md:text-6xl font-black uppercase tracking-tighter font-public mb-12 text-center">
+        <span class="reveal-wrapper"><span class="reveal-line">Lokasi Kami</span></span>
+      </h2>
+      <div class="bg-gray-50 rounded-[2.5rem] p-8 md:p-12 border border-gray-200 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div class="flex flex-col gap-8 stagger-group">
+          <div class="stagger-item flex gap-5 items-start">
+            <div class="w-14 h-14 bg-brand-yellow rounded-full flex items-center justify-center shrink-0 shadow-sm">
+              <span class="material-symbols-outlined text-black text-2xl">location_on</span>
+            </div>
+            <div>
+              <strong class="text-black text-2xl font-bold block mb-2 font-public">Alamat</strong>
+              <p class="text-gray-600 text-lg leading-relaxed">Karanggondang, Rt4 Rw2, Mlonggo, Jepara, Jawa Tengah 59452</p>
+            </div>
+          </div>
+          <div class="stagger-item flex gap-5 items-start">
+            <div class="w-14 h-14 bg-brand-yellow rounded-full flex items-center justify-center shrink-0 shadow-sm">
+              <span class="material-symbols-outlined text-black text-2xl">schedule</span>
+            </div>
+            <div>
+              <strong class="text-black text-2xl font-bold block mb-2 font-public">Jam Operasional</strong>
+              <p class="text-gray-600 text-lg">Senin - Sabtu : 08.00 - 21.00</p>
+            </div>
+          </div>
+          <div class="stagger-item flex gap-5 items-start">
+            <div class="w-14 h-14 bg-brand-yellow rounded-full flex items-center justify-center shrink-0 shadow-sm">
+              <span class="material-symbols-outlined text-black text-2xl">call</span>
+            </div>
+            <div>
+              <strong class="text-black text-2xl font-bold block mb-2 font-public">Hubungi Kami</strong>
+              <p class="text-gray-600 text-lg">0895-0484-1279</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="reveal-fade rounded-3xl overflow-hidden h-[350px] lg:h-[450px] border border-gray-200 shadow-card">
+          <iframe title="Lokasi Prokar Elektronik" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.0545985815284!2d110.71228237499275!3d-6.514773893477648!2m3!1f0!2f0!3f0!2m3!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7123e1adf86edb%3A0xc0e7d2d2ad9056d3!2sProkar%20Elektronik!5e0!3m2!1sen!2sid!4v1780388610597!5m2!1sen!2sid" class="w-full h-full border-0" loading="lazy"></iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- CART MODAL -->
+<div id="cart-modal-overlay" onclick="closeCartModal()"></div>
+<div id="cart-modal" class="rounded-l-3xl p-6">
+  <div id="cart-step-select" class="h-full flex flex-col">
+    <div class="flex items-start justify-between mb-8">
+      <h2 class="text-2xl font-black font-public">Pilih Opsi</h2>
+      <button onclick="closeCartModal()" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-black hover:text-white transition-colors">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+    </div>
+    <div class="flex gap-4 mb-8">
+      <div class="w-24 h-24 bg-gray-50 rounded-2xl p-2 border border-gray-200">
+        <img id="modal-img" src="" class="w-full h-full object-contain">
+      </div>
+      <div class="flex-1">
+        <h3 id="modal-name" class="text-xl font-bold font-public leading-tight mb-2"></h3>
+        <p id="modal-price" class="text-2xl font-black text-black"></p>
+      </div>
+    </div>
+    <div class="mb-8">
+      <p class="text-base font-bold text-gray-800 mb-3 font-public">Warna: <span id="modal-color-label" class="font-normal text-gray-500"></span></p>
+      <div id="modal-color-swatches" class="flex gap-3 flex-wrap"></div>
+    </div>
+    <div class="mt-auto pt-6 border-t border-gray-100">
+      <button onclick="addToCart()" class="w-full bg-brand-yellow text-black font-black text-lg py-4 rounded-full hover:bg-yellow-400 transition-colors btn-hover font-public uppercase">
+        Tambah ke Keranjang
+      </button>
+    </div>
+  </div>
+
+  <!-- Step 2 -->
+  <div id="cart-step-added" style="display:none;" class="h-full flex-col">
+    <div class="flex justify-end mb-4">
+      <button onclick="closeCartModal()" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-black hover:text-white transition-colors">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+    </div>
+    <div class="flex flex-col items-center text-center mb-8 mt-10">
+      <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
+        <i class="fa-solid fa-check text-4xl text-green-600"></i>
+      </div>
+      <h2 class="text-2xl font-black font-public mb-2">Berhasil!</h2>
+      <p class="text-gray-500 text-lg">Produk ditambahkan ke keranjang</p>
+    </div>
+    <div class="flex gap-4 p-4 bg-gray-50 rounded-2xl mb-8">
+      <img id="added-img" src="" class="w-16 h-16 rounded-xl object-contain bg-white">
+      <div class="text-left flex-1">
+        <p id="added-name" class="font-bold font-public text-sm mb-1 line-clamp-1"></p>
+        <p id="added-price" class="font-black text-black text-sm"></p>
+        <p id="added-color" class="text-xs text-gray-500 mt-1"></p>
+      </div>
+    </div>
+    <div class="mt-auto flex flex-col gap-3">
+      <a href="{{ route('keranjang.index') }}" class="w-full block text-center bg-black text-white font-black text-lg py-4 rounded-full hover:bg-gray-800 transition-colors btn-hover font-public">
+        Lihat Keranjang
+      </a>
+      <button onclick="closeCartModal()" class="w-full bg-white text-black border-2 border-black font-black text-lg py-4 rounded-full hover:bg-gray-50 transition-colors font-public">
+        Lanjut Belanja
+      </button>
     </div>
   </div>
 </div>
 @endsection
 
 @push('scripts')
+<style>
+  .testimoni-dot {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 9999px;
+    transition: all 0.3s ease;
+  }
+  .testimoni-dot.active {
+    width: 2rem;
+    background-color: #FFCC00;
+  }
+  .testimoni-dot.inactive {
+    background-color: #4b5563;
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js"></script>
+
 <script>
-  // ===========================
-  // SYNC MAP HEIGHT
-  // ===========================
-  function syncMapHeight() {
-    const card = document.getElementById("kontak-card");
-    const iframe = document.getElementById("maps-iframe");
-    if (!card || !iframe) return;
-    iframe.style.height = window.innerWidth >= 768 ? card.offsetHeight + "px" : "240px";
-  }
-  window.addEventListener("load", syncMapHeight);
-  window.addEventListener("resize", syncMapHeight);
-
-  // ===========================
-  // ON SALE SLIDER
-  // ===========================
-  const ONSALE_GAP = 16;
-  let onsaleIndex = 0;
-
-  function getOnsaleCardWidth() {
-    const cards = document.querySelectorAll(".onsale-card");
-    if (!cards.length) return 0;
-    const isDesktop = window.innerWidth >= 768;
-    if (isDesktop) {
-      const wrapper = document.getElementById("onsale-wrapper");
-      return (wrapper.offsetWidth - ONSALE_GAP * 3) / 4;
-    }
-    return cards[0].offsetWidth;
-  }
-
-  function updateOnsaleCards() {
-    const wrapper = document.getElementById("onsale-wrapper");
-    const cards = document.querySelectorAll(".onsale-card");
-    const isMobile = window.innerWidth < 768;
-    const cardW = isMobile ?
-      (wrapper.offsetWidth - ONSALE_GAP) / 2 :
-      (wrapper.offsetWidth - ONSALE_GAP * 3) / 4;
-    cards.forEach((c) => {
-      c.style.width = cardW + "px";
-      c.style.flexBasis = cardW + "px";
-    });
-  }
-
-  function getOnsaleMaxIndex() {
-    const cards = document.querySelectorAll(".onsale-card");
-    const visibleCards = window.innerWidth < 768 ? 2 : 4;
-    return Math.max(0, cards.length - visibleCards);
-  }
-
-  function updateOnsaleNav() {
-    updateOnsaleCards();
-    const cardW = getOnsaleCardWidth();
-    const maxIndex = getOnsaleMaxIndex();
-    if (onsaleIndex > maxIndex) onsaleIndex = maxIndex;
-    const track = document.getElementById("onsale-track");
-    if (track) {
-      track.style.transform = `translateX(-${onsaleIndex * (cardW + ONSALE_GAP)}px)`;
-    }
-    const prevBtn = document.getElementById("onsale-prev");
-    const nextBtn = document.getElementById("onsale-next");
-    if (prevBtn && nextBtn) {
-      prevBtn.disabled = onsaleIndex === 0;
-      prevBtn.style.opacity = onsaleIndex === 0 ? "0.3" : "1";
-      nextBtn.disabled = onsaleIndex >= maxIndex;
-      nextBtn.style.opacity = onsaleIndex >= maxIndex ? "0.3" : "1";
-    }
-  }
-
-  function onsaleSlide(dir) {
-    const maxIndex = getOnsaleMaxIndex();
-    onsaleIndex = Math.min(Math.max(onsaleIndex + dir, 0), maxIndex);
-    updateOnsaleNav();
-  }
-  window.addEventListener("resize", () => { onsaleIndex = 0; updateOnsaleNav(); });
-
-  // ===========================
-  // INIT
-  // ===========================
-  document.addEventListener("DOMContentLoaded", () => {
-    updateOnsaleNav();
-    syncMapHeight();
+  // Initialize Lenis
+  const lenis = new Lenis({
+    duration: 1.2,
+    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    direction: 'vertical',
+    smooth: true,
+    mouseMultiplier: 1,
+    touchMultiplier: 2,
   });
 
-  // ===========================
-  // CART MODAL
-  // ===========================
-  let cartSelectedColor = null;
-  let cartCurrentProduct = null;
+  function raf(time) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+  }
+  requestAnimationFrame(raf);
 
-  function openCartModal(cardEl) {
-    const product = {
-      name: cardEl.dataset.name,
-      price: cardEl.dataset.price,
-      oldprice: cardEl.dataset.oldprice,
-      img: cardEl.dataset.img,
-      colors: JSON.parse(cardEl.dataset.colors || '[]'),
-      rating: parseFloat(cardEl.dataset.rating || '5'),
-      reviews: cardEl.dataset.reviews
-    };
-    cartCurrentProduct = product;
-    document.getElementById('modal-img').src = product.img;
-    document.getElementById('modal-img').alt = product.name;
-    document.getElementById('modal-name').textContent = product.name;
-    document.getElementById('modal-price').textContent = product.price;
-    document.getElementById('modal-price').className = product.oldprice
-      ? 'text-sm font-semibold mt-0.5 font-inter text-red-600'
-      : 'text-sm font-semibold mt-0.5 font-inter text-black';
+  // Sync GSAP with Lenis
+  gsap.registerPlugin(ScrollTrigger);
+  lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add((time)=>{ lenis.raf(time * 1000) });
+  gsap.ticker.lagSmoothing(0, 0);
 
-    const swatchesEl = document.getElementById('modal-color-swatches');
-    swatchesEl.innerHTML = '';
-    cartSelectedColor = product.colors.length > 0 ? product.colors[0] : null;
-    if (cartSelectedColor) {
-      document.getElementById('modal-color-label').textContent = cartSelectedColor.label;
+  /* --- OVERLAPPING SCROLL EFFECT --- */
+  const overlapSections = document.querySelectorAll('.section-overlap');
+  overlapSections.forEach((section, index) => {
+    if (index === overlapSections.length - 1) return;
+    ScrollTrigger.create({
+      trigger: section,
+      start: () => section.offsetHeight > window.innerHeight ? "bottom bottom" : "top top",
+      pin: true,
+      pinSpacing: false,
+    });
+  });
+
+  // 0. Parallax hero columns
+  document.querySelectorAll('.hero-parallax-col').forEach((col) => {
+    const speed = parseFloat(col.dataset.speed || "0");
+    gsap.to(col, {
+      yPercent: speed,
+      ease: "none",
+      scrollTrigger: {
+        trigger: "#hero",
+        start: "top top",
+        end: "bottom top",
+        scrub: true,
+      }
+    });
+  });
+
+  // 1. Animasi Hero Section
+  gsap.fromTo("#hero .reveal-line",
+    { y: "110%" },
+    { y: "0%", duration: 1.2, stagger: 0.15, ease: "power4.out", delay: 0.2 }
+  );
+
+  gsap.fromTo("#hero .reveal-fade",
+    { y: 40, autoAlpha: 0 },
+    { y: 0, autoAlpha: 1, duration: 1.2, stagger: 0.2, ease: "power3.out", delay: 0.6 }
+  );
+
+  // 2. Animasi Judul Section
+  document.querySelectorAll('section:not(#hero) .reveal-wrapper').forEach(wrapper => {
+    const line = wrapper.querySelector('.reveal-line');
+    if(line) {
+      gsap.fromTo(line,
+        { y: "110%" },
+        {
+          scrollTrigger: { trigger: wrapper, start: "top 90%" },
+          y: "0%", duration: 1.2, ease: "power4.out"
+        }
+      );
     }
-    product.colors.forEach((c, idx) => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'color-swatch' + (idx === 0 ? ' selected' : '');
-      btn.style.background = c.hex;
-      btn.title = c.label;
-      btn.setAttribute('aria-label', c.label);
-      btn.onclick = function () {
-        cartSelectedColor = c;
-        document.getElementById('modal-color-label').textContent = c.label;
-        swatchesEl.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
-        this.classList.add('selected');
-      };
-      swatchesEl.appendChild(btn);
+  });
+
+  // 3. Animasi Elemen Fade-Up
+  document.querySelectorAll('section:not(#hero) .reveal-fade').forEach(el => {
+    gsap.fromTo(el,
+      { y: 40, autoAlpha: 0 },
+      {
+        scrollTrigger: { trigger: el, start: "top 90%" },
+        y: 0, autoAlpha: 1, duration: 1, ease: "power3.out"
+      }
+    );
+  });
+
+  // 4. Animasi Stagger Cards
+  const staggerGroups = document.querySelectorAll('.stagger-group');
+  staggerGroups.forEach(group => {
+    const items = group.querySelectorAll('.stagger-item');
+    gsap.fromTo(items,
+      { y: 60, autoAlpha: 0 },
+      {
+        scrollTrigger: { trigger: group, start: "top 85%" },
+        y: 0, autoAlpha: 1, duration: 0.8, stagger: 0.15, ease: "power3.out"
+      }
+    );
+  });
+
+  // Testimonial Script
+  const testimonials = [
+    { text: "TV yang saya beli kondisinya masih sangat bagus dan sesuai deskripsi. Pengiriman cepat dan pelayanannya ramah", name: "Ahmad Fauzi" },
+    { text: "Kulkas yang saya beli masih sangat dingin dan mulus. Harganya jauh lebih murah dibanding toko biasa, recommended banget!", name: "Siti Rahayu" },
+    { text: "Servis mesin cuci saya selesai dalam sehari dan hasilnya memuaskan. Teknisinya profesional dan jujur soal kerusakan.", name: "Budi Santoso" }
+  ];
+
+  let currentIndex = 0;
+  const dotsEl = document.getElementById("testimoni-dots");
+
+  testimonials.forEach((_, i) => {
+    const dot = document.createElement("button");
+    dot.className = `testimoni-dot ${i === 0 ? 'active' : 'inactive'}`;
+    dot.onclick = () => { currentIndex = i; updateTestimoni(); };
+    dotsEl.appendChild(dot);
+  });
+
+  function updateTestimoni() {
+    const t = testimonials[currentIndex];
+    gsap.to("#testimoni-text, #testimoni-name", { opacity: 0, y: 10, duration: 0.2, onComplete: () => {
+      document.getElementById("testimoni-text").textContent = `"${t.text}"`;
+      document.getElementById("testimoni-name").textContent = `— ${t.name}`;
+      gsap.to("#testimoni-text, #testimoni-name", { opacity: 1, y: 0, duration: 0.3 });
+    }});
+
+    Array.from(dotsEl.children).forEach((d, i) => {
+      d.className = `testimoni-dot ${i === currentIndex ? 'active' : 'inactive'}`;
     });
 
-    document.getElementById('cart-step-select').style.display = '';
+    const btnPrev = document.getElementById('btn-prev');
+    const btnNext = document.getElementById('btn-next');
+
+    if (currentIndex === 0) {
+      btnPrev.className = "w-12 h-12 rounded-full border border-gray-600 flex items-center justify-center text-gray-600 transition-colors";
+    } else {
+      btnPrev.className = "w-12 h-12 rounded-full bg-white text-black flex items-center justify-center hover:bg-brand-yellow transition-colors";
+    }
+
+    if (currentIndex === testimonials.length - 1) {
+      btnNext.className = "w-12 h-12 rounded-full border border-gray-600 flex items-center justify-center text-gray-600 transition-colors";
+    } else {
+      btnNext.className = "w-12 h-12 rounded-full bg-white text-black flex items-center justify-center hover:bg-brand-yellow transition-colors";
+    }
+  }
+
+  function changeTestimoni(dir) {
+    currentIndex = Math.max(0, Math.min(testimonials.length - 1, currentIndex + dir));
+    updateTestimoni();
+  }
+
+  // FAQ Script
+  function toggleFaq(btn) {
+    const item = btn.closest(".faq-item");
+    const wasOpen = item.classList.contains("open");
+    document.querySelectorAll(".faq-item").forEach((i) => i.classList.remove("open"));
+    if (!wasOpen) item.classList.add("open");
+  }
+
+  // Horizontal Scroll Buttons
+  const track = document.getElementById('onsale-track');
+  document.getElementById('onsale-next').onclick = () => track.scrollBy({ left: 350, behavior: 'smooth' });
+  document.getElementById('onsale-prev').onclick = () => track.scrollBy({ left: -350, behavior: 'smooth' });
+
+  // Modal Script
+  function openCartModal(cardEl) {
+    if (!cardEl) return;
+    const product = {
+      name: cardEl.dataset.name || '',
+      price: cardEl.dataset.price || '',
+      img: cardEl.dataset.img || '',
+    };
+    document.getElementById('modal-img').src = product.img;
+    document.getElementById('modal-name').textContent = product.name;
+    document.getElementById('modal-price').textContent = product.price;
+
+    document.getElementById('cart-step-select').style.display = 'flex';
     document.getElementById('cart-step-added').style.display = 'none';
+
     document.getElementById('cart-modal-overlay').classList.add('open');
     document.getElementById('cart-modal').classList.add('open');
-    document.body.style.overflow = 'hidden';
+    lenis.stop();
   }
 
   function addToCart() {
-    if (!cartCurrentProduct) return;
-    document.getElementById('added-img').src = cartCurrentProduct.img;
-    document.getElementById('added-img').alt = cartCurrentProduct.name;
-    document.getElementById('added-name').textContent = cartCurrentProduct.name;
-    document.getElementById('added-price').textContent = cartCurrentProduct.price;
-    document.getElementById('added-color').textContent = cartSelectedColor
-      ? 'Warna: ' + cartSelectedColor.label
-      : '';
-    const badge = document.querySelector('[aria-label^="Keranjang"] span');
-    if (badge) {
-      const count = (parseInt(badge.textContent) || 0) + 1;
-      badge.textContent = count;
-      badge.setAttribute('aria-hidden', 'true');
-      document.querySelector('[aria-label^="Keranjang"]').setAttribute('aria-label', 'Keranjang (' + count + ' item)');
-    }
+    document.getElementById('added-img').src = document.getElementById('modal-img').src;
+    document.getElementById('added-name').textContent = document.getElementById('modal-name').textContent;
+    document.getElementById('added-price').textContent = document.getElementById('modal-price').textContent;
     document.getElementById('cart-step-select').style.display = 'none';
-    const step2 = document.getElementById('cart-step-added');
-    step2.style.display = 'flex';
+    document.getElementById('cart-step-added').style.display = 'flex';
   }
 
   function closeCartModal() {
     document.getElementById('cart-modal-overlay').classList.remove('open');
     document.getElementById('cart-modal').classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') closeCartModal();
-  });
-
-  // ===========================
-  // FAQ ACCORDION
-  // ===========================
-  function toggleFaq(btn) {
-    const item = btn.closest(".faq-item");
-    const wasOpen = item.classList.contains("open");
-    document.querySelectorAll(".faq-item").forEach((i) => {
-      i.classList.remove("open");
-      const b = i.querySelector("button[aria-expanded]");
-      if (b) b.setAttribute("aria-expanded", "false");
-    });
-    if (!wasOpen) {
-      item.classList.add("open");
-      btn.setAttribute("aria-expanded", "true");
-    }
-  }
-
-  // ===========================
-  // OPENING ANIMATION
-  // ===========================
-  function openingAnimation(config) {
-    return {
-      enabled: config.enabled,
-      phase: "intro", // intro -> reveal -> done
-      index: 0,
-      skip: false,
-      messages: config.messages,
-
-      init() {
-        if (!this.enabled) {
-          this.skip = true;
-          this.phase = "done";
-          return;
-        }
-
-        const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-        let alreadyPlayed = false;
-        try {
-          alreadyPlayed = sessionStorage.getItem("prokar_opening_played") === "1";
-        } catch (e) {
-          // sessionStorage can fail in private mode
-        }
-
-        if (prefersReducedMotion || alreadyPlayed) {
-          this.skip = true;
-          this.phase = "done";
-          return;
-        }
-
-        this.runSequence();
-      },
-
-      runSequence() {
-        const fadeDuration = config.fadeDuration;
-
-        const step = (i) => {
-          this.index = i;
-          const duration = this.messages[i]?.duration || 1900;
-          window.setTimeout(() => {
-            if (i < this.messages.length - 1) {
-              step(i + 1);
-            } else {
-              this.phase = "reveal";
-              window.setTimeout(() => {
-                this.phase = "done";
-                try {
-                  sessionStorage.setItem("prokar_opening_played", "1");
-                } catch (e) {
-                  /* ignore */
-                }
-              }, fadeDuration);
-            }
-          }, duration);
-        };
-
-        step(0);
-      }
-    };
+    lenis.start();
   }
 </script>
 @endpush

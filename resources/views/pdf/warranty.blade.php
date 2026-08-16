@@ -4,164 +4,287 @@
     <meta charset="utf-8">
     <title>Kartu Garansi - {{ $serviceOrder->service_code }}</title>
     <style>
+        @page {
+            margin: 15px;
+        }
         body {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-family: 'DejaVu Sans', 'Helvetica', 'Arial', sans-serif;
             color: #000;
+            background: #fff;
             margin: 0;
-            padding: 20px;
+            padding: 10px;
+            font-size: 11px;
+            line-height: 1.4;
         }
-        .ticket-wrapper {
+        .receipt-card {
             width: 100%;
-            max-width: 600px;
+            max-width: 440px;
             margin: 0 auto;
-            border: 2px dashed #000;
-            padding: 20px;
-            border-radius: 10px;
+            border: none;
+            padding: 5px;
+            box-sizing: border-box;
         }
-        .header {
+        .brand-logo-container {
             text-align: center;
-            border-bottom: 2px solid #000;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 12px;
         }
-        .header h1 {
-            margin: 0;
-            font-size: 32px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+        .brand-logo {
+            max-width: 140px;
+            height: auto;
         }
-        .header p {
-            margin: 5px 0 0;
-            font-size: 14px;
-            color: #555;
-            text-transform: uppercase;
+        .title-garansi {
+            font-family: 'DejaVu Serif', Georgia, serif;
+            font-style: italic;
+            font-weight: bold;
+            font-size: 21px;
+            margin: 10px 0 12px 0;
+            color: #000;
         }
-        .row {
+        .meta-table {
             width: 100%;
-            margin-bottom: 15px;
-            clear: both;
-        }
-        .col-half {
-            width: 48%;
-            float: left;
-        }
-        .col-half.right {
-            float: right;
-        }
-        .label {
-            font-size: 10px;
-            font-weight: bold;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin: 0 0 4px 0;
-        }
-        .value {
-            font-size: 16px;
-            font-weight: bold;
-            margin: 0;
-        }
-        .section-title {
-            background: #000;
-            color: #fff;
-            padding: 5px 10px;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 20px;
+            border-collapse: collapse;
             margin-bottom: 10px;
         }
-        .footer {
-            margin-top: 30px;
-            text-align: center;
-            font-size: 12px;
-            color: #555;
-            border-top: 1px solid #ddd;
-            padding-top: 15px;
+        .meta-table td {
+            padding: 2px 0;
+            font-size: 11px;
         }
-        .warranty-box {
-            background: #f9f9f9;
-            border: 1px solid #ccc;
-            padding: 15px;
-            text-align: center;
-            margin-top: 20px;
+        .meta-label {
+            font-weight: bold;
+            color: #333;
         }
-        .warranty-box .label {
+        .meta-val {
+            font-weight: bold;
             color: #000;
         }
-        .warranty-box .value {
-            font-size: 24px;
+        .solid-divider {
+            border: none;
+            border-top: 1.5px solid #000;
+            margin: 10px 0;
         }
-        .clearfix::after {
-            content: "";
-            clear: both;
-            display: table;
+        .dashed-divider {
+            border: none;
+            border-top: 1px dashed #000;
+            margin: 10px 0;
+        }
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 6px;
+        }
+        .info-table td {
+            padding: 3px 0;
+            vertical-align: top;
+            font-size: 11px;
+        }
+        .info-table .key {
+            font-weight: bold;
+            color: #222;
+            width: 45%;
+        }
+        .info-table .val {
+            font-weight: bold;
+            color: #000;
+            width: 55%;
+            text-align: right;
+            word-break: break-word;
+        }
+        .total-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .total-table td {
+            padding: 2px 0;
+        }
+        .total-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #000;
+        }
+        .total-amount {
+            font-size: 16px;
+            font-weight: bold;
+            color: #000;
+            text-align: right;
+        }
+        .status-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #222;
+        }
+        .status-val {
+            font-size: 12px;
+            font-weight: bold;
+            color: #000;
+            text-align: right;
+        }
+        .barcode-wrapper {
+            text-align: center;
+            margin: 14px 0 10px;
+        }
+        .barcode-label {
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        .barcode-code {
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-top: 4px;
+        }
+        .footer-banner {
+            text-align: center;
+            margin-top: 14px;
+            padding-top: 6px;
+        }
+        .warranty-date-text {
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            color: #000;
+        }
+        .thank-you-text {
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #000;
+            line-height: 1.4;
         }
     </style>
 </head>
 <body>
 
-    <div class="ticket-wrapper">
-        <div class="header">
-            <h1>PROKAR</h1>
-            <p>Kartu Garansi Servis Resmi</p>
+    @php
+        $logoPath = public_path('images/logo prokar.png');
+        $logoData = file_exists($logoPath) ? base64_encode(file_get_contents($logoPath)) : null;
+        $logoSrc = $logoData ? 'data:image/png;base64,' . $logoData : null;
+
+        // Generate physical PNG Barcode File on Disk for 100% reliable DomPDF rendering
+        try {
+            $barcodeDir = public_path('images/barcodes');
+            if (!file_exists($barcodeDir)) {
+                mkdir($barcodeDir, 0755, true);
+            }
+            $barcodeFilePath = $barcodeDir . '/' . $serviceOrder->service_code . '.png';
+            
+            $barcodeGenerator = new \Picqer\Barcode\BarcodeGeneratorPNG();
+            $barcodePngData = $barcodeGenerator->getBarcode($serviceOrder->service_code, $barcodeGenerator::TYPE_CODE_128, 2, 50);
+            file_put_contents($barcodeFilePath, $barcodePngData);
+
+            $barcodeImgSrc = $barcodeFilePath;
+        } catch (\Throwable $e) {
+            $barcodeImgSrc = null;
+        }
+
+        // Calculate Warranty Date (Forced temporarily to 2 weeks / 14 days from completed_at)
+        $warrantyDate = $serviceOrder->completed_at ? $serviceOrder->completed_at->copy()->addDays(14) : now()->addDays(14);
+        $warrantyDateString = $warrantyDate->translatedFormat('j F Y');
+    @endphp
+
+    <div class="receipt-card">
+
+        <!-- LOGO PROKAR CENTERED -->
+        <div class="brand-logo-container">
+            @if($logoSrc)
+                <img src="{{ $logoSrc }}" class="brand-logo" alt="PROKAR SERVICE ELEKTRONIK">
+            @else
+                <div style="font-size: 24px; font-weight: 900; letter-spacing: 2px;">PROKAR</div>
+                <div style="font-size: 10px; font-weight: bold; letter-spacing: 1px; margin-top: 2px;">SERVICE ELEKTRONIK</div>
+            @endif
         </div>
 
-        <div class="row clearfix">
-            <div class="col-half">
-                <p class="label">Kode Tiket</p>
-                <p class="value">{{ $serviceOrder->service_code }}</p>
+        <!-- TITLE KARTU GARANSI -->
+        <div class="title-garansi">Invoice & Kartu Garansi</div>
+
+        <!-- METADATA TIKET & PELANGGAN -->
+        <table class="meta-table">
+            <tr>
+                <td style="width: 50%;">
+                    <span class="meta-label">No:</span> <span class="meta-val">{{ str_replace('SRV-', '', $serviceOrder->service_code) }}</span>
+                </td>
+                <td style="width: 50%; text-align: right;">
+                    <span class="meta-label">Date:</span> <span class="meta-val">{{ $serviceOrder->completed_at ? $serviceOrder->completed_at->translatedFormat('d F Y') : now()->translatedFormat('d F Y') }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 50%;">
+                    <span class="meta-label">To:</span> <span class="meta-val">{{ $serviceOrder->customer_name }}</span>
+                </td>
+                <td style="width: 50%; text-align: right;">
+                    <span class="meta-label">No. Telepon:</span> <span class="meta-val">{{ $serviceOrder->customer_phone }}</span>
+                </td>
+            </tr>
+        </table>
+
+        <!-- SOLID LINE DIVIDER -->
+        <div class="solid-divider"></div>
+
+        <!-- ITEMISASI RINCIAN PERANGKAT -->
+        <table class="info-table">
+            <tr>
+                <td class="key">Perangkat</td>
+                <td class="val">{{ $serviceOrder->category->name }}</td>
+            </tr>
+            <tr>
+                <td class="key">Merek/Tipe</td>
+                <td class="val">{{ $serviceOrder->device_brand ?: '-' }}</td>
+            </tr>
+            <tr>
+                <td class="key">Jenis Layanan</td>
+                <td class="val">{{ $serviceOrder->service_type === 'home_visit' ? 'Teknisi Datang' : 'Kirim Ke Toko' }}</td>
+            </tr>
+            <tr>
+                <td class="key">Diagnosa/Perbaikan</td>
+                <td class="val">{{ $serviceOrder->diagnosis ?: 'Perbaikan & Pengantian Komponen Utama' }}</td>
+            </tr>
+        </table>
+
+        <!-- DASHED LINE DIVIDER -->
+        <div class="dashed-divider"></div>
+
+        <!-- TOTAL BIAYA & STATUS BAYAR -->
+        <table class="total-table">
+            <tr>
+                <td class="total-title">Total</td>
+                <td class="total-amount">Rp. {{ number_format($serviceOrder->final_cost > 0 ? $serviceOrder->final_cost : $serviceOrder->estimated_cost, 0, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <td class="status-title">Status Bayar</td>
+                <td class="status-val">{{ $serviceOrder->payment_status === 'paid' ? 'Lunas (Paid)' : 'Belum Lunas' }}</td>
+            </tr>
+        </table>
+
+        <!-- DASHED LINE DIVIDER -->
+        <div class="dashed-divider"></div>
+
+        <!-- KODE SERVIS & BARCODE GARIS ASLI -->
+        <div class="barcode-wrapper">
+            <div class="barcode-label">KODE SERVIS</div>
+            <div style="text-align: center; padding: 6px 0;">
+                @if($barcodeImgSrc && file_exists($barcodeImgSrc))
+                    <img src="{{ $barcodeImgSrc }}" style="height: 48px; width: 220px; display: inline-block;" alt="Barcode">
+                @endif
             </div>
-            <div class="col-half right">
-                <p class="label">Tanggal Selesai</p>
-                <p class="value">{{ $serviceOrder->completed_at ? $serviceOrder->completed_at->format('d M Y') : '-' }}</p>
+            <div class="barcode-code">{{ $serviceOrder->service_code }}</div>
+        </div>
+
+        <!-- FOOTER & MASA GARANSI -->
+        <div class="footer-banner">
+            <div class="warranty-date-text">
+                GARANSI BERLAKU HINGGA {{ strtoupper($warrantyDateString) }}
+            </div>
+            <div class="thank-you-text">
+                TERIMA KASIH ATAS KEPERCAYAAN ANDA<br>
+                KEPADA PROKAR ELEKTRONIK
             </div>
         </div>
 
-        <div class="section-title">Informasi Pelanggan & Perangkat</div>
-        <div class="row clearfix">
-            <div class="col-half">
-                <p class="label">Nama Pelanggan</p>
-                <p class="value">{{ $serviceOrder->customer_name }}</p>
-            </div>
-            <div class="col-half right">
-                <p class="label">No. WhatsApp</p>
-                <p class="value">{{ $serviceOrder->customer_phone }}</p>
-            </div>
-        </div>
-
-        <div class="row clearfix">
-            <div class="col-half">
-                <p class="label">Kategori</p>
-                <p class="value">{{ $serviceOrder->category->name }}</p>
-            </div>
-            <div class="col-half right">
-                <p class="label">Merek / Tipe</p>
-                <p class="value">{{ $serviceOrder->device_brand ?: '-' }}</p>
-            </div>
-        </div>
-
-        <div class="section-title">Hasil Perbaikan</div>
-        <div class="row clearfix">
-            <p class="label">Diagnosa Kerusakan</p>
-            <p style="margin:0; font-size:14px; line-height:1.5;">{{ $serviceOrder->diagnosis ?: 'Perbaikan dan pemeliharaan umum.' }}</p>
-        </div>
-        
-        <div class="row clearfix" style="margin-top: 15px;">
-            <p class="label">Biaya Final</p>
-            <p class="value">Rp {{ number_format($serviceOrder->final_cost, 0, ',', '.') }}</p>
-        </div>
-
-        <div class="warranty-box">
-            <p class="label">GARANSI BERLAKU HINGGA</p>
-            <p class="value">{{ $serviceOrder->warranty_until ? $serviceOrder->warranty_until->format('d M Y') : 'TIDAK ADA GARANSI' }}</p>
-            <p style="font-size:10px; margin-top:5px; color:#555;">(Simpan kartu ini atau tangkap layar sebagai bukti klaim garansi)</p>
-        </div>
-
-        <div class="footer">
-            Terima kasih telah mempercayakan perbaikan perangkat Anda kepada <strong>PROKAR Elektronik</strong>.<br>
-            Jika kendala berulang dalam masa garansi, silakan hubungi teknisi kami.
-        </div>
     </div>
 
 </body>
