@@ -17,8 +17,12 @@
       <a href="{{ route('servis.lacak') }}" class="text-white text-2xl font-bold hover:text-brand-yellow transition-colors">TRACK</a>
     </nav>
   </div>
-  <div class="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center text-gray-500 font-inter text-sm md:text-base">
+  <div class="max-w-[1440px] mx-auto flex flex-col sm:flex-row justify-between items-center text-gray-500 font-inter text-xs sm:text-sm gap-4">
     <p>&copy; <span>{{ date('Y') }}</span> Copyright by Prokar Elektronik</p>
-    <p>Made by <a href="https://github.com/AriscaPramalistyo05" target="_blank" rel="noopener noreferrer">Lar's</a></p>
+    <div class="flex items-center gap-6">
+      <a href="{{ route('terms') }}" class="hover:text-brand-yellow transition-colors underline">Syarat &amp; Ketentuan</a>
+      <a href="{{ route('privacy') }}" class="hover:text-brand-yellow transition-colors underline">Kebijakan Privasi</a>
+      <p>Made by <a href="https://github.com/AriscaPramalistyo05" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors">Lar's</a></p>
+    </div>
   </div>
 </footer>

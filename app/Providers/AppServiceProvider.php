@@ -43,5 +43,21 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(\Illuminate\Auth\Events\Login::class, function ($event) {
             app(\App\Services\CartService::class)->syncSessionToDatabase();
         });
+
+        // Custom branded email notification for Password Reset
+        \Illuminate\Auth\Notifications\ResetPassword::toMailUsing(function (object $notifiable, string $token) {
+            $resetUrl = url(route('password.reset', [
+                'token' => $token,
+                'email' => $notifiable->getEmailForPasswordReset(),
+            ], false));
+
+            return (new \Illuminate\Notifications\Messages\MailMessage)
+                ->subject('Atur Ulang Kata Sandi Akun Prokar Elektronik')
+                ->view('emails.reset-password', [
+                    'user' => $notifiable,
+                    'url' => $resetUrl,
+                    'token' => $token,
+                ]);
+        });
     }
 }

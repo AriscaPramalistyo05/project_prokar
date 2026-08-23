@@ -31,6 +31,7 @@
                 <x-admin.sidebar-item route="admin.orders.index" icon="o-shopping-bag" label="Order" />
                 <x-menu-separator />
                 <x-admin.sidebar-item route="admin.users.index" icon="o-users" label="Pengguna" />
+                <x-admin.sidebar-item route="admin.roles.index" icon="o-shield-check" label="Role & Hak Akses" />
                 <x-admin.sidebar-item route="admin.reports.index" icon="o-chart-bar" label="Laporan" />
                 <x-admin.sidebar-item route="admin.activity-log" icon="o-clipboard-document-list" label="Activity Log" />
                 <x-menu-separator />

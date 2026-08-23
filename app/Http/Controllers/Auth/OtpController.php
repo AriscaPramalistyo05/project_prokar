@@ -69,7 +69,7 @@ class OtpController extends Controller
         Auth::login($user);
         session()->forget('otp_user_id');
 
-        return auth()->user()->hasRole(['super_admin','teknisi'])
+        return auth()->user()->hasAnyRole(['super_admin', 'teknisi', 'admin'])
             ? redirect()->route('admin.dashboard')->with('success', 'Akun berhasil diverifikasi!')
             : redirect()->route('home')->with('success', 'Akun berhasil diverifikasi!');
     }

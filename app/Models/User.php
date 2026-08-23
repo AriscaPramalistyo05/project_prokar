@@ -20,6 +20,7 @@ class User extends Authenticatable
         'phone',
         'avatar',
         'fcm_token',
+        'is_suspended',
     ];
 
     protected $hidden = [
@@ -32,13 +33,14 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_suspended' => 'boolean',
         ];
     }
 
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['name', 'email', 'phone', 'avatar'])
+            ->logOnly(['name', 'email', 'phone', 'avatar', 'is_suspended'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
     }
