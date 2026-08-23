@@ -67,17 +67,20 @@ class PaymentWebhookController extends Controller
             return response()->json(['message' => 'Order not found'], 44);
         }
 
-        // Cegah eksekusi ulang jika order sudah paid/completed
-        if ($order->payment_status === 'paid' && in_array($transactionStatus, ['settlement', 'capture'])) {
+        // Cegah eksekusi ulang jika order sudah paid/dp_paid
+        if (in_array($order->payment_status, ['paid', 'dp_paid']) && in_array($transactionStatus, ['settlement', 'capture'])) {
             return response()->json(['message' => 'Order already processed']);
         }
 
         DB::transaction(function () use ($order, $transactionStatus, $paymentType, $payload) {
             if ($transactionStatus === 'settlement' || $transactionStatus === 'capture') {
+                $isDp = ($order->payment_type === 'down_payment');
+                $targetPaymentStatus = $isDp ? 'dp_paid' : 'paid';
+
                 // Update status order & pembayaran
                 $order->update([
                     'status' => 'processing',
-                    'payment_status' => 'paid',
+                    'payment_status' => $targetPaymentStatus,
                     'paid_at' => now(),
                     'payment_method' => $paymentType,
                     'midtrans_response' => $payload,
@@ -99,10 +102,15 @@ class PaymentWebhookController extends Controller
 
                 // Kirim notifikasi FCM ke admin
                 try {
+                    $notifTitle = $isDp ? "DP 50% Diterima! 🛒" : "Pembayaran Diterima! 🛒";
+                    $notifBody = $isDp
+                        ? "Pesanan {$order->order_code} telah dibayar DP Rp " . number_format($order->down_payment, 0, ',', '.') . " (Sisa COD: Rp " . number_format($order->remaining_payment, 0, ',', '.') . ")."
+                        : "Pesanan {$order->order_code} senilai Rp " . number_format($order->total, 0, ',', '.') . " telah dibayar lunas.";
+
                     $this->fcmService->sendToAdmins(
-                        "Pembayaran Diterima! 🛒",
-                        "Pesanan {$order->order_code} senilai Rp " . number_format($order->total, 0, ',', '.') . " telah dibayar.",
-                        ['order_code' => $order->order_code, 'type' => 'order_paid']
+                        $notifTitle,
+                        $notifBody,
+                        ['order_code' => $order->order_code, 'type' => $isDp ? 'order_dp_paid' : 'order_paid']
                     );
                 } catch (\Throwable $e) {
                     Log::error("Failed sending FCM notification for Order {$order->order_code}: " . $e->getMessage());

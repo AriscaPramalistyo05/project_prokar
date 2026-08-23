@@ -48,6 +48,7 @@ class DatabaseSeeder extends Seeder
             RolePermissionSeeder::class,
             AdminUserSeeder::class,
             CategoryProductSeeder::class,
+            TransactionDummySeeder::class,
         ]);
     }
 }

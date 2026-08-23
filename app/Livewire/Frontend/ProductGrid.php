@@ -12,6 +12,7 @@ class ProductGrid extends Component
 {
     use WithPagination;
     public $category = 'semua';
+    public $search = '';
     public $perPage = 8;
 
     protected $listeners = ['category-changed' => 'updateCategory'];
@@ -19,6 +20,7 @@ class ProductGrid extends Component
     public function mount()
     {
         $this->category = request()->query('kategori', 'semua');
+        $this->search = trim((string) request()->query('search', ''));
     }
 
     public function updateCategory($key)
@@ -35,7 +37,17 @@ class ProductGrid extends Component
 
     public function render()
     {
-        $query = Product::with(['category', 'primaryImage']);
+        $query = Product::with(['category', 'primaryImage'])
+            ->where('status', 'available');
+
+        if (!empty($this->search)) {
+            $s = $this->search;
+            $query->where(function ($q) use ($s) {
+                $q->where('name', 'like', "%{$s}%")
+                    ->orWhere('brand', 'like', "%{$s}%")
+                    ->orWhere('model', 'like', "%{$s}%");
+            });
+        }
 
         if ($this->category !== 'semua') {
             if ($this->category === 'lainnya') {
@@ -74,6 +86,7 @@ class ProductGrid extends Component
                 'original_price' => $product->promo_price ? (float) $product->price : null,
                 'on_sale' => $product->is_promo,
                 'image' => $product->image_url,
+                'stock' => (int) ($product->stock ?? 10),
             ];
         });
 

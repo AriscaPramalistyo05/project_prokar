@@ -20,6 +20,9 @@ class OrderIndex extends Component
     #[Url]
     public string $filterPaymentStatus = '';
 
+    #[Url]
+    public string $filterPaymentMethod = '';
+
     public bool $showDetailModal = false;
     public ?Order $selectedOrder = null;
 
@@ -27,6 +30,7 @@ class OrderIndex extends Component
         'search' => ['except' => ''],
         'filterStatus' => ['except' => ''],
         'filterPaymentStatus' => ['except' => ''],
+        'filterPaymentMethod' => ['except' => ''],
     ];
 
     public function updatedSearch()
@@ -44,11 +48,17 @@ class OrderIndex extends Component
         $this->resetPage();
     }
 
+    public function updatedFilterPaymentMethod()
+    {
+        $this->resetPage();
+    }
+
     public function resetFilters()
     {
         $this->search = '';
         $this->filterStatus = '';
         $this->filterPaymentStatus = '';
+        $this->filterPaymentMethod = '';
         $this->resetPage();
     }
 
@@ -72,14 +82,74 @@ class OrderIndex extends Component
 
     public function updatePaymentStatus(Order $order, string $paymentStatus)
     {
-        $order->update(['payment_status' => $paymentStatus]);
+        $data = ['payment_status' => $paymentStatus];
         if ($paymentStatus === 'paid') {
-            $order->update(['paid_at' => now()]);
+            $data['paid_at'] = now();
+            $data['remaining_payment'] = 0;
             if ($order->status === 'pending') {
-                $order->update(['status' => 'processing']);
+                $data['status'] = 'processing';
             }
+        } elseif ($paymentStatus === 'dp_paid') {
+            $data['paid_at'] = now();
+            if ($order->status === 'pending') {
+                $data['status'] = 'processing';
+            }
+        } elseif ($paymentStatus === 'unpaid') {
+            $data['paid_at'] = null;
+        }
+
+        $order->update($data);
+
+        if ($this->selectedOrder && $this->selectedOrder->id === $order->id) {
+            $this->selectedOrder = $order->fresh(['orderItems.product', 'user']);
         }
         $this->dispatch('mary-toast', type: 'success', title: 'Status pembayaran berhasil diperbarui');
+    }
+
+    public function verifyStorePayment(Order $order)
+    {
+        $order->update([
+            'payment_status' => 'paid',
+            'paid_at' => now(),
+            'remaining_payment' => 0,
+            'status' => 'completed',
+        ]);
+
+        if ($this->selectedOrder && $this->selectedOrder->id === $order->id) {
+            $this->selectedOrder = $order->fresh(['orderItems.product', 'user']);
+        }
+        $this->dispatch('mary-toast', type: 'success', title: 'Pembayaran tunai di kasir toko berhasil diverifikasi (Pesanan Selesai)');
+    }
+
+    public function verifyCodFullPayment(Order $order)
+    {
+        $order->update([
+            'payment_status' => 'paid',
+            'paid_at' => now(),
+            'remaining_payment' => 0,
+            'status' => 'completed',
+        ]);
+
+        if ($this->selectedOrder && $this->selectedOrder->id === $order->id) {
+            $this->selectedOrder = $order->fresh(['orderItems.product', 'user']);
+        }
+        $this->dispatch('mary-toast', type: 'success', title: 'Setoran pembayaran COD berhasil diverifikasi (Pesanan Selesai)');
+    }
+
+    public function settleRemainingPayment(Order $order, string $method = 'cash')
+    {
+        $order->update([
+            'payment_status' => 'paid',
+            'payment_method' => $method,
+            'remaining_payment' => 0,
+            'paid_at' => now(),
+            'status' => 'completed',
+        ]);
+
+        if ($this->selectedOrder && $this->selectedOrder->id === $order->id) {
+            $this->selectedOrder = $order->fresh(['orderItems.product', 'user']);
+        }
+        $this->dispatch('mary-toast', type: 'success', title: 'Pelunasan sisa tagihan COD berhasil dicatat (Pesanan Selesai)');
     }
 
     public function render()
@@ -87,6 +157,7 @@ class OrderIndex extends Component
         $totalCount = Order::count();
         $processingCount = Order::where('status', 'processing')->count();
         $paidCount = Order::where('payment_status', 'paid')->count();
+        $dpPaidCount = Order::where('payment_status', 'dp_paid')->count();
         $unpaidCount = Order::where('payment_status', 'unpaid')->count();
 
         $query = Order::with(['orderItems.product', 'user'])
@@ -104,6 +175,16 @@ class OrderIndex extends Component
             ->when($this->filterPaymentStatus, function ($q) {
                 $q->where('payment_status', $this->filterPaymentStatus);
             })
+            ->when($this->filterPaymentMethod, function ($q) {
+                if ($this->filterPaymentMethod === 'dp') {
+                    $q->where(function ($sub) {
+                        $sub->where('payment_type', 'down_payment')
+                            ->orWhere('payment_method', 'midtrans_dp');
+                    });
+                } else {
+                    $q->where('payment_method', $this->filterPaymentMethod);
+                }
+            })
             ->latest();
 
         $orders = $query->paginate(15);
@@ -114,6 +195,7 @@ class OrderIndex extends Component
                 'total' => $totalCount,
                 'processing' => $processingCount,
                 'paid' => $paidCount,
+                'dp_paid' => $dpPaidCount,
                 'unpaid' => $unpaidCount,
             ]
         ])->layout('layouts.admin');

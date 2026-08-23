@@ -1,4 +1,4 @@
-<section class="w-full lg:w-3/5 lg:h-screen lg:overflow-y-auto px-4 pt-5 pb-8 sm:px-6 lg:px-10 lg:pt-8 flex flex-col justify-between">
+<div class="w-full min-h-full px-4 pt-5 pb-8 sm:px-6 lg:px-10 lg:pt-8 flex flex-col justify-between">
 
   <div>
     <!-- Header -->
@@ -20,23 +20,67 @@
 
     <!-- Judul -->
     <div class="mb-6">
-      <h1 class="font-public font-bold text-3xl sm:text-4xl uppercase tracking-tight leading-none mb-2 text-[#0A0A0A]">Alamat Pengiriman</h1>
-      <p class="text-sm text-[#0A0A0A]/50 font-inter">Lengkapi lokasi tujuan supaya kurir toko tidak nyasar.</p>
+      <h1 class="font-public font-bold text-3xl sm:text-4xl uppercase tracking-tight leading-none mb-2 text-[#0A0A0A]">Pengiriman &amp; Pembayaran</h1>
+      <p class="text-sm text-[#0A0A0A]/50 font-inter">Pilih opsi pengiriman dan metode pembayaran sesuai kebutuhan Anda.</p>
     </div>
 
     @if ($submitted)
       <div class="block-card rounded-2xl border-2 border-[#1E8A5F] bg-green-50 text-[#1E8A5F] p-4 font-inter text-sm mb-5 flex items-center gap-2">
         <i class="fa-solid fa-circle-check text-lg"></i>
-        <span class="font-semibold">Alamat tersimpan. Membuka jendela pembayaran...</span>
+        <span class="font-semibold">Pesanan tersimpan. Membuka jendela pembayaran...</span>
       </div>
     @endif
 
     <form id="checkoutForm" wire:submit.prevent="submit" class="flex flex-col gap-5">
 
-      <!-- Blok: Data Penerima -->
+      <!-- Blok: Metode Pengiriman (Delivery Type) -->
       <div class="block-card bg-[#FCFCFA] border-2 border-[#0A0A0A] rounded-2xl p-5 sm:p-6 flex flex-col gap-4">
         <h2 class="font-public font-bold text-sm uppercase tracking-wider text-[#0A0A0A]/70 flex items-center gap-2">
-          <i class="fa-solid fa-user text-[#0A0A0A]/40" aria-hidden="true"></i> Data Penerima
+          <i class="fa-solid fa-truck-fast text-[#0A0A0A]/40" aria-hidden="true"></i> 1. Metode Pengiriman
+        </h2>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <!-- Opsi 1: Dikirim ke Alamat -->
+          <label wire:key="delivery-delivery" class="relative flex flex-col p-4 border-2 rounded-xl cursor-pointer transition-all {{ $deliveryType === 'delivery' ? 'border-[#0A0A0A] bg-[#FFCC00]/15 press' : 'border-[#0A0A0A]/15 bg-white hover:border-[#0A0A0A]/40' }}">
+            <input type="radio" wire:model.live="deliveryType" value="delivery" class="sr-only" />
+            <div class="flex items-center justify-between mb-1.5">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-truck text-base {{ $deliveryType === 'delivery' ? 'text-[#0A0A0A]' : 'text-[#0A0A0A]/40' }}"></i>
+                <span class="font-public font-bold text-sm text-[#0A0A0A] uppercase tracking-wide">Kirim ke Alamat</span>
+              </div>
+              <div class="w-4 h-4 rounded-full border-2 border-[#0A0A0A] flex items-center justify-center">
+                @if($deliveryType === 'delivery')
+                  <div class="w-2 h-2 rounded-full bg-[#0A0A0A]"></div>
+                @endif
+              </div>
+            </div>
+            <p class="text-xs text-[#0A0A0A]/60 font-inter">Diantar kurir toko / ekspedisi kargo langsung ke rumah Anda.</p>
+          </label>
+
+          <!-- Opsi 2: Ambil di Toko -->
+          <label wire:key="delivery-pickup" class="relative flex flex-col p-4 border-2 rounded-xl cursor-pointer transition-all {{ $deliveryType === 'pickup' ? 'border-[#0A0A0A] bg-[#FFCC00]/15 press' : 'border-[#0A0A0A]/15 bg-white hover:border-[#0A0A0A]/40' }}">
+            <input type="radio" wire:model.live="deliveryType" value="pickup" class="sr-only" />
+            <div class="flex items-center justify-between mb-1.5">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-store text-base {{ $deliveryType === 'pickup' ? 'text-[#0A0A0A]' : 'text-[#0A0A0A]/40' }}"></i>
+                <span class="font-public font-bold text-sm text-[#0A0A0A] uppercase tracking-wide">Ambil di Toko</span>
+                <span class="bg-[#15803d] text-white text-[9px] font-bold px-1.5 py-0.5 rounded">Bebas Ongkir</span>
+              </div>
+              <div class="w-4 h-4 rounded-full border-2 border-[#0A0A0A] flex items-center justify-center">
+                @if($deliveryType === 'pickup')
+                  <div class="w-2 h-2 rounded-full bg-[#0A0A0A]"></div>
+                @endif
+              </div>
+            </div>
+            <p class="text-xs text-[#0A0A0A]/60 font-inter">Ambil / bawa sendiri produk langsung di toko fisik Prokar Jepara.</p>
+          </label>
+        </div>
+      </div>
+
+      <!-- Blok: Data Pemesan -->
+      <div class="block-card bg-[#FCFCFA] border-2 border-[#0A0A0A] rounded-2xl p-5 sm:p-6 flex flex-col gap-4">
+        <h2 class="font-public font-bold text-sm uppercase tracking-wider text-[#0A0A0A]/70 flex items-center gap-2">
+          <i class="fa-solid fa-user text-[#0A0A0A]/40" aria-hidden="true"></i> 2. Data Pemesan
         </h2>
 
         <div>
@@ -45,9 +89,9 @@
             type="text"
             id="name"
             wire:model.defer="name"
-            placeholder="Nama penerima paket"
+            placeholder="Nama pemesan"
             required
-            class="block w-full border-2 border-[#0A0A0A]/15 focus:border-[#0A0A0A] bg-[#FCFCFA] rounded-xl px-4 py-3.5 text-base font-inter text-[#0A0A0A] outline-none transition-colors" />
+            class="block w-full border-2 border-[#0A0A0A]/15 focus:border-[#0A0A0A] bg-[#FCFCFA] rounded-xl px-4 py-3 text-base font-inter text-[#0A0A0A] outline-none transition-colors" />
           @error('name') <span class="text-xs text-[#D8342B] font-bold mt-1 block">{{ $message }}</span> @enderror
         </div>
 
@@ -62,7 +106,7 @@
                 wire:model.defer="phone"
                 placeholder="08xxxxxxxxxx"
                 required
-                class="block w-full border-2 border-[#0A0A0A]/15 focus:border-[#0A0A0A] bg-[#FCFCFA] rounded-xl pl-11 pr-4 py-3.5 text-base font-inter text-[#0A0A0A] outline-none transition-colors" />
+                class="block w-full border-2 border-[#0A0A0A]/15 focus:border-[#0A0A0A] bg-[#FCFCFA] rounded-xl pl-11 pr-4 py-3 text-base font-inter text-[#0A0A0A] outline-none transition-colors" />
             </div>
             @error('phone') <span class="text-xs text-[#D8342B] font-bold mt-1 block">{{ $message }}</span> @enderror
           </div>
@@ -77,33 +121,119 @@
                 wire:model.defer="email"
                 placeholder="email@domain.com"
                 required
-                class="block w-full border-2 border-[#0A0A0A]/15 focus:border-[#0A0A0A] bg-[#FCFCFA] rounded-xl pl-11 pr-4 py-3.5 text-base font-inter text-[#0A0A0A] outline-none transition-colors" />
+                class="block w-full border-2 border-[#0A0A0A]/15 focus:border-[#0A0A0A] bg-[#FCFCFA] rounded-xl pl-11 pr-4 py-3 text-base font-inter text-[#0A0A0A] outline-none transition-colors" />
             </div>
             @error('email') <span class="text-xs text-[#D8342B] font-bold mt-1 block">{{ $message }}</span> @enderror
           </div>
         </div>
       </div>
 
-      <!-- Blok: Alamat Pengiriman -->
+      <!-- Blok: Alamat Pengiriman (Hanya Muncul Jika Delivery) -->
+      @if ($deliveryType === 'delivery')
+        <div class="block-card bg-[#FCFCFA] border-2 border-[#0A0A0A] rounded-2xl p-5 sm:p-6 flex flex-col gap-4">
+          <h2 class="font-public font-bold text-sm uppercase tracking-wider text-[#0A0A0A]/70 flex items-center gap-2">
+            <i class="fa-solid fa-location-dot text-[#0A0A0A]/40" aria-hidden="true"></i> 3. Lokasi Pengiriman
+          </h2>
+
+          <div class="w-full relative" wire:ignore>
+              <livewire:frontend.address-picker :initialData="[
+                  'province_id' => $province_id,
+                  'regency_id' => $regency_id,
+                  'district_id' => $district_id,
+                  'village_id' => $village_id,
+                  'address_detail' => $address_detail,
+              ]" 
+              input-class="field w-full border-2 border-[#0A0A0A]/15 focus:border-[#0A0A0A] bg-[#FCFCFA] rounded-xl px-4 py-3 text-base font-inter text-[#0A0A0A] outline-none transition-colors"
+              label-class="block font-public font-bold text-xs uppercase tracking-wider text-[#0A0A0A]/70 mb-2"
+              />
+              @error('province_id') <span class="text-xs text-[#D8342B] font-bold mt-1 block">{{ $message }}</span> @enderror
+              @error('regency_id') <span class="text-xs text-[#D8342B] font-bold mt-1 block">{{ $message }}</span> @enderror
+              @error('address_detail') <span class="text-xs text-[#D8342B] font-bold mt-1 block">{{ $message }}</span> @enderror
+          </div>
+        </div>
+      @else
+        <!-- Info Pickup Toko -->
+        <div class="block-card bg-[#FFCC00]/10 border-2 border-[#0A0A0A] rounded-2xl p-5 flex items-start gap-4">
+          <div class="w-10 h-10 rounded-xl bg-[#0A0A0A] text-[#FFCC00] flex items-center justify-center shrink-0">
+            <i class="fa-solid fa-location-pin text-lg"></i>
+          </div>
+          <div>
+            <h3 class="font-public font-bold text-sm uppercase tracking-wider text-[#0A0A0A]">Lokasi Pengambilan Barang:</h3>
+            <p class="text-sm font-semibold text-[#0A0A0A] mt-0.5 font-inter">Toko Prokar Elektronik Jepara</p>
+            <p class="text-xs text-[#0A0A0A]/70 mt-1 font-inter">Karanggondang, Rt4 Rw2, Mlonggo, Jepara, Jawa Tengah (Buka Senin-Sabtu: 08.00 - 21.00 WIB)</p>
+          </div>
+        </div>
+      @endif
+
+      <!-- Blok: Metode Pembayaran (Sesuai Pilihan Pengiriman) -->
       <div class="block-card bg-[#FCFCFA] border-2 border-[#0A0A0A] rounded-2xl p-5 sm:p-6 flex flex-col gap-4">
         <h2 class="font-public font-bold text-sm uppercase tracking-wider text-[#0A0A0A]/70 flex items-center gap-2">
-          <i class="fa-solid fa-location-dot text-[#0A0A0A]/40" aria-hidden="true"></i> Lokasi Pengiriman
+          <i class="fa-solid fa-credit-card text-[#0A0A0A]/40" aria-hidden="true"></i> {{ $deliveryType === 'delivery' ? '4.' : '3.' }} Metode Pembayaran
         </h2>
 
-        <div class="w-full relative" wire:ignore>
-            <livewire:frontend.address-picker :initialData="[
-                'province_id' => $province_id,
-                'regency_id' => $regency_id,
-                'district_id' => $district_id,
-                'village_id' => $village_id,
-                'address_detail' => $address_detail,
-            ]" 
-            input-class="field w-full border-2 border-[#0A0A0A]/15 focus:border-[#0A0A0A] bg-[#FCFCFA] rounded-xl px-4 py-3.5 text-base font-inter text-[#0A0A0A] outline-none transition-colors"
-            label-class="block font-public font-bold text-xs uppercase tracking-wider text-[#0A0A0A]/70 mb-2"
-            />
-            @error('province_id') <span class="text-xs text-[#D8342B] font-bold mt-1 block">{{ $message }}</span> @enderror
-            @error('regency_id') <span class="text-xs text-[#D8342B] font-bold mt-1 block">{{ $message }}</span> @enderror
-            @error('address_detail') <span class="text-xs text-[#D8342B] font-bold mt-1 block">{{ $message }}</span> @enderror
+        <div class="flex flex-col gap-2.5">
+          @if ($deliveryType === 'pickup')
+            {{-- PILIHAN PEMBAYARAN JIKA AMBIL DI TOKO (2 OPSI) --}}
+            
+            <!-- Opsi 1: Bayar Tunai di Kasir Toko -->
+            <label wire:key="payment-cash-store" class="relative flex items-start p-3.5 border-2 rounded-xl cursor-pointer transition-all {{ $paymentOption === 'cash_store' ? 'border-[#0A0A0A] bg-[#FFCC00]/15 press' : 'border-[#0A0A0A]/15 bg-white hover:border-[#0A0A0A]/40' }}">
+              <input type="radio" wire:model.live="paymentOption" value="cash_store" class="sr-only" />
+              <div class="w-4 h-4 rounded-full border-2 border-[#0A0A0A] flex items-center justify-center shrink-0 mt-0.5 mr-3">
+                @if($paymentOption === 'cash_store')
+                  <div class="w-2 h-2 rounded-full bg-[#0A0A0A]"></div>
+                @endif
+              </div>
+              <div class="flex-1">
+                <span class="font-public font-bold text-sm text-[#0A0A0A] uppercase tracking-wide block">Bayar Tunai di Kasir Toko (Cash)</span>
+                <p class="text-xs text-[#0A0A0A]/60 font-inter mt-0.5">Lakukan pembayaran tunai langsung di meja kasir toko Prokar saat mengambil barang.</p>
+              </div>
+            </label>
+
+            <!-- Opsi 2: Bayar Online Lunas (Midtrans) -->
+            <label wire:key="payment-midtrans-pickup" class="relative flex items-start p-3.5 border-2 rounded-xl cursor-pointer transition-all {{ $paymentOption === 'midtrans' ? 'border-[#0A0A0A] bg-[#FFCC00]/15 press' : 'border-[#0A0A0A]/15 bg-white hover:border-[#0A0A0A]/40' }}">
+              <input type="radio" wire:model.live="paymentOption" value="midtrans" class="sr-only" />
+              <div class="w-4 h-4 rounded-full border-2 border-[#0A0A0A] flex items-center justify-center shrink-0 mt-0.5 mr-3">
+                @if($paymentOption === 'midtrans')
+                  <div class="w-2 h-2 rounded-full bg-[#0A0A0A]"></div>
+                @endif
+              </div>
+              <div class="flex-1">
+                <span class="font-public font-bold text-sm text-[#0A0A0A] uppercase tracking-wide block">Bayar Online Lunas (Instant)</span>
+                <p class="text-xs text-[#0A0A0A]/60 font-inter mt-0.5">Bayar lunas dari HP melalui QRIS, BCA/BRI/Mandiri Virtual Account, GoPay, ShopeePay.</p>
+              </div>
+            </label>
+
+          @else
+            {{-- PILIHAN PEMBAYARAN JIKA DIKIRIM KE ALAMAT (2 OPSI) --}}
+
+            <!-- Opsi 1: Bayar Penuh Online (Lunas) -->
+            <label wire:key="payment-midtrans-delivery" class="relative flex items-start p-3.5 border-2 rounded-xl cursor-pointer transition-all {{ $paymentOption === 'midtrans' ? 'border-[#0A0A0A] bg-[#FFCC00]/15 press' : 'border-[#0A0A0A]/15 bg-white hover:border-[#0A0A0A]/40' }}">
+              <input type="radio" wire:model.live="paymentOption" value="midtrans" class="sr-only" />
+              <div class="w-4 h-4 rounded-full border-2 border-[#0A0A0A] flex items-center justify-center shrink-0 mt-0.5 mr-3">
+                @if($paymentOption === 'midtrans')
+                  <div class="w-2 h-2 rounded-full bg-[#0A0A0A]"></div>
+                @endif
+              </div>
+              <div class="flex-1">
+                <span class="font-public font-bold text-sm text-[#0A0A0A] uppercase tracking-wide block">Bayar Penuh Online (Lunas)</span>
+                <p class="text-xs text-[#0A0A0A]/60 font-inter mt-0.5">Bayar lunas langsung. Barang dikirim ke rumah tanpa tagihan lagi di tempat.</p>
+              </div>
+            </label>
+
+            <!-- Opsi 2: Bayar DP 50% Online (Sisa COD saat Barang Tiba) -->
+            <label wire:key="payment-dp" class="relative flex items-start p-3.5 border-2 rounded-xl cursor-pointer transition-all {{ $paymentOption === 'dp' ? 'border-[#0A0A0A] bg-[#FFCC00]/15 press' : 'border-[#0A0A0A]/15 bg-white hover:border-[#0A0A0A]/40' }}">
+              <input type="radio" wire:model.live="paymentOption" value="dp" class="sr-only" />
+              <div class="w-4 h-4 rounded-full border-2 border-[#0A0A0A] flex items-center justify-center shrink-0 mt-0.5 mr-3">
+                @if($paymentOption === 'dp')
+                  <div class="w-2 h-2 rounded-full bg-[#0A0A0A]"></div>
+                @endif
+              </div>
+              <div class="flex-1">
+                <span class="font-public font-bold text-sm text-[#0A0A0A] uppercase tracking-wide block">Bayar DP 50% Online (Sisa COD di Tempat)</span>
+                <p class="text-xs text-[#0A0A0A]/60 font-inter mt-0.5">Kunci pesanan dengan DP 50% online, sisa pelunasan dibayar tunai ke kurir saat barang tiba.</p>
+              </div>
+            </label>
+          @endif
         </div>
       </div>
 
@@ -126,7 +256,7 @@
       Transaksi Aman &amp; Bergaransi
     </p>
   </div>
-</section>
+</div>
 
 @push('scripts')
 <script 

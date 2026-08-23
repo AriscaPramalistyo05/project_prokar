@@ -75,7 +75,9 @@
     </div>
 
     <div class="flex items-center gap-5">
-      <button class="hover:scale-110 transition-transform"><i class="fa-solid fa-magnifying-glass text-xl"></i></button>
+      <button type="button" @click="$dispatch('open-search-modal')" aria-label="Cari Produk" class="hover:scale-110 transition-transform cursor-pointer text-black">
+        <i class="fa-solid fa-magnifying-glass text-xl"></i>
+      </button>
       
       @guest
         <a href="{{ route('login') }}" aria-label="Login" class="w-10 h-10 rounded-full bg-black flex items-center justify-center hover:scale-110 transition-transform">
@@ -223,6 +225,9 @@
 
             <!-- Navigation Links -->
             <div class="p-4 flex flex-col gap-5">
+              <button type="button" @click="mobileMenuOpen = false; $dispatch('open-search-modal')" class="flex items-center gap-3 text-[15px] font-bold text-gray-900 w-full text-left">
+                <i class="fa-solid fa-magnifying-glass w-5 text-center text-gray-400"></i> CARI PRODUK
+              </button>
               <a href="{{ route('home') }}" class="flex items-center gap-3 text-[15px] font-bold text-gray-900 {{ $isHome ? 'text-brand-orange' : '' }}">
                 <i class="fa-solid fa-house w-5 text-center {{ $isHome ? 'text-brand-orange' : 'text-gray-400' }}"></i> HOME
               </a>

@@ -55,17 +55,36 @@
                 </div>
             </x-card>
             
-            <x-card title="Galeri Foto & Video">
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <x-card title="Galeri Foto & Video" subtitle="Upload / kelola media barang masuk">
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
                     @forelse($submission->sellSubmissionImages as $media)
-                        @if($media->type == 'photo')
-                            <img src="{{ Storage::url($media->path) }}" class="rounded-lg shadow-sm border border-gray-200 aspect-square object-cover w-full" />
-                        @elseif($media->type == 'video')
-                            <video src="{{ Storage::url($media->path) }}" controls class="rounded-lg shadow-sm border border-gray-200 aspect-square object-cover w-full"></video>
-                        @endif
+                        <div class="relative group rounded-lg overflow-hidden border border-gray-200 aspect-square bg-black/5 flex items-center justify-center">
+                            @if($media->type == 'photo')
+                                <img src="{{ Storage::url($media->path) }}" class="w-full h-full object-cover" />
+                            @elseif($media->type == 'video')
+                                <video src="{{ Storage::url($media->path) }}" controls class="w-full h-full object-cover"></video>
+                            @endif
+                            
+                            <button type="button"
+                                wire:click="deleteMedia({{ $media->id }})"
+                                wire:confirm="Yakin ingin menghapus media ini?"
+                                class="absolute top-1.5 right-1.5 w-7 h-7 bg-red-600 hover:bg-red-700 text-white rounded-full flex items-center justify-center opacity-80 hover:opacity-100 transition-opacity shadow-md text-xs z-10"
+                                title="Hapus media">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
                     @empty
-                        <p class="text-gray-500 text-sm">Belum ada foto/video</p>
+                        <div class="col-span-full py-4 text-center text-gray-500 text-sm">
+                            Belum ada foto/video
+                        </div>
                     @endforelse
+                </div>
+
+                <div class="border-t border-gray-100 pt-4">
+                    <form wire:submit.prevent="uploadMedia" class="space-y-3">
+                        <x-file wire:model="new_media" label="Tambah Foto / Video Baru" multiple accept="image/*,video/*" hint="Mendukung JPG, PNG, WEBP, MP4 (Maks 50MB)" />
+                        <x-button type="submit" label="Upload ke Galeri" icon="o-arrow-up-tray" class="btn-primary btn-sm w-full" spinner="new_media,uploadMedia" />
+                    </form>
                 </div>
             </x-card>
         </div>
@@ -100,16 +119,19 @@
                     @if(!$submission->physical_check_at)
                         <x-button label="Barang Sudah Dicek Fisik" wire:click="markPhysicalCheck" class="btn-info w-full" spinner />
                     @else
-                        <p class="mb-4 text-sm font-bold text-gray-700">✓ Cek fisik selesai ({{ $submission->physical_check_at->format('d M Y H:i') }})</p>
-                        <x-button label="Tandai Sudah Dibayar" wire:click="markPaid" class="btn-primary w-full" spinner />
+                        <p class="mb-2 text-sm font-bold text-gray-700">✓ Cek fisik selesai ({{ $submission->physical_check_at->format('d M Y H:i') }})</p>
+                        <div class="space-y-2 mb-3">
+                            <x-button label="Bayar Tunai di Tempat (Cash)" wire:click="markPaid('cash')" icon="o-banknotes" class="btn-success text-white w-full btn-sm" spinner />
+                            <x-button label="Bayar via Transfer Rekening" wire:click="markPaid('transfer')" icon="o-credit-card" class="btn-info text-white w-full btn-sm" spinner />
+                        </div>
                     @endif
-                    <x-button label="Batal" wire:click="updateStatus('rejected')" class="btn-error btn-outline w-full mt-4" spinner />
+                    <x-button label="Batal" wire:click="updateStatus('rejected')" class="btn-error btn-outline w-full mt-2" spinner />
                 @endif
                 
                 @if($submission->status === 'paid' || $submission->status === 'in_repair' || $submission->status === 'ready_for_sale')
                     <div class="p-4 bg-green-50 border border-green-200 rounded-lg mb-6">
-                        <p class="text-green-800 font-bold mb-1">Pembayaran Selesai</p>
-                        <p class="text-sm text-green-700">Barang ini sudah menjadi milik toko.</p>
+                        <p class="text-green-800 font-bold mb-1">Pembayaran Selesai ({{ strtoupper($submission->payment_method ?? 'CASH') }})</p>
+                        <p class="text-sm text-green-700">Barang ini sudah lunas dibeli dan menjadi milik toko.</p>
                     </div>
                     
                     @if($submission->status === 'paid')

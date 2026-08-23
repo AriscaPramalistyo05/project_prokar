@@ -18,6 +18,9 @@ class CheckoutSummary extends Component
     public array $shippingOptions = [];
     public int $selectedOptionIndex = 0;
     
+    public string $deliveryType = 'delivery'; // 'delivery' or 'pickup'
+    public string $paymentOption = 'midtrans'; // 'midtrans', 'cash_store', 'cod', 'dp'
+
     public string $discountCode = '';
     public ?string $discountMessage = null;
 
@@ -37,6 +40,30 @@ class CheckoutSummary extends Component
         $this->hasSelectedAddress = false;
         $this->shippingFee = 0;
         $this->shippingLabel = 'Dihitung setelah alamat diisi';
+    }
+
+    #[\Livewire\Attributes\On('delivery-type-changed')]
+    public function updateDeliveryType($type = null, $data = null): void
+    {
+        $t = is_array($type) ? ($type['type'] ?? $type['value'] ?? 'delivery') : $type;
+        $this->deliveryType = (string) ($t ?: 'delivery');
+        if ($this->deliveryType === 'pickup') {
+            $this->shippingFee = 0;
+            $this->shippingLabel = 'Ambil di Toko (Bebas Ongkir)';
+            $this->dispatch('shipping-cost-changed', ['cost' => 0, 'courier' => 'pickup', 'label' => 'Ambil Sendiri di Toko Prokar']);
+        }
+    }
+
+    #[\Livewire\Attributes\On('payment-option-changed')]
+    public function updatePaymentOption($option = null, $data = null): void
+    {
+        if (is_array($option)) {
+            $this->paymentOption = $option['option'] ?? $option['value'] ?? $this->paymentOption;
+        } elseif (!empty($option)) {
+            $this->paymentOption = (string) $option;
+        } elseif (is_array($data)) {
+            $this->paymentOption = $data['option'] ?? $this->paymentOption;
+        }
     }
 
     public function applyDiscount(): void
@@ -65,6 +92,12 @@ class CheckoutSummary extends Component
         $postal_code = null,
         $address_detail = null
     ): void {
+        if ($this->deliveryType === 'pickup') {
+            $this->shippingFee = 0;
+            $this->shippingLabel = 'Ambil di Toko (Bebas Ongkir)';
+            return;
+        }
+
         $targetCity = null;
         $targetPostal = null;
 
@@ -159,6 +192,16 @@ class CheckoutSummary extends Component
     public function total(): int
     {
         return $this->subtotal + $this->shippingFee;
+    }
+
+    public function downPaymentAmount(): int
+    {
+        return (int) round($this->total() * 0.5);
+    }
+
+    public function remainingPaymentAmount(): int
+    {
+        return $this->total() - $this->downPaymentAmount();
     }
 
     public function render()

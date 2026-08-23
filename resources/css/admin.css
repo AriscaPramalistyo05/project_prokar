@@ -66,3 +66,11 @@
 .mary-table-pagination button {
     @apply cursor-pointer;
 }
+
+/* Pastikan teks dropdown select di seluruh panel admin tidak pernah tertimpa panah chevron */
+select, .select, select.select {
+    padding-right: 2.5rem !important;
+    background-position: right 0.75rem center !important;
+    text-overflow: ellipsis;
+}
+

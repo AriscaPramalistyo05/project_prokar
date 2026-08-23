@@ -31,6 +31,7 @@ class SellSubmission extends Model
         'offered_price',
         'agreed_price',
         'status',
+        'payment_method',
         'admin_notes',
         'physical_check_at',
         'payment_at',
@@ -63,8 +64,10 @@ class SellSubmission extends Model
         parent::boot();
 
         static::creating(function ($model) {
-            $model->submission_code = 'SELL-' . date('Ymd') . '-' .
-                str_pad(self::whereDate('created_at', today())->count() + 1, 4, '0', STR_PAD_LEFT);
+            if (empty($model->submission_code)) {
+                $model->submission_code = 'SELL-' . date('Ymd') . '-' .
+                    str_pad(self::whereDate('created_at', today())->count() + 1, 4, '0', STR_PAD_LEFT);
+            }
         });
     }
 

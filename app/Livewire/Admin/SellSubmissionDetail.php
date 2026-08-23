@@ -4,16 +4,23 @@ namespace App\Livewire\Admin;
 
 use App\Models\Product;
 use App\Models\SellSubmission;
+use App\Models\SellSubmissionImage;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
+use Livewire\WithFileUploads;
+use Mary\Traits\Toast;
 
+#[Layout('layouts.admin')]
 class SellSubmissionDetail extends Component
 {
-    #[Layout('layouts.admin')]
+    use WithFileUploads, Toast;
+
     public SellSubmission $submission;
     public $offered_price;
     public $agreed_price;
+    public $new_media = [];
 
     public function mount(SellSubmission $sellSubmission)
     {
@@ -21,6 +28,48 @@ class SellSubmissionDetail extends Component
         $this->submission->load(['category', 'sellSubmissionImages']);
         $this->offered_price = $sellSubmission->offered_price;
         $this->agreed_price = $sellSubmission->agreed_price;
+    }
+
+    public function uploadMedia()
+    {
+        $this->validate([
+            'new_media.*' => 'required|file|mimes:jpg,jpeg,png,webp,mp4,mov,avi,webm,mkv|max:51200',
+        ]);
+
+        foreach ($this->new_media as $file) {
+            $mime = $file->getMimeType();
+            $ext = strtolower($file->getClientOriginalExtension());
+            $isVideo = str_starts_with($mime, 'video/') || in_array($ext, ['mp4', 'mov', 'avi', 'webm', 'mkv']);
+            $type = $isVideo ? 'video' : 'photo';
+
+            $path = $file->store('sell_submissions', 'public');
+
+            SellSubmissionImage::create([
+                'sell_submission_id' => $this->submission->id,
+                'path' => $path,
+                'type' => $type,
+            ]);
+        }
+
+        $this->new_media = [];
+        $this->mount($this->submission);
+        $this->toast(type: 'success', title: 'Foto / Video berhasil ditambahkan ke galeri!');
+    }
+
+    public function deleteMedia(int $mediaId)
+    {
+        $media = SellSubmissionImage::where('sell_submission_id', $this->submission->id)
+            ->where('id', $mediaId)
+            ->first();
+
+        if ($media) {
+            if (Storage::disk('public')->exists($media->path)) {
+                Storage::disk('public')->delete($media->path);
+            }
+            $media->delete();
+            $this->mount($this->submission);
+            $this->toast(type: 'success', title: 'Media berhasil dihapus.');
+        }
     }
 
     public function updateStatus($status)
@@ -64,13 +113,16 @@ class SellSubmissionDetail extends Component
         $this->mount($this->submission);
     }
     
-    public function markPaid()
+    public function markPaid(string $method = 'cash')
     {
         $this->submission->update([
             'payment_at' => now(),
+            'payment_method' => $method,
             'status' => 'paid'
         ]);
         $this->mount($this->submission);
+        $methodLabel = $method === 'transfer' ? 'Transfer Bank' : 'Tunai di Tempat (Cash)';
+        $this->toast(type: 'success', title: "Pembayaran ke pelanggan selesai ({$methodLabel}).");
     }
 
     public function markNeedsRepair()

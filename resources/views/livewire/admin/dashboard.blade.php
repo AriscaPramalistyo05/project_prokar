@@ -575,13 +575,13 @@
         renderDonut(type);
     };
 
-    document.addEventListener('DOMContentLoaded', () => {
-        initCharts();
-    });
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        setTimeout(initCharts, 50);
+    } else {
+        document.addEventListener('DOMContentLoaded', initCharts);
+    }
 
-    document.addEventListener('livewire:navigated', () => {
-        initCharts();
-    });
+    document.addEventListener('livewire:navigated', initCharts);
 
     document.addEventListener('livewire:initialized', () => {
         initCharts();
