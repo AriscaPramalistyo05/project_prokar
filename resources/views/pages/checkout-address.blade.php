@@ -64,7 +64,7 @@
 @endpush
 
 @section('content')
-<div class="max-w-7xl mx-auto min-h-screen lg:h-screen lg:flex lg:flex-row lg:overflow-hidden bg-[#FCFCFA] shadow-2xl">
+<div class="w-full min-h-screen lg:h-screen lg:flex lg:flex-row lg:overflow-hidden bg-[#FCFCFA]">
 
   <!-- ===================== 1. Form Alamat (Livewire) ===================== -->
   <div class="w-full lg:w-3/5 lg:h-full lg:overflow-y-auto bg-[#FCFCFA]">

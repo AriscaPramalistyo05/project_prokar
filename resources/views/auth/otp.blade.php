@@ -94,7 +94,11 @@
                     {{-- Header --}}
                     <div class="mb-6 text-center">
                         <a href="{{ route('home') }}" class="inline-block mb-5">
-                            <span class="font-black uppercase tracking-tighter text-xl text-primary">Prokar Elektronik</span>
+                            @if(function_exists('setting') && setting('shop_logo'))
+                                <img src="{{ asset('storage/' . setting('shop_logo')) }}" alt="{{ setting('shop_name', 'Prokar Elektronik') }}" class="h-9 sm:h-10 w-auto object-contain mx-auto" />
+                            @else
+                                <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/brnriy48_expires_30_days.png" alt="Prokar Elektronik" class="h-8 sm:h-9 w-auto object-contain mx-auto" />
+                            @endif
                         </a>
 
                       

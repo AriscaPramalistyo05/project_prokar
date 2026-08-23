@@ -44,7 +44,7 @@ class GoogleController extends Controller
 
         Auth::login($user, remember: true);
 
-        return auth()->user()->hasRole(['super_admin', 'teknisi'])
+        return auth()->user()->hasAnyRole(['super_admin', 'teknisi', 'admin'])
             ? redirect()->intended(route('admin.dashboard'))
             : redirect()->intended(route('home'));
     }

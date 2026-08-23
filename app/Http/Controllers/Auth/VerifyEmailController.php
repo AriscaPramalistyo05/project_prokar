@@ -14,7 +14,7 @@ class VerifyEmailController extends Controller
      */
     public function __invoke(EmailVerificationRequest $request): RedirectResponse
     {
-        $route = $request->user()->hasRole(['super_admin', 'teknisi'])
+        $route = $request->user()->hasAnyRole(['super_admin', 'teknisi', 'admin'])
             ? route('admin.dashboard', absolute: false)
             : route('home', absolute: false);
 

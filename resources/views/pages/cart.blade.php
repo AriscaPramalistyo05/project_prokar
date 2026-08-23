@@ -58,10 +58,10 @@
 @endpush
 
 @section('content')
-<div class="max-w-7xl mx-auto lg:h-screen lg:flex lg:flex-row lg:overflow-hidden">
+<div class="w-full min-h-screen lg:h-screen lg:flex lg:flex-row lg:overflow-hidden bg-[#F1F2ED]">
 
   <!-- ===================== KOLOM KIRI: DAFTAR PRODUK ===================== -->
-  <section class="w-full lg:w-3/5 lg:h-screen lg:overflow-y-auto px-4 pt-5 pb-8 sm:px-6 lg:px-10 lg:pt-8 flex flex-col justify-between">
+  <section class="w-full lg:w-3/5 lg:h-screen lg:overflow-y-auto px-4 pt-5 pb-8 sm:px-8 lg:px-12 xl:px-16 lg:pt-8 flex flex-col justify-between">
 
     <div>
       <!-- Header -->

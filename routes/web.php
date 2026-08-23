@@ -34,6 +34,9 @@ Route::view('/jual', 'pages.sell')->name('jual.index');
 Route::view('/servis', 'pages.service')->name('servis.index');
 Route::view('/servis/lacak', 'pages.service-tracking')->name('servis.lacak');
 Route::get('/servis/lacak/{code}', \App\Livewire\Frontend\TrackService::class)->name('servis.track');
+
+Route::view('/syarat-ketentuan', 'pages.terms')->name('terms');
+Route::view('/kebijakan-privasi', 'pages.privacy')->name('privacy');
 Route::get('/servis/garansi/{code}/download', function ($code) {
     $serviceOrder = \App\Models\ServiceOrder::where('service_code', $code)->firstOrFail();
     
@@ -188,6 +191,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         // Pengajuan Jual Barang (Masuk)
         Route::get('/jual-masuk', \App\Livewire\Admin\SellSubmissionIndex::class)->name('sell-submissions.index');
         Route::get('/jual-masuk/{sellSubmission}', \App\Livewire\Admin\SellSubmissionDetail::class)->name('sell-submissions.show');
+
+        // Pengguna & Role (FASE 7)
+        Route::get('/users', \App\Livewire\Admin\UserIndex::class)->name('users.index');
+        Route::get('/users/tambah', \App\Livewire\Admin\UserForm::class)->name('users.create');
+        Route::get('/users/{user}/edit', \App\Livewire\Admin\UserForm::class)->name('users.edit');
+        Route::get('/roles', \App\Livewire\Admin\RolePermissionIndex::class)->name('roles.index');
 
         // Laporan Transaksi, Servis & Barang Masuk
         Route::get('/laporan', \App\Livewire\Admin\ReportIndex::class)->name('reports.index');
