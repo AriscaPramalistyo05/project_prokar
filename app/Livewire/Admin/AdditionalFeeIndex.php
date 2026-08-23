@@ -59,12 +59,14 @@ class AdditionalFeeIndex extends Component
 
     public function save()
     {
+        $this->default_amount = (float) preg_replace('/[^0-9.]/', '', (string) $this->default_amount);
+
         $this->validate();
 
         $data = [
             'name' => $this->name,
             'default_amount' => $this->default_amount,
-            'is_active' => $this->is_active,
+            'is_active' => (bool) $this->is_active,
         ];
 
         if ($this->fee) {

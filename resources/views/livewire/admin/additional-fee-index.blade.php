@@ -30,16 +30,15 @@
     </x-card>
 
     <x-modal wire:model="fee_modal" title="{{ $fee ? 'Edit' : 'Tambah' }} Biaya Tambahan" separator>
-        <form wire:submit="save" class="space-y-4">
-            <x-input label="Nama Biaya Tambahan" wire:model="name" placeholder="Misal: Biaya Antar, Biaya Cek..." required />
-            <x-input label="Nominal Default (Rp)" wire:model="default_amount" type="number" prefix="Rp" required />
-            
+        <div class="space-y-4">
+            <x-input label="Nama Biaya Tambahan" wire:model="name" placeholder="Misal: Biaya Antar, Biaya Cek, Biaya Bongkar..." required />
+            <x-input label="Nominal Default (Rp)" wire:model="default_amount" type="number" min="0" prefix="Rp" required />
             <x-toggle label="Status Aktif" wire:model="is_active" />
+        </div>
 
-            <x-slot:actions>
-                <x-button label="Batal" @click="$wire.fee_modal = false" />
-                <x-button label="Simpan" type="submit" icon="o-check" class="btn-primary" spinner="save" />
-            </x-slot:actions>
-        </form>
+        <x-slot:actions>
+            <x-button label="Batal" @click="$wire.fee_modal = false" />
+            <x-button label="Simpan" wire:click="save" icon="o-check" class="btn-primary" spinner="save" />
+        </x-slot:actions>
     </x-modal>
 </div>

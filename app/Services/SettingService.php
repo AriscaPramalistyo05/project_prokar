@@ -11,16 +11,24 @@ class SettingService
         'mail_password',
         'midtrans_server_key',
         'midtrans_client_key',
-        'fcm_server_key', // legacy, akan diganti firebase_* di 0.4
     ];
 
-    public function set(string $key, mixed $value): void
+    public function set(string $key, mixed $value, string $group = 'general', string $type = 'text', ?string $label = null): void
     {
         if (in_array($key, $this->sensitiveKeys) && !empty($value)) {
             $value = encrypt($value);
         }
 
-        Setting::updateOrCreate(['key' => $key], ['value' => $value]);
+        Setting::updateOrCreate(
+            ['key' => $key],
+            [
+                'value' => $value,
+                'group' => $group,
+                'type'  => $type,
+                'label' => $label ?? ucfirst(str_replace('_', ' ', $key)),
+            ]
+        );
+
         Cache::forget('setting_' . $key);
     }
 
@@ -31,7 +39,11 @@ class SettingService
         });
 
         if ($decrypt && $value) {
-            return decrypt($value);
+            try {
+                return decrypt($value);
+            } catch (\Exception $e) {
+                return $value;
+            }
         }
 
         return $value;

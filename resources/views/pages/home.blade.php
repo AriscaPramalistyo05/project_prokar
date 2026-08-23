@@ -19,23 +19,30 @@
         <div class="text-center lg:text-left">
           <div class="reveal-fade inline-flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-full px-5 py-2.5 mb-8 shadow-sm">
             <span class="material-symbols-outlined text-brand-blue text-2xl">verified</span>
-            <span class="text-gray-800 text-base font-bold font-public tracking-wide">Bergaransi &amp; Berkualitas</span>
+            <span class="text-gray-800 text-base font-bold font-public tracking-wide">{{ setting('hero_badge') ?? 'Bergaransi & Berkualitas' }}</span>
           </div>
 
           <h1 class="font-public font-black text-[13vw] sm:text-6xl md:text-7xl lg:text-6xl xl:text-7xl leading-[0.95] text-black mb-6">
-            <span class="reveal-wrapper block"><span class="block reveal-line">JUAL, BELI &amp;</span></span>
-            <span class="reveal-wrapper block"><span class="block reveal-line">SERVIS</span></span>
-            <span class="reveal-wrapper block"><span class="block text-brand-yellow drop-shadow-sm reveal-line">ELEKTRONIK BEKAS</span></span>
-            <span class="reveal-wrapper block"><span class="block reveal-line">TERPERCAYA</span></span>
+            <span class="reveal-wrapper block"><span class="block reveal-line">{{ setting('hero_headline') ?? 'JUAL, BELI & SERVIS ELEKTRONIK BEKAS TERPERCAYA' }}</span></span>
           </h1>
 
           <p class="hero-desc-text reveal-fade text-gray-700 text-lg md:text-xl lg:text-xl font-medium max-w-xl mx-auto lg:mx-0 mb-10">
-            Beragam elektronik rumah tangga berkualitas yang siap digunakan dan telah melalui proses pengecekan teknisi profesional.
+            {{ setting('hero_subheadline') ?? 'Beragam elektronik rumah tangga berkualitas yang siap digunakan dan telah melalui proses pengecekan teknisi profesional.' }}
           </p>
 
           <div class="reveal-fade flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-4">
             <a href="{{ route('produk.index') }}" class="btn-hover inline-flex items-center gap-3 bg-black text-white text-lg md:text-xl font-bold px-10 py-5 rounded-full font-public tracking-wide">
               Lihat Produk <i class="fa-solid fa-arrow-right"></i>
+            </a>
+            @php
+              $heroCta = setting('hero_cta_number') ?? setting('shop_whatsapp') ?? '0895-0484-1279';
+              $heroCtaClean = preg_replace('/[^0-9]/', '', $heroCta);
+              if (str_starts_with($heroCtaClean, '0')) {
+                $heroCtaClean = '62' . substr($heroCtaClean, 1);
+              }
+            @endphp
+            <a href="https://wa.me/{{ $heroCtaClean }}" target="_blank" class="btn-hover inline-flex items-center gap-3 bg-brand-yellow text-black text-lg md:text-xl font-bold px-8 py-5 rounded-full font-public tracking-wide">
+              <i class="fa-brands fa-whatsapp text-2xl"></i> Hubungi CS
             </a>
           </div>
         </div>
@@ -47,11 +54,11 @@
             <!-- Kolom 1 -->
             <div class="hero-parallax-col flex flex-col gap-5" data-speed="-70">
               <a href="{{ route('produk.index') }}?kategori=kulkas" class="hero-tile stagger-item w-[150px] xl:w-[170px] h-[180px] xl:h-[200px]">
-                <img src="{{ asset('assets/images/kulkas0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&h=400&fit=crop'" alt="Kulkas">
+                <img src="{{ setting('hero_image_kulkas') ? asset('storage/' . setting('hero_image_kulkas')) : asset('assets/images/kulkas0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&h=400&fit=crop'" alt="Kulkas">
                 <span class="hero-tile-label">Kulkas</span>
               </a>
               <a href="{{ route('produk.index') }}?kategori=dispenser" class="hero-tile stagger-item w-[150px] xl:w-[170px] h-[180px] xl:h-[200px]">
-                <img src="{{ asset('assets/images/dispenser0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400&h=400&fit=crop'" alt="Dispenser">
+                <img src="{{ setting('hero_image_dispenser') ? asset('storage/' . setting('hero_image_dispenser')) : asset('assets/images/dispenser0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400&h=400&fit=crop'" alt="Dispenser">
                 <span class="hero-tile-label">Dispenser</span>
               </a>
             </div>
@@ -59,11 +66,11 @@
             <!-- Kolom 2 -->
             <div class="hero-parallax-col flex flex-col gap-5 mt-16" data-speed="90">
               <a href="{{ route('produk.index') }}?kategori=tv" class="hero-tile stagger-item w-[150px] xl:w-[170px] h-[180px] xl:h-[200px]">
-                <img src="{{ asset('assets/images/tv0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&h=400&fit=crop'" alt="TV">
+                <img src="{{ setting('hero_image_tv') ? asset('storage/' . setting('hero_image_tv')) : asset('assets/images/tv0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&h=400&fit=crop'" alt="TV">
                 <span class="hero-tile-label">TV</span>
               </a>
               <a href="{{ route('produk.index') }}?kategori=microwave" class="hero-tile stagger-item w-[150px] xl:w-[170px] h-[180px] xl:h-[200px]">
-                <img src="{{ asset('assets/images/microwave0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1585659722983-3a675dabf23d?w=400&h=400&fit=crop'" alt="Microwave">
+                <img src="{{ setting('hero_image_microwave') ? asset('storage/' . setting('hero_image_microwave')) : asset('assets/images/microwave0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1585659722983-3a675dabf23d?w=400&h=400&fit=crop'" alt="Microwave">
                 <span class="hero-tile-label">Microwave</span>
               </a>
             </div>
@@ -71,11 +78,11 @@
             <!-- Kolom 3 -->
             <div class="hero-parallax-col flex flex-col gap-5" data-speed="-50">
               <a href="{{ route('produk.index') }}?kategori=mesin-cuci" class="hero-tile stagger-item w-[150px] xl:w-[170px] h-[180px] xl:h-[200px]">
-                <img src="{{ asset('assets/images/mesin-cuci0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=400&h=400&fit=crop'" alt="Mesin Cuci">
+                <img src="{{ setting('hero_image_mesin_cuci') ? asset('storage/' . setting('hero_image_mesin_cuci')) : asset('assets/images/mesin-cuci0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=400&h=400&fit=crop'" alt="Mesin Cuci">
                 <span class="hero-tile-label">Mesin Cuci</span>
               </a>
               <a href="{{ route('produk.index') }}?kategori=ac" class="hero-tile stagger-item w-[150px] xl:w-[170px] h-[180px] xl:h-[200px]">
-                <img src="{{ asset('assets/images/ac0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1631545806609-947f38b3f6ea?w=400&h=400&fit=crop'" alt="AC">
+                <img src="{{ setting('hero_image_ac') ? asset('storage/' . setting('hero_image_ac')) : asset('assets/images/ac0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1631545806609-947f38b3f6ea?w=400&h=400&fit=crop'" alt="AC">
                 <span class="hero-tile-label">AC</span>
               </a>
             </div>
@@ -87,12 +94,12 @@
         <div class="lg:hidden stagger-group">
           <p class="text-center font-bold text-gray-400 mb-5 tracking-widest uppercase text-sm reveal-fade">Kategori Pilihan</p>
           <ul class="grid grid-cols-3 gap-3">
-            <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=kulkas" class="hero-tile-mobile"><img src="{{ asset('assets/images/kulkas0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=300&h=300&fit=crop'" alt="Kulkas"><span class="hero-tile-label">Kulkas</span></a></li>
-            <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=tv" class="hero-tile-mobile"><img src="{{ asset('assets/images/tv0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=300&h=300&fit=crop'" alt="TV"><span class="hero-tile-label">TV</span></a></li>
-            <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=mesin-cuci" class="hero-tile-mobile"><img src="{{ asset('assets/images/mesin-cuci0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=300&h=300&fit=crop'" alt="Mesin Cuci"><span class="hero-tile-label">Mesin Cuci</span></a></li>
-            <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=ac" class="hero-tile-mobile"><img src="{{ asset('assets/images/ac0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1631545806609-947f38b3f6ea?w=300&h=300&fit=crop'" alt="AC"><span class="hero-tile-label">AC</span></a></li>
-            <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=dispenser" class="hero-tile-mobile"><img src="{{ asset('assets/images/dispenser0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=300&h=300&fit=crop'" alt="Dispenser"><span class="hero-tile-label">Dispenser</span></a></li>
-            <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=microwave" class="hero-tile-mobile"><img src="{{ asset('assets/images/microwave0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1585659722983-3a675dabf23d?w=300&h=300&fit=crop'" alt="Microwave"><span class="hero-tile-label">Microwave</span></a></li>
+            <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=kulkas" class="hero-tile-mobile"><img src="{{ setting('hero_image_kulkas') ? asset('storage/' . setting('hero_image_kulkas')) : asset('assets/images/kulkas0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=300&h=300&fit=crop'" alt="Kulkas"><span class="hero-tile-label">Kulkas</span></a></li>
+            <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=tv" class="hero-tile-mobile"><img src="{{ setting('hero_image_tv') ? asset('storage/' . setting('hero_image_tv')) : asset('assets/images/tv0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=300&h=300&fit=crop'" alt="TV"><span class="hero-tile-label">TV</span></a></li>
+            <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=mesin-cuci" class="hero-tile-mobile"><img src="{{ setting('hero_image_mesin_cuci') ? asset('storage/' . setting('hero_image_mesin_cuci')) : asset('assets/images/mesin-cuci0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=300&h=300&fit=crop'" alt="Mesin Cuci"><span class="hero-tile-label">Mesin Cuci</span></a></li>
+            <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=ac" class="hero-tile-mobile"><img src="{{ setting('hero_image_ac') ? asset('storage/' . setting('hero_image_ac')) : asset('assets/images/ac0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1631545806609-947f38b3f6ea?w=300&h=300&fit=crop'" alt="AC"><span class="hero-tile-label">AC</span></a></li>
+            <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=dispenser" class="hero-tile-mobile"><img src="{{ setting('hero_image_dispenser') ? asset('storage/' . setting('hero_image_dispenser')) : asset('assets/images/dispenser0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=300&h=300&fit=crop'" alt="Dispenser"><span class="hero-tile-label">Dispenser</span></a></li>
+            <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=microwave" class="hero-tile-mobile"><img src="{{ setting('hero_image_microwave') ? asset('storage/' . setting('hero_image_microwave')) : asset('assets/images/microwave0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1585659722983-3a675dabf23d?w=300&h=300&fit=crop'" alt="Microwave"><span class="hero-tile-label">Microwave</span></a></li>
           </ul>
         </div>
 
@@ -100,43 +107,30 @@
     </div>
 
     <!-- Brand Logos Carousel -->
+    @php
+      $rawBrands = setting('brand_partners') ?? 'SHARP, POLYTRON, LG, AQUA, SAMSUNG, Panasonic, TOSHIBA, Hisense';
+      $brandList = array_filter(array_map('trim', explode(',', $rawBrands)));
+    @endphp
     <div class="brand-carousel-wrap relative h-16 border-t border-b border-gray-100 mt-16 lg:mt-20">
       <div class="absolute inset-y-0 left-0 w-16 md:w-20 z-10 pointer-events-none bg-gradient-to-r from-white to-transparent"></div>
       <div class="absolute inset-y-0 right-0 w-16 md:w-20 z-10 pointer-events-none bg-gradient-to-l from-white to-transparent"></div>
       <div class="brand-track h-full text-gray-700 font-bold">
-        <span class="brand-logo text-2xl tracking-[1.2px] px-8 md:px-10 shrink-0">SHARP</span>
-        <span class="brand-logo text-xl tracking-[2px] px-8 md:px-10 shrink-0">POLYTRON</span>
-        <span class="brand-logo text-2xl tracking-[2.4px] px-8 md:px-10 shrink-0 flex items-center gap-1"><span class="material-symbols-outlined text-3xl">tv</span>LG</span>
-        <span class="brand-logo text-2xl tracking-[2.4px] px-8 md:px-10 shrink-0">AQUA</span>
-        <span class="brand-logo text-2xl tracking-[-1.2px] px-8 md:px-10 shrink-0">SAMSUNG</span>
-        <span class="brand-logo text-xl tracking-[0.5px] px-8 md:px-10 shrink-0">Panasonic</span>
-        <span class="brand-logo text-xl tracking-[2px] italic px-8 md:px-10 shrink-0">TOSHIBA</span>
-        <span class="brand-logo text-2xl px-8 md:px-10 shrink-0">Hisense</span>
-        <span class="brand-logo text-2xl tracking-[1.2px] px-8 md:px-10 shrink-0" aria-hidden="true">SHARP</span>
-        <span class="brand-logo text-xl tracking-[2px] px-8 md:px-10 shrink-0" aria-hidden="true">POLYTRON</span>
-        <span class="brand-logo text-2xl tracking-[2.4px] px-8 md:px-10 shrink-0 flex items-center gap-1" aria-hidden="true"><span class="material-symbols-outlined text-3xl">tv</span>LG</span>
-        <span class="brand-logo text-2xl tracking-[2.4px] px-8 md:px-10 shrink-0" aria-hidden="true">AQUA</span>
-        <span class="brand-logo text-2xl tracking-[-1.2px] px-8 md:px-10 shrink-0" aria-hidden="true">SAMSUNG</span>
-        <span class="brand-logo text-xl tracking-[0.5px] px-8 md:px-10 shrink-0" aria-hidden="true">Panasonic</span>
-        <span class="brand-logo text-xl tracking-[2px] italic px-8 md:px-10 shrink-0" aria-hidden="true">TOSHIBA</span>
-        <span class="brand-logo text-2xl px-8 md:px-10 shrink-0" aria-hidden="true">Hisense</span>
+        @foreach(array_merge($brandList, $brandList) as $brand)
+          <span class="brand-logo text-2xl tracking-[1.2px] px-8 md:px-10 shrink-0 uppercase font-public">{{ $brand }}</span>
+        @endforeach
       </div>
     </div>
 
     <!-- Bottom Ticker (Marquee Biru) -->
+    @php
+      $tickerText = setting('marquee_text_blue') ?? 'tersedia berbagai produk elektronik rumah tangga • harga ramah barang berkualitas';
+    @endphp
     <div class="bg-brand-soft border-t-2 border-b-2 border-black py-3 mt-6 ticker-wrap">
       <div class="ticker-content">
-        <span>tersedia berbagai produk elektronik rumah tangga</span>
-        <i class="fa-solid fa-circle text-[6px]"></i>
-        <span>harga ramah barang berkualitas</span>
-        <i class="fa-solid fa-circle text-[6px]"></i>
-        <span>tersedia berbagai produk elektronik rumah tangga</span>
-        <i class="fa-solid fa-circle text-[6px]"></i>
-        <span>harga ramah barang berkualitas</span>
-        <i class="fa-solid fa-circle text-[6px]"></i>
-        <span>tersedia berbagai produk elektronik rumah tangga</span>
-        <i class="fa-solid fa-circle text-[6px]"></i>
-        <span>harga ramah barang berkualitas</span>
+        @for($i = 0; $i < 4; $i++)
+          <span>{{ $tickerText }}</span>
+          <i class="fa-solid fa-circle text-[6px]"></i>
+        @endfor
       </div>
     </div>
   </section>
@@ -149,25 +143,30 @@
       </h2>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-10 stagger-group">
+        {{-- Servis TV --}}
         <div class="stagger-item">
           <a href="{{ route('servis.index') }}" class="group relative block h-[400px] lg:h-[500px] rounded-[2rem] overflow-hidden bg-black shadow-card transform hover:-translate-y-2 transition-all duration-500">
-            <img src="{{ asset('assets/images/service-tv.jpg') }}" onerror="this.src='https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=800&q=80'" alt="Service TV" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700">
+            <img src="{{ setting('service_image_tv') ? asset('storage/' . setting('service_image_tv')) : asset('assets/images/service-tv.jpg') }}" onerror="this.src='https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=800&q=80'" alt="Service TV" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700">
             <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-8">
               <h3 class="text-white text-3xl lg:text-4xl font-bold font-public uppercase leading-none">Service<br><span class="text-brand-yellow">TV</span></h3>
             </div>
           </a>
         </div>
+
+        {{-- Servis Mesin Cuci --}}
         <div class="stagger-item md:mt-12">
           <a href="{{ route('servis.index') }}" class="group relative block h-[400px] lg:h-[500px] rounded-[2rem] overflow-hidden bg-black shadow-card transform hover:-translate-y-2 transition-all duration-500">
-            <img src="{{ asset('assets/images/service-mesin-cuci.jpg') }}" onerror="this.src='https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=800&q=80'" alt="Service Mesin Cuci" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700">
+            <img src="{{ setting('service_image_mesin_cuci') ? asset('storage/' . setting('service_image_mesin_cuci')) : asset('assets/images/service-mesin-cuci.jpg') }}" onerror="this.src='https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=800&q=80'" alt="Service Mesin Cuci" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700">
             <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-8">
               <h3 class="text-white text-3xl lg:text-4xl font-bold font-public uppercase leading-none">Service<br><span class="text-brand-yellow">Mesin Cuci</span></h3>
             </div>
           </a>
         </div>
+
+        {{-- Servis Kulkas --}}
         <div class="stagger-item">
           <a href="{{ route('servis.index') }}" class="group relative block h-[400px] lg:h-[500px] rounded-[2rem] overflow-hidden bg-black shadow-card transform hover:-translate-y-2 transition-all duration-500">
-            <img src="{{ asset('assets/images/service-kulkas.jpg') }}" onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=800&q=80'" alt="Service Kulkas" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700">
+            <img src="{{ setting('service_image_kulkas') ? asset('storage/' . setting('service_image_kulkas')) : asset('assets/images/service-kulkas.jpg') }}" onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=800&q=80'" alt="Service Kulkas" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700">
             <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-8">
               <h3 class="text-white text-3xl lg:text-4xl font-bold font-public uppercase leading-none">Service<br><span class="text-brand-yellow">Kulkas</span></h3>
             </div>
@@ -175,12 +174,19 @@
         </div>
       </div>
 
+      {{-- Layanan Lainnya Box --}}
       <div class="reveal-fade mt-16 bg-brand-black border border-gray-800 rounded-3xl p-8 md:p-12 shadow-card flex flex-col md:flex-row items-center justify-between gap-6">
         <div class="text-center md:text-left">
-          <h4 class="text-2xl font-black font-public uppercase mb-2 text-white">Layanan Lainnya</h4>
-          <p class="text-gray-400 text-lg">Kami juga menerima reparasi AC, Setrika, Speaker, dan peralatan elektronik lainnya.</p>
+          <h4 class="text-2xl font-black font-public uppercase mb-2 text-white">{{ setting('service_other_title') ?? 'Layanan Lainnya' }}</h4>
+          <p class="text-gray-400 text-lg">{{ setting('service_other_desc') ?? 'Kami juga menerima reparasi AC, Setrika, Speaker, dan peralatan elektronik lainnya.' }}</p>
         </div>
-        <a href="https://wa.me/6289504841279" target="_blank" class="btn-hover bg-brand-yellow text-black px-8 py-4 rounded-full font-bold text-lg whitespace-nowrap flex items-center gap-2">
+        @php
+          $waNumber = preg_replace('/[^0-9]/', '', setting('shop_whatsapp') ?? '089504841279');
+          if (str_starts_with($waNumber, '0')) {
+            $waNumber = '62' . substr($waNumber, 1);
+          }
+        @endphp
+        <a href="https://wa.me/{{ $waNumber }}" target="_blank" class="btn-hover bg-brand-yellow text-black px-8 py-4 rounded-full font-bold text-lg whitespace-nowrap flex items-center gap-2">
           <i class="fa-brands fa-whatsapp text-2xl"></i> Konsultasi Gratis
         </a>
       </div>
@@ -318,40 +324,30 @@
       <h2 class="text-black text-4xl md:text-6xl font-black uppercase tracking-tighter font-public mb-12 text-center">
         <span class="reveal-wrapper"><span class="reveal-line">Pertanyaan Umum</span></span>
       </h2>
+      
+      @php
+        $rawFaqs = setting('faqs');
+        $faqList = is_array($rawFaqs) ? $rawFaqs : (json_decode($rawFaqs ?? '[]', true) ?: [
+          ['question' => 'Bagaimana kondisi elektronik bekas yang dijual?', 'answer' => 'Semua produk telah melalui pengecekan teknisi berpengalaman. Kondisi tertera jelas dengan kategori: Seperti Baru, Kondisi Prima, Kondisi Baik, Lecet Pemakaian, atau Kondisi Minus Body.'],
+          ['question' => 'Bagaimana proses menjual elektronik saya?', 'answer' => 'Isi formulir di halaman Jual, tim kami menghubungi Anda dengan penawaran. Jika deal, kami jemput gratis ke lokasi dan bayar langsung di tempat.'],
+          ['question' => 'Apakah garansi berlaku untuk jasa servis?', 'answer' => 'Ya, setiap jasa servis dilengkapi garansi pengerjaan. Jika kerusakan yang sama muncul kembali dalam masa garansi, kami perbaiki tanpa biaya tambahan.'],
+        ]);
+      @endphp
+
       <div class="w-full border-t-2 border-black stagger-group">
-        <div class="stagger-item faq-item border-b-2 border-black">
-          <button onclick="toggleFaq(this)" class="w-full py-8 flex items-center justify-between text-left gap-4 bg-transparent group">
-            <span class="text-black text-xl md:text-2xl font-bold font-public group-hover:text-brand-blue transition-colors">Bagaimana kondisi elektronik bekas yang dijual?</span>
-            <div class="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center shrink-0 group-hover:bg-black group-hover:text-white transition-colors">
-              <i class="fa-solid fa-plus text-lg faq-icon transition-transform duration-300"></i>
+        @foreach($faqList as $faq)
+          <div class="stagger-item faq-item border-b-2 border-black">
+            <button onclick="toggleFaq(this)" class="w-full py-8 flex items-center justify-between text-left gap-4 bg-transparent group cursor-pointer">
+              <span class="text-black text-xl md:text-2xl font-bold font-public group-hover:text-brand-blue transition-colors">{{ $faq['question'] ?? '' }}</span>
+              <div class="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center shrink-0 group-hover:bg-black group-hover:text-white transition-colors">
+                <i class="fa-solid fa-plus text-lg faq-icon transition-transform duration-300"></i>
+              </div>
+            </button>
+            <div class="faq-answer">
+              <p class="text-gray-700 text-lg pb-8 leading-relaxed font-inter">{{ $faq['answer'] ?? '' }}</p>
             </div>
-          </button>
-          <div class="faq-answer">
-            <p class="text-gray-700 text-lg pb-8 leading-relaxed font-inter">Semua produk telah melalui pengecekan teknisi berpengalaman. Kondisi tertera jelas dengan kategori: Seperti Baru, Kondisi Prima, Kondisi Baik, Lecet Pemakaian, atau Kondisi Minus Body.</p>
           </div>
-        </div>
-        <div class="stagger-item faq-item border-b-2 border-black">
-          <button onclick="toggleFaq(this)" class="w-full py-8 flex items-center justify-between text-left gap-4 bg-transparent group">
-            <span class="text-black text-xl md:text-2xl font-bold font-public group-hover:text-brand-blue transition-colors">Bagaimana proses menjual elektronik saya?</span>
-            <div class="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center shrink-0 group-hover:bg-black group-hover:text-white transition-colors">
-              <i class="fa-solid fa-plus text-lg faq-icon transition-transform duration-300"></i>
-            </div>
-          </button>
-          <div class="faq-answer">
-            <p class="text-gray-700 text-lg pb-8 leading-relaxed font-inter">Isi formulir di halaman Jual, tim kami menghubungi Anda dengan penawaran. Jika deal, kami jemput gratis ke lokasi dan bayar langsung di tempat.</p>
-          </div>
-        </div>
-        <div class="stagger-item faq-item border-b-2 border-black">
-          <button onclick="toggleFaq(this)" class="w-full py-8 flex items-center justify-between text-left gap-4 bg-transparent group">
-            <span class="text-black text-xl md:text-2xl font-bold font-public group-hover:text-brand-blue transition-colors">Apakah garansi berlaku untuk jasa servis?</span>
-            <div class="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center shrink-0 group-hover:bg-black group-hover:text-white transition-colors">
-              <i class="fa-solid fa-plus text-lg faq-icon transition-transform duration-300"></i>
-            </div>
-          </button>
-          <div class="faq-answer">
-            <p class="text-gray-700 text-lg pb-8 leading-relaxed font-inter">Ya, setiap jasa servis dilengkapi garansi pengerjaan. Jika kerusakan yang sama muncul kembali dalam masa garansi, kami perbaiki tanpa biaya tambahan.</p>
-          </div>
-        </div>
+        @endforeach
       </div>
     </div>
   </section>
@@ -370,7 +366,7 @@
             </div>
             <div>
               <strong class="text-black text-2xl font-bold block mb-2 font-public">Alamat</strong>
-              <p class="text-gray-600 text-lg leading-relaxed">Karanggondang, Rt4 Rw2, Mlonggo, Jepara, Jawa Tengah 59452</p>
+              <p class="text-gray-600 text-lg leading-relaxed">{{ setting('shop_address') ?? 'Karanggondang, Rt4 Rw2, Mlonggo, Jepara, Jawa Tengah 59452' }}</p>
             </div>
           </div>
           <div class="stagger-item flex gap-5 items-start">
@@ -379,7 +375,7 @@
             </div>
             <div>
               <strong class="text-black text-2xl font-bold block mb-2 font-public">Jam Operasional</strong>
-              <p class="text-gray-600 text-lg">Senin - Sabtu : 08.00 - 21.00</p>
+              <p class="text-gray-600 text-lg">{{ setting('shop_opening_hours') ?? 'Senin - Sabtu : 08.00 - 21.00' }}</p>
             </div>
           </div>
           <div class="stagger-item flex gap-5 items-start">
@@ -388,13 +384,13 @@
             </div>
             <div>
               <strong class="text-black text-2xl font-bold block mb-2 font-public">Hubungi Kami</strong>
-              <p class="text-gray-600 text-lg">0895-0484-1279</p>
+              <p class="text-gray-600 text-lg">{{ setting('shop_phone') ?? '0895-0484-1279' }}</p>
             </div>
           </div>
         </div>
 
         <div class="reveal-fade rounded-3xl overflow-hidden h-[350px] lg:h-[450px] border border-gray-200 shadow-card">
-          <iframe title="Lokasi Prokar Elektronik" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.0545985815284!2d110.71228237499275!3d-6.514773893477648!2m3!1f0!2f0!3f0!2m3!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7123e1adf86edb%3A0xc0e7d2d2ad9056d3!2sProkar%20Elektronik!5e0!3m2!1sen!2sid!4v1780388610597!5m2!1sen!2sid" class="w-full h-full border-0" loading="lazy"></iframe>
+          <iframe title="Lokasi Prokar Elektronik" src="{{ setting('shop_maps_embed') ?? 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.0545985815284!2d110.71228237499275!3d-6.514773893477648!2m3!1f0!2f0!3f0!2m3!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7123e1adf86edb%3A0xc0e7d2d2ad9056d3!2sProkar%20Elektronik!5e0!3m2!1sen!2sid!4v1780388610597!5m2!1sen!2sid' }}" class="w-full h-full border-0" loading="lazy"></iframe>
         </div>
       </div>
     </div>
@@ -522,12 +518,17 @@
     );
   });
 
-  // Testimonial Script
-  const testimonials = [
-    { text: "TV yang saya beli kondisinya masih sangat bagus dan sesuai deskripsi. Pengiriman cepat dan pelayanannya ramah", name: "Ahmad Fauzi" },
-    { text: "Kulkas yang saya beli masih sangat dingin dan mulus. Harganya jauh lebih murah dibanding toko biasa, recommended banget!", name: "Siti Rahayu" },
-    { text: "Servis mesin cuci saya selesai dalam sehari dan hasilnya memuaskan. Teknisinya profesional dan jujur soal kerusakan.", name: "Budi Santoso" }
-  ];
+  // Dynamic Testimonial Script from Settings
+  @php
+    $rawTesti = setting('testimonials');
+    $dbTestimonials = is_array($rawTesti) ? $rawTesti : (json_decode($rawTesti ?? '[]', true) ?: []);
+    $testiList = !empty($dbTestimonials) ? array_map(fn($t) => ['text' => $t['quote'] ?? '', 'name' => $t['name'] ?? ''], $dbTestimonials) : [
+      ['text' => 'TV yang saya beli kondisinya masih sangat bagus dan sesuai deskripsi. Pengiriman cepat dan pelayanannya ramah', 'name' => 'Ahmad Fauzi'],
+      ['text' => 'Kulkas yang saya beli masih sangat dingin dan mulus. Harganya jauh lebih murah dibanding toko biasa, recommended banget!', 'name' => 'Siti Rahayu'],
+      ['text' => 'Servis mesin cuci saya selesai dalam sehari dan hasilnya memuaskan. Teknisinya profesional dan jujur soal kerusakan.', 'name' => 'Budi Santoso'],
+    ];
+  @endphp
+  const testimonials = @json($testiList);
 
   let currentIndex = 0;
   const dotsEl = document.getElementById("testimoni-dots");
