@@ -217,7 +217,7 @@
               data-name="{{ $product->name }}"
               data-price="{{ 'Rp ' . number_format($product->promo_price ?? $product->price, 0, ',', '.') }}"
               data-img="{{ $product->image_url }}"
-              data-colors='[{"label":"Hitam","hex":"#111111"}]'>
+              data-stock="{{ $product->stock ?? 10 }}">
               <a href="{{ route('produk.show', $product->slug) }}" class="flex flex-col h-full w-full outline-none">
                 <div class="relative h-[250px] md:h-[300px] w-full bg-white rounded-2xl overflow-hidden mb-6 flex items-center justify-center">
                   <img src="{{ $product->image_url }}"
@@ -232,8 +232,19 @@
                   </button>
                 </div>
                 <h3 class="text-xl font-bold font-public leading-tight mb-2 text-black">{{ $product->name }}</h3>
-                <div class="flex items-end gap-3 mb-4">
-                  <span class="text-2xl font-black text-red-600">{{ 'Rp ' . number_format($product->price, 0, ',', '.') }}</span>
+                <div class="flex flex-col mb-4">
+                  @if ($product->promo_price && $product->promo_price < $product->price)
+                    <span class="text-gray-400 font-inter font-semibold text-sm line-through">
+                      {{ 'Rp ' . number_format($product->price, 0, ',', '.') }}
+                    </span>
+                    <span class="text-2xl font-black text-red-600">
+                      {{ 'Rp ' . number_format($product->promo_price, 0, ',', '.') }}
+                    </span>
+                  @else
+                    <span class="text-2xl font-black text-red-600">
+                      {{ 'Rp ' . number_format($product->price, 0, ',', '.') }}
+                    </span>
+                  @endif
                 </div>
               </a>
             </article>
@@ -241,10 +252,10 @@
           @empty
           {{-- Dummy cards ketika tidak ada produk promo --}}
           @foreach([
-            ['name'=>'TV LED 32 Inch Sharp','price'=>'Rp 1.200.000','img'=>'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&h=400&fit=crop'],
-            ['name'=>'Kulkas 2 Pintu Samsung','price'=>'Rp 2.500.000','img'=>'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&h=400&fit=crop'],
-            ['name'=>'Mesin Cuci Polytron','price'=>'Rp 1.800.000','img'=>'https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=400&h=400&fit=crop'],
-            ['name'=>'AC Split 1PK Panasonic','price'=>'Rp 2.100.000','img'=>'https://images.unsplash.com/photo-1631545806609-947f38b3f6ea?w=400&h=400&fit=crop'],
+            ['name'=>'TV LED 32 Inch Sharp','price'=>'Rp 1.200.000','original_price'=>'Rp 1.500.000','img'=>'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&h=400&fit=crop'],
+            ['name'=>'Kulkas 2 Pintu Samsung','price'=>'Rp 2.500.000','original_price'=>'Rp 3.000.000','img'=>'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&h=400&fit=crop'],
+            ['name'=>'Mesin Cuci Polytron','price'=>'Rp 1.800.000','original_price'=>'Rp 2.200.000','img'=>'https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=400&h=400&fit=crop'],
+            ['name'=>'AC Split 1PK Panasonic','price'=>'Rp 2.100.000','original_price'=>'Rp 2.600.000','img'=>'https://images.unsplash.com/photo-1631545806609-947f38b3f6ea?w=400&h=400&fit=crop'],
           ] as $dummy)
           <div class="stagger-item shrink-0 snap-center">
             <article class="onsale-card w-[280px] md:w-[350px] bg-gray-50 rounded-3xl p-4 md:p-6 border border-gray-100 hover:shadow-card transition-all duration-300 group flex flex-col">
@@ -254,7 +265,8 @@
                   <span class="absolute top-4 left-4 bg-red-600 text-white text-xs font-black px-3 py-1.5 rounded-full uppercase">Promo</span>
                 </div>
                 <h3 class="text-xl font-bold font-public leading-tight mb-2 text-black">{{ $dummy['name'] }}</h3>
-                <div class="flex items-end gap-3 mb-4">
+                <div class="flex flex-col mb-4">
+                  <span class="text-gray-400 font-inter font-semibold text-sm line-through">{{ $dummy['original_price'] }}</span>
                   <span class="text-2xl font-black text-red-600">{{ $dummy['price'] }}</span>
                 </div>
               </div>
@@ -389,69 +401,6 @@
   </section>
 
 </main>
-
-<!-- CART MODAL -->
-<div id="cart-modal-overlay" onclick="closeCartModal()"></div>
-<div id="cart-modal" class="rounded-l-3xl p-6">
-  <div id="cart-step-select" class="h-full flex flex-col">
-    <div class="flex items-start justify-between mb-8">
-      <h2 class="text-2xl font-black font-public">Pilih Opsi</h2>
-      <button onclick="closeCartModal()" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-black hover:text-white transition-colors">
-        <i class="fa-solid fa-xmark text-lg"></i>
-      </button>
-    </div>
-    <div class="flex gap-4 mb-8">
-      <div class="w-24 h-24 bg-gray-50 rounded-2xl p-2 border border-gray-200">
-        <img id="modal-img" src="" class="w-full h-full object-contain">
-      </div>
-      <div class="flex-1">
-        <h3 id="modal-name" class="text-xl font-bold font-public leading-tight mb-2"></h3>
-        <p id="modal-price" class="text-2xl font-black text-black"></p>
-      </div>
-    </div>
-    <div class="mb-8">
-      <p class="text-base font-bold text-gray-800 mb-3 font-public">Warna: <span id="modal-color-label" class="font-normal text-gray-500"></span></p>
-      <div id="modal-color-swatches" class="flex gap-3 flex-wrap"></div>
-    </div>
-    <div class="mt-auto pt-6 border-t border-gray-100">
-      <button onclick="addToCart()" class="w-full bg-brand-yellow text-black font-black text-lg py-4 rounded-full hover:bg-yellow-400 transition-colors btn-hover font-public uppercase">
-        Tambah ke Keranjang
-      </button>
-    </div>
-  </div>
-
-  <!-- Step 2 -->
-  <div id="cart-step-added" style="display:none;" class="h-full flex-col">
-    <div class="flex justify-end mb-4">
-      <button onclick="closeCartModal()" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-black hover:text-white transition-colors">
-        <i class="fa-solid fa-xmark text-lg"></i>
-      </button>
-    </div>
-    <div class="flex flex-col items-center text-center mb-8 mt-10">
-      <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
-        <i class="fa-solid fa-check text-4xl text-green-600"></i>
-      </div>
-      <h2 class="text-2xl font-black font-public mb-2">Berhasil!</h2>
-      <p class="text-gray-500 text-lg">Produk ditambahkan ke keranjang</p>
-    </div>
-    <div class="flex gap-4 p-4 bg-gray-50 rounded-2xl mb-8">
-      <img id="added-img" src="" class="w-16 h-16 rounded-xl object-contain bg-white">
-      <div class="text-left flex-1">
-        <p id="added-name" class="font-bold font-public text-sm mb-1 line-clamp-1"></p>
-        <p id="added-price" class="font-black text-black text-sm"></p>
-        <p id="added-color" class="text-xs text-gray-500 mt-1"></p>
-      </div>
-    </div>
-    <div class="mt-auto flex flex-col gap-3">
-      <a href="{{ route('keranjang.index') }}" class="w-full block text-center bg-black text-white font-black text-lg py-4 rounded-full hover:bg-gray-800 transition-colors btn-hover font-public">
-        Lihat Keranjang
-      </a>
-      <button onclick="closeCartModal()" class="w-full bg-white text-black border-2 border-black font-black text-lg py-4 rounded-full hover:bg-gray-50 transition-colors font-public">
-        Lanjut Belanja
-      </button>
-    </div>
-  </div>
-</div>
 @endsection
 
 @push('scripts')
@@ -635,58 +584,5 @@
   const track = document.getElementById('onsale-track');
   document.getElementById('onsale-next').onclick = () => track.scrollBy({ left: 350, behavior: 'smooth' });
   document.getElementById('onsale-prev').onclick = () => track.scrollBy({ left: -350, behavior: 'smooth' });
-
-  // Modal Script
-  let currentModalProductId = null;
-
-  function openCartModal(cardEl) {
-    if (!cardEl) return;
-    currentModalProductId = cardEl.dataset.id || null;
-    const product = {
-      name: cardEl.dataset.name || '',
-      price: cardEl.dataset.price || '',
-      img: cardEl.dataset.img || '',
-    };
-    document.getElementById('modal-img').src = product.img;
-    document.getElementById('modal-name').textContent = product.name;
-    document.getElementById('modal-price').textContent = product.price;
-
-    document.getElementById('cart-step-select').style.display = 'flex';
-    document.getElementById('cart-step-added').style.display = 'none';
-
-    document.getElementById('cart-modal-overlay').classList.add('open');
-    document.getElementById('cart-modal').classList.add('open');
-    lenis.stop();
-  }
-
-  function addToCart() {
-    if (currentModalProductId) {
-      fetch('{{ route("cart.add") }}', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify({ product_id: currentModalProductId })
-      }).then(res => res.json()).then(data => {
-        if (data.success) {
-          window.dispatchEvent(new CustomEvent('cart-count-updated', { detail: { count: data.count } }));
-          window.dispatchEvent(new CustomEvent('cart-updated', { detail: { count: data.count } }));
-        }
-      });
-    }
-
-    document.getElementById('added-img').src = document.getElementById('modal-img').src;
-    document.getElementById('added-name').textContent = document.getElementById('modal-name').textContent;
-    document.getElementById('added-price').textContent = document.getElementById('modal-price').textContent;
-    document.getElementById('cart-step-select').style.display = 'none';
-    document.getElementById('cart-step-added').style.display = 'flex';
-  }
-
-  function closeCartModal() {
-    document.getElementById('cart-modal-overlay').classList.remove('open');
-    document.getElementById('cart-modal').classList.remove('open');
-    lenis.start();
-  }
 </script>
 @endpush

@@ -218,16 +218,23 @@ class ServiceDetail extends Component
         $this->success('Servis berhasil diselesaikan!');
     }
 
-    public function markAsPaid()
+    public function markAsPaid(string $method = 'cash')
     {
+        $methodLabel = match($method) {
+            'transfer' => 'Transfer Bank',
+            'qris' => 'QRIS Toko',
+            default => 'Tunai (Cash)',
+        };
+
         $this->serviceOrder->update([
             'payment_status' => 'paid',
+            'payment_method' => $method,
             'paid_at' => now(),
         ]);
         $this->serviceOrder->refresh();
         
-        $this->logStatusChange('Pembayaran lunas diterima oleh Admin/Kasir.');
-        $this->success('Status pembayaran berhasil diubah menjadi Lunas.');
+        $this->logStatusChange("Pembayaran lunas ({$methodLabel}) diterima oleh Admin/Kasir.");
+        $this->success("Status pembayaran diubah: Lunas via {$methodLabel}.");
     }
 
     // ─── BIAYA TAMBAHAN ───

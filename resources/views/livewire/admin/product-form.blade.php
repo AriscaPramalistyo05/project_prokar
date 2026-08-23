@@ -118,7 +118,7 @@
                 ]" option-label="name" option-value="id" required />
             </div>
             <div class="flex items-center pt-8">
-                <x-toggle label="Aktifkan Tag Promo (SALE)" wire:model="is_promo" />
+                <x-toggle label="Aktifkan Tag Promo" wire:model="is_promo" />
             </div>
         </div>
 

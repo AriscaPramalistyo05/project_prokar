@@ -407,45 +407,6 @@
     .scrollbar-hide::-webkit-scrollbar { display: none; }
     .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
-    /* ── Modal Cart ── */
-    #cart-modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(4px);
-      z-index: 9999;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
-    #cart-modal-overlay.open {
-      opacity: 1;
-      pointer-events: all;
-    }
-    #cart-modal {
-      position: fixed;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      width: min(450px, 100vw);
-      background: #fff;
-      z-index: 10000;
-      display: flex;
-      flex-direction: column;
-      transform: translateX(100%);
-      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow: -10px 0 30px rgba(0, 0, 0, 0.2);
-    }
-    #cart-modal.open { transform: translateX(0); }
-    .color-swatch {
-      width: 32px; height: 32px;
-      border-radius: 50%;
-      border: 2px solid transparent;
-      cursor: pointer;
-      transition: transform 0.2s, border-color 0.2s;
-    }
-    .color-swatch.selected { border-color: #111; transform: scale(1.1); }
-
     .btn-hover {
       transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
@@ -486,6 +447,9 @@
   @if(!request()->routeIs('keranjang.index') && !request()->routeIs('checkout.address'))
     <x-footer />
   @endif
+
+  <x-cart-modal />
+  <x-search-modal />
 
   @stack('scripts')
 

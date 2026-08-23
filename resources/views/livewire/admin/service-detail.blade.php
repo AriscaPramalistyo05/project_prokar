@@ -264,15 +264,31 @@
                     @elseif($status === 'completed')
                         @if($serviceOrder->payment_status === 'unpaid' && $role === 'admin')
                             <div class="alert alert-warning shadow-sm text-sm mb-3">
-                                <x-icon name="o-banknotes" class="w-5 h-5 mr-2" /> Menunggu pembayaran di kasir/toko.
+                                <x-icon name="o-banknotes" class="w-5 h-5 mr-2" /> Menunggu pelunasan servis.
                             </div>
-                            <button @click="confirmAction('Tandai Sudah Lunas?', 'Konfirmasi bahwa pembayaran lunas telah diterima.', 'success', 'Ya, Sudah Lunas', () => $wire.markAsPaid())" class="btn btn-success text-white btn-lg w-full flex items-center justify-center gap-3 py-3.5 text-base font-bold shadow-md rounded-xl hover:scale-[1.01] transition-all mb-4">
-                                <x-icon name="o-check-circle" class="w-6 h-6 shrink-0" />
-                                <span>Tandai Sudah Lunas</span>
-                            </button>
+                            <div class="space-y-2 mb-4">
+                                <button @click="confirmAction('Pelunasan Tunai (Cash)?', 'Konfirmasi pembayaran tunai diterima di kasir/toko.', 'success', 'Ya, Bayar Cash', () => $wire.markAsPaid('cash'))" class="btn btn-success text-white btn-sm w-full flex items-center justify-center gap-2 font-bold shadow-sm rounded-xl">
+                                    <x-icon name="o-banknotes" class="w-4 h-4 shrink-0" />
+                                    <span>Tandai Lunas — Tunai (Cash)</span>
+                                </button>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button @click="confirmAction('Pelunasan Transfer?', 'Konfirmasi pembayaran via transfer bank.', 'info', 'Ya, Transfer', () => $wire.markAsPaid('transfer'))" class="btn btn-outline btn-info btn-sm w-full flex items-center justify-center gap-1.5 font-bold rounded-xl">
+                                        <x-icon name="o-credit-card" class="w-3.5 h-3.5" />
+                                        <span>Transfer Bank</span>
+                                    </button>
+                                    <button @click="confirmAction('Pelunasan QRIS?', 'Konfirmasi pembayaran via QRIS toko.', 'info', 'Ya, QRIS', () => $wire.markAsPaid('qris'))" class="btn btn-outline btn-warning btn-sm w-full flex items-center justify-center gap-1.5 font-bold rounded-xl">
+                                        <x-icon name="o-qr-code" class="w-3.5 h-3.5" />
+                                        <span>QRIS Toko</span>
+                                    </button>
+                                </div>
+                            </div>
                         @elseif($serviceOrder->payment_status === 'paid')
                             <div class="alert alert-success text-white shadow-sm text-sm mb-3">
-                                <x-icon name="o-check-circle" class="w-5 h-5 mr-2" /> Servis Selesai & Lunas.
+                                <x-icon name="o-check-circle" class="w-5 h-5 mr-2" />
+                                <div>
+                                    <div class="font-bold">Servis Selesai & Lunas</div>
+                                    <div class="text-xs opacity-90">Metode: {{ strtoupper($serviceOrder->payment_method ?? 'CASH') }}</div>
+                                </div>
                             </div>
                         @else
                             <div class="alert alert-info text-white shadow-sm text-sm mb-3">

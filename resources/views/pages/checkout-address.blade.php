@@ -64,13 +64,17 @@
 @endpush
 
 @section('content')
-<div class="max-w-7xl mx-auto lg:h-screen lg:flex lg:flex-row lg:overflow-hidden">
+<div class="max-w-7xl mx-auto min-h-screen lg:h-screen lg:flex lg:flex-row lg:overflow-hidden bg-[#FCFCFA] shadow-2xl">
 
   <!-- ===================== 1. Form Alamat (Livewire) ===================== -->
-  <livewire:frontend.checkout-address-form />
+  <div class="w-full lg:w-3/5 lg:h-full lg:overflow-y-auto bg-[#FCFCFA]">
+    <livewire:frontend.checkout-address-form />
+  </div>
 
   <!-- ===================== 2. Ringkasan Pesanan & Ongkir (Livewire) ===================== -->
-  <livewire:frontend.checkout-summary />
+  <div class="w-full lg:w-2/5 lg:h-full bg-[#0A0A0A] flex flex-col justify-between">
+    <livewire:frontend.checkout-summary />
+  </div>
 
 </div>
 

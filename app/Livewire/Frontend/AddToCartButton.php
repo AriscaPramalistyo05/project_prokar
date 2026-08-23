@@ -8,9 +8,16 @@ use Livewire\Component;
 class AddToCartButton extends Component
 {
     public int $productId;
+    public ?\App\Models\Product $product = null;
     public string $mode = 'detail'; // 'detail' | 'grid'
     public bool $added = false;
     public ?string $errorMessage = null;
+
+    public function mount(int $productId): void
+    {
+        $this->productId = $productId;
+        $this->product = \App\Models\Product::with('primaryImage')->find($productId);
+    }
 
     public function addToCart(): void
     {

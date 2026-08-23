@@ -133,6 +133,7 @@ Route::post('/cart/add', function (Illuminate\Http\Request $request) {
 })->name('cart.add');
 
 Route::view('/checkout', 'pages.checkout-address')->name('checkout.address');
+Route::get('/api/search', [\App\Http\Controllers\Api\SearchController::class, 'search'])->name('api.search');
 Route::post('/payment/webhook', [\App\Http\Controllers\Api\PaymentWebhookController::class, 'handle'])->name('payment.webhook');
 
 // ─── AUTH (Breeze) ──────────────────────────────────────────────
@@ -187,5 +188,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         // Pengajuan Jual Barang (Masuk)
         Route::get('/jual-masuk', \App\Livewire\Admin\SellSubmissionIndex::class)->name('sell-submissions.index');
         Route::get('/jual-masuk/{sellSubmission}', \App\Livewire\Admin\SellSubmissionDetail::class)->name('sell-submissions.show');
+
+        // Laporan Transaksi, Servis & Barang Masuk
+        Route::get('/laporan', \App\Livewire\Admin\ReportIndex::class)->name('reports.index');
+
+        // Activity Log Admin
+        Route::get('/activity-log', \App\Livewire\Admin\ActivityLogIndex::class)->name('activity-log');
     });
 });

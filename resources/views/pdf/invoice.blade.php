@@ -315,16 +315,34 @@
                 <td class="total-amount">Rp {{ number_format($order->subtotal, 0, ',', '.') }}</td>
             </tr>
             <tr>
-                <td class="total-title">Ongkos Kirim ({{ strtoupper($order->courier_name ?? 'Kargo') }}{{ $order->courier_service ? ' - ' . $order->courier_service : '' }})</td>
+                <td class="total-title">Ongkos Kirim ({{ $order->delivery_type === 'pickup' ? 'Bebas Ongkir' : (strtoupper($order->courier_name ?? 'Kargo') . ($order->courier_service ? ' - ' . $order->courier_service : '')) }})</td>
                 <td class="total-amount">Rp {{ number_format($order->shipping_cost, 0, ',', '.') }}</td>
             </tr>
             <tr>
                 <td class="grand-total-title">Total Pembayaran</td>
                 <td class="grand-total-amount">Rp {{ number_format($order->total, 0, ',', '.') }}</td>
             </tr>
+            @if($order->payment_type === 'down_payment')
+                <tr>
+                    <td class="total-title" style="color: #b45309; padding-top: 4px;">Uang Muka / DP 50%</td>
+                    <td class="total-amount" style="color: #b45309; padding-top: 4px;">Rp {{ number_format($order->down_payment, 0, ',', '.') }}</td>
+                </tr>
+                <tr>
+                    <td class="total-title" style="color: #b91c1c;">Sisa Tagihan Pelunasan (COD)</td>
+                    <td class="total-amount" style="color: #b91c1c;">Rp {{ number_format($order->payment_status === 'paid' ? 0 : $order->remaining_payment, 0, ',', '.') }}</td>
+                </tr>
+            @endif
             <tr>
-                <td class="status-title">Status Pembayaran</td>
-                <td class="status-val">{{ in_array($order->payment_status, ['paid', 'settlement', 'capture', 'success']) ? 'LUNAS (PAID)' : 'MENUNGGU PEMBAYARAN' }}</td>
+                <td class="status-title" style="padding-top: 4px;">Status Pembayaran</td>
+                <td class="status-val" style="padding-top: 4px;">
+                    @if(in_array($order->payment_status, ['paid', 'settlement', 'capture', 'success']))
+                        LUNAS (PAID)
+                    @elseif($order->payment_status === 'dp_paid')
+                        DP 50% DITERIMA (SISA COD)
+                    @else
+                        MENUNGGU PEMBAYARAN
+                    @endif
+                </td>
             </tr>
         </table>
 

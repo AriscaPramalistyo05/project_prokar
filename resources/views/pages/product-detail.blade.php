@@ -472,7 +472,7 @@
               alt="{{ $related->name }}" loading="lazy" decoding="async"
               onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&q=80'">
             @if ($related->is_promo)
-              <span class="absolute top-2 left-2 bg-red-600 text-white text-[10px] font-inter font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">SALE</span>
+              <span class="absolute top-2 left-2 bg-red-600 text-white text-[10px] font-inter font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">PROMO</span>
             @endif
           </div>
           <div class="p-4 flex flex-col flex-1">

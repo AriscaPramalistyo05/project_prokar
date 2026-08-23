@@ -38,6 +38,7 @@ class ServiceOrder extends Model
         'completed_at',
         'warranty_until',
         'payment_status',
+        'payment_method',
         'paid_at',
         'notes',
     ];

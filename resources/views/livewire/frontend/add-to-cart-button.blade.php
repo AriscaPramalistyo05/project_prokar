@@ -22,6 +22,14 @@
         {{-- ── STATE: Normal CTA ── --}}
         <div class="flex gap-3 w-full">
             {{-- Tambah Keranjang --}}
+            @if ($product)
+            <button type="button"
+                    onclick="event.preventDefault(); window.openCartModal({ id: {{ $product->id }}, name: '{{ addslashes($product->name) }}', price: 'Rp {{ number_format($product->promo_price ?: $product->price, 0, ',', '.') }}', img: '{{ $product->image_url }}', stock: {{ $product->stock ?? 10 }} })"
+                    class="flex-1 flex items-center justify-center gap-2 bg-white border-2 border-gray-900 rounded-xl py-4 font-inter font-bold text-base text-gray-900 hover:bg-gray-50 transition-colors">
+                <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
+                <span>Keranjang</span>
+            </button>
+            @else
             <button type="button"
                     wire:click="addToCart"
                     wire:loading.attr="disabled"
@@ -30,6 +38,7 @@
                 <span wire:loading.remove wire:target="addToCart">Keranjang</span>
                 <span wire:loading wire:target="addToCart">Menambahkan...</span>
             </button>
+            @endif
 
             {{-- Beli Sekarang --}}
             <button type="button"
