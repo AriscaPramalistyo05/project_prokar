@@ -203,5 +203,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
 
         // Activity Log Admin
         Route::get('/activity-log', \App\Livewire\Admin\ActivityLogIndex::class)->name('activity-log');
+
+        // Pengaturan Toko & Sistem (FASE 8)
+        Route::get('/settings', \App\Livewire\Admin\SettingIndex::class)->name('settings');
     });
 });
