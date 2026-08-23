@@ -19,6 +19,6 @@
   </div>
   <div class="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center text-gray-500 font-inter text-sm md:text-base">
     <p>&copy; <span>{{ date('Y') }}</span> Copyright by Prokar Elektronik</p>
-    <p>Made by Lar's</p>
+    <p>Made by <a href="https://github.com/AriscaPramalistyo05" target="_blank" rel="noopener noreferrer">Lar's</a></p>
   </div>
 </footer>

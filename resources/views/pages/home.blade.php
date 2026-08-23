@@ -213,13 +213,14 @@
           <div class="stagger-item shrink-0 snap-center">
             {{-- Card produk promo - klik area card mengarahkan ke detail produk --}}
             <article class="onsale-card w-[280px] md:w-[350px] bg-gray-50 rounded-3xl p-4 md:p-6 border border-gray-100 hover:shadow-card transition-all duration-300 group flex flex-col"
+              data-id="{{ $product->id }}"
               data-name="{{ $product->name }}"
-              data-price="{{ 'Rp ' . number_format($product->price, 0, ',', '.') }}"
-              data-img="{{ $product->primaryImage ? asset('storage/' . $product->primaryImage->path) : 'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&h=400&fit=crop' }}"
+              data-price="{{ 'Rp ' . number_format($product->promo_price ?? $product->price, 0, ',', '.') }}"
+              data-img="{{ $product->image_url }}"
               data-colors='[{"label":"Hitam","hex":"#111111"}]'>
               <a href="{{ route('produk.show', $product->slug) }}" class="flex flex-col h-full w-full outline-none">
                 <div class="relative h-[250px] md:h-[300px] w-full bg-white rounded-2xl overflow-hidden mb-6 flex items-center justify-center">
-                  <img src="{{ $product->primaryImage ? asset('storage/' . $product->primaryImage->path) : 'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&h=400&fit=crop' }}"
+                  <img src="{{ $product->image_url }}"
                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     alt="{{ $product->name }}"
                     onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&h=400&fit=crop'">
@@ -636,8 +637,11 @@
   document.getElementById('onsale-prev').onclick = () => track.scrollBy({ left: -350, behavior: 'smooth' });
 
   // Modal Script
+  let currentModalProductId = null;
+
   function openCartModal(cardEl) {
     if (!cardEl) return;
+    currentModalProductId = cardEl.dataset.id || null;
     const product = {
       name: cardEl.dataset.name || '',
       price: cardEl.dataset.price || '',
@@ -656,6 +660,22 @@
   }
 
   function addToCart() {
+    if (currentModalProductId) {
+      fetch('{{ route("cart.add") }}', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({ product_id: currentModalProductId })
+      }).then(res => res.json()).then(data => {
+        if (data.success) {
+          window.dispatchEvent(new CustomEvent('cart-count-updated', { detail: { count: data.count } }));
+          window.dispatchEvent(new CustomEvent('cart-updated', { detail: { count: data.count } }));
+        }
+      });
+    }
+
     document.getElementById('added-img').src = document.getElementById('modal-img').src;
     document.getElementById('added-name').textContent = document.getElementById('modal-name').textContent;
     document.getElementById('added-price').textContent = document.getElementById('modal-price').textContent;

@@ -6,10 +6,13 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductImage;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class ProductGrid extends Component
 {
+    use WithPagination;
     public $category = 'semua';
+    public $perPage = 8;
 
     protected $listeners = ['category-changed' => 'updateCategory'];
 
@@ -21,6 +24,13 @@ class ProductGrid extends Component
     public function updateCategory($key)
     {
         $this->category = $key;
+        $this->perPage = 8; // Reset perPage saat ganti kategori
+        $this->dispatch('category-updated');
+    }
+
+    public function loadMore()
+    {
+        $this->perPage += 8;
     }
 
     public function render()
@@ -32,7 +42,12 @@ class ProductGrid extends Component
                 $mainCategoryIds = Category::whereIn('slug', ['kulkas', 'televisi', 'mesin-cuci'])
                     ->pluck('id')
                     ->toArray();
-                $query->whereNotIn('category_id', $mainCategoryIds);
+                
+                $lainnyaCategoryIds = Category::whereNotIn('id', $mainCategoryIds)
+                    ->pluck('id')
+                    ->toArray();
+
+                $query->whereIn('category_id', $lainnyaCategoryIds);
             } else {
                 $categoryModel = Category::where('slug', $this->category)->first();
                 if ($categoryModel) {
@@ -43,10 +58,12 @@ class ProductGrid extends Component
             }
         }
 
-        $products = $query->get()->map(function (Product $product) {
+        $paginator = $query->simplePaginate($this->perPage);
+        $products = $paginator->getCollection()->map(function (Product $product) {
             $conditionData = $this->getConditionBadgeData($product->condition, $product->condition_color);
 
             return [
+                'id' => $product->id,
                 'slug' => $product->slug,
                 'name' => $product->name,
                 'category' => $product->category?->slug ?? 'lainnya',
@@ -56,13 +73,22 @@ class ProductGrid extends Component
                 'price' => $product->promo_price ? (float) $product->promo_price : (float) $product->price,
                 'original_price' => $product->promo_price ? (float) $product->price : null,
                 'on_sale' => $product->is_promo,
-                'image' => $product->primaryImage ? asset('storage/' . $product->primaryImage->path) : 'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&q=80',
+                'image' => $product->image_url,
             ];
-        })->toArray();
+        });
 
         return view('livewire.frontend.product-grid', [
             'products' => $products,
+            'hasMore' => $paginator->hasMorePages(),
         ]);
+    }
+
+    public function addToCart(int $productId): void
+    {
+        $cartService = app(\App\Services\CartService::class);
+        $cartService->addItem($productId);
+        $this->dispatch('cart-count-updated', count: $cartService->count());
+        $this->dispatch('cart-updated', count: $cartService->count());
     }
 
     private function getConditionBadgeData($condition, $color = 'blue')

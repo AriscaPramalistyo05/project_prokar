@@ -1,5 +1,7 @@
 *.log
 .DS_Store
+.agents/
+.agents/rules/ponytail.md
 .env
 .env.backup
 .env.production

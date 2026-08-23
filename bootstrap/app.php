@@ -20,6 +20,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'verified' => \App\Http\Middleware\EnsureEmailVerified::class,
         ]);
 
+        $middleware->validateCsrfTokens(except: [
+            'payment/webhook',
+            'api/payment/webhook',
+        ]);
+
         $middleware->redirectUsersTo(function (Request $request) {
             if ($request->user() && $request->user()->hasRole(['super_admin', 'teknisi'])) {
                 return route('admin.dashboard');

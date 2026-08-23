@@ -18,24 +18,43 @@
 <div x-data="{ mobileMenuOpen: false }">
   <!-- Announcement Bar (Marquee Hitam) -->
   <div role="banner" class="flex justify-between items-center bg-black py-2.5 px-4 sm:px-10 md:px-[60px] z-[150] relative">
-  <div class="marquee-container flex-1">
-    <div class="marquee-content">
-      <span class="text-white font-public font-bold text-sm uppercase tracking-widest">nikmati produk second berkualitas dengan harga murah</span>
-      <i class="fa-solid fa-star text-[8px] text-brand-yellow"></i>
-      <span class="text-white font-public font-bold text-sm uppercase tracking-widest">jual produk elektronik bekasmu dengan harga terbaik</span>
-      <i class="fa-solid fa-star text-[8px] text-brand-yellow"></i>
-      <span class="text-white font-public font-bold text-sm uppercase tracking-widest">produk di servis oleh teknisi berpengalaman</span>
-      <i class="fa-solid fa-star text-[8px] text-brand-yellow"></i>
-      <span class="text-white font-public font-bold text-sm uppercase tracking-widest">nikmati produk second berkualitas dengan harga murah</span>
-      <i class="fa-solid fa-star text-[8px] text-brand-yellow"></i>
-      <span class="text-white font-public font-bold text-sm uppercase tracking-widest">jual produk elektronik bekasmu dengan harga terbaik</span>
-      <i class="fa-solid fa-star text-[8px] text-brand-yellow"></i>
+    <div class="marquee-container flex-1">
+      <div class="marquee-content">
+        @guest
+          <span class="text-white font-public font-bold text-sm uppercase tracking-widest">
+            Silakan <a href="{{ route('login') }}" class="text-brand-yellow underline hover:text-white font-black">LOGIN</a> atau <a href="{{ route('register') }}" class="text-brand-yellow underline hover:text-white font-black">REGISTER</a> untuk menikmati semua fitur di website Prokar Elektronik
+          </span>
+          <i class="fa-solid fa-star text-[8px] text-brand-yellow"></i>
+          <span class="text-white font-public font-bold text-sm uppercase tracking-widest">
+            Daftar sekarang untuk kemudahan bertransaksi, cek status servis, dan jual elektronik bekas
+          </span>
+          <i class="fa-solid fa-star text-[8px] text-brand-yellow"></i>
+          <span class="text-white font-public font-bold text-sm uppercase tracking-widest">
+            Silakan <a href="{{ route('login') }}" class="text-brand-yellow underline hover:text-white font-black">LOGIN</a> atau <a href="{{ route('register') }}" class="text-brand-yellow underline hover:text-white font-black">REGISTER</a> untuk menikmati semua fitur di website Prokar Elektronik
+          </span>
+          <i class="fa-solid fa-star text-[8px] text-brand-yellow"></i>
+          <span class="text-white font-public font-bold text-sm uppercase tracking-widest">
+            Daftar sekarang untuk kemudahan bertransaksi, cek status servis, dan jual elektronik bekas
+          </span>
+          <i class="fa-solid fa-star text-[8px] text-brand-yellow"></i>
+        @else
+          <span class="text-white font-public font-bold text-sm uppercase tracking-widest">nikmati produk second berkualitas dengan harga murah</span>
+          <i class="fa-solid fa-star text-[8px] text-brand-yellow"></i>
+          <span class="text-white font-public font-bold text-sm uppercase tracking-widest">jual produk elektronik bekasmu dengan harga terbaik</span>
+          <i class="fa-solid fa-star text-[8px] text-brand-yellow"></i>
+          <span class="text-white font-public font-bold text-sm uppercase tracking-widest">produk di servis oleh teknisi berpengalaman</span>
+          <i class="fa-solid fa-star text-[8px] text-brand-yellow"></i>
+          <span class="text-white font-public font-bold text-sm uppercase tracking-widest">nikmati produk second berkualitas dengan harga murah</span>
+          <i class="fa-solid fa-star text-[8px] text-brand-yellow"></i>
+          <span class="text-white font-public font-bold text-sm uppercase tracking-widest">jual produk elektronik bekasmu dengan harga terbaik</span>
+          <i class="fa-solid fa-star text-[8px] text-brand-yellow"></i>
+        @endguest
+      </div>
     </div>
   </div>
-</div>
 
 <!-- Navbar -->
-<header class="sticky top-0 z-[9999] bg-white/80 backdrop-blur-xl border-b border-gray-200 shadow-sm">
+<header class="sticky top-0 z-[9999] bg-[#E8F4F8]/80 backdrop-blur-xl border-b border-gray-200 shadow-sm">
   <nav class="max-w-[1440px] mx-auto flex justify-between items-center h-20 px-6 lg:px-12">
     <div class="flex items-center gap-3">
       <button @click="mobileMenuOpen = true" class="md:hidden cursor-pointer" aria-label="Buka Menu">
@@ -107,10 +126,35 @@
         </div>
       @endauth
 
-      <a href="{{ route('keranjang.index') }}" aria-label="Keranjang" class="relative hover:scale-110 transition-transform">
-        <i class="fa-solid fa-cart-shopping text-xl"></i>
-        <span class="absolute -top-2 -right-2 w-5 h-5 bg-brand-yellow rounded-full text-black text-xs font-bold flex items-center justify-center border-2 border-white">5</span>
-      </a>
+      @php $cartCount = (int) app(\App\Services\CartService::class)->count(); @endphp
+      <div x-data="{
+          count: {{ $cartCount }},
+          bump: false,
+          updateCount(val) {
+              const num = (typeof val === 'object' && val !== null) ? (val.count ?? 0) : val;
+              this.count = parseInt(num) || 0;
+              this.bump = true;
+              setTimeout(() => { this.bump = false; }, 600);
+          }
+      }"
+      @cart-count-updated.window="updateCount($event.detail)"
+      @cart-updated.window="updateCount($event.detail)"
+      class="relative flex items-center">
+        <a href="{{ route('keranjang.index') }}" aria-label="Keranjang" class="relative hover:scale-110 transition-transform">
+          <i class="fa-solid fa-cart-shopping text-xl"></i>
+          <span 
+            x-show="count > 0" 
+            x-text="count" 
+            x-transition:enter="transition ease-out duration-300 transform"
+            x-transition:enter-start="opacity-0 scale-50"
+            x-transition:enter-end="opacity-100 scale-100"
+            :class="{ 'scale-125 bg-amber-400': bump, 'scale-100 bg-brand-yellow': !bump }"
+            class="absolute -top-2 -right-2 min-w-[20px] h-5 px-1 rounded-full text-black text-xs font-bold flex items-center justify-center border-2 border-white shadow-xs transition-all duration-300 transform"
+            style="{{ $cartCount > 0 ? '' : 'display: none;' }}">
+            {{ $cartCount > 0 ? $cartCount : '' }}
+          </span>
+        </a>
+      </div>
     </div>
   </nav>
 </header>
@@ -193,6 +237,12 @@
               </a>
               <a href="{{ route('servis.lacak') }}" class="flex items-center gap-3 text-[15px] font-bold text-gray-900 {{ $isTrack ? 'text-brand-orange' : '' }}">
                 <i class="fa-solid fa-truck-fast w-5 text-center {{ $isTrack ? 'text-brand-orange' : 'text-gray-400' }}"></i> TRACK
+              </a>
+              <a href="{{ route('keranjang.index') }}" class="flex items-center justify-between text-[15px] font-bold text-gray-900 {{ $isCart ? 'text-brand-orange' : '' }}">
+                <div class="flex items-center gap-3">
+                  <i class="fa-solid fa-cart-shopping w-5 text-center {{ $isCart ? 'text-brand-orange' : 'text-gray-400' }}"></i> KERANJANG
+                </div>
+                <span x-show="count > 0" x-text="count" class="bg-brand-yellow text-black text-xs font-bold px-2 py-0.5 rounded-full" style="{{ $cartCount > 0 ? '' : 'display: none;' }}">{{ $cartCount > 0 ? $cartCount : '' }}</span>
               </a>
             </div>
 

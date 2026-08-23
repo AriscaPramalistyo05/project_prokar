@@ -1,29 +1,48 @@
 @extends('layouts.app')
 
-@section('title', 'Checkout — Keranjang Belanja | Prokar Elektronik')
+@section('title', 'Keranjang Belanja — Prokar Elektronik')
 @section('description', 'Tinjau dan sesuaikan produk di keranjang belanja Anda sebelum melanjutkan ke pengiriman dan pembayaran di Prokar Elektronik.')
 @section('robots', 'noindex, nofollow')
-@section('theme_color', '#111111')
+@section('theme_color', '#0A0A0A')
 @section('og_type', 'website')
 @section('og_title', 'Keranjang Belanja — Prokar Elektronik')
 @section('og_description', 'Tinjau pesanan Anda sebelum melanjutkan ke pembayaran.')
 @section('hide_chrome', 'true') {{-- Hide navbar/footer on transactional pages --}}
-@section('body_class', 'bg-background text-on-background font-body-md antialiased min-h-screen flex flex-col')
+@section('body_class', 'bg-[#F1F2ED] text-[#0A0A0A] font-inter antialiased min-h-screen pb-28 lg:pb-0')
 
 @push('styles')
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;700;800;900&family=Archivo+Narrow:wght@500;700&display=swap" rel="stylesheet" />
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
+
 <style>
-  .material-symbols-outlined {
-    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  html, body { background: #F1F2ED; }
+  body { font-family: 'Inter', sans-serif; }
+
+  /* Font classes */
+  .font-public { font-family: 'Archivo Narrow', sans-serif !important; }
+  .font-mono { font-family: 'IBM Plex Mono', monospace !important; }
+
+  /* Keyboard focus styles */
+  a:focus-visible, button:focus-visible, input:focus-visible {
+    outline: 3px solid #0A0A0A;
+    outline-offset: 2px;
   }
-  input:focus, select:focus {
-    outline: none;
-    border-color: #000000 !important;
-    box-shadow: 0 0 0 1px #000000 !important;
+  .on-dark a:focus-visible, .on-dark button:focus-visible, .on-dark input:focus-visible {
+    outline-color: #FFCC00;
   }
+
+  /* Hard brutalist shadow + press interaction */
+  .press {
+    box-shadow: 4px 4px 0 0 #0A0A0A;
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .press:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 0 #0A0A0A; }
+  .press:active { transform: translate(1px, 1px); box-shadow: 2px 2px 0 0 #0A0A0A; }
+
+  .press-yellow { box-shadow: 6px 6px 0 0 #FFCC00; }
+  .press-yellow:hover { box-shadow: 8px 8px 0 0 #FFCC00; }
+
   input[type="number"]::-webkit-inner-spin-button,
   input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
   input[type="number"] { -moz-appearance: textfield; }
@@ -31,52 +50,55 @@
   @media (min-width: 1024px) {
     html, body { height: 100%; overflow: hidden; }
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .press, .press:hover, .press:active { transition: none; transform: none; }
+  }
 </style>
 @endpush
 
 @section('content')
-<main class="flex-grow flex flex-col lg:flex-row w-full max-w-7xl mx-auto lg:h-screen lg:overflow-hidden">
+<div class="max-w-7xl mx-auto lg:h-screen lg:flex lg:flex-row lg:overflow-hidden">
 
-    <!-- ===================== Daftar Produk (tampil di atas pada mobile & tablet) ===================== -->
-    <section class="w-full lg:w-3/5 lg:h-screen lg:overflow-y-auto px-margin-mobile pt-margin-mobile pb-unit-8 md:px-margin-desktop md:pt-margin-desktop md:pb-unit-8 lg:p-section-gap flex flex-col gap-unit-4 border-b-4 border-primary shadow-[0_6px_12px_-6px_rgba(0,0,0,0.2)] lg:shadow-none lg:border-b-0 lg:border-r-2 order-1">
+  <!-- ===================== KOLOM KIRI: DAFTAR PRODUK ===================== -->
+  <section class="w-full lg:w-3/5 lg:h-screen lg:overflow-y-auto px-4 pt-5 pb-8 sm:px-6 lg:px-10 lg:pt-8 flex flex-col justify-between">
 
-      <header class="mb-unit-4">
-        <a class="inline-block mb-unit-2" href="{{ route('home') }}">
-          <span class="font-headline-lg text-headline-lg font-black uppercase tracking-tighter text-primary">Prokar Elektronik</span>
+    <div>
+      <!-- Header -->
+      <header class="mb-6">
+        <a href="{{ route('home') }}" class="inline-block mb-3">
+          <span class="font-public font-black text-2xl uppercase tracking-tight text-[#0A0A0A]">
+            Prokar Elektronik
+          </span>
         </a>
 
-        <nav aria-label="Breadcrumb" class="flex items-center gap-2 font-label-mono text-label-mono text-on-surface-variant mb-unit-8 uppercase">
-          <a class="hover:text-primary transition-colors" href="{{ route('home') }}">Home</a>
-          <span class="material-symbols-outlined text-[14px]" aria-hidden="true">chevron_right</span>
-          <span class="text-primary font-bold" aria-current="step">Cart</span>
+        <nav aria-label="Breadcrumb" class="flex items-center gap-2 font-public font-bold text-sm text-[#0A0A0A]/60 uppercase tracking-wider mb-2">
+          <a class="hover:text-[#0A0A0A] transition-colors" href="{{ route('home') }}">Home</a>
+          <i class="fa-solid fa-chevron-right text-[11px]" aria-hidden="true"></i>
+          <span class="text-[#0A0A0A] font-extrabold" aria-current="step">Keranjang</span>
         </nav>
-
-        <h1 class="font-headline-md text-headline-md mb-unit-2">Keranjang Belanja</h1>
-        <p class="font-label-mono text-label-mono text-on-surface-variant uppercase" id="itemCountLabel">2 produk</p>
       </header>
 
-      <!-- ===================== Daftar item keranjang (Livewire) ===================== -->
+      <!-- Livewire Cart List Component -->
       <livewire:frontend.cart-list />
+    </div>
 
-      <div class="mt-auto pt-unit-4 border-t-2 border-primary">
-        <a href="{{ route('produk.index') }}" class="flex items-center gap-1 font-label-mono text-label-mono text-on-surface-variant hover:text-primary transition-colors uppercase">
-          <span class="material-symbols-outlined text-[14px]" aria-hidden="true">chevron_left</span>
-          Lanjutkan belanja
-        </a>
-      </div>
+    <!-- Lanjutkan belanja -->
+    <div class="pt-7 mt-7 border-t-2 border-[#0A0A0A]/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+      <a href="{{ route('produk.index') }}" class="flex items-center gap-2 font-public font-bold text-xs uppercase tracking-wider text-[#0A0A0A]/70 hover:text-[#0A0A0A] transition-colors">
+        <i class="fa-solid fa-arrow-left text-sm" aria-hidden="true"></i>
+        Lanjutkan Belanja
+      </a>
+      <p class="flex items-center gap-2 text-xs text-[#0A0A0A]/45 font-inter">
+        <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+        Transaksi Aman &amp; Bergaransi
+      </p>
+    </div>
 
-      <footer class="pt-unit-8 md:pt-unit-4">
-        <nav class="flex flex-wrap gap-4 font-label-mono text-label-mono text-on-surface-variant uppercase">
-          <a href="#" class="hover:text-primary underline">Refund policy</a>
-          <a href="#" class="hover:text-primary underline">Shipping</a>
-          <a href="#" class="hover:text-primary underline">Privacy policy</a>
-          <a href="#" class="hover:text-primary underline">Terms of service</a>
-        </nav>
-      </footer>
-    </section>
+  </section>
 
-    <!-- ===================== Ringkasan Pesanan (Livewire) ===================== -->
-    <livewire:frontend.cart-summary />
+  <!-- ===================== KOLOM KANAN: RINGKASAN PESANAN (Livewire) ===================== -->
+  <livewire:frontend.cart-summary />
 
-  </main>
+</div>
 @endsection

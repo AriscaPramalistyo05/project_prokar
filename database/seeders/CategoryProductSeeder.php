@@ -54,7 +54,7 @@ class CategoryProductSeeder extends Seeder
                 'stock' => 1,
                 'status' => 'available',
                 'is_promo' => true,
-                'image' => 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/burs3wxx_expires_30_days.png',
+                'image' => 'products/tv_bekas_1_1787064280.png',
             ],
             [
                 'category' => 'Kulkas',
@@ -70,7 +70,7 @@ class CategoryProductSeeder extends Seeder
                 'stock' => 1,
                 'status' => 'available',
                 'is_promo' => false,
-                'image' => 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/lfo9hyrd_expires_30_days.png',
+                'image' => 'products/kulkas_bekas_1_1787064280.png',
             ],
             [
                 'category' => 'Mesin Cuci',
@@ -86,7 +86,7 @@ class CategoryProductSeeder extends Seeder
                 'stock' => 1,
                 'status' => 'available',
                 'is_promo' => false,
-                'image' => 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/i79fn9am_expires_30_days.png',
+                'image' => 'products/mesincuci_bekas_1_1787064280.png',
             ],
             [
                 'category' => 'Kipas Angin',
@@ -102,7 +102,7 @@ class CategoryProductSeeder extends Seeder
                 'stock' => 1,
                 'status' => 'available',
                 'is_promo' => false,
-                'image' => 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/bilr5uiq_expires_30_days.png',
+                'image' => 'https://images.unsplash.com/photo-1618941716939-553df3c6c278?w=800&q=80',
             ],
             [
                 'category' => 'Blender',
@@ -118,7 +118,7 @@ class CategoryProductSeeder extends Seeder
                 'stock' => 1,
                 'status' => 'available',
                 'is_promo' => true,
-                'image' => 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/cilcgsan_expires_30_days.png',
+                'image' => 'https://images.unsplash.com/photo-1570222094114-d054a817e56b?w=800&q=80',
             ],
             [
                 'category' => 'Microwave',
@@ -134,7 +134,7 @@ class CategoryProductSeeder extends Seeder
                 'stock' => 1,
                 'status' => 'available',
                 'is_promo' => false,
-                'image' => 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/3mwa74uz_expires_30_days.png',
+                'image' => 'https://images.unsplash.com/photo-1574269909862-7e1d70bb8078?w=800&q=80',
             ],
             [
                 'category' => 'AC',
@@ -150,7 +150,7 @@ class CategoryProductSeeder extends Seeder
                 'stock' => 1,
                 'status' => 'available',
                 'is_promo' => true,
-                'image' => 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/cs9jkbf3_expires_30_days.png',
+                'image' => 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800&q=80',
             ],
             [
                 'category' => 'Vacuum Cleaner',
@@ -166,7 +166,7 @@ class CategoryProductSeeder extends Seeder
                 'stock' => 1,
                 'status' => 'available',
                 'is_promo' => false,
-                'image' => 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/e9gwi90n_expires_30_days.png',
+                'image' => 'https://images.unsplash.com/photo-1558317374-067fb5f30001?w=800&q=80',
             ],
         ];
 

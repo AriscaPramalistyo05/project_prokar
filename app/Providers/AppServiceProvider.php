@@ -38,5 +38,10 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(ServiceOrderCreated::class,    SendServiceOrderCreatedNotification::class);
         Event::listen(SellSubmissionCreated::class,  SendSellSubmissionCreatedNotification::class);
         Event::listen(CustomerApprovalUpdated::class, SendCustomerApprovalNotification::class);
+
+        // Sync session cart to database when user logs in
+        Event::listen(\Illuminate\Auth\Events\Login::class, function ($event) {
+            app(\App\Services\CartService::class)->syncSessionToDatabase();
+        });
     }
 }
