@@ -2,84 +2,64 @@
 
 namespace App\Livewire\Frontend;
 
+use App\Services\CartService;
 use Livewire\Component;
 
 class CartList extends Component
 {
     /**
-     * Demo cart items. In production this would come from session/DB.
+     * Cart items loaded from CartService (session-backed, enriched with DB data).
      * @var array<int, array<string, mixed>>
      */
     public array $items = [];
 
     public function mount(): void
     {
-        $this->items = [
-            [
-                'id' => 1,
-                'name' => 'Mesin Cuci Polytron Tabung 2',
-                'variant' => 'White',
-                'image' => 'https://lh3.googleusercontent.com/aida-public/AB6AXuDaJ1SEx7OuXzMHY5APcrdGU25U2Ko3ZgG901bLY6YH4elzRTTNBHFPXzYu0QAikuKPXLEpNFOGWMLOOxpThwUYiquO_9tJcgKmHeJgWNXiddjeuTQAU3wNj74L90N37UYr2MhnA2GCxKOVeCmrZDJXKzIc_yVNy7zny2dOseP5jzLxrRYsExr5470WU-gMlX3UEIwGbQaui1PW-weWvEW6kFmjl-4glb-VNLmMTM8cmfOSLrvP2s9PgfHJ0EUMATTv7MKu1uKY81I',
-                'is_icon' => false,
-                'unit_price' => 1504000,
-                'original_price' => 1880000,
-                'on_sale' => true,
-                'quantity' => 1,
-            ],
-            [
-                'id' => 2,
-                'name' => 'Kabel Power AC Universal',
-                'variant' => 'Hitam · 1.5m',
-                'image' => null,
-                'is_icon' => true,
-                'icon' => 'cable',
-                'unit_price' => 45000,
-                'original_price' => null,
-                'on_sale' => false,
-                'quantity' => 2,
-            ],
-        ];
+        $this->loadItems();
+    }
+
+    private function loadItems(): void
+    {
+        $this->items = app(CartService::class)->getItems();
     }
 
     public function increase(int $id): void
     {
-        foreach ($this->items as $i => $item) {
+        $cartService = app(CartService::class);
+        foreach ($this->items as $item) {
             if ($item['id'] === $id) {
-                $qty = min(99, ((int) $item['quantity']) + 1);
-                $this->items[$i]['quantity'] = $qty;
+                $cartService->updateQty($id, $item['quantity'] + 1);
                 break;
             }
         }
+        $this->loadItems();
         $this->dispatchCartUpdate();
     }
 
     public function decrease(int $id): void
     {
-        foreach ($this->items as $i => $item) {
+        $cartService = app(CartService::class);
+        foreach ($this->items as $item) {
             if ($item['id'] === $id) {
-                $qty = max(1, ((int) $item['quantity']) - 1);
-                $this->items[$i]['quantity'] = $qty;
+                $cartService->updateQty($id, $item['quantity'] - 1);
                 break;
             }
         }
+        $this->loadItems();
         $this->dispatchCartUpdate();
     }
 
     public function updateQuantity(int $id, int $value): void
     {
-        $qty = max(1, min(99, $value));
-        foreach ($this->items as $i => $item) {
-            if ($item['id'] === $id) {
-                $this->items[$i]['quantity'] = $qty;
-                break;
-            }
-        }
+        app(CartService::class)->updateQty($id, $value);
+        $this->loadItems();
         $this->dispatchCartUpdate();
     }
 
     public function remove(int $id): void
     {
-        $this->items = array_values(array_filter($this->items, fn ($i) => $i['id'] !== $id));
+        app(CartService::class)->removeItem($id);
+        $this->loadItems();
         $this->dispatchCartUpdate();
     }
 
@@ -105,16 +85,19 @@ class CartList extends Component
 
     public function formatRupiah(int $n): string
     {
-        return 'Rp ' . number_format($n, 0, ',', '.') . ',00';
+        return 'Rp ' . number_format($n, 0, ',', '.');
     }
 
     private function dispatchCartUpdate(): void
     {
+        $count = app(CartService::class)->count();
         $this->dispatch('cart-updated',
+            count: $count,
             subtotal: $this->subtotal(),
             totalQty: $this->totalQuantity(),
             itemCount: $this->itemCount(),
         );
+        $this->dispatch('cart-count-updated', count: $count);
     }
 
     public function render()

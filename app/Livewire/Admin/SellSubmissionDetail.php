@@ -87,7 +87,7 @@ class SellSubmissionDetail extends Component
 
     public function convertToProduct()
     {
-        DB::transaction(function () {
+        return DB::transaction(function () {
             // Check if already converted
             if ($this->submission->converted_product_id) {
                 return redirect()->route('admin.products.edit', $this->submission->converted_product_id);
@@ -95,21 +95,36 @@ class SellSubmissionDetail extends Component
 
             $product = Product::create([
                 'category_id' => $this->submission->category_id,
-                'name' => $this->submission->device_brand . ' ' . $this->submission->device_model,
+                'name' => $this->submission->device_brand . ' ' . ($this->submission->device_model ?: 'Elektronik'),
                 'slug' => str()->slug($this->submission->device_brand . ' ' . $this->submission->device_model . '-' . uniqid()),
                 'brand' => $this->submission->device_brand,
                 'model' => $this->submission->device_model,
-                'description' => "Barang masuk dari " . $this->submission->customer_name . ".\n\n" . $this->submission->description . "\n" . $this->submission->admin_notes,
-                'condition_notes' => $this->submission->condition,
-                'price' => 0,
+                'description' => "Barang masuk dari pelanggan " . $this->submission->customer_name . ".\n\n" . ($this->submission->description ?: ''),
+                'condition_notes' => 'Kondisi: ' . ucfirst($this->submission->condition ?? 'Bekas Berkualitas'),
+                'price' => $this->submission->agreed_price ?: $this->submission->offered_price ?: 0,
                 'stock' => 1,
                 'status' => 'available',
             ]);
 
+            // Salin foto barang yang diupload customer ke galeri produk
+            foreach ($this->submission->sellSubmissionImages as $index => $media) {
+                if ($media->type === 'photo') {
+                    \App\Models\ProductImage::create([
+                        'product_id' => $product->id,
+                        'path' => $media->path,
+                        'type' => 'photo',
+                        'is_primary' => $index === 0,
+                        'order' => $index,
+                    ]);
+                }
+            }
+
             $this->submission->update([
                 'converted_product_id' => $product->id,
+                'status' => 'ready_for_sale',
             ]);
 
+            session()->flash('success', 'Barang berhasil dikonversi ke Kelola Produk. Silakan lengkapi harga jual dan detail lainnya.');
             return redirect()->route('admin.products.edit', $product->id);
         });
     }

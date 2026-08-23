@@ -14,3 +14,6 @@ use Illuminate\Support\Facades\Route;
 Route::post('/fcm/register', [FcmController::class, 'register'])
     ->middleware('auth')
     ->name('api.fcm.register');
+
+Route::post('/payment/webhook', [\App\Http\Controllers\Api\PaymentWebhookController::class, 'handle'])
+    ->name('api.payment.webhook');

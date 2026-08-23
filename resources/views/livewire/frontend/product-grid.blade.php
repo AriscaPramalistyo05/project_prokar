@@ -1,7 +1,31 @@
 <div wire:ignore.self>
-    <section aria-label="Daftar produk elektronik" class="py-6 md:py-8">
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8 relative z-10" role="list">
-            @foreach ($products as $p)
+    <div x-data="{ gridLoading: true }" x-init="setTimeout(() => gridLoading = false, 300)" @category-loading.window="gridLoading = true" @category-updated.window="gridLoading = false">
+        <section aria-label="Daftar produk elektronik" class="py-6 md:py-8">
+            
+            {{-- ─── SKELETON LOADER (Muncul saat ganti kategori atau pertama kali load) ─── --}}
+            <div x-show="gridLoading" x-cloak class="w-full">
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8 relative z-10" aria-hidden="true">
+                    @for ($i = 0; $i < 8; $i++)
+                        <article class="bg-gray-100 rounded-3xl p-4 md:p-6 border border-gray-200 flex flex-col h-full animate-pulse">
+                            <div class="w-full aspect-[4/3] bg-gray-300 rounded-2xl mb-4"></div>
+                            <div class="flex flex-col flex-1 gap-2">
+                                <div class="h-3 bg-gray-300 rounded w-1/3 mb-1"></div>
+                                <div class="h-5 bg-gray-300 rounded w-full"></div>
+                                <div class="h-5 bg-gray-300 rounded w-3/4 mb-2"></div>
+                                <div class="h-4 bg-gray-300 rounded w-1/4 mb-3"></div>
+                                <div class="mt-auto flex items-center justify-between pt-2">
+                                    <div class="h-6 md:h-8 bg-gray-300 rounded w-1/2"></div>
+                                    <div class="w-9 h-9 bg-gray-300 rounded-full"></div>
+                                </div>
+                            </div>
+                        </article>
+                    @endfor
+                </div>
+            </div>
+
+            {{-- ─── GRID PRODUK ASLI ─── --}}
+            <div x-show="!gridLoading" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8 relative z-10" role="list">
+                @foreach ($products as $p)
                 <article class="onsale-card bg-gray-50 rounded-3xl p-4 md:p-6 border border-gray-100 hover:shadow-card transition-all duration-300 group flex flex-col h-full" role="listitem">
                     <a href="{{ route('produk.show', $p['slug']) }}"
                         aria-label="Lihat detail {{ $p['name'] }}" class="flex flex-col h-full w-full outline-none block">
@@ -26,22 +50,60 @@
                                     {{ $p['condition'] }}
                                 </span>
                             </div>
-                            <div class="mt-auto flex flex-col">
-                                @if ($p['original_price'])
-                                    <span class="text-gray-400 font-inter font-semibold text-xs md:text-sm line-through">
-                                        Rp {{ number_format($p['original_price'], 0, ',', '.') }}
+                            <div class="mt-auto flex items-center justify-between pt-2">
+                                <div>
+                                    @if ($p['original_price'])
+                                        <span class="text-gray-400 font-inter font-semibold text-xs md:text-sm line-through block">
+                                            Rp {{ number_format($p['original_price'], 0, ',', '.') }}
+                                        </span>
+                                    @endif
+                                    <span class="text-lg md:text-2xl font-black text-black">
+                                        Rp {{ number_format($p['price'], 0, ',', '.') }}
                                     </span>
-                                @else
-                                    <span class="text-transparent font-inter font-semibold text-xs md:text-sm select-none" aria-hidden="true">-</span>
-                                @endif
-                                <span class="text-lg md:text-2xl font-black text-black">
-                                    Rp {{ number_format($p['price'], 0, ',', '.') }}
-                                </span>
+                                </div>
+                                <button type="button" wire:click.prevent="addToCart({{ $p['id'] }})"
+                                    class="w-9 h-9 rounded-full bg-brand-yellow hover:bg-black hover:text-white text-black flex items-center justify-center transition-colors shadow-sm"
+                                    title="Tambah ke Keranjang">
+                                    <i class="fa-solid fa-cart-plus text-sm"></i>
+                                </button>
                             </div>
                         </div>
                     </a>
                 </article>
-            @endforeach
+                @endforeach
         </div>
+        
+        {{-- ─── INFINITE SCROLL TRIGGER ─── --}}
+        @if ($hasMore)
+            <div x-data="{
+                observe() {
+                    let observer = new IntersectionObserver((entries) => {
+                        if (entries[0].isIntersecting) {
+                            @this.call('loadMore');
+                        }
+                    }, { rootMargin: '50px' });
+                    observer.observe(this.$el);
+                }
+            }" x-init="observe" class="w-full h-10 mt-4">
+            </div>
+
+            {{-- ─── SKELETON SAAT LOAD MORE ─── --}}
+            <div wire:loading wire:target="loadMore" class="w-full mt-4">
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
+                    @for ($i = 0; $i < 4; $i++)
+                        <article class="bg-gray-100 rounded-3xl p-4 md:p-6 border border-gray-200 flex flex-col h-full animate-pulse">
+                            <div class="w-full aspect-[4/3] bg-gray-300 rounded-2xl mb-4"></div>
+                            <div class="flex flex-col flex-1 gap-2">
+                                <div class="h-3 bg-gray-300 rounded w-1/3 mb-1"></div>
+                                <div class="h-5 bg-gray-300 rounded w-full"></div>
+                                <div class="h-5 bg-gray-300 rounded w-3/4 mb-2"></div>
+                                <div class="h-6 md:h-8 bg-gray-300 rounded w-1/2 mt-auto"></div>
+                            </div>
+                        </article>
+                    @endfor
+                </div>
+            </div>
+        @endif
     </section>
+    </div>
 </div>

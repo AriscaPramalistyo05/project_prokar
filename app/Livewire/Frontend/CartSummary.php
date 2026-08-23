@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Frontend;
 
+use App\Services\CartService;
 use Livewire\Component;
 
 class CartSummary extends Component
@@ -18,10 +19,10 @@ class CartSummary extends Component
 
     public function mount(): void
     {
-        // Initial demo values matching the default cart (2 items, qty 1+2, subtotal 1.594.000)
-        $this->subtotal = 1504000 + 45000 * 2;
-        $this->totalQty = 3;
-        $this->itemCount = 2;
+        $cartService = app(CartService::class);
+        $this->subtotal = $cartService->subtotal();
+        $this->totalQty = $cartService->totalQty();
+        $this->itemCount = $cartService->count();
     }
 
     public function updateFromCart(int $subtotal, int $totalQty, int $itemCount): void
@@ -38,13 +39,12 @@ class CartSummary extends Component
             $this->discountMessage = 'Masukkan kode diskon terlebih dahulu.';
             return;
         }
-        // Demo: any non-empty code just acknowledges
         $this->discountMessage = 'Kode "' . $code . '" akan divalidasi saat checkout.';
     }
 
     public function formatRupiah(int $n): string
     {
-        return 'Rp ' . number_format($n, 0, ',', '.') . ',00';
+        return 'Rp ' . number_format($n, 0, ',', '.');
     }
 
     public function render()

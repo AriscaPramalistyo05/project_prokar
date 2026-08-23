@@ -239,34 +239,7 @@
 
         <!-- ── Product Grid (Livewire) ── -->
         <livewire:frontend.product-grid />
-    <!-- ── Pagination ── -->
-    <nav aria-label="Navigasi halaman produk" class="pt-12">
-      <div class="flex justify-center items-center gap-1 md:gap-2 flex-wrap">
-        <button aria-label="Halaman sebelumnya" class="w-12 h-12 rounded-full border border-gray-300 flex items-center justify-center hover:border-black transition-colors bg-white hover:bg-black hover:text-white group">
-          <i class="fa-solid fa-arrow-left text-gray-500 group-hover:text-white transition-colors" aria-hidden="true"></i>
-        </button>
 
-        <a href="{{ route('produk.index') }}?page=1" aria-label="Halaman 1" aria-current="page" class="w-12 h-12 rounded-full bg-brand-yellow text-black font-bold font-public flex items-center justify-center shadow-[2px_2px_0px_#000]">
-          1
-        </a>
-        <a href="{{ route('produk.index') }}?page=2" aria-label="Halaman 2" class="w-12 h-12 rounded-full bg-white border border-gray-300 hover:border-black text-black font-bold font-public flex items-center justify-center transition-colors">
-          2
-        </a>
-        <a href="{{ route('produk.index') }}?page=3" aria-label="Halaman 3" class="w-12 h-12 rounded-full bg-white border border-gray-300 hover:border-black text-black font-bold font-public flex items-center justify-center transition-colors">
-          3
-        </a>
-        <span class="flex items-center justify-center px-2" aria-hidden="true">
-          <span class="text-black font-bold">...</span>
-        </span>
-        <a href="{{ route('produk.index') }}?page=10" aria-label="Halaman 10" class="w-12 h-12 rounded-full bg-white border border-gray-300 hover:border-black text-black font-bold font-public flex items-center justify-center transition-colors">
-          10
-        </a>
-
-        <button aria-label="Halaman berikutnya" class="w-12 h-12 rounded-full border border-gray-300 flex items-center justify-center hover:border-black transition-colors bg-white hover:bg-black hover:text-white group">
-          <i class="fa-solid fa-arrow-right text-gray-500 group-hover:text-white transition-colors" aria-hidden="true"></i>
-        </button>
-      </div>
-    </nav>
       </div>
     </section>
   </main>

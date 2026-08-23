@@ -483,7 +483,7 @@
   {{ $slot ?? '' }}
   @yield('content')
 
-  @if(!request()->routeIs('cart') && !request()->routeIs('checkout.address'))
+  @if(!request()->routeIs('keranjang.index') && !request()->routeIs('checkout.address'))
     <x-footer />
   @endif
 

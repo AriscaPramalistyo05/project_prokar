@@ -3,6 +3,7 @@
         '{{ $regency_id ?? '' }}',
         '{{ $district_id ?? '' }}',
         '{{ $village_id ?? '' }}',
+        '{{ $postal_code ?? '' }}',
         '{{ addslashes($address_detail ?? '') }}'
     )"
      x-init="init()"
@@ -73,9 +74,15 @@
         </div>
     </div>
 
-    <div>
-        <label class="{{ $labelClass }}">Detail Alamat (Jalan, RT/RW, Patokan) <span class="text-red-500">*</span></label>
-        <textarea x-model="address_detail" @input="syncToParent()" rows="3" class="{{ $inputClass }}" placeholder="Contoh: Jl. Diponegoro No.10, RT 01/RW 02, Samping Masjid"></textarea>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+        <div class="sm:col-span-1">
+            <label class="{{ $labelClass }}">Kode Pos <span class="text-red-500">*</span></label>
+            <input type="text" x-model="postal_code" @input.debounce.300ms="syncToParent()" class="{{ $inputClass }}" placeholder="Masukkan Kode Pos">
+        </div>
+        <div class="sm:col-span-2">
+            <label class="{{ $labelClass }}">Detail Alamat (Jalan, RT/RW, Patokan) <span class="text-red-500">*</span></label>
+            <textarea x-model="address_detail" @input.debounce.300ms="syncToParent()" rows="3" class="{{ $inputClass }}" placeholder="Contoh: Jl. Diponegoro No.10, RT 01/RW 02, Samping Masjid"></textarea>
+        </div>
     </div>
     
     <script>
@@ -85,12 +92,13 @@
             if (typeof window.addressPickerDataFn === 'undefined') {
                 window.addressPickerDataFn = true;
 
-                window.addressPickerData = function(initProvince, initRegency, initDistrict, initVillage, initDetail) {
+                window.addressPickerData = function(initProvince, initRegency, initDistrict, initVillage, initPostal, initDetail) {
                     return {
                         province: initProvince || '',
                         regency: initRegency || '',
                         district: initDistrict || '',
                         village: initVillage || '',
+                        postal_code: initPostal || '',
                         address_detail: initDetail || '',
 
                         provinces: [],
@@ -103,17 +111,29 @@
                             if (this.province) await this.fetchRegenciesLoad();
                             if (this.regency) await this.fetchDistrictsLoad();
                             if (this.district) await this.fetchVillagesLoad();
+                            if (this.province || this.regency || this.address_detail) {
+                                this.syncToParent();
+                            }
                         },
 
                         syncToParent() {
+                            const selProvince = Array.isArray(this.provinces) ? this.provinces.find(p => p.id == this.province) : null;
+                            const selRegency = Array.isArray(this.regencies) ? this.regencies.find(r => r.id == this.regency) : null;
+                            const selDistrict = Array.isArray(this.districts) ? this.districts.find(d => d.id == this.district) : null;
+
                             const payload = {
-                                province_id: this.province || '',
+                                city: selRegency ? selRegency.name : (this.regency || ''),
+                                regency_name: selRegency ? selRegency.name : '',
                                 regency_id: this.regency || '',
+                                province_id: this.province || '',
+                                province_name: selProvince ? selProvince.name : '',
                                 district_id: this.district || '',
+                                district_name: selDistrict ? selDistrict.name : '',
                                 village_id: this.village || '',
+                                postal_code: this.postal_code || '',
                                 address_detail: this.address_detail || '',
                             };
-                            // Dispatch globally so parent ServiceForm/SellForm can listen via #[On('address-updated')]
+                            // Dispatch globally so parent ServiceForm/SellForm/CheckoutSummary can listen via #[On('address-updated')]
                             if (typeof Livewire !== 'undefined') {
                                 Livewire.dispatch('address-updated', payload);
                             }

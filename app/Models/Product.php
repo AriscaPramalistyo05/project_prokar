@@ -24,11 +24,27 @@ class Product extends Model
         'price',
         'promo_price',
         'stock',
+        'weight',
+        'length',
+        'width',
+        'height',
         'status',
         'is_promo',
         'meta_title',
         'meta_description',
     ];
+
+    /**
+     * Returns the chargeable weight in grams.
+     * Uses only the actual physical weight stored in the database (in grams).
+     * Volumetric weight has been disabled because cargo couriers for electronics
+     * use physical weight only and the box dimensions are already accounted for
+     * in the cargo service minimums (min 10kg).
+     */
+    public function getChargeableWeightGram(): int
+    {
+        return (int) max(1000, $this->weight ?: 1000);
+    }
 
     protected function casts(): array
     {
@@ -77,5 +93,15 @@ class Product extends Model
     public function primaryImage()
     {
         return $this->hasOne(ProductImage::class)->where('is_primary', true);
+    }
+
+    public function getImageUrlAttribute(): string
+    {
+        $primary = $this->primaryImage ?? $this->productImages->where('is_primary', true)->first() ?? $this->productImages->first();
+        if ($primary) {
+            return $primary->url;
+        }
+
+        return 'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&q=80';
     }
 }

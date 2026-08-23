@@ -1,4 +1,50 @@
 <div>
+    @if(session('message'))
+        <div x-data="{ show: true }" 
+             x-show="show" 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 -translate-y-2"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0 -translate-y-2"
+             x-init="setTimeout(() => show = false, 6000)"
+             class="mb-6 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 text-emerald-900 rounded-2xl p-4 flex items-center justify-between shadow-xs">
+            <div class="flex items-center gap-3.5">
+                <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                    <i class="fa-solid fa-circle-check text-lg"></i>
+                </div>
+                <div>
+                    <h4 class="font-bold text-sm text-emerald-950">{{ session('success_title') ?? 'Berhasil!' }}</h4>
+                    <p class="text-xs text-emerald-800 font-medium mt-0.5">{{ session('message') }}</p>
+                </div>
+            </div>
+            <button @click="show = false" class="text-emerald-700 hover:text-emerald-950 p-1.5 rounded-lg hover:bg-emerald-100/60 transition-colors cursor-pointer" title="Tutup Notifikasi">
+                <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+        </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                if (typeof Swal !== 'undefined') {
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3500,
+                        timerProgressBar: true,
+                        customClass: {
+                            popup: 'rounded-xl shadow-lg border border-emerald-100 bg-white font-inter text-sm'
+                        }
+                    });
+                    Toast.fire({
+                        icon: 'success',
+                        title: "{{ session('message') }}"
+                    });
+                }
+            });
+        </script>
+    @endif
+
     <!-- Header Section -->
     <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
         <div>
@@ -33,7 +79,13 @@
         >
             @scope('cell_image', $product)
                 <div class="w-10 h-10 rounded border border-gray-200 overflow-hidden bg-gray-50">
-                    <img src="{{ $product->primaryImage?->path ?? 'https://via.placeholder.com/150x150?text=No+Photo' }}" alt="{{ $product->name }}" class="w-full h-full object-cover" />
+                    @if($product->primaryImage && $product->primaryImage->type === 'video')
+                        <video class="w-full h-full object-cover" muted>
+                            <source src="{{ $product->primaryImage->url }}" type="video/mp4">
+                        </video>
+                    @else
+                        <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=150&q=80'" />
+                    @endif
                 </div>
             @endscope
 
