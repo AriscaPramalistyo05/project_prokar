@@ -19,6 +19,13 @@ class User extends Authenticatable
         'password',
         'phone',
         'avatar',
+        'province_id',
+        'regency_id',
+        'district_id',
+        'village_id',
+        'address_detail',
+        'latitude',
+        'longitude',
         'fcm_token',
         'is_suspended',
     ];
@@ -45,8 +52,34 @@ class User extends Authenticatable
             ->dontSubmitEmptyLogs();
     }
 
+    public function getAvatarUrlAttribute(): string
+    {
+        if ($this->avatar && str_starts_with($this->avatar, 'http')) {
+            return $this->avatar;
+        }
+        if ($this->avatar && \Illuminate\Support\Facades\Storage::disk('public')->exists($this->avatar)) {
+            return asset('storage/' . $this->avatar);
+        }
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=0A0A0A&color=FFCC00&bold=true';
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'user_id');
+    }
+
     public function serviceOrders()
     {
+        return $this->hasMany(ServiceOrder::class, 'user_id');
+    }
+
+    public function assignedServiceOrders()
+    {
         return $this->hasMany(ServiceOrder::class, 'technician_id');
+    }
+
+    public function sellSubmissions()
+    {
+        return $this->hasMany(SellSubmission::class, 'user_id');
     }
 }

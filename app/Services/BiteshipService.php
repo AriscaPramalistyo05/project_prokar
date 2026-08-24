@@ -13,9 +13,9 @@ class BiteshipService
 
     public function __construct()
     {
-        $this->apiKey = env('BITESHIP_API_KEY', '');
+        $this->apiKey = (string) config('services.biteship.api_key', '');
         $this->baseUrl = 'https://api.biteship.com/v1';
-        $this->originPostalCode = env('BITESHIP_ORIGIN_POSTAL_CODE', '59411'); // Jepara
+        $this->originPostalCode = (string) config('services.biteship.origin_postal_code', '59411'); // Jepara
     }
 
     /**

@@ -119,13 +119,20 @@
                         <p class="text-xs text-gray-500">{{ $user->email }}</p>
                     </div>
                 </div>
-                <hr class="my-1">
-                <a href="{{ Route::has('profile.edit') ? route('profile.edit') : '#' }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profil Saya</a>
-                <a href="{{ Route::has('settings') ? route('settings') : '#' }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Pengaturan</a>
-                <hr class="my-1">
+                <hr class="my-1 border-gray-100">
+                <a href="{{ route('user.profile') }}" class="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-black">
+                    <i class="fa-regular fa-user mr-2 text-gray-400"></i> Profil Saya
+                </a>
+                <a href="{{ auth()->user()->hasRole('super_admin') ? route('admin.settings') : route('user.settings') }}" class="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-black">
+                    <i class="fa-solid fa-gear mr-2 text-gray-400"></i> Pengaturan
+                </a>
+                <hr class="my-1 border-gray-100">
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Logout</button>
+                    <button type="submit" class="w-full text-left px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 flex items-center gap-2 cursor-pointer">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        <span>Logout</span>
+                    </button>
                 </form>
             </div>
         </div>
@@ -255,13 +262,17 @@
             </div>
 
             @auth
-            <div class="mt-auto p-4 border-t border-gray-200 bg-gray-50">
-              <a href="{{ Route::has('profile.edit') ? route('profile.edit') : '#' }}" class="block py-2 text-sm font-medium text-gray-700">Profil Saya</a>
-              <a href="{{ Route::has('settings') ? route('settings') : '#' }}" class="block py-2 text-sm font-medium text-gray-700">Pengaturan</a>
-              <form method="POST" action="{{ route('logout') }}" class="mt-4">
+            <div class="mt-auto p-4 border-t border-gray-200 bg-gray-50 space-y-1">
+              <a href="{{ route('user.profile') }}" class="flex items-center gap-2 py-2 text-sm font-bold text-gray-800 hover:text-black">
+                <i class="fa-regular fa-user text-gray-400"></i> Profil Saya
+              </a>
+              <a href="{{ auth()->user()->hasRole('super_admin') ? route('admin.settings') : route('user.settings') }}" class="flex items-center gap-2 py-2 text-sm font-bold text-gray-800 hover:text-black">
+                <i class="fa-solid fa-gear text-gray-400"></i> Pengaturan
+              </a>
+              <form method="POST" action="{{ route('logout') }}" class="pt-2">
                   @csrf
-                  <button type="submit" class="w-full flex items-center justify-center gap-2 py-2.5 rounded bg-red-100 text-sm text-red-600 font-bold hover:bg-red-200 transition-colors">
-                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                  <button type="submit" class="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-100 text-sm text-red-600 font-bold hover:bg-red-200 transition-colors cursor-pointer">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
                   </button>
               </form>
             </div>

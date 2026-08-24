@@ -182,115 +182,313 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="mb-6">
                         <x-input label="Teks Badge Hero (Pill)" wire:model="hero_badge" placeholder="Bergaransi & Berkualitas" class="bg-gray-50 border-gray-200 focus:bg-white" />
-                        <x-input label="Nomor WhatsApp / Kontak CTA Hero" wire:model="hero_cta_number" placeholder="0895-0484-1279" icon="o-phone" class="bg-gray-50 border-gray-200 focus:bg-white" />
                     </div>
 
                     <div class="space-y-4 mb-6">
-                        <x-input label="Headline Utama" wire:model="hero_headline" class="bg-gray-50 border-gray-200 focus:bg-white" />
+                        {{-- Headline Multi-Color Segments --}}
+                        <div class="p-5 rounded-2xl bg-gray-50 border border-gray-200 space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-900 uppercase tracking-wider">Teks Headline & Warna (3 Bagian)</label>
+                                    <p class="text-xs text-gray-500 mt-0.5">Atur teks dan pilih warna per bagian (Hitam, Kuning, atau Biru).</p>
+                                </div>
+                                <span class="badge badge-sm badge-neutral">Multi-Color</span>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                {{-- Bagian 1 --}}
+                                <div class="p-3.5 bg-white rounded-xl border border-gray-200 space-y-2.5">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-xs font-bold text-gray-700">Bagian 1</span>
+                                        <span class="inline-block w-3 h-3 rounded-full {{ $hero_headline_color_1 === 'kuning' ? 'bg-[#FFCC00]' : ($hero_headline_color_1 === 'biru' ? 'bg-[#3B82F6]' : 'bg-black') }}"></span>
+                                    </div>
+                                    <x-input wire:model.live="hero_headline_1" placeholder="JUAL, BELI & SERVIS" class="bg-gray-50 text-xs" />
+                                    <div>
+                                        <label class="text-[11px] font-semibold text-gray-500 block mb-1">Pilihan Warna:</label>
+                                        <div class="flex gap-2">
+                                            <label class="flex items-center gap-1.5 text-xs cursor-pointer">
+                                                <input type="radio" wire:model.live="hero_headline_color_1" value="kuning" class="radio radio-xs radio-warning" />
+                                                <span class="font-medium text-amber-600">Kuning</span>
+                                            </label>
+                                            <label class="flex items-center gap-1.5 text-xs cursor-pointer">
+                                                <input type="radio" wire:model.live="hero_headline_color_1" value="hitam" class="radio radio-xs" />
+                                                <span class="font-medium text-gray-900">Hitam</span>
+                                            </label>
+                                            <label class="flex items-center gap-1.5 text-xs cursor-pointer">
+                                                <input type="radio" wire:model.live="hero_headline_color_1" value="biru" class="radio radio-xs radio-info" />
+                                                <span class="font-medium text-blue-600">Biru</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Bagian 2 --}}
+                                <div class="p-3.5 bg-white rounded-xl border border-gray-200 space-y-2.5">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-xs font-bold text-gray-700">Bagian 2</span>
+                                        <span class="inline-block w-3 h-3 rounded-full {{ $hero_headline_color_2 === 'kuning' ? 'bg-[#FFCC00]' : ($hero_headline_color_2 === 'biru' ? 'bg-[#3B82F6]' : 'bg-black') }}"></span>
+                                    </div>
+                                    <x-input wire:model.live="hero_headline_2" placeholder="ELEKTRONIK BEKAS" class="bg-gray-50 text-xs" />
+                                    <div>
+                                        <label class="text-[11px] font-semibold text-gray-500 block mb-1">Pilihan Warna:</label>
+                                        <div class="flex gap-2">
+                                            <label class="flex items-center gap-1.5 text-xs cursor-pointer">
+                                                <input type="radio" wire:model.live="hero_headline_color_2" value="hitam" class="radio radio-xs" />
+                                                <span class="font-medium text-gray-900">Hitam</span>
+                                            </label>
+                                            <label class="flex items-center gap-1.5 text-xs cursor-pointer">
+                                                <input type="radio" wire:model.live="hero_headline_color_2" value="kuning" class="radio radio-xs radio-warning" />
+                                                <span class="font-medium text-amber-600">Kuning</span>
+                                            </label>
+                                            <label class="flex items-center gap-1.5 text-xs cursor-pointer">
+                                                <input type="radio" wire:model.live="hero_headline_color_2" value="biru" class="radio radio-xs radio-info" />
+                                                <span class="font-medium text-blue-600">Biru</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Bagian 3 --}}
+                                <div class="p-3.5 bg-white rounded-xl border border-gray-200 space-y-2.5">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-xs font-bold text-gray-700">Bagian 3</span>
+                                        <span class="inline-block w-3 h-3 rounded-full {{ $hero_headline_color_3 === 'kuning' ? 'bg-[#FFCC00]' : ($hero_headline_color_3 === 'biru' ? 'bg-[#3B82F6]' : 'bg-black') }}"></span>
+                                    </div>
+                                    <x-input wire:model.live="hero_headline_3" placeholder="TERPERCAYA" class="bg-gray-50 text-xs" />
+                                    <div>
+                                        <label class="text-[11px] font-semibold text-gray-500 block mb-1">Pilihan Warna:</label>
+                                        <div class="flex gap-2">
+                                            <label class="flex items-center gap-1.5 text-xs cursor-pointer">
+                                                <input type="radio" wire:model.live="hero_headline_color_3" value="biru" class="radio radio-xs radio-info" />
+                                                <span class="font-medium text-blue-600">Biru</span>
+                                            </label>
+                                            <label class="flex items-center gap-1.5 text-xs cursor-pointer">
+                                                <input type="radio" wire:model.live="hero_headline_color_3" value="kuning" class="radio radio-xs radio-warning" />
+                                                <span class="font-medium text-amber-600">Kuning</span>
+                                            </label>
+                                            <label class="flex items-center gap-1.5 text-xs cursor-pointer">
+                                                <input type="radio" wire:model.live="hero_headline_color_3" value="hitam" class="radio radio-xs" />
+                                                <span class="font-medium text-gray-900">Hitam</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Live Preview Headline --}}
+                            <div class="mt-3 p-3.5 rounded-xl bg-white border border-gray-200 flex flex-col gap-1">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Live Preview Headline:</span>
+                                <div class="text-lg sm:text-xl font-black font-public leading-tight">
+                                    <span style="color: {{ $hero_headline_color_1 === 'kuning' ? '#FFCC00' : ($hero_headline_color_1 === 'biru' ? '#3B82F6' : '#000000') }};">{{ $hero_headline_1 }}</span>
+                                    <span style="color: {{ $hero_headline_color_2 === 'kuning' ? '#FFCC00' : ($hero_headline_color_2 === 'biru' ? '#3B82F6' : '#000000') }};">{{ $hero_headline_2 }}</span>
+                                    <span style="color: {{ $hero_headline_color_3 === 'kuning' ? '#FFCC00' : ($hero_headline_color_3 === 'biru' ? '#3B82F6' : '#000000') }};">{{ $hero_headline_3 }}</span>
+                                </div>
+                            </div>
+                        </div>
+
                         <x-textarea label="Sub-Headline (Deskripsi Penjelas)" wire:model="hero_subheadline" rows="2" class="bg-gray-50 border-gray-200 focus:bg-white" />
                     </div>
 
-                    {{-- 6 Hero Category Gallery Images --}}
-                    <div class="pt-4 border-t border-gray-100">
-                        <div class="mb-4">
-                            <h4 class="text-sm font-bold text-gray-900">6 Foto Galeri Kategori Hero (Parallax Collage)</h4>
-                            <p class="text-xs text-gray-500">Foto masing-masing kategori produk yang tampil diagonal melayang di hero section beranda.</p>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {{-- 1. Kulkas --}}
-                            <div class="p-4 rounded-xl bg-gray-50 border border-gray-200 space-y-2">
-                                <span class="font-bold text-xs text-gray-700 uppercase tracking-wider block">1. Kulkas</span>
-                                <x-file wire:model="hero_image_kulkas_file" accept="image/*" class="file-input-xs w-full" />
-                                <div class="mt-2 h-20 w-full rounded-lg overflow-hidden bg-white border border-gray-200 flex items-center justify-center">
-                                    @if ($hero_image_kulkas_file)
-                                        <img src="{{ $hero_image_kulkas_file->temporaryUrl() }}" alt="Kulkas" class="h-full w-full object-cover" />
-                                    @elseif ($existing_hero_image_kulkas)
-                                        <img src="{{ asset('storage/' . $existing_hero_image_kulkas) }}" alt="Kulkas" class="h-full w-full object-cover" />
-                                    @else
-                                        <img src="{{ asset('assets/images/kulkas0.png') }}" alt="Kulkas" class="h-full w-full object-cover opacity-60" />
-                                    @endif
+                    {{-- Pilihan Mode Hero Card (6 Card vs 3 Card) --}}
+                    <div class="pt-4 border-t border-gray-100 mb-6">
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-3">Pilihan Mode Tampilan Hero Banner</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {{-- Option 1: 6 Card --}}
+                            <div wire:click="$set('hero_card_mode', '6_card')" class="p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-start gap-3 {{ $hero_card_mode === '6_card' ? 'border-gray-900 bg-gray-50/80 shadow-xs' : 'border-gray-200 bg-white hover:border-gray-300' }}">
+                                <input type="radio" wire:model.live="hero_card_mode" value="6_card" class="mt-1 radio radio-sm radio-primary" />
+                                <div>
+                                    <span class="font-bold text-sm text-gray-900 block">Opsi 1: Mode 6 Card (Parallax Kategori)</span>
+                                    <p class="text-xs text-gray-500 mt-0.5 leading-relaxed">
+                                        Menampilkan 6 kartu kategori melayang diagonal (Kulkas, TV, Mesin Cuci, Dispenser, Microwave, AC).
+                                    </p>
                                 </div>
                             </div>
 
-                            {{-- 2. TV --}}
-                            <div class="p-4 rounded-xl bg-gray-50 border border-gray-200 space-y-2">
-                                <span class="font-bold text-xs text-gray-700 uppercase tracking-wider block">2. TV</span>
-                                <x-file wire:model="hero_image_tv_file" accept="image/*" class="file-input-xs w-full" />
-                                <div class="mt-2 h-20 w-full rounded-lg overflow-hidden bg-white border border-gray-200 flex items-center justify-center">
-                                    @if ($hero_image_tv_file)
-                                        <img src="{{ $hero_image_tv_file->temporaryUrl() }}" alt="TV" class="h-full w-full object-cover" />
-                                    @elseif ($existing_hero_image_tv)
-                                        <img src="{{ asset('storage/' . $existing_hero_image_tv) }}" alt="TV" class="h-full w-full object-cover" />
-                                    @else
-                                        <img src="{{ asset('assets/images/tv0.png') }}" alt="TV" class="h-full w-full object-cover opacity-60" />
-                                    @endif
-                                </div>
-                            </div>
-
-                            {{-- 3. Mesin Cuci --}}
-                            <div class="p-4 rounded-xl bg-gray-50 border border-gray-200 space-y-2">
-                                <span class="font-bold text-xs text-gray-700 uppercase tracking-wider block">3. Mesin Cuci</span>
-                                <x-file wire:model="hero_image_mesin_cuci_file" accept="image/*" class="file-input-xs w-full" />
-                                <div class="mt-2 h-20 w-full rounded-lg overflow-hidden bg-white border border-gray-200 flex items-center justify-center">
-                                    @if ($hero_image_mesin_cuci_file)
-                                        <img src="{{ $hero_image_mesin_cuci_file->temporaryUrl() }}" alt="Mesin Cuci" class="h-full w-full object-cover" />
-                                    @elseif ($existing_hero_image_mesin_cuci)
-                                        <img src="{{ asset('storage/' . $existing_hero_image_mesin_cuci) }}" alt="Mesin Cuci" class="h-full w-full object-cover" />
-                                    @else
-                                        <img src="{{ asset('assets/images/mesin-cuci0.png') }}" alt="Mesin Cuci" class="h-full w-full object-cover opacity-60" />
-                                    @endif
-                                </div>
-                            </div>
-
-                            {{-- 4. Dispenser --}}
-                            <div class="p-4 rounded-xl bg-gray-50 border border-gray-200 space-y-2">
-                                <span class="font-bold text-xs text-gray-700 uppercase tracking-wider block">4. Dispenser</span>
-                                <x-file wire:model="hero_image_dispenser_file" accept="image/*" class="file-input-xs w-full" />
-                                <div class="mt-2 h-20 w-full rounded-lg overflow-hidden bg-white border border-gray-200 flex items-center justify-center">
-                                    @if ($hero_image_dispenser_file)
-                                        <img src="{{ $hero_image_dispenser_file->temporaryUrl() }}" alt="Dispenser" class="h-full w-full object-cover" />
-                                    @elseif ($existing_hero_image_dispenser)
-                                        <img src="{{ asset('storage/' . $existing_hero_image_dispenser) }}" alt="Dispenser" class="h-full w-full object-cover" />
-                                    @else
-                                        <img src="{{ asset('assets/images/dispenser0.png') }}" alt="Dispenser" class="h-full w-full object-cover opacity-60" />
-                                    @endif
-                                </div>
-                            </div>
-
-                            {{-- 5. Microwave --}}
-                            <div class="p-4 rounded-xl bg-gray-50 border border-gray-200 space-y-2">
-                                <span class="font-bold text-xs text-gray-700 uppercase tracking-wider block">5. Microwave</span>
-                                <x-file wire:model="hero_image_microwave_file" accept="image/*" class="file-input-xs w-full" />
-                                <div class="mt-2 h-20 w-full rounded-lg overflow-hidden bg-white border border-gray-200 flex items-center justify-center">
-                                    @if ($hero_image_microwave_file)
-                                        <img src="{{ $hero_image_microwave_file->temporaryUrl() }}" alt="Microwave" class="h-full w-full object-cover" />
-                                    @elseif ($existing_hero_image_microwave)
-                                        <img src="{{ asset('storage/' . $existing_hero_image_microwave) }}" alt="Microwave" class="h-full w-full object-cover" />
-                                    @else
-                                        <img src="{{ asset('assets/images/microwave0.png') }}" alt="Microwave" class="h-full w-full object-cover opacity-60" />
-                                    @endif
-                                </div>
-                            </div>
-
-                            {{-- 6. AC --}}
-                            <div class="p-4 rounded-xl bg-gray-50 border border-gray-200 space-y-2">
-                                <span class="font-bold text-xs text-gray-700 uppercase tracking-wider block">6. AC</span>
-                                <x-file wire:model="hero_image_ac_file" accept="image/*" class="file-input-xs w-full" />
-                                <div class="mt-2 h-20 w-full rounded-lg overflow-hidden bg-white border border-gray-200 flex items-center justify-center">
-                                    @if ($hero_image_ac_file)
-                                        <img src="{{ $hero_image_ac_file->temporaryUrl() }}" alt="AC" class="h-full w-full object-cover" />
-                                    @elseif ($existing_hero_image_ac)
-                                        <img src="{{ asset('storage/' . $existing_hero_image_ac) }}" alt="AC" class="h-full w-full object-cover" />
-                                    @else
-                                        <img src="{{ asset('assets/images/ac0.png') }}" alt="AC" class="h-full w-full object-cover opacity-60" />
-                                    @endif
+                            {{-- Option 2: 3 Card --}}
+                            <div wire:click="$set('hero_card_mode', '3_card')" class="p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-start gap-3 {{ $hero_card_mode === '3_card' ? 'border-gray-900 bg-gray-50/80 shadow-xs' : 'border-gray-200 bg-white hover:border-gray-300' }}">
+                                <input type="radio" wire:model.live="hero_card_mode" value="3_card" class="mt-1 radio radio-sm radio-primary" />
+                                <div>
+                                    <span class="font-bold text-sm text-gray-900 block">Opsi 2: Mode 3 Card (Asymmetric Grid)</span>
+                                    <p class="text-xs text-gray-500 mt-0.5 leading-relaxed">
+                                        Menampilkan kolase 3 kartu modern: 2 kartu di kiri (atas &amp; bawah) dan 1 kartu potret tinggi di kanan.
+                                    </p>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    {{-- MODE 1: 6 HERO CATEGORY GALLERY IMAGES --}}
+                    @if ($hero_card_mode === '6_card')
+                        <div class="pt-2 animate-in fade-in">
+                            <div class="mb-4">
+                                <h4 class="text-sm font-bold text-gray-900">Upload 6 Foto Galeri Kategori (Mode 6 Card)</h4>
+                                <p class="text-xs text-gray-500">Foto masing-masing kategori produk yang tampil diagonal melayang di hero section beranda.</p>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {{-- 1. Kulkas --}}
+                                <div class="p-4 rounded-xl bg-gray-50 border border-gray-200 space-y-2">
+                                    <span class="font-bold text-xs text-gray-700 uppercase tracking-wider block">1. Kulkas</span>
+                                    <x-file wire:model="hero_image_kulkas_file" accept="image/*" class="file-input-xs w-full" />
+                                    <div class="mt-2 h-20 w-full rounded-lg overflow-hidden bg-white border border-gray-200 flex items-center justify-center">
+                                        @if ($hero_image_kulkas_file)
+                                            <img src="{{ $hero_image_kulkas_file->temporaryUrl() }}" alt="Kulkas" class="h-full w-full object-cover" />
+                                        @elseif ($existing_hero_image_kulkas)
+                                            <img src="{{ asset('storage/' . $existing_hero_image_kulkas) }}" alt="Kulkas" class="h-full w-full object-cover" />
+                                        @else
+                                            <img src="https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&h=400&fit=crop" alt="Kulkas" class="h-full w-full object-cover opacity-60" />
+                                        @endif
+                                    </div>
+                                </div>
+
+                                {{-- 2. TV --}}
+                                <div class="p-4 rounded-xl bg-gray-50 border border-gray-200 space-y-2">
+                                    <span class="font-bold text-xs text-gray-700 uppercase tracking-wider block">2. TV</span>
+                                    <x-file wire:model="hero_image_tv_file" accept="image/*" class="file-input-xs w-full" />
+                                    <div class="mt-2 h-20 w-full rounded-lg overflow-hidden bg-white border border-gray-200 flex items-center justify-center">
+                                        @if ($hero_image_tv_file)
+                                            <img src="{{ $hero_image_tv_file->temporaryUrl() }}" alt="TV" class="h-full w-full object-cover" />
+                                        @elseif ($existing_hero_image_tv)
+                                            <img src="{{ asset('storage/' . $existing_hero_image_tv) }}" alt="TV" class="h-full w-full object-cover" />
+                                        @else
+                                            <img src="https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&h=400&fit=crop" alt="TV" class="h-full w-full object-cover opacity-60" />
+                                        @endif
+                                    </div>
+                                </div>
+
+                                {{-- 3. Mesin Cuci --}}
+                                <div class="p-4 rounded-xl bg-gray-50 border border-gray-200 space-y-2">
+                                    <span class="font-bold text-xs text-gray-700 uppercase tracking-wider block">3. Mesin Cuci</span>
+                                    <x-file wire:model="hero_image_mesin_cuci_file" accept="image/*" class="file-input-xs w-full" />
+                                    <div class="mt-2 h-20 w-full rounded-lg overflow-hidden bg-white border border-gray-200 flex items-center justify-center">
+                                        @if ($hero_image_mesin_cuci_file)
+                                            <img src="{{ $hero_image_mesin_cuci_file->temporaryUrl() }}" alt="Mesin Cuci" class="h-full w-full object-cover" />
+                                        @elseif ($existing_hero_image_mesin_cuci)
+                                            <img src="{{ asset('storage/' . $existing_hero_image_mesin_cuci) }}" alt="Mesin Cuci" class="h-full w-full object-cover" />
+                                        @else
+                                            <img src="https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=400&h=400&fit=crop" alt="Mesin Cuci" class="h-full w-full object-cover opacity-60" />
+                                        @endif
+                                    </div>
+                                </div>
+
+                                {{-- 4. Dispenser --}}
+                                <div class="p-4 rounded-xl bg-gray-50 border border-gray-200 space-y-2">
+                                    <span class="font-bold text-xs text-gray-700 uppercase tracking-wider block">4. Dispenser</span>
+                                    <x-file wire:model="hero_image_dispenser_file" accept="image/*" class="file-input-xs w-full" />
+                                    <div class="mt-2 h-20 w-full rounded-lg overflow-hidden bg-white border border-gray-200 flex items-center justify-center">
+                                        @if ($hero_image_dispenser_file)
+                                            <img src="{{ $hero_image_dispenser_file->temporaryUrl() }}" alt="Dispenser" class="h-full w-full object-cover" />
+                                        @elseif ($existing_hero_image_dispenser)
+                                            <img src="{{ asset('storage/' . $existing_hero_image_dispenser) }}" alt="Dispenser" class="h-full w-full object-cover" />
+                                        @else
+                                            <img src="https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400&h=400&fit=crop" alt="Dispenser" class="h-full w-full object-cover opacity-60" />
+                                        @endif
+                                    </div>
+                                </div>
+
+                                {{-- 5. Microwave --}}
+                                <div class="p-4 rounded-xl bg-gray-50 border border-gray-200 space-y-2">
+                                    <span class="font-bold text-xs text-gray-700 uppercase tracking-wider block">5. Microwave</span>
+                                    <x-file wire:model="hero_image_microwave_file" accept="image/*" class="file-input-xs w-full" />
+                                    <div class="mt-2 h-20 w-full rounded-lg overflow-hidden bg-white border border-gray-200 flex items-center justify-center">
+                                        @if ($hero_image_microwave_file)
+                                            <img src="{{ $hero_image_microwave_file->temporaryUrl() }}" alt="Microwave" class="h-full w-full object-cover" />
+                                        @elseif ($existing_hero_image_microwave)
+                                            <img src="{{ asset('storage/' . $existing_hero_image_microwave) }}" alt="Microwave" class="h-full w-full object-cover" />
+                                        @else
+                                            <img src="https://images.unsplash.com/photo-1585659722983-3a675dabf23d?w=400&h=400&fit=crop" alt="Microwave" class="h-full w-full object-cover opacity-60" />
+                                        @endif
+                                    </div>
+                                </div>
+
+                                {{-- 6. AC --}}
+                                <div class="p-4 rounded-xl bg-gray-50 border border-gray-200 space-y-2">
+                                    <span class="font-bold text-xs text-gray-700 uppercase tracking-wider block">6. AC</span>
+                                    <x-file wire:model="hero_image_ac_file" accept="image/*" class="file-input-xs w-full" />
+                                    <div class="mt-2 h-20 w-full rounded-lg overflow-hidden bg-white border border-gray-200 flex items-center justify-center">
+                                        @if ($hero_image_ac_file)
+                                            <img src="{{ $hero_image_ac_file->temporaryUrl() }}" alt="AC" class="h-full w-full object-cover" />
+                                        @elseif ($existing_hero_image_ac)
+                                            <img src="{{ asset('storage/' . $existing_hero_image_ac) }}" alt="AC" class="h-full w-full object-cover" />
+                                        @else
+                                            <img src="https://images.unsplash.com/photo-1631545806609-947f38b3f6ea?w=400&h=400&fit=crop" alt="AC" class="h-full w-full object-cover opacity-60" />
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
+                    {{-- MODE 2: 3 HERO COLLAGE CARDS --}}
+                    @if ($hero_card_mode === '3_card')
+                        <div class="pt-2 animate-in fade-in">
+                            <div class="mb-4">
+                                <h4 class="text-sm font-bold text-gray-900">Upload 3 Foto Hero Banner (Mode 3 Card Asymmetric)</h4>
+                                <p class="text-xs text-gray-500">2 kartu di sebelah kiri (atas &amp; bawah) dan 1 kartu potret tinggi di sebelah kanan.</p>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                                {{-- Card 1 (Kiri Atas) --}}
+                                <div class="p-4 rounded-2xl bg-gray-50 border border-gray-200 space-y-3">
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-bold text-xs text-gray-900 uppercase tracking-wider">Card 1 (Kiri Atas)</span>
+                                        <span class="badge badge-sm badge-neutral">Landscape</span>
+                                    </div>
+                                    <x-input label="Judul / Label Kartu" wire:model="hero_3card_title_1" placeholder="Mesin Cuci" class="bg-white text-xs" />
+                                    <x-file label="Foto Kartu" wire:model="hero_3card_image_1_file" accept="image/*" class="file-input-xs w-full" />
+                                    <div class="h-28 w-full rounded-xl overflow-hidden bg-white border border-gray-200 flex items-center justify-center">
+                                        @if ($hero_3card_image_1_file)
+                                            <img src="{{ $hero_3card_image_1_file->temporaryUrl() }}" alt="Card 1" class="h-full w-full object-cover" />
+                                        @elseif ($existing_hero_3card_image_1)
+                                            <img src="{{ asset('storage/' . $existing_hero_3card_image_1) }}" alt="Card 1" class="h-full w-full object-cover" />
+                                        @else
+                                            <img src="https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=600&h=450&fit=crop" alt="Mesin Cuci" class="h-full w-full object-cover" />
+                                        @endif
+                                    </div>
+                                </div>
+
+                                {{-- Card 2 (Kiri Bawah) --}}
+                                <div class="p-4 rounded-2xl bg-gray-50 border border-gray-200 space-y-3">
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-bold text-xs text-gray-900 uppercase tracking-wider">Card 2 (Kiri Bawah)</span>
+                                        <span class="badge badge-sm badge-neutral">Landscape</span>
+                                    </div>
+                                    <x-input label="Judul / Label Kartu" wire:model="hero_3card_title_2" placeholder="Televisi" class="bg-white text-xs" />
+                                    <x-file label="Foto Kartu" wire:model="hero_3card_image_2_file" accept="image/*" class="file-input-xs w-full" />
+                                    <div class="h-28 w-full rounded-xl overflow-hidden bg-white border border-gray-200 flex items-center justify-center">
+                                        @if ($hero_3card_image_2_file)
+                                            <img src="{{ $hero_3card_image_2_file->temporaryUrl() }}" alt="Card 2" class="h-full w-full object-cover" />
+                                        @elseif ($existing_hero_3card_image_2)
+                                            <img src="{{ asset('storage/' . $existing_hero_3card_image_2) }}" alt="Card 2" class="h-full w-full object-cover" />
+                                        @else
+                                            <img src="https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=600&h=450&fit=crop" alt="Televisi" class="h-full w-full object-cover" />
+                                        @endif
+                                    </div>
+                                </div>
+
+                                {{-- Card 3 (Kanan Tinggi) --}}
+                                <div class="p-4 rounded-2xl bg-gray-50 border border-gray-200 space-y-3">
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-bold text-xs text-gray-900 uppercase tracking-wider">Card 3 (Kanan Tinggi)</span>
+                                        <span class="badge badge-sm badge-primary">Portrait</span>
+                                    </div>
+                                    <x-input label="Judul / Label Kartu" wire:model="hero_3card_title_3" placeholder="Kulkas" class="bg-white text-xs" />
+                                    <x-file label="Foto Kartu" wire:model="hero_3card_image_3_file" accept="image/*" class="file-input-xs w-full" />
+                                    <div class="h-28 w-full rounded-xl overflow-hidden bg-white border border-gray-200 flex items-center justify-center">
+                                        @if ($hero_3card_image_3_file)
+                                            <img src="{{ $hero_3card_image_3_file->temporaryUrl() }}" alt="Card 3" class="h-full w-full object-cover" />
+                                        @elseif ($existing_hero_3card_image_3)
+                                            <img src="{{ asset('storage/' . $existing_hero_3card_image_3) }}" alt="Card 3" class="h-full w-full object-cover" />
+                                        @else
+                                            <img src="https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=600&h=800&fit=crop" alt="Kulkas" class="h-full w-full object-cover" />
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                 </div>
 
                 {{-- 2. Marquee & Partners --}}

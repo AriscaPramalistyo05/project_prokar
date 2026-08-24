@@ -71,7 +71,7 @@ class ProductIndex extends Component
             ['key' => 'status', 'label' => 'Status'],
         ];
 
-        $products = Product::with(['category', 'primaryImage'])
+        $products = Product::with(['category', 'primaryImage', 'productImages'])
             ->when($this->search, function ($q) {
                 $q->where(function ($sub) {
                     $sub->where('name', 'like', '%' . $this->search . '%')

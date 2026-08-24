@@ -42,23 +42,35 @@ class Dashboard extends Component
         $revenueData = [];
         $orderCountData = [];
 
+        $startDate = Carbon::today()->subDays($this->chartPeriod - 1)->startOfDay();
+
+        // Single aggregate query for daily revenues
+        $dailyRevenues = Order::where('payment_status', 'paid')
+            ->where(function ($q) use ($startDate) {
+                $q->where('paid_at', '>=', $startDate)
+                  ->orWhere(function ($sub) use ($startDate) {
+                      $sub->whereNull('paid_at')->where('created_at', '>=', $startDate);
+                  });
+            })
+            ->selectRaw('DATE(COALESCE(paid_at, created_at)) as date_key, SUM(total) as total_revenue')
+            ->groupBy('date_key')
+            ->pluck('total_revenue', 'date_key')
+            ->toArray();
+
+        // Single aggregate query for daily orders
+        $dailyOrders = Order::where('created_at', '>=', $startDate)
+            ->selectRaw('DATE(created_at) as date_key, COUNT(*) as total_orders')
+            ->groupBy('date_key')
+            ->pluck('total_orders', 'date_key')
+            ->toArray();
+
         for ($i = $this->chartPeriod - 1; $i >= 0; $i--) {
             $date = Carbon::today()->subDays($i);
+            $key = $date->toDateString();
             $labels[] = $this->chartPeriod > 14 ? $date->format('d/m') : $date->translatedFormat('d M');
 
-            $dailyRevenue = (float) Order::where('payment_status', 'paid')
-                ->where(function ($q) use ($date) {
-                    $q->whereDate('paid_at', $date)
-                      ->orWhere(function ($sub) use ($date) {
-                          $sub->whereNull('paid_at')->whereDate('created_at', $date);
-                      });
-                })
-                ->sum('total');
-
-            $dailyOrders = Order::whereDate('created_at', $date)->count();
-
-            $revenueData[] = $dailyRevenue;
-            $orderCountData[] = $dailyOrders;
+            $revenueData[] = (float) ($dailyRevenues[$key] ?? 0);
+            $orderCountData[] = (int) ($dailyOrders[$key] ?? 0);
         }
 
         $this->revenueChartData = [

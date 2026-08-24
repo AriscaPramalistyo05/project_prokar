@@ -22,8 +22,35 @@
             <span class="text-gray-800 text-base font-bold font-public tracking-wide">{{ setting('hero_badge') ?? 'Bergaransi & Berkualitas' }}</span>
           </div>
 
+          @php
+            $colorMap = [
+              'hitam'  => ['class' => 'text-black', 'style' => 'color: #000000;'],
+              'kuning' => ['class' => 'text-brand-yellow', 'style' => 'color: #FFCC00;'],
+              'biru'   => ['class' => 'text-brand-blue', 'style' => 'color: #3B82F6;'],
+            ];
+
+            $h1 = setting('hero_headline_1') ?? 'JUAL, BELI & SERVIS';
+            $c1 = setting('hero_headline_color_1') ?? 'kuning';
+            $h2 = setting('hero_headline_2') ?? 'ELEKTRONIK BEKAS';
+            $c2 = setting('hero_headline_color_2') ?? 'hitam';
+            $h3 = setting('hero_headline_3') ?? 'TERPERCAYA';
+            $c3 = setting('hero_headline_color_3') ?? 'biru';
+          @endphp
+
           <h1 class="font-public font-black text-[13vw] sm:text-6xl md:text-7xl lg:text-6xl xl:text-7xl leading-[0.95] text-black mb-6">
-            <span class="reveal-wrapper block"><span class="block reveal-line">{{ setting('hero_headline') ?? 'JUAL, BELI & SERVIS ELEKTRONIK BEKAS TERPERCAYA' }}</span></span>
+            <span class="reveal-wrapper block">
+              <span class="block reveal-line">
+                @if($h1)
+                  <span class="{{ $colorMap[$c1]['class'] ?? 'text-brand-yellow' }}" style="{{ $colorMap[$c1]['style'] ?? 'color: #FFCC00;' }}">{{ $h1 }}</span>
+                @endif
+                @if($h2)
+                  <span class="{{ $colorMap[$c2]['class'] ?? 'text-black' }}" style="{{ $colorMap[$c2]['style'] ?? 'color: #000000;' }}">{{ $h2 }}</span>
+                @endif
+                @if($h3)
+                  <span class="{{ $colorMap[$c3]['class'] ?? 'text-brand-blue' }}" style="{{ $colorMap[$c3]['style'] ?? 'color: #3B82F6;' }}">{{ $h3 }}</span>
+                @endif
+              </span>
+            </span>
           </h1>
 
           <p class="hero-desc-text reveal-fade text-gray-700 text-lg md:text-xl lg:text-xl font-medium max-w-xl mx-auto lg:mx-0 mb-10">
@@ -34,74 +61,146 @@
             <a href="{{ route('produk.index') }}" class="btn-hover inline-flex items-center gap-3 bg-black text-white text-lg md:text-xl font-bold px-10 py-5 rounded-full font-public tracking-wide">
               Lihat Produk <i class="fa-solid fa-arrow-right"></i>
             </a>
-            @php
-              $heroCta = setting('hero_cta_number') ?? setting('shop_whatsapp') ?? '0895-0484-1279';
-              $heroCtaClean = preg_replace('/[^0-9]/', '', $heroCta);
-              if (str_starts_with($heroCtaClean, '0')) {
-                $heroCtaClean = '62' . substr($heroCtaClean, 1);
-              }
-            @endphp
-            <a href="https://wa.me/{{ $heroCtaClean }}" target="_blank" class="btn-hover inline-flex items-center gap-3 bg-brand-yellow text-black text-lg md:text-xl font-bold px-8 py-5 rounded-full font-public tracking-wide">
-              <i class="fa-brands fa-whatsapp text-2xl"></i> Hubungi CS
+          </div>
+        </div>
+
+        @php
+          $heroCardMode = setting('hero_card_mode') ?? '6_card';
+          $hero3CardImg1 = setting('hero_3card_image_1') ? asset('storage/' . setting('hero_3card_image_1')) : (setting('hero_image_mesin_cuci') ? asset('storage/' . setting('hero_image_mesin_cuci')) : 'https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=600&h=450&fit=crop');
+          $hero3CardImg2 = setting('hero_3card_image_2') ? asset('storage/' . setting('hero_3card_image_2')) : (setting('hero_image_tv') ? asset('storage/' . setting('hero_image_tv')) : 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=600&h=450&fit=crop');
+          $hero3CardImg3 = setting('hero_3card_image_3') ? asset('storage/' . setting('hero_3card_image_3')) : (setting('hero_image_kulkas') ? asset('storage/' . setting('hero_image_kulkas')) : 'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=600&h=800&fit=crop');
+          $hero3CardTitle1 = setting('hero_3card_title_1') ?? 'Mesin Cuci';
+          $hero3CardTitle2 = setting('hero_3card_title_2') ?? 'Televisi';
+          $hero3CardTitle3 = setting('hero_3card_title_3') ?? 'Kulkas';
+        @endphp
+
+        @if($heroCardMode === '3_card')
+          <!-- RIGHT: 3-Card Parallax Straight Grid (Desktop) -->
+          <div class="hidden lg:block relative w-full max-w-[500px] xl:max-w-[540px] ml-auto h-[500px] xl:h-[540px] stagger-group">
+            <div class="flex items-center justify-center gap-5 xl:gap-6 h-full">
+
+              <!-- Kolom Kiri: 2 Card Kecil (Mesin Cuci & TV) - Ketika discroll NAIK (data-speed="-40") -->
+              <div class="hero-parallax-col flex flex-col gap-5 w-[230px] xl:w-[250px] h-full justify-between" data-speed="-40">
+                <!-- Card 1: Kiri Atas (Mesin Cuci) -->
+                <a href="{{ route('produk.index') }}?kategori=mesin-cuci" class="hero-3card-card stagger-item h-[235px] xl:h-[255px] group block">
+                  <img src="{{ $hero3CardImg1 }}" alt="{{ $hero3CardTitle1 }}" onerror="this.src='https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=600&h=450&fit=crop'">
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-50 group-hover:opacity-75 transition-opacity pointer-events-none"></div>
+                  @if($hero3CardTitle1)
+                    <span class="hero-3card-label">{{ $hero3CardTitle1 }}</span>
+                  @endif
+                </a>
+
+                <!-- Card 2: Kiri Bawah (Televisi) -->
+                <a href="{{ route('produk.index') }}?kategori=tv" class="hero-3card-card stagger-item h-[235px] xl:h-[255px] group block">
+                  <img src="{{ $hero3CardImg2 }}" alt="{{ $hero3CardTitle2 }}" onerror="this.src='https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=600&h=450&fit=crop'">
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-50 group-hover:opacity-75 transition-opacity pointer-events-none"></div>
+                  @if($hero3CardTitle2)
+                    <span class="hero-3card-label">{{ $hero3CardTitle2 }}</span>
+                  @endif
+                </a>
+              </div>
+
+              <!-- Kolom Kanan: 1 Card Panjang (Kulkas) - Ketika discroll TURUN (data-speed="45") -->
+              <div class="hero-parallax-col flex flex-col gap-5 w-[230px] xl:w-[250px] h-full justify-center" data-speed="45">
+                <!-- Card 3: Kanan Tinggi (Kulkas) -->
+                <a href="{{ route('produk.index') }}?kategori=kulkas" class="hero-3card-card stagger-item h-[490px] xl:h-[530px] group block">
+                  <img src="{{ $hero3CardImg3 }}" alt="{{ $hero3CardTitle3 }}" onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=600&h=800&fit=crop'">
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-50 group-hover:opacity-75 transition-opacity pointer-events-none"></div>
+                  @if($hero3CardTitle3)
+                    <span class="hero-3card-label">{{ $hero3CardTitle3 }}</span>
+                  @endif
+                </a>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Mobile 3-Card Vertical Stack (Sesuai Screenshot Mobile) -->
+          <div class="lg:hidden stagger-group w-full max-w-sm sm:max-w-md mx-auto space-y-4 pt-2">
+            <!-- Card 1: Mesin Cuci -->
+            <a href="{{ route('produk.index') }}?kategori=mesin-cuci" class="hero-3card-card h-[200px] sm:h-[240px] block stagger-item group">
+              <img src="{{ $hero3CardImg1 }}" alt="{{ $hero3CardTitle1 }}" onerror="this.src='https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=600&h=450&fit=crop'">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-50 group-hover:opacity-75 transition-opacity pointer-events-none"></div>
+              @if($hero3CardTitle1)
+                <span class="hero-3card-label">{{ $hero3CardTitle1 }}</span>
+              @endif
+            </a>
+
+            <!-- Card 2: Televisi -->
+            <a href="{{ route('produk.index') }}?kategori=tv" class="hero-3card-card h-[200px] sm:h-[240px] block stagger-item group">
+              <img src="{{ $hero3CardImg2 }}" alt="{{ $hero3CardTitle2 }}" onerror="this.src='https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=600&h=450&fit=crop'">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-50 group-hover:opacity-75 transition-opacity pointer-events-none"></div>
+              @if($hero3CardTitle2)
+                <span class="hero-3card-label">{{ $hero3CardTitle2 }}</span>
+              @endif
+            </a>
+
+            <!-- Card 3: Kulkas (Potret Panjang) -->
+            <a href="{{ route('produk.index') }}?kategori=kulkas" class="hero-3card-card h-[360px] sm:h-[420px] block stagger-item group">
+              <img src="{{ $hero3CardImg3 }}" alt="{{ $hero3CardTitle3 }}" onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=600&h=800&fit=crop'">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-50 group-hover:opacity-75 transition-opacity pointer-events-none"></div>
+              @if($hero3CardTitle3)
+                <span class="hero-3card-label">{{ $hero3CardTitle3 }}</span>
+              @endif
             </a>
           </div>
-        </div>
+        @else
+          <!-- RIGHT: 6-Card Diagonal Parallax Gallery (desktop) -->
+          <div class="hero-visual hidden lg:block relative h-[520px] xl:h-[560px] overflow-hidden stagger-group">
+            <div class="hero-visual-grid absolute inset-0 flex items-center justify-center gap-5">
 
-        <!-- RIGHT: Diagonal Parallax Gallery (desktop) -->
-        <div class="hero-visual hidden lg:block relative h-[520px] xl:h-[560px] overflow-hidden stagger-group">
-          <div class="hero-visual-grid absolute inset-0 flex items-center justify-center gap-5">
+              <!-- Kolom 1 -->
+              <div class="hero-parallax-col flex flex-col gap-5" data-speed="-70">
+                <a href="{{ route('produk.index') }}?kategori=kulkas" class="hero-tile stagger-item w-[150px] xl:w-[170px] h-[180px] xl:h-[200px]">
+                  <img src="{{ setting('hero_image_kulkas') ? asset('storage/' . setting('hero_image_kulkas')) : asset('assets/images/kulkas0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&h=400&fit=crop'" alt="Kulkas">
+                  <span class="hero-tile-label">Kulkas</span>
+                </a>
+                <a href="{{ route('produk.index') }}?kategori=dispenser" class="hero-tile stagger-item w-[150px] xl:w-[170px] h-[180px] xl:h-[200px]">
+                  <img src="{{ setting('hero_image_dispenser') ? asset('storage/' . setting('hero_image_dispenser')) : asset('assets/images/dispenser0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400&h=400&fit=crop'" alt="Dispenser">
+                  <span class="hero-tile-label">Dispenser</span>
+                </a>
+              </div>
 
-            <!-- Kolom 1 -->
-            <div class="hero-parallax-col flex flex-col gap-5" data-speed="-70">
-              <a href="{{ route('produk.index') }}?kategori=kulkas" class="hero-tile stagger-item w-[150px] xl:w-[170px] h-[180px] xl:h-[200px]">
-                <img src="{{ setting('hero_image_kulkas') ? asset('storage/' . setting('hero_image_kulkas')) : asset('assets/images/kulkas0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&h=400&fit=crop'" alt="Kulkas">
-                <span class="hero-tile-label">Kulkas</span>
-              </a>
-              <a href="{{ route('produk.index') }}?kategori=dispenser" class="hero-tile stagger-item w-[150px] xl:w-[170px] h-[180px] xl:h-[200px]">
-                <img src="{{ setting('hero_image_dispenser') ? asset('storage/' . setting('hero_image_dispenser')) : asset('assets/images/dispenser0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400&h=400&fit=crop'" alt="Dispenser">
-                <span class="hero-tile-label">Dispenser</span>
-              </a>
+              <!-- Kolom 2 -->
+              <div class="hero-parallax-col flex flex-col gap-5 mt-16" data-speed="90">
+                <a href="{{ route('produk.index') }}?kategori=tv" class="hero-tile stagger-item w-[150px] xl:w-[170px] h-[180px] xl:h-[200px]">
+                  <img src="{{ setting('hero_image_tv') ? asset('storage/' . setting('hero_image_tv')) : asset('assets/images/tv0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&h=400&fit=crop'" alt="TV">
+                  <span class="hero-tile-label">TV</span>
+                </a>
+                <a href="{{ route('produk.index') }}?kategori=microwave" class="hero-tile stagger-item w-[150px] xl:w-[170px] h-[180px] xl:h-[200px]">
+                  <img src="{{ setting('hero_image_microwave') ? asset('storage/' . setting('hero_image_microwave')) : asset('assets/images/microwave0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1585659722983-3a675dabf23d?w=400&h=400&fit=crop'" alt="Microwave">
+                  <span class="hero-tile-label">Microwave</span>
+                </a>
+              </div>
+
+              <!-- Kolom 3 -->
+              <div class="hero-parallax-col flex flex-col gap-5" data-speed="-50">
+                <a href="{{ route('produk.index') }}?kategori=mesin-cuci" class="hero-tile stagger-item w-[150px] xl:w-[170px] h-[180px] xl:h-[200px]">
+                  <img src="{{ setting('hero_image_mesin_cuci') ? asset('storage/' . setting('hero_image_mesin_cuci')) : asset('assets/images/mesin-cuci0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=400&h=400&fit=crop'" alt="Mesin Cuci">
+                  <span class="hero-tile-label">Mesin Cuci</span>
+                </a>
+                <a href="{{ route('produk.index') }}?kategori=ac" class="hero-tile stagger-item w-[150px] xl:w-[170px] h-[180px] xl:h-[200px]">
+                  <img src="{{ setting('hero_image_ac') ? asset('storage/' . setting('hero_image_ac')) : asset('assets/images/ac0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1631545806609-947f38b3f6ea?w=400&h=400&fit=crop'" alt="AC">
+                  <span class="hero-tile-label">AC</span>
+                </a>
+              </div>
+
             </div>
-
-            <!-- Kolom 2 -->
-            <div class="hero-parallax-col flex flex-col gap-5 mt-16" data-speed="90">
-              <a href="{{ route('produk.index') }}?kategori=tv" class="hero-tile stagger-item w-[150px] xl:w-[170px] h-[180px] xl:h-[200px]">
-                <img src="{{ setting('hero_image_tv') ? asset('storage/' . setting('hero_image_tv')) : asset('assets/images/tv0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&h=400&fit=crop'" alt="TV">
-                <span class="hero-tile-label">TV</span>
-              </a>
-              <a href="{{ route('produk.index') }}?kategori=microwave" class="hero-tile stagger-item w-[150px] xl:w-[170px] h-[180px] xl:h-[200px]">
-                <img src="{{ setting('hero_image_microwave') ? asset('storage/' . setting('hero_image_microwave')) : asset('assets/images/microwave0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1585659722983-3a675dabf23d?w=400&h=400&fit=crop'" alt="Microwave">
-                <span class="hero-tile-label">Microwave</span>
-              </a>
-            </div>
-
-            <!-- Kolom 3 -->
-            <div class="hero-parallax-col flex flex-col gap-5" data-speed="-50">
-              <a href="{{ route('produk.index') }}?kategori=mesin-cuci" class="hero-tile stagger-item w-[150px] xl:w-[170px] h-[180px] xl:h-[200px]">
-                <img src="{{ setting('hero_image_mesin_cuci') ? asset('storage/' . setting('hero_image_mesin_cuci')) : asset('assets/images/mesin-cuci0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=400&h=400&fit=crop'" alt="Mesin Cuci">
-                <span class="hero-tile-label">Mesin Cuci</span>
-              </a>
-              <a href="{{ route('produk.index') }}?kategori=ac" class="hero-tile stagger-item w-[150px] xl:w-[170px] h-[180px] xl:h-[200px]">
-                <img src="{{ setting('hero_image_ac') ? asset('storage/' . setting('hero_image_ac')) : asset('assets/images/ac0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1631545806609-947f38b3f6ea?w=400&h=400&fit=crop'" alt="AC">
-                <span class="hero-tile-label">AC</span>
-              </a>
-            </div>
-
           </div>
-        </div>
 
-        <!-- Mobile gallery (simplified, non-tilted) -->
-        <div class="lg:hidden stagger-group">
-          <p class="text-center font-bold text-gray-400 mb-5 tracking-widest uppercase text-sm reveal-fade">Kategori Pilihan</p>
-          <ul class="grid grid-cols-3 gap-3">
-            <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=kulkas" class="hero-tile-mobile"><img src="{{ setting('hero_image_kulkas') ? asset('storage/' . setting('hero_image_kulkas')) : asset('assets/images/kulkas0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=300&h=300&fit=crop'" alt="Kulkas"><span class="hero-tile-label">Kulkas</span></a></li>
-            <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=tv" class="hero-tile-mobile"><img src="{{ setting('hero_image_tv') ? asset('storage/' . setting('hero_image_tv')) : asset('assets/images/tv0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=300&h=300&fit=crop'" alt="TV"><span class="hero-tile-label">TV</span></a></li>
-            <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=mesin-cuci" class="hero-tile-mobile"><img src="{{ setting('hero_image_mesin_cuci') ? asset('storage/' . setting('hero_image_mesin_cuci')) : asset('assets/images/mesin-cuci0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=300&h=300&fit=crop'" alt="Mesin Cuci"><span class="hero-tile-label">Mesin Cuci</span></a></li>
-            <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=ac" class="hero-tile-mobile"><img src="{{ setting('hero_image_ac') ? asset('storage/' . setting('hero_image_ac')) : asset('assets/images/ac0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1631545806609-947f38b3f6ea?w=300&h=300&fit=crop'" alt="AC"><span class="hero-tile-label">AC</span></a></li>
-            <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=dispenser" class="hero-tile-mobile"><img src="{{ setting('hero_image_dispenser') ? asset('storage/' . setting('hero_image_dispenser')) : asset('assets/images/dispenser0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=300&h=300&fit=crop'" alt="Dispenser"><span class="hero-tile-label">Dispenser</span></a></li>
-            <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=microwave" class="hero-tile-mobile"><img src="{{ setting('hero_image_microwave') ? asset('storage/' . setting('hero_image_microwave')) : asset('assets/images/microwave0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1585659722983-3a675dabf23d?w=300&h=300&fit=crop'" alt="Microwave"><span class="hero-tile-label">Microwave</span></a></li>
-          </ul>
-        </div>
+          <!-- Mobile gallery (simplified, non-tilted) -->
+          <div class="lg:hidden stagger-group">
+            <p class="text-center font-bold text-gray-400 mb-5 tracking-widest uppercase text-sm reveal-fade">Kategori Pilihan</p>
+            <ul class="grid grid-cols-3 gap-3">
+              <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=kulkas" class="hero-tile-mobile"><img src="{{ setting('hero_image_kulkas') ? asset('storage/' . setting('hero_image_kulkas')) : asset('assets/images/kulkas0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=300&h=300&fit=crop'" alt="Kulkas"><span class="hero-tile-label">Kulkas</span></a></li>
+              <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=tv" class="hero-tile-mobile"><img src="{{ setting('hero_image_tv') ? asset('storage/' . setting('hero_image_tv')) : asset('assets/images/tv0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=300&h=300&fit=crop'" alt="TV"><span class="hero-tile-label">TV</span></a></li>
+              <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=mesin-cuci" class="hero-tile-mobile"><img src="{{ setting('hero_image_mesin_cuci') ? asset('storage/' . setting('hero_image_mesin_cuci')) : asset('assets/images/mesin-cuci0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=300&h=300&fit=crop'" alt="Mesin Cuci"><span class="hero-tile-label">Mesin Cuci</span></a></li>
+              <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=ac" class="hero-tile-mobile"><img src="{{ setting('hero_image_ac') ? asset('storage/' . setting('hero_image_ac')) : asset('assets/images/ac0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1631545806609-947f38b3f6ea?w=300&h=300&fit=crop'" alt="AC"><span class="hero-tile-label">AC</span></a></li>
+              <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=dispenser" class="hero-tile-mobile"><img src="{{ setting('hero_image_dispenser') ? asset('storage/' . setting('hero_image_dispenser')) : asset('assets/images/dispenser0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=300&h=300&fit=crop'" alt="Dispenser"><span class="hero-tile-label">Dispenser</span></a></li>
+              <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=microwave" class="hero-tile-mobile"><img src="{{ setting('hero_image_microwave') ? asset('storage/' . setting('hero_image_microwave')) : asset('assets/images/microwave0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1585659722983-3a675dabf23d?w=300&h=300&fit=crop'" alt="Microwave"><span class="hero-tile-label">Microwave</span></a></li>
+            </ul>
+          </div>
+        @endif
 
       </div>
     </div>
@@ -194,6 +293,7 @@
   </section>
 
   <!-- ON SALE SECTION -->
+  @if(isset($promoProducts) && $promoProducts->isNotEmpty())
   <section id="on-sale" class="section-overlap bg-white py-24 lg:py-32 z-30">
     <div class="max-w-[1440px] mx-auto px-6 md:px-12">
       <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
@@ -215,7 +315,7 @@
 
       <div class="relative w-full overflow-hidden stagger-group">
         <div id="onsale-track" class="flex gap-6 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-10" style="scroll-behavior: smooth;">
-          @forelse($promoProducts as $product)
+          @foreach($promoProducts as $product)
           <div class="stagger-item shrink-0 snap-center">
             {{-- Card produk promo - klik area card mengarahkan ke detail produk --}}
             <article class="onsale-card w-[280px] md:w-[350px] bg-gray-50 rounded-3xl p-4 md:p-6 border border-gray-100 hover:shadow-card transition-all duration-300 group flex flex-col"
@@ -255,35 +355,12 @@
               </a>
             </article>
           </div>
-          @empty
-          {{-- Dummy cards ketika tidak ada produk promo --}}
-          @foreach([
-            ['name'=>'TV LED 32 Inch Sharp','price'=>'Rp 1.200.000','original_price'=>'Rp 1.500.000','img'=>'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&h=400&fit=crop'],
-            ['name'=>'Kulkas 2 Pintu Samsung','price'=>'Rp 2.500.000','original_price'=>'Rp 3.000.000','img'=>'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&h=400&fit=crop'],
-            ['name'=>'Mesin Cuci Polytron','price'=>'Rp 1.800.000','original_price'=>'Rp 2.200.000','img'=>'https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=400&h=400&fit=crop'],
-            ['name'=>'AC Split 1PK Panasonic','price'=>'Rp 2.100.000','original_price'=>'Rp 2.600.000','img'=>'https://images.unsplash.com/photo-1631545806609-947f38b3f6ea?w=400&h=400&fit=crop'],
-          ] as $dummy)
-          <div class="stagger-item shrink-0 snap-center">
-            <article class="onsale-card w-[280px] md:w-[350px] bg-gray-50 rounded-3xl p-4 md:p-6 border border-gray-100 hover:shadow-card transition-all duration-300 group flex flex-col">
-              <div class="flex flex-col h-full w-full outline-none">
-                <div class="relative h-[250px] md:h-[300px] w-full bg-white rounded-2xl overflow-hidden mb-6 flex items-center justify-center">
-                  <img src="{{ $dummy['img'] }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="{{ $dummy['name'] }}">
-                  <span class="absolute top-4 left-4 bg-red-600 text-white text-xs font-black px-3 py-1.5 rounded-full uppercase">Promo</span>
-                </div>
-                <h3 class="text-xl font-bold font-public leading-tight mb-2 text-black">{{ $dummy['name'] }}</h3>
-                <div class="flex flex-col mb-4">
-                  <span class="text-gray-400 font-inter font-semibold text-sm line-through">{{ $dummy['original_price'] }}</span>
-                  <span class="text-2xl font-black text-red-600">{{ $dummy['price'] }}</span>
-                </div>
-              </div>
-            </article>
-          </div>
           @endforeach
-          @endforelse
         </div>
       </div>
     </div>
   </section>
+  @endif
 
   <!-- TESTIMONI SECTION -->
   <section id="testimonials" class="section-overlap bg-black py-24 lg:py-40 z-40">
@@ -583,7 +660,11 @@
 
   // Horizontal Scroll Buttons
   const track = document.getElementById('onsale-track');
-  document.getElementById('onsale-next').onclick = () => track.scrollBy({ left: 350, behavior: 'smooth' });
-  document.getElementById('onsale-prev').onclick = () => track.scrollBy({ left: -350, behavior: 'smooth' });
+  const nextBtn = document.getElementById('onsale-next');
+  const prevBtn = document.getElementById('onsale-prev');
+  if (track && nextBtn && prevBtn) {
+    nextBtn.onclick = () => track.scrollBy({ left: 350, behavior: 'smooth' });
+    prevBtn.onclick = () => track.scrollBy({ left: -350, behavior: 'smooth' });
+  }
 </script>
 @endpush

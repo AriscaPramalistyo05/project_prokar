@@ -13,9 +13,9 @@ class RajaOngkirService
 
     public function __construct()
     {
-        $this->apiKey = env('RAJAONGKIR_API_KEY', '');
-        $this->originCityId = env('RAJAONGKIR_ORIGIN_CITY', '156'); // 156 = Jepara
-        $this->baseUrl = env('RAJAONGKIR_BASE_URL', 'https://rajaongkir.komerce.id/api/v1');
+        $this->apiKey = (string) config('services.rajaongkir.api_key', '');
+        $this->originCityId = (string) config('services.rajaongkir.origin_city', '156'); // 156 = Jepara
+        $this->baseUrl = (string) config('services.rajaongkir.base_url', 'https://rajaongkir.komerce.id/api/v1');
     }
 
     /**

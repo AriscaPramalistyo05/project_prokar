@@ -129,7 +129,7 @@ class ProductForm extends Component
             $extension = strtolower($value->getClientOriginalExtension());
             $videoExts = ['mp4', 'mov', 'avi', 'webm'];
             $mediaType = in_array($extension, $videoExts) ? 'video' : 'image';
-            $path = $value->store('products', 'public');
+            $path = \App\Services\ImageOptimizer::optimizeAndStore($value, 'products', 1200, 80);
 
             $photo->update([
                 'path' => $path,
@@ -318,12 +318,10 @@ class ProductForm extends Component
                 $videoExts = ['mp4', 'mov', 'avi', 'webm'];
                 $mediaType = in_array($extension, $videoExts) ? 'video' : 'image';
 
-                $path = $file->store('products', 'public');
+                $path = \App\Services\ImageOptimizer::optimizeAndStore($file, 'products', 1200, 80);
                 $isPrimary = false;
 
-                if ($mediaType === 'image') {
-                    $this->compressImageFile(storage_path('app/public/' . $path));
-                } elseif ($mediaType === 'video' && $extension === 'mp4') {
+                if ($mediaType === 'video' && $extension === 'mp4') {
                     \App\Services\Mp4FastStart::process(storage_path('app/public/' . $path));
                 }
 

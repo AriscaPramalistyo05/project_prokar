@@ -11,6 +11,7 @@
     "require": {
         "php": "^8.3",
         "aliziodev/laravel-wilayah": "^1.0",
+        "artesaos/seotools": "*",
         "barryvdh/laravel-dompdf": "^3.1",
         "blade-ui-kit/blade-heroicons": "*",
         "intervention/image": "^4.1",
@@ -24,7 +25,8 @@
         "robsontenorio/mary": "*",
         "spatie/laravel-activitylog": "^4.12",
         "spatie/laravel-medialibrary": "^11.23",
-        "spatie/laravel-permission": "^8.0"
+        "spatie/laravel-permission": "^8.0",
+        "spatie/laravel-sitemap": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

@@ -260,8 +260,8 @@
 
 @push('scripts')
 <script 
-    src="{{ (bool) (setting('midtrans_is_production') ?? env('MIDTRANS_IS_PRODUCTION', false)) ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js' }}"
-    data-client-key="{{ setting('midtrans_client_key', decrypt: true) ?: env('MIDTRANS_CLIENT_KEY') }}">
+    src="{{ (bool) (setting('midtrans_is_production') ?? config('services.midtrans.is_production', false)) ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js' }}"
+    data-client-key="{{ setting('midtrans_client_key', decrypt: true) ?: config('services.midtrans.client_key') }}">
 </script>
 <script>
     let currentActiveSnapToken = null;
