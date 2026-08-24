@@ -7,7 +7,7 @@
 
 @if ($isAvailable)
     <x-menu-item title="{{ $label }}" icon="{{ $icon }}"
-        :link="route($route)" :active="$isActive" />
+        :link="route($route)" :active="$isActive" wire:navigate.hover />
 @else
     <x-menu-item title="{{ $label }}" icon="{{ $icon }}"
         class="text-gray-400 pointer-events-none"

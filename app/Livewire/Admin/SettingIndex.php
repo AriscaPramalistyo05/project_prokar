@@ -40,10 +40,16 @@ class SettingIndex extends Component
     // Hero Section
     public string $hero_badge = '';
     public string $hero_headline = '';
+    public string $hero_headline_1 = 'JUAL, BELI & SERVIS';
+    public string $hero_headline_color_1 = 'kuning'; // 'hitam', 'kuning', 'biru'
+    public string $hero_headline_2 = 'ELEKTRONIK BEKAS';
+    public string $hero_headline_color_2 = 'hitam'; // 'hitam', 'kuning', 'biru'
+    public string $hero_headline_3 = 'TERPERCAYA';
+    public string $hero_headline_color_3 = 'biru'; // 'hitam', 'kuning', 'biru'
     public string $hero_subheadline = '';
-    public string $hero_cta_number = '';
+    public string $hero_card_mode = '6_card'; // '6_card' or '3_card'
 
-    // 6 Hero Category Gallery Images
+    // 6 Hero Category Gallery Images (Mode 6 Card)
     public $hero_image_kulkas_file = null;
     public ?string $existing_hero_image_kulkas = null;
 
@@ -61,6 +67,19 @@ class SettingIndex extends Component
 
     public $hero_image_ac_file = null;
     public ?string $existing_hero_image_ac = null;
+
+    // 3 Hero Collage Cards (Mode 3 Card)
+    public $hero_3card_image_1_file = null;
+    public ?string $existing_hero_3card_image_1 = null;
+    public string $hero_3card_title_1 = '';
+
+    public $hero_3card_image_2_file = null;
+    public ?string $existing_hero_3card_image_2 = null;
+    public string $hero_3card_title_2 = '';
+
+    public $hero_3card_image_3_file = null;
+    public ?string $existing_hero_3card_image_3 = null;
+    public string $hero_3card_title_3 = '';
 
     // Running Text & Brand Partners
     public string $marquee_text_black = '';
@@ -136,16 +155,30 @@ class SettingIndex extends Component
         // 2. Tampilan & Konten Home
         $this->hero_badge = (string) ($settingService->get('hero_badge') ?? 'Bergaransi & Berkualitas');
         $this->hero_headline = (string) ($settingService->get('hero_headline') ?? 'JUAL, BELI & SERVIS ELEKTRONIK BEKAS TERPERCAYA');
+        $this->hero_headline_1 = (string) ($settingService->get('hero_headline_1') ?? 'JUAL, BELI & SERVIS');
+        $this->hero_headline_color_1 = (string) ($settingService->get('hero_headline_color_1') ?? 'kuning');
+        $this->hero_headline_2 = (string) ($settingService->get('hero_headline_2') ?? 'ELEKTRONIK BEKAS');
+        $this->hero_headline_color_2 = (string) ($settingService->get('hero_headline_color_2') ?? 'hitam');
+        $this->hero_headline_3 = (string) ($settingService->get('hero_headline_3') ?? 'TERPERCAYA');
+        $this->hero_headline_color_3 = (string) ($settingService->get('hero_headline_color_3') ?? 'biru');
         $this->hero_subheadline = (string) ($settingService->get('hero_subheadline') ?? 'Beragam elektronik rumah tangga berkualitas yang siap digunakan dan telah melalui proses pengecekan teknisi profesional.');
-        $this->hero_cta_number = (string) ($settingService->get('hero_cta_number') ?? '0895-0484-1279');
+        $this->hero_card_mode = (string) ($settingService->get('hero_card_mode') ?? '6_card');
         
-        // 6 Hero Category Images
+        // 6 Hero Category Images (Mode 6 Card)
         $this->existing_hero_image_kulkas = $settingService->get('hero_image_kulkas');
         $this->existing_hero_image_tv = $settingService->get('hero_image_tv');
         $this->existing_hero_image_mesin_cuci = $settingService->get('hero_image_mesin_cuci');
         $this->existing_hero_image_dispenser = $settingService->get('hero_image_dispenser');
         $this->existing_hero_image_microwave = $settingService->get('hero_image_microwave');
         $this->existing_hero_image_ac = $settingService->get('hero_image_ac');
+
+        // 3 Hero Collage Cards (Mode 3 Card)
+        $this->existing_hero_3card_image_1 = $settingService->get('hero_3card_image_1');
+        $this->existing_hero_3card_image_2 = $settingService->get('hero_3card_image_2');
+        $this->existing_hero_3card_image_3 = $settingService->get('hero_3card_image_3');
+        $this->hero_3card_title_1 = (string) ($settingService->get('hero_3card_title_1') ?? 'Mesin Cuci');
+        $this->hero_3card_title_2 = (string) ($settingService->get('hero_3card_title_2') ?? 'Televisi ');
+        $this->hero_3card_title_3 = (string) ($settingService->get('hero_3card_title_3') ?? 'Kulkas');
 
         $this->marquee_text_black = (string) ($settingService->get('marquee_text_black') ?? 'PRODUK BERGARANSI ★ KUALITAS TERUJI ★ TEKNISI BERPENGALAMAN ★ BISA COD ★');
         $this->marquee_text_blue = (string) ($settingService->get('marquee_text_blue') ?? 'tersedia berbagai produk elektronik rumah tangga • harga ramah barang berkualitas');
@@ -300,8 +333,20 @@ class SettingIndex extends Component
             $fileProp = "hero_image_{$key}_file";
             $existProp = "existing_hero_image_{$key}";
             if ($this->$fileProp) {
-                $path = $this->$fileProp->store('settings/hero', 'public');
+                $path = \App\Services\ImageOptimizer::optimizeAndStore($this->$fileProp, 'settings/hero', 800, 80);
                 $settingService->set("hero_image_{$key}", $path, 'homepage', 'image', "Hero Banner {$label}");
+                $this->$existProp = $path;
+                $this->$fileProp = null;
+            }
+        }
+
+        // Upload 3 Hero Collage Cards (Mode 3 Card)
+        for ($i = 1; $i <= 3; $i++) {
+            $fileProp = "hero_3card_image_{$i}_file";
+            $existProp = "existing_hero_3card_image_{$i}";
+            if ($this->$fileProp) {
+                $path = \App\Services\ImageOptimizer::optimizeAndStore($this->$fileProp, 'settings/hero3card', 1000, 80);
+                $settingService->set("hero_3card_image_{$i}", $path, 'homepage', 'image', "Hero 3-Card Foto {$i}");
                 $this->$existProp = $path;
                 $this->$fileProp = null;
             }
@@ -318,7 +363,7 @@ class SettingIndex extends Component
             $fileProp = "service_image_{$key}_file";
             $existProp = "existing_service_image_{$key}";
             if ($this->$fileProp) {
-                $path = $this->$fileProp->store('settings/service', 'public');
+                $path = \App\Services\ImageOptimizer::optimizeAndStore($this->$fileProp, 'settings/service', 800, 80);
                 $settingService->set("service_image_{$key}", $path, 'homepage', 'image', "Foto Service {$label}");
                 $this->$existProp = $path;
                 $this->$fileProp = null;
@@ -351,10 +396,20 @@ class SettingIndex extends Component
         $settingService->set('social_youtube', $this->social_youtube, 'general', 'text', 'YouTube');
 
         // 2. Simpan Tab Tampilan & Konten Home
+        $settingService->set('hero_card_mode', $this->hero_card_mode, 'homepage', 'text', 'Mode Card Hero (6_card / 3_card)');
         $settingService->set('hero_badge', $this->hero_badge, 'homepage', 'text', 'Hero Badge Text');
-        $settingService->set('hero_headline', $this->hero_headline, 'homepage', 'text', 'Hero Headline');
+        $settingService->set('hero_headline_1', $this->hero_headline_1, 'homepage', 'text', 'Headline Hero Bagian 1');
+        $settingService->set('hero_headline_color_1', $this->hero_headline_color_1, 'homepage', 'text', 'Warna Headline Bagian 1');
+        $settingService->set('hero_headline_2', $this->hero_headline_2, 'homepage', 'text', 'Headline Hero Bagian 2');
+        $settingService->set('hero_headline_color_2', $this->hero_headline_color_2, 'homepage', 'text', 'Warna Headline Bagian 2');
+        $settingService->set('hero_headline_3', $this->hero_headline_3, 'homepage', 'text', 'Headline Hero Bagian 3');
+        $settingService->set('hero_headline_color_3', $this->hero_headline_color_3, 'homepage', 'text', 'Warna Headline Bagian 3');
+        $combinedHeadline = trim("{$this->hero_headline_1} {$this->hero_headline_2} {$this->hero_headline_3}");
+        $settingService->set('hero_headline', $combinedHeadline, 'homepage', 'text', 'Hero Headline');
         $settingService->set('hero_subheadline', $this->hero_subheadline, 'homepage', 'textarea', 'Hero Subheadline');
-        $settingService->set('hero_cta_number', $this->hero_cta_number, 'homepage', 'text', 'Nomor CTA Hero');
+        $settingService->set('hero_3card_title_1', $this->hero_3card_title_1, 'homepage', 'text', 'Judul Hero 3-Card 1');
+        $settingService->set('hero_3card_title_2', $this->hero_3card_title_2, 'homepage', 'text', 'Judul Hero 3-Card 2');
+        $settingService->set('hero_3card_title_3', $this->hero_3card_title_3, 'homepage', 'text', 'Judul Hero 3-Card 3');
         $settingService->set('marquee_text_black', $this->marquee_text_black, 'homepage', 'text', 'Marquee Hitam');
         $settingService->set('marquee_text_blue', $this->marquee_text_blue, 'homepage', 'text', 'Marquee Biru');
         $settingService->set('brand_partners', $this->brand_partners, 'homepage', 'text', 'Brand Partner');

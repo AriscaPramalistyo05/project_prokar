@@ -16,9 +16,9 @@ class MidtransService
             class_exists(\Midtrans\Snap::class);
         }
 
-        $serverKey = setting('midtrans_server_key', decrypt: true) ?: env('MIDTRANS_SERVER_KEY');
-        $clientKey = setting('midtrans_client_key', decrypt: true) ?: env('MIDTRANS_CLIENT_KEY');
-        $isProduction = setting('midtrans_is_production') ?? env('MIDTRANS_IS_PRODUCTION', false);
+        $serverKey = setting('midtrans_server_key', decrypt: true) ?: config('services.midtrans.server_key');
+        $clientKey = setting('midtrans_client_key', decrypt: true) ?: config('services.midtrans.client_key');
+        $isProduction = setting('midtrans_is_production') ?? config('services.midtrans.is_production', false);
 
         Config::$serverKey = (string) $serverKey;
         Config::$clientKey = (string) $clientKey;
@@ -67,7 +67,7 @@ class MidtransService
      */
     public function verifySignatureKey(string $orderId, string $statusCode, string $grossAmount, string $signatureKey): bool
     {
-        $serverKey = (string) (setting('midtrans_server_key', decrypt: true) ?: env('MIDTRANS_SERVER_KEY'));
+        $serverKey = (string) (setting('midtrans_server_key', decrypt: true) ?: config('services.midtrans.server_key'));
         $hashed = hash('sha512', $orderId . $statusCode . $grossAmount . $serverKey);
 
         return hash_equals($hashed, $signatureKey);

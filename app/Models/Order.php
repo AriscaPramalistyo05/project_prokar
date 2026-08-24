@@ -105,28 +105,44 @@ class Order extends Model
             return $this->postal_code ? $addr . ' ' . $this->postal_code : $addr;
         }
 
-        $province = \Illuminate\Support\Facades\Cache::remember("prov_{$this->province_id}", 86400 * 7, function () {
+        $province = \Illuminate\Support\Facades\Cache::remember("prov_{$this->province_id}", 86400 * 30, function () {
             if (!$this->province_id) return '';
-            $res = @file_get_contents("https://www.emsifa.com/api-wilayah-indonesia/api/province/{$this->province_id}.json");
-            return $res ? json_decode($res)->name ?? '' : '';
+            try {
+                $response = \Illuminate\Support\Facades\Http::timeout(0.4)->get("https://www.emsifa.com/api-wilayah-indonesia/api/province/{$this->province_id}.json");
+                return $response->successful() ? ($response->json('name') ?? '') : '';
+            } catch (\Throwable $e) {
+                return '';
+            }
         });
 
-        $regency = \Illuminate\Support\Facades\Cache::remember("reg_{$this->regency_id}", 86400 * 7, function () {
+        $regency = \Illuminate\Support\Facades\Cache::remember("reg_{$this->regency_id}", 86400 * 30, function () {
             if (!$this->regency_id) return '';
-            $res = @file_get_contents("https://www.emsifa.com/api-wilayah-indonesia/api/regency/{$this->regency_id}.json");
-            return $res ? json_decode($res)->name ?? '' : '';
+            try {
+                $response = \Illuminate\Support\Facades\Http::timeout(0.4)->get("https://www.emsifa.com/api-wilayah-indonesia/api/regency/{$this->regency_id}.json");
+                return $response->successful() ? ($response->json('name') ?? '') : '';
+            } catch (\Throwable $e) {
+                return '';
+            }
         });
 
-        $district = \Illuminate\Support\Facades\Cache::remember("dist_{$this->district_id}", 86400 * 7, function () {
+        $district = \Illuminate\Support\Facades\Cache::remember("dist_{$this->district_id}", 86400 * 30, function () {
             if (!$this->district_id) return '';
-            $res = @file_get_contents("https://www.emsifa.com/api-wilayah-indonesia/api/district/{$this->district_id}.json");
-            return $res ? json_decode($res)->name ?? '' : '';
+            try {
+                $response = \Illuminate\Support\Facades\Http::timeout(0.4)->get("https://www.emsifa.com/api-wilayah-indonesia/api/district/{$this->district_id}.json");
+                return $response->successful() ? ($response->json('name') ?? '') : '';
+            } catch (\Throwable $e) {
+                return '';
+            }
         });
 
-        $village = \Illuminate\Support\Facades\Cache::remember("vill_{$this->village_id}", 86400 * 7, function () {
+        $village = \Illuminate\Support\Facades\Cache::remember("vill_{$this->village_id}", 86400 * 30, function () {
             if (!$this->village_id) return '';
-            $res = @file_get_contents("https://www.emsifa.com/api-wilayah-indonesia/api/village/{$this->village_id}.json");
-            return $res ? json_decode($res)->name ?? '' : '';
+            try {
+                $response = \Illuminate\Support\Facades\Http::timeout(0.4)->get("https://www.emsifa.com/api-wilayah-indonesia/api/village/{$this->village_id}.json");
+                return $response->successful() ? ($response->json('name') ?? '') : '';
+            } catch (\Throwable $e) {
+                return '';
+            }
         });
 
         $parts = array_filter([

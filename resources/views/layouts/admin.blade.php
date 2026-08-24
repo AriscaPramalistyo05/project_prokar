@@ -13,7 +13,7 @@
         {{-- Sidebar Mary UI --}}
         <x-slot:sidebar drawer="main-drawer" collapsible class="bg-base-100 border-r border-base-200">
             {{-- Logo --}}
-            <div class="p-4 font-bold text-lg tracking-wider">PROKAR ADMIN</div>
+            <a href="{{ route('admin.dashboard') }}" wire:navigate.hover class="p-4 font-bold text-lg tracking-wider block hover:text-primary transition-colors">PROKAR ADMIN</a>
 
             {{-- Menu Navigasi --}}
             <x-menu activate-by-route>
@@ -29,12 +29,12 @@
                 @role('super_admin')
                 <x-admin.sidebar-item route="admin.sell-submissions.index" icon="o-arrow-down-tray" label="Jual (Masuk)" />
                 <x-admin.sidebar-item route="admin.orders.index" icon="o-shopping-bag" label="Order" />
-                <x-menu-separator />
+                <hr class="my-2 border-base-200" />
                 <x-admin.sidebar-item route="admin.users.index" icon="o-users" label="Pengguna" />
                 <x-admin.sidebar-item route="admin.roles.index" icon="o-shield-check" label="Role & Hak Akses" />
                 <x-admin.sidebar-item route="admin.reports.index" icon="o-chart-bar" label="Laporan" />
                 <x-admin.sidebar-item route="admin.activity-log" icon="o-clipboard-document-list" label="Activity Log" />
-                <x-menu-separator />
+                <hr class="my-2 border-base-200" />
                 <x-admin.sidebar-item route="admin.additional-fees.index" icon="o-currency-dollar" label="Biaya Tambahan" />
                 <x-admin.sidebar-item route="admin.settings" icon="o-cog-6-tooth" label="Setting" />
                 @endrole

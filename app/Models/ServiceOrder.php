@@ -103,27 +103,67 @@ class ServiceOrder extends Model
             return $this->address_detail ?: '-';
         }
 
-        $province = \Illuminate\Support\Facades\Cache::remember("prov_{$this->province_id}", 86400, function () {
-            $res = @file_get_contents("https://www.emsifa.com/api-wilayah-indonesia/api/province/{$this->province_id}.json");
-            return $res ? json_decode($res)->name ?? '' : '';
+        // Check if stored values are already text names
+        $isNumeric = is_numeric($this->province_id) || is_numeric($this->regency_id);
+
+        if (!$isNumeric) {
+            $parts = array_filter([
+                $this->address_detail,
+                $this->village_id,
+                $this->district_id,
+                $this->regency_id,
+                $this->province_id,
+            ]);
+            return implode(', ', $parts);
+        }
+
+        $province = \Illuminate\Support\Facades\Cache::remember("prov_{$this->province_id}", 86400 * 30, function () {
+            if (!$this->province_id) return '';
+            try {
+                $response = \Illuminate\Support\Facades\Http::timeout(0.4)->get("https://www.emsifa.com/api-wilayah-indonesia/api/province/{$this->province_id}.json");
+                return $response->successful() ? ($response->json('name') ?? '') : '';
+            } catch (\Throwable $e) {
+                return '';
+            }
         });
 
-        $regency = \Illuminate\Support\Facades\Cache::remember("reg_{$this->regency_id}", 86400, function () {
-            $res = @file_get_contents("https://www.emsifa.com/api-wilayah-indonesia/api/regency/{$this->regency_id}.json");
-            return $res ? json_decode($res)->name ?? '' : '';
+        $regency = \Illuminate\Support\Facades\Cache::remember("reg_{$this->regency_id}", 86400 * 30, function () {
+            if (!$this->regency_id) return '';
+            try {
+                $response = \Illuminate\Support\Facades\Http::timeout(0.4)->get("https://www.emsifa.com/api-wilayah-indonesia/api/regency/{$this->regency_id}.json");
+                return $response->successful() ? ($response->json('name') ?? '') : '';
+            } catch (\Throwable $e) {
+                return '';
+            }
         });
 
-        $district = \Illuminate\Support\Facades\Cache::remember("dist_{$this->district_id}", 86400, function () {
-            $res = @file_get_contents("https://www.emsifa.com/api-wilayah-indonesia/api/district/{$this->district_id}.json");
-            return $res ? json_decode($res)->name ?? '' : '';
+        $district = \Illuminate\Support\Facades\Cache::remember("dist_{$this->district_id}", 86400 * 30, function () {
+            if (!$this->district_id) return '';
+            try {
+                $response = \Illuminate\Support\Facades\Http::timeout(0.4)->get("https://www.emsifa.com/api-wilayah-indonesia/api/district/{$this->district_id}.json");
+                return $response->successful() ? ($response->json('name') ?? '') : '';
+            } catch (\Throwable $e) {
+                return '';
+            }
         });
 
-        $village = \Illuminate\Support\Facades\Cache::remember("vill_{$this->village_id}", 86400, function () {
-            $res = @file_get_contents("https://www.emsifa.com/api-wilayah-indonesia/api/village/{$this->village_id}.json");
-            return $res ? json_decode($res)->name ?? '' : '';
+        $village = \Illuminate\Support\Facades\Cache::remember("vill_{$this->village_id}", 86400 * 30, function () {
+            if (!$this->village_id) return '';
+            try {
+                $response = \Illuminate\Support\Facades\Http::timeout(0.4)->get("https://www.emsifa.com/api-wilayah-indonesia/api/village/{$this->village_id}.json");
+                return $response->successful() ? ($response->json('name') ?? '') : '';
+            } catch (\Throwable $e) {
+                return '';
+            }
         });
 
-        $parts = array_filter([$this->address_detail, $village, $district, $regency, $province]);
+        $parts = array_filter([
+            $this->address_detail,
+            $village ? ucwords(strtolower($village)) : null,
+            $district ? 'Kec. ' . ucwords(strtolower($district)) : null,
+            $regency ? ucwords(strtolower($regency)) : null,
+            $province ? ucwords(strtolower($province)) : null,
+        ]);
         return implode(', ', $parts);
     }
 }

@@ -11,41 +11,47 @@
   <meta name="MobileOptimized" content="width" />
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
-  <title>@yield('title', 'Prokar Elektronik – Jual, Beli & Servis Elektronik Bekas Terpercaya di Jepara')</title>
-  <meta name="description" content="@yield('description', 'Prokar Elektronik: jual beli dan servis elektronik bekas berkualitas di Jepara. Kulkas, TV, mesin cuci, AC, dispenser bergaransi dengan harga terjangkau. Teknisi berpengalaman.')" />
-  <meta name="keywords" content="@yield('keywords', 'elektronik bekas Jepara, jual kulkas second, servis TV, servis mesin cuci, servis kulkas, AC second, toko elektronik Mlonggo, jual beli elektronik, Prokar Elektronik')" />
-  <meta name="author" content="Prokar Elektronik" />
+  @php
+    $shopName = setting('shop_name', 'Prokar Elektronik');
+    $shopTagline = setting('shop_tagline', 'Jual, Beli & Servis Elektronik Bekas Terpercaya');
+    $shopLogo = setting('shop_logo') ? asset('storage/' . setting('shop_logo')) : 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/mfbi92py_expires_30_days.png';
+  @endphp
+
+  <title>@yield('title', $shopName . ' – ' . $shopTagline)</title>
+  <meta name="description" content="@yield('description', $shopName . ': jual beli dan servis elektronik bekas berkualitas di Jepara. Kulkas, TV, mesin cuci, AC, dispenser bergaransi dengan harga terjangkau. Teknisi berpengalaman.')" />
+  <meta name="keywords" content="@yield('keywords', 'elektronik bekas Jepara, jual kulkas second, servis TV, servis mesin cuci, servis kulkas, AC second, toko elektronik Mlonggo, jual beli elektronik, ' . $shopName)" />
+  <meta name="author" content="{{ $shopName }}" />
   <meta name="robots" content="@yield('robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1')" />
   <meta name="googlebot" content="index, follow" />
   <meta name="geo.region" content="ID-JT" />
   <meta name="geo.placename" content="Mlonggo, Jepara" />
   <meta name="geo.position" content="-6.514774;110.712282" />
   <meta name="ICBM" content="-6.514774, 110.712282" />
-  <link rel="canonical" href="@yield('canonical', 'https://prokarelektronik.com/')" />
-  <link rel="alternate" hreflang="id-ID" href="@yield('canonical', 'https://prokarelektronik.com/')" />
+  <link rel="canonical" href="@yield('canonical', url()->current())" />
+  <link rel="alternate" hreflang="id-ID" href="@yield('canonical', url()->current())" />
   <link rel="icon" type="image/png" sizes="32x32"
-    href="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/rui8atrf_expires_30_days.png" />
+    href="{{ setting('shop_favicon') ? asset('storage/' . setting('shop_favicon')) : 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/rui8atrf_expires_30_days.png' }}" />
   <link rel="apple-touch-icon"
-    href="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/rui8atrf_expires_30_days.png" />
+    href="{{ setting('shop_favicon') ? asset('storage/' . setting('shop_favicon')) : 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/rui8atrf_expires_30_days.png' }}" />
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="@yield('og_type', 'website')" />
-  <meta property="og:site_name" content="Prokar Elektronik" />
+  <meta property="og:site_name" content="{{ $shopName }}" />
   <meta property="og:locale" content="id_ID" />
-  <meta property="og:title" content="@yield('og_title', 'Prokar Elektronik – Jual, Beli & Servis Elektronik Bekas Terpercaya')" />
-  <meta property="og:description" content="@yield('og_description', 'Toko elektronik bekas berkualitas di Jepara. Jual, beli, dan servis TV, kulkas, mesin cuci, AC, dispenser bergaransi dengan harga terjangkau.')" />
-  <meta property="og:url" content="@yield('og_url', 'https://prokarelektronik.com/')" />
-  <meta property="og:image" content="@yield('og_image', 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/mfbi92py_expires_30_days.png')" />
+  <meta property="og:title" content="@yield('og_title', $shopName . ' – ' . $shopTagline)" />
+  <meta property="og:description" content="@yield('og_description', 'Toko elektronik bekas berkualitas. Jual, beli, dan servis TV, kulkas, mesin cuci, AC, dispenser bergaransi dengan harga terjangkau.')" />
+  <meta property="og:url" content="@yield('og_url', url()->current())" />
+  <meta property="og:image" content="@yield('og_image', $shopLogo)" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="Prokar Elektronik – Jual, Beli & Servis Elektronik Bekas" />
+  <meta property="og:image:alt" content="{{ $shopName }} – {{ $shopTagline }}" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="@yield('twitter_title', 'Prokar Elektronik – Jual, Beli & Servis Elektronik Bekas')" />
-  <meta name="twitter:description" content="@yield('twitter_description', 'Toko elektronik bekas berkualitas di Jepara. Jual, beli, dan servis TV, kulkas, mesin cuci, AC, dispenser bergaransi.')" />
-  <meta name="twitter:image" content="@yield('twitter_image', 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/mfbi92py_expires_30_days.png')" />
-  <meta name="twitter:image:alt" content="Prokar Elektronik – Jual, Beli & Servis Elektronik Bekas" />
+  <meta name="twitter:title" content="@yield('twitter_title', $shopName . ' – ' . $shopTagline)" />
+  <meta name="twitter:description" content="@yield('twitter_description', 'Toko elektronik bekas berkualitas. Jual, beli, dan servis TV, kulkas, mesin cuci, AC, dispenser bergaransi.')" />
+  <meta name="twitter:image" content="@yield('twitter_image', $shopLogo)" />
+  <meta name="twitter:image:alt" content="{{ $shopName }} – {{ $shopTagline }}" />
 
   @stack('schema')
 
@@ -394,6 +400,71 @@
       text-transform: uppercase;
       line-height: 1.1;
     }
+
+    /* ── Hero 3-Card Asymmetric Collage ── */
+    .hero-3card-card {
+      position: relative;
+      border-radius: 1.75rem;
+      overflow: hidden;
+      background: #f8fafc;
+      box-shadow: 0 16px 32px -8px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.03);
+      border: 1px solid rgba(0,0,0,0.06);
+      transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .hero-3card-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 24px 44px -12px rgba(0,0,0,0.16), 0 2px 6px rgba(0,0,0,0.04);
+    }
+    .hero-3card-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .hero-3card-card:hover img {
+      transform: scale(1.06);
+    }
+    .hero-3card-card .hero-3card-label {
+      position: absolute;
+      bottom: 0.85rem;
+      left: 0.85rem;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: #0f172a;
+      font-weight: 800;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 0.3rem 0.7rem;
+      border-radius: 9999px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border: 1px solid rgba(255,255,255,0.8);
+      transition: background 0.3s, color 0.3s;
+    }
+    .hero-3card-card:hover .hero-3card-label {
+      background: #0f172a;
+      color: #ffffff;
+    }
+
+    /* Floating animations for 3-card layout */
+    @keyframes heroFloat1 {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-7px); }
+    }
+    @keyframes heroFloat2 {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(6px); }
+    }
+    @keyframes heroFloat3 {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-9px); }
+    }
+    .hero-float-1 { animation: heroFloat1 6s ease-in-out infinite; }
+    .hero-float-2 { animation: heroFloat2 7s ease-in-out infinite 1s; }
+    .hero-float-3 { animation: heroFloat3 8s ease-in-out infinite 0.5s; }
 
     /* ── Readability ── */
     #hero p.hero-desc-text {

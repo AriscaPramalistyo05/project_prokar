@@ -158,11 +158,12 @@ Route::get('/auth/google/redirect', [GoogleController::class, 'redirect'])
 Route::get('/auth/google/callback', [GoogleController::class, 'callback'])
     ->name('auth.google.callback');
 
-// ─── PROFILE (dari Breeze) ──────────────────────────────────────
+// ─── USER PROFILE & SETTINGS ────────────────────────────────────
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/profil', \App\Livewire\Frontend\UserProfile::class)->name('user.profile');
+    Route::get('/profile', \App\Livewire\Frontend\UserProfile::class)->name('profile.edit');
+    Route::get('/pengaturan', \App\Livewire\Frontend\UserSettings::class)->name('user.settings');
+    Route::get('/pengaturan-akun', \App\Livewire\Frontend\UserSettings::class)->name('settings');
 });
 
 // ─── ADMIN ──────────────────────────────────────────────────────
