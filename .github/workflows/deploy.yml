@@ -36,7 +36,7 @@ jobs:
             composer install --no-dev --optimize-autoloader --no-interaction
             
             echo "⚡ Mengompilasi aset Vite frontend..."
-            npm ci --prefer-offline --no-audit
+            npm ci --prefer-offline --no-audit || npm install --no-audit
             npm run build
             
             echo "🗄️ Menjalankan migrasi database..."
