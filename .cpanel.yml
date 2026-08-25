@@ -1,7 +1,7 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/username/public_html/
+    - export DEPLOYPATH=/home/ndsg9688/prokarelektronik.com/
     - /bin/cp -R * $DEPLOYPATH
     - cd $DEPLOYPATH
     - php artisan optimize:clear
