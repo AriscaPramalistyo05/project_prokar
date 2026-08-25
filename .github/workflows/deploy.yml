@@ -2,59 +2,46 @@ name: Continuous Deployment (CD)
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
-  deploy:
-    name: Deploy to Production Server
+  web-deploy:
+    name: Deploy to Hosting via FTP
     runs-on: ubuntu-latest
-    needs: [] # Dapat diisi [laravel-tests] jika dalam 1 file workflow
-
     steps:
-      - name: Checkout Code
+      - name: 🚚 Checkout Code
         uses: actions/checkout@v4
 
-      - name: Deploy via SSH to Production
-        uses: appleboy/ssh-action@v1.0.3
+      - name: ⚙️ Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT || 22 }}
-          script_stop: true
-          script: |
-            cd ${{ secrets.SSH_DEPLOY_PATH || '/var/www/prokar' }}
-            
-            echo "🚀 Menyalakan mode maintenance..."
-            php artisan down --render="errors::503" || true
-            
-            echo "📥 Mengambil kode terbaru dari GitHub..."
-            git pull origin main
-            
-            echo "📦 Menginstall dependensi Composer..."
-            composer install --no-dev --optimize-autoloader --no-interaction
-            
-            echo "⚡ Mengompilasi aset Vite frontend..."
-            npm ci --prefer-offline --no-audit || npm install --no-audit
-            npm run build
-            
-            echo "🗄️ Menjalankan migrasi database..."
-            php artisan migrate --force
-            
-            echo "🧹 Mengoptimasi Cache Konfigurasi & Rute..."
-            php artisan optimize:clear
-            php artisan config:cache
-            php artisan route:cache
-            php artisan view:cache
-            
-            echo "🗺️ Memperbarui Sitemap XML..."
-            php artisan sitemap:generate || true
-            
-            echo "🔄 Merestart Queue Worker..."
-            php artisan queue:restart || true
-            
-            echo "✨ Mematikan mode maintenance..."
-            php artisan up
-            
-            echo "✅ Deployment Sukses!"
+          php-version: '8.2'
+
+      - name: 📦 Install Composer Dependencies
+        run: composer install --no-dev --optimize-autoloader --no-interaction
+
+      - name: ⚙️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: ⚡ Build Frontend Assets (Vite)
+        run: |
+          npm ci || npm install --no-audit
+          npm run build
+
+      - name: 📂 Sync files via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: /public_html/prokarelektronik.com/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            .env
+            .env.example
+            tests/**
