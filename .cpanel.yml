@@ -1,5 +1,5 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/ndsg9688/prokarelektronik.com/
+    - export DEPLOYPATH=/home/ndsg9688/public_html/prokarelektronik.com/
     - /bin/rsync -av --exclude='.git' --exclude='.env' --exclude='node_modules' --exclude='vendor' --exclude='storage' ./ $DEPLOYPATH
