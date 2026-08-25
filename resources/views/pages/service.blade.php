@@ -114,7 +114,7 @@
   </nav>
 
   <!-- HEADER SERVIS -->
-  <section class="bg-brand-black py-16 md:py-24 z-10 relative text-center">
+  <section class="section-overlap section-overlap-first bg-brand-black pt-16 pb-24 md:pt-24 md:pb-32 z-10 relative text-center">
     <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
       <h1 class="text-white text-5xl md:text-7xl font-black uppercase tracking-tighter font-public mb-4 reveal-wrapper">
         <span class="reveal-line">Servis Elektronik</span>
@@ -126,7 +126,7 @@
   </section>
 
   <!-- PILIHAN LAYANAN (OVERLAPPING SECTION) -->
-  <section id="jenis-layanan" class="section-overlap bg-white pt-20 pb-20 z-20">
+  <section id="jenis-layanan" class="section-overlap bg-white pt-20 pb-20 md:pt-28 md:pb-28 z-20">
     <div class="max-w-5xl mx-auto px-6 lg:px-12 text-center">
       <h2 class="text-black text-3xl md:text-5xl font-black uppercase tracking-tighter font-public mb-12 reveal-wrapper">
         <span class="reveal-line">Jenis Layanan</span>
@@ -137,7 +137,7 @@
   </section>
 
   <!-- CARA KERJA (OVERLAPPING SECTION) -->
-  <section id="cara-kerja" class="section-overlap bg-brand-soft py-20 z-30">
+  <section id="cara-kerja" class="section-overlap bg-brand-soft pt-20 pb-20 md:pt-28 md:pb-28 z-30">
     <div class="max-w-[1440px] mx-auto px-6 lg:px-12 text-center">
       <h2 class="text-black text-3xl md:text-5xl font-black uppercase tracking-tighter font-public mb-12 md:mb-16 reveal-wrapper">
         <span class="reveal-line">Cara Kerja</span>
@@ -217,7 +217,7 @@
   <livewire:frontend.service-form />
 
   <!-- KEUNGGULAN LAYANAN (CUBERTO SCATTER EFFECT) -->
-  <section id="keunggulan" aria-label="Keunggulan layanan servis elektronik" class="section-overlap bg-brand-yellow py-32 lg:py-48 z-[45] overflow-hidden">
+  <section id="keunggulan" aria-label="Keunggulan layanan servis elektronik" class="section-overlap bg-brand-yellow pt-20 pb-28 md:pt-28 md:pb-40 z-[45] overflow-hidden">
     <div class="max-w-[1440px] mx-auto px-6 lg:px-12 relative">
       <div class="text-center mb-16 lg:hidden reveal-fade">
         <h2 class="text-black text-4xl font-black uppercase font-public">Keunggulan Kami</h2>
@@ -260,9 +260,9 @@
 @endsection
 
 @push('scripts')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha384-g4NTh/Iv5PPU4xPyhEWqPcwtNXOvdaDI8LLnyYfyNZOjKJeYQyjzQ9X5275eBjpt" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha384-Z3REaz79l2IaAZqJsSABtTbhjgOUYyV3p90XNnAPCSHg3EMTz1fouunq9WZRtj3d" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js" integrity="sha384-0FwbSMlcCBgRZIAIN+i1xVrAbgrwSmKYej7zCCFlPpv50NGur87UfaeG1l13efmX" crossorigin="anonymous"></script>
 <script>
   // Initialize Lenis
   const lenis = new Lenis({
@@ -286,15 +286,19 @@
   gsap.ticker.add((time) => { lenis.raf(time * 1000) });
   gsap.ticker.lagSmoothing(0, 0);
 
-  /* --- OVERLAPPING SCROLL EFFECT --- */
-  const overlapSections = document.querySelectorAll('.section-overlap');
+  /* --- CUBERTO OVERLAPPING SCROLL EFFECT --- */
+  const overlapSections = gsap.utils.toArray('.section-overlap');
   overlapSections.forEach((section, index) => {
-    if (index === overlapSections.length - 1) return; // Skip footer
+    if (index === overlapSections.length - 1) return;
+    const nextSection = overlapSections[index + 1];
     ScrollTrigger.create({
       trigger: section,
       start: () => section.offsetHeight > window.innerHeight ? "bottom bottom" : "top top",
+      endTrigger: nextSection,
+      end: () => nextSection ? (nextSection.offsetHeight > window.innerHeight ? "bottom bottom" : "top top") : "bottom top",
       pin: true,
       pinSpacing: false,
+      invalidateOnRefresh: true,
     });
   });
 

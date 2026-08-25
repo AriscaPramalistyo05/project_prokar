@@ -16,7 +16,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous" />
 
   <script id="tailwind-config">
     tailwind.config = {
@@ -208,7 +208,7 @@
       <!-- Footer Info -->
       <div class="relative z-10 pt-6 border-t border-gray-800 text-xs text-gray-400 flex justify-between items-center">
         <span>Butuh bantuan langsung?</span>
-        <a href="https://wa.me/6281234567890" target="_blank" class="text-brand-yellow font-bold hover:underline flex items-center gap-1.5">
+        <a href="https://wa.me/6219504841279" target="_blank" class="text-brand-yellow font-bold hover:underline flex items-center gap-1.5">
           <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp CS
         </a>
       </div>

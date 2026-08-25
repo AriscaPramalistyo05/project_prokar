@@ -118,7 +118,7 @@
         <div class="p-4 rounded-xl bg-gray-50 border border-gray-200 text-xs sm:text-sm text-gray-700 space-y-1.5">
           <p><strong>Tim Privasi Prokar Elektronik</strong></p>
           <p>Alamat: Karanggondang RT 04 / RW 02, Kec. Mlonggo, Kab. Jepara, Jawa Tengah</p>
-          <p>WhatsApp: <a href="https://wa.me/6281234567890" target="_blank" class="font-bold underline text-black">0812-3456-7890</a></p>
+          <p>WhatsApp: <a href="https://wa.me/6289504841279" target="_blank" class="font-bold underline text-black">0895-0484-1279</a></p>
           <p>Email: <a href="mailto:privacy@prokar.id" class="font-bold underline text-black">privacy@prokar.id</a></p>
         </div>
       </section>

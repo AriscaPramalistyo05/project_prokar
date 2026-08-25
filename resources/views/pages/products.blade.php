@@ -215,7 +215,7 @@
   <main class="bg-brand-black">
 
     <!-- HEADER PRODUK -->
-    <section class="bg-brand-black py-12 md:py-20 z-10 relative">
+    <section class="section-overlap section-overlap-first bg-brand-black py-12 md:py-20 z-10 relative">
       <div class="max-w-[1440px] mx-auto px-6 lg:px-12 text-center">
         <nav aria-label="Breadcrumb" class="mb-4">
           <ol class="flex justify-center text-sm font-public font-bold uppercase tracking-widest text-gray-500">
@@ -244,3 +244,57 @@
     </section>
   </main>
 @endsection
+
+@push('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha384-g4NTh/Iv5PPU4xPyhEWqPcwtNXOvdaDI8LLnyYfyNZOjKJeYQyjzQ9X5275eBjpt" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha384-Z3REaz79l2IaAZqJsSABtTbhjgOUYyV3p90XNnAPCSHg3EMTz1fouunq9WZRtj3d" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js" integrity="sha384-0FwbSMlcCBgRZIAIN+i1xVrAbgrwSmKYej7zCCFlPpv50NGur87UfaeG1l13efmX" crossorigin="anonymous"></script>
+<script>
+  // Initialize Lenis
+  const lenis = new Lenis({
+    duration: 1.2,
+    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    direction: 'vertical',
+    smooth: true,
+  });
+
+  function raf(time) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+  }
+  requestAnimationFrame(raf);
+
+  // Sync GSAP with Lenis
+  gsap.registerPlugin(ScrollTrigger);
+  lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add((time) => { lenis.raf(time * 1000) });
+  gsap.ticker.lagSmoothing(0, 0);
+
+  /* --- CUBERTO OVERLAPPING SCROLL EFFECT (Hanya Header -> Konten Produk) --- */
+  const headerSection = document.querySelector('section.section-overlap-first');
+  const productSection = document.querySelector('section.section-overlap:not(.section-overlap-first)');
+
+  if (headerSection && productSection) {
+    ScrollTrigger.create({
+      trigger: headerSection,
+      start: () => headerSection.offsetHeight > window.innerHeight ? "bottom bottom" : "top top",
+      endTrigger: productSection,
+      end: () => productSection.offsetHeight > window.innerHeight ? "bottom bottom" : "top top",
+      pin: true,
+      pinSpacing: false,
+      invalidateOnRefresh: true,
+    });
+  }
+
+  // Refresh ScrollTrigger saat Livewire selesai update (filter / load produk)
+  document.addEventListener('livewire:init', () => {
+    Livewire.hook('commit', ({ succeed }) => {
+      succeed(() => {
+        setTimeout(() => {
+          ScrollTrigger.refresh();
+        }, 150);
+      });
+    });
+  });
+</script>
+@endpush

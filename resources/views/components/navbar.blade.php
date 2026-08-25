@@ -12,10 +12,22 @@
   $isTrack    = request()->routeIs('servis.lacak') || request()->routeIs('servis.track');
   $isCart     = request()->routeIs('keranjang.index');
   $isCheckout = request()->routeIs('checkout.address');
+  $cartCount  = (int) app(\App\Services\CartService::class)->count();
 @endphp
-
 <!-- Navbar Wrapper to hoist Alpine data -->
-<div x-data="{ mobileMenuOpen: false }">
+<div x-data="{ 
+    mobileMenuOpen: false,
+    cartCount: {{ $cartCount }},
+    bump: false,
+    updateCartCount(val) {
+        const num = (typeof val === 'object' && val !== null) ? (val.count ?? 0) : val;
+        this.cartCount = parseInt(num) || 0;
+        this.bump = true;
+        setTimeout(() => { this.bump = false; }, 600);
+    }
+}"
+@cart-count-updated.window="updateCartCount($event.detail)"
+@cart-updated.window="updateCartCount($event.detail)">
   <!-- Announcement Bar (Marquee Hitam) -->
   <div role="banner" class="flex justify-between items-center bg-black py-2.5 px-4 sm:px-10 md:px-[60px] z-[150] relative">
     <div class="marquee-container flex-1">
@@ -144,25 +156,12 @@
         </div>
       @endauth
 
-      @php $cartCount = (int) app(\App\Services\CartService::class)->count(); @endphp
-      <div x-data="{
-          count: {{ $cartCount }},
-          bump: false,
-          updateCount(val) {
-              const num = (typeof val === 'object' && val !== null) ? (val.count ?? 0) : val;
-              this.count = parseInt(num) || 0;
-              this.bump = true;
-              setTimeout(() => { this.bump = false; }, 600);
-          }
-      }"
-      @cart-count-updated.window="updateCount($event.detail)"
-      @cart-updated.window="updateCount($event.detail)"
-      class="relative flex items-center">
+      <div class="relative flex items-center">
         <a href="{{ route('keranjang.index') }}" aria-label="Keranjang" class="relative hover:scale-110 transition-transform">
           <i class="fa-solid fa-cart-shopping text-xl"></i>
           <span 
-            x-show="count > 0" 
-            x-text="count" 
+            x-show="cartCount > 0" 
+            x-text="cartCount" 
             x-transition:enter="transition ease-out duration-300 transform"
             x-transition:enter-start="opacity-0 scale-50"
             x-transition:enter-end="opacity-100 scale-100"
@@ -201,76 +200,36 @@
                x-transition:leave="transform transition ease-in-out duration-300" 
                x-transition:leave-start="translate-x-0" 
                x-transition:leave-end="-translate-x-full" 
-               class="flex h-full flex-col overflow-y-scroll bg-white shadow-xl w-full">
+               class="w-full bg-white shadow-xl flex flex-col justify-between overflow-y-auto">
             
-            <div class="p-4 flex items-center justify-between border-b">
-              <span class="font-black text-xl tracking-tighter text-black">PROKAR</span>
-              <button @click="mobileMenuOpen = false" type="button" class="text-gray-400 hover:text-black w-8 h-8 flex items-center justify-center rounded-full bg-gray-100">
-                <span class="sr-only">Tutup menu</span>
-                <i class="fa-solid fa-xmark text-lg"></i>
-              </button>
+            <div class="p-6">
+              <div class="flex items-center justify-between mb-8 pb-4 border-b border-gray-100">
+                <span class="text-xl font-black font-public text-black uppercase tracking-tighter">Menu</span>
+                <button type="button" @click="mobileMenuOpen = false" class="text-gray-400 hover:text-black p-2 -mr-2">
+                  <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+              </div>
+
+              <nav class="flex flex-col space-y-4">
+                <a href="{{ route('home') }}" class="text-lg font-bold text-gray-900 {{ $isHome ? 'text-brand-orange' : '' }}">Home</a>
+                <a href="{{ route('produk.index') }}" class="text-lg font-bold text-gray-900 {{ $isProducts ? 'text-brand-orange' : '' }}">Produk</a>
+                <a href="{{ route('jual.index') }}" class="text-lg font-bold text-gray-900 {{ $isSell ? 'text-brand-orange' : '' }}">Jual</a>
+                <a href="{{ route('servis.index') }}" class="text-lg font-bold text-gray-900 {{ $isService ? 'text-brand-orange' : '' }}">Servis</a>
+                <a href="{{ route('servis.lacak') }}" class="text-lg font-bold text-gray-900 {{ $isTrack ? 'text-brand-orange' : '' }}">Track</a>
+              </nav>
             </div>
 
-            <!-- Profile Section -->
-            <div class="p-4 mb-2 border-b border-gray-100 bg-gray-50">
-              @guest
-                <a href="{{ route('login') }}" class="flex items-center gap-3">
-                  <div class="w-10 h-10 rounded-full bg-black flex items-center justify-center shadow-sm">
-                    <i class="fa-regular fa-user text-white text-base"></i>
-                  </div>
-                  <div>
-                    <p class="text-sm font-bold text-gray-900">Masuk / Daftar</p>
-                    <p class="text-xs text-gray-500">Nikmati layanan penuh</p>
-                  </div>
-                </a>
-              @endguest
-              @auth
-                <div class="flex items-center gap-3 min-w-0">
-                  @if($hasAvatar)
-                    <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}" class="w-10 h-10 min-w-[40px] min-h-[40px] shrink-0 aspect-square rounded-full object-cover shadow-sm border border-gray-200">
-                  @else
-                    <div class="w-10 h-10 min-w-[40px] min-h-[40px] shrink-0 aspect-square rounded-full bg-black flex items-center justify-center text-white text-xs font-bold tracking-tight shadow-sm">
-                      {{ $initials }}
-                    </div>
-                  @endif
-                  <div class="min-w-0 flex-1">
-                    <p class="text-sm font-bold text-gray-900 truncate leading-snug">{{ $user->name }}</p>
-                    <p class="text-xs text-gray-500 truncate mt-0.5">{{ $user->email }}</p>
-                  </div>
-                </div>
-              @endauth
-            </div>
-
-            <!-- Navigation Links -->
-            <div class="p-4 flex flex-col gap-5">
-              <button type="button" @click="mobileMenuOpen = false; $dispatch('open-search-modal')" class="flex items-center gap-3 text-[15px] font-bold text-gray-900 w-full text-left">
-                <i class="fa-solid fa-magnifying-glass w-5 text-center text-gray-400"></i> CARI PRODUK
-              </button>
-              <a href="{{ route('home') }}" class="flex items-center gap-3 text-[15px] font-bold text-gray-900 {{ $isHome ? 'text-brand-orange' : '' }}">
-                <i class="fa-solid fa-house w-5 text-center {{ $isHome ? 'text-brand-orange' : 'text-gray-400' }}"></i> HOME
-              </a>
-              <a href="{{ route('produk.index') }}" class="flex items-center gap-3 text-[15px] font-bold text-gray-900 {{ $isProducts ? 'text-brand-orange' : '' }}">
-                <i class="fa-solid fa-box w-5 text-center {{ $isProducts ? 'text-brand-orange' : 'text-gray-400' }}"></i> PRODUK
-              </a>
-              <a href="{{ route('jual.index') }}" class="flex items-center gap-3 text-[15px] font-bold text-gray-900 {{ $isSell ? 'text-brand-orange' : '' }}">
-                <i class="fa-solid fa-hand-holding-dollar w-5 text-center {{ $isSell ? 'text-brand-orange' : 'text-gray-400' }}"></i> JUAL
-              </a>
-              <a href="{{ route('servis.index') }}" class="flex items-center gap-3 text-[15px] font-bold text-gray-900 {{ $isService ? 'text-brand-orange' : '' }}">
-                <i class="fa-solid fa-screwdriver-wrench w-5 text-center {{ $isService ? 'text-brand-orange' : 'text-gray-400' }}"></i> SERVIS
-              </a>
-              <a href="{{ route('servis.lacak') }}" class="flex items-center gap-3 text-[15px] font-bold text-gray-900 {{ $isTrack ? 'text-brand-orange' : '' }}">
-                <i class="fa-solid fa-truck-fast w-5 text-center {{ $isTrack ? 'text-brand-orange' : 'text-gray-400' }}"></i> TRACK
-              </a>
-              <a href="{{ route('keranjang.index') }}" class="flex items-center justify-between text-[15px] font-bold text-gray-900 {{ $isCart ? 'text-brand-orange' : '' }}">
+            <div class="p-6 border-t border-gray-100 bg-gray-50">
+              <a href="{{ route('keranjang.index') }}" class="flex items-center justify-between text-base font-bold text-gray-900 {{ $isCart ? 'text-brand-orange' : '' }}">
                 <div class="flex items-center gap-3">
-                  <i class="fa-solid fa-cart-shopping w-5 text-center {{ $isCart ? 'text-brand-orange' : 'text-gray-400' }}"></i> KERANJANG
+                  <i class="fa-solid fa-cart-shopping"></i> Keranjang
                 </div>
-                <span x-show="count > 0" x-text="count" class="bg-brand-yellow text-black text-xs font-bold px-2 py-0.5 rounded-full" style="{{ $cartCount > 0 ? '' : 'display: none;' }}">{{ $cartCount > 0 ? $cartCount : '' }}</span>
+                <span x-show="cartCount > 0" x-text="cartCount" class="bg-brand-yellow text-black text-xs font-bold px-2 py-0.5 rounded-full" style="{{ $cartCount > 0 ? '' : 'display: none;' }}">{{ $cartCount > 0 ? $cartCount : '' }}</span>
               </a>
             </div>
 
             @auth
-            <div class="mt-auto p-4 border-t border-gray-200 bg-gray-50 space-y-1">
+            <div class="p-6 border-t border-gray-100 bg-gray-50 space-y-1">
               <a href="{{ route('user.profile') }}" class="flex items-center gap-2 py-2 text-sm font-bold text-gray-800 hover:text-black">
                 <i class="fa-regular fa-user text-gray-400"></i> Profil Saya
               </a>

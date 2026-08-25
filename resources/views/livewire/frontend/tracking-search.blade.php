@@ -1,6 +1,6 @@
 <div>
 <!-- HEADER TRACK -->
-<section class="bg-brand-black pt-16 pb-24 md:pt-24 md:pb-32 z-10 relative text-center">
+<section class="section-overlap section-overlap-first bg-brand-black pt-16 pb-24 md:pt-24 md:pb-32 z-10 relative text-center">
   <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
     <h1 class="text-white text-5xl md:text-7xl font-black uppercase tracking-tighter font-public mb-4 reveal-wrapper">
       <span class="reveal-line">Lacak Servis</span>

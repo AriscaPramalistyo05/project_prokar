@@ -1,4 +1,4 @@
-<section id="form-penjualan" aria-labelledby="form-heading" class="section-overlap bg-white pt-20 pb-48 md:pb-64 z-30 relative">
+<section id="form-penjualan" aria-labelledby="form-heading" class="section-overlap bg-white pt-20 pb-24 md:pt-28 md:pb-36 z-30 relative">
     <div class="max-w-4xl mx-auto px-6 lg:px-12">
         <div class="bg-white border border-gray-200 rounded-[2.5rem] p-6 sm:p-10 md:p-14 pb-14 sm:pb-20 md:pb-24 shadow-card relative overflow-hidden">
 

@@ -8,7 +8,7 @@
 @endphp
 
 <!-- HEADER TRACK -->
-<section class="no-print bg-brand-black pt-16 pb-24 md:pt-24 md:pb-32 z-10 relative text-center">
+<section class="section-overlap section-overlap-first no-print bg-brand-black pt-16 pb-24 md:pt-24 md:pb-32 z-10 relative text-center">
   <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
     <h1 class="text-white text-5xl md:text-7xl font-black uppercase tracking-tighter font-public mb-4 reveal-wrapper">
       <span class="reveal-line">Lacak Servis</span>
@@ -386,9 +386,9 @@
 </section>
 
 @push('scripts')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha384-g4NTh/Iv5PPU4xPyhEWqPcwtNXOvdaDI8LLnyYfyNZOjKJeYQyjzQ9X5275eBjpt" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha384-Z3REaz79l2IaAZqJsSABtTbhjgOUYyV3p90XNnAPCSHg3EMTz1fouunq9WZRtj3d" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js" integrity="sha384-0FwbSMlcCBgRZIAIN+i1xVrAbgrwSmKYej7zCCFlPpv50NGur87UfaeG1l13efmX" crossorigin="anonymous"></script>
 <script>
   // Initialize Lenis
   const lenis = new Lenis({
@@ -410,14 +410,19 @@
   gsap.ticker.add((time) => { lenis.raf(time * 1000) });
   gsap.ticker.lagSmoothing(0, 0);
 
-  /* --- OVERLAPPING SCROLL EFFECT --- */
-  const overlapSections = document.querySelectorAll('.section-overlap');
+  /* --- CUBERTO OVERLAPPING SCROLL EFFECT --- */
+  const overlapSections = gsap.utils.toArray('.section-overlap');
   overlapSections.forEach((section, index) => {
+    if (index === overlapSections.length - 1) return;
+    const nextSection = overlapSections[index + 1];
     ScrollTrigger.create({
       trigger: section,
       start: () => section.offsetHeight > window.innerHeight ? "bottom bottom" : "top top",
+      endTrigger: nextSection,
+      end: () => nextSection ? (nextSection.offsetHeight > window.innerHeight ? "bottom bottom" : "top top") : "bottom top",
       pin: true,
       pinSpacing: false,
+      invalidateOnRefresh: true,
     });
   });
 

@@ -9,7 +9,7 @@
 <main class="bg-brand-black">
 
   <!-- HERO SECTION -->
-  <section id="hero" class="section-overlap bg-white pt-10 pb-16 lg:pt-16 lg:pb-24 z-10">
+  <section id="hero" class="section-overlap section-overlap-first bg-white pt-10 pb-20 lg:pt-16 lg:pb-28 z-10 relative">
 
     <!-- Text + Diagonal Parallax Visual -->
     <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
@@ -235,7 +235,7 @@
   </section>
 
   <!-- SERVIS SECTION -->
-  <section class="section-overlap bg-brand-yellow py-24 lg:py-32 z-20">
+  <section id="servis" class="section-overlap bg-brand-yellow pt-20 pb-20 lg:pt-28 lg:pb-32 z-20">
     <div class="max-w-[1440px] mx-auto px-6 md:px-12">
       <h2 class="text-black text-4xl md:text-6xl font-black uppercase tracking-tighter font-public mb-16 text-center">
         <span class="reveal-wrapper"><span class="reveal-line">Layanan Servis Kami</span></span>
@@ -294,7 +294,7 @@
 
   <!-- ON SALE SECTION -->
   @if(isset($promoProducts) && $promoProducts->isNotEmpty())
-  <section id="on-sale" class="section-overlap bg-white py-24 lg:py-32 z-30">
+  <section id="on-sale" class="section-overlap bg-white pt-20 pb-20 lg:pt-28 lg:pb-32 z-30">
     <div class="max-w-[1440px] mx-auto px-6 md:px-12">
       <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
         <div>
@@ -365,7 +365,7 @@
   @endif
 
   <!-- TESTIMONI SECTION -->
-  <section id="testimonials" class="section-overlap bg-black py-24 lg:py-40 z-40">
+  <section id="testimonials" class="section-overlap bg-black pt-20 pb-20 lg:pt-28 lg:pb-36 z-40">
     <div class="max-w-[1000px] mx-auto px-6 text-center">
       <h2 class="text-white text-4xl md:text-6xl font-black uppercase tracking-tighter font-public mb-6">
         <span class="reveal-wrapper"><span class="reveal-line">Kata Pelanggan</span></span>
@@ -398,7 +398,7 @@
   </section>
 
   <!-- FAQ SECTION -->
-  <section class="section-overlap bg-brand-soft py-24 lg:py-32 z-50">
+  <section id="faq" class="section-overlap bg-brand-soft pt-20 pb-36 lg:pt-28 lg:pb-48 z-50">
     <div class="max-w-[1000px] mx-auto px-6 md:px-12">
       <h2 class="text-black text-4xl md:text-6xl font-black uppercase tracking-tighter font-public mb-12 text-center">
         <span class="reveal-wrapper"><span class="reveal-line">Pertanyaan Umum</span></span>
@@ -423,7 +423,7 @@
               </div>
             </button>
             <div class="faq-answer">
-              <p class="text-gray-700 text-lg pb-8 leading-relaxed font-inter">{{ $faq['answer'] ?? '' }}</p>
+              <p class="text-gray-700 text-base md:text-lg pb-8 leading-relaxed font-inter">{{ $faq['answer'] ?? '' }}</p>
             </div>
           </div>
         @endforeach
@@ -432,7 +432,7 @@
   </section>
 
   <!-- LOKASI SECTION -->
-  <section class="section-overlap bg-white py-24 lg:py-32 z-[60]">
+  <section id="lokasi" class="section-overlap bg-white pt-20 pb-24 lg:pt-28 lg:pb-36 z-[60]">
     <div class="max-w-[1440px] mx-auto px-6 md:px-12">
       <h2 class="text-black text-4xl md:text-6xl font-black uppercase tracking-tighter font-public mb-12 text-center">
         <span class="reveal-wrapper"><span class="reveal-line">Lokasi Kami</span></span>
@@ -494,9 +494,9 @@
     background-color: #4b5563;
   }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha384-g4NTh/Iv5PPU4xPyhEWqPcwtNXOvdaDI8LLnyYfyNZOjKJeYQyjzQ9X5275eBjpt" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha384-Z3REaz79l2IaAZqJsSABtTbhjgOUYyV3p90XNnAPCSHg3EMTz1fouunq9WZRtj3d" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js" integrity="sha384-0FwbSMlcCBgRZIAIN+i1xVrAbgrwSmKYej7zCCFlPpv50NGur87UfaeG1l13efmX" crossorigin="anonymous"></script>
 
 <script>
   // Initialize Lenis
@@ -521,15 +521,19 @@
   gsap.ticker.add((time)=>{ lenis.raf(time * 1000) });
   gsap.ticker.lagSmoothing(0, 0);
 
-  /* --- OVERLAPPING SCROLL EFFECT --- */
-  const overlapSections = document.querySelectorAll('.section-overlap');
+  /* --- CUBERTO OVERLAPPING SCROLL EFFECT --- */
+  const overlapSections = gsap.utils.toArray('.section-overlap');
   overlapSections.forEach((section, index) => {
-    if (index === overlapSections.length - 1) return;
+    if (index === overlapSections.length - 1) return; // Footer does not pin
+    const nextSection = overlapSections[index + 1];
     ScrollTrigger.create({
       trigger: section,
       start: () => section.offsetHeight > window.innerHeight ? "bottom bottom" : "top top",
+      endTrigger: nextSection,
+      end: () => nextSection ? (nextSection.offsetHeight > window.innerHeight ? "bottom bottom" : "top top") : "bottom top",
       pin: true,
       pinSpacing: false,
+      invalidateOnRefresh: true,
     });
   });
 
@@ -597,7 +601,7 @@
     );
   });
 
-  // Dynamic Testimonial Script from Settings
+  // Testimonial handler
   @php
     $rawTesti = setting('testimonials');
     $dbTestimonials = is_array($rawTesti) ? $rawTesti : (json_decode($rawTesti ?? '[]', true) ?: []);
@@ -658,6 +662,9 @@
     const wasOpen = item.classList.contains("open");
     document.querySelectorAll(".faq-item").forEach((i) => i.classList.remove("open"));
     if (!wasOpen) item.classList.add("open");
+    setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 450);
   }
 
   // Horizontal Scroll Buttons

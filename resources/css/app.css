@@ -1,6 +1,7 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@source "../../resources/views/**/*.blade.php";
+@source "../../app/Livewire/**/*.php";
+@source "../../app/View/**/*.php";
 
 /* ── Opening Animation Styles ──
    ponytail: Tailwind v4 @apply di @layer components bisa error
@@ -90,7 +91,12 @@
 
 /* ── Prokar Global UI Styles ── */
 :root {
-  --radius-overlap: 3rem;
+  --radius-overlap: 2.5rem;
+}
+@media (min-width: 768px) {
+  :root {
+    --radius-overlap: 3.5rem;
+  }
 }
 
 html, body {
@@ -134,12 +140,13 @@ body {
 .section-overlap {
   position: relative;
   border-radius: var(--radius-overlap) var(--radius-overlap) 0 0;
-  box-shadow: var(--shadow-cuberto);
+  box-shadow: 0 -15px 40px -10px rgba(0,0,0,0.22);
   will-change: transform;
 }
-.section-overlap:first-of-type {
-  border-radius: 0;
-  box-shadow: none;
+.section-overlap-first,
+.section-overlap.no-overlap {
+  border-radius: 0 !important;
+  box-shadow: none !important;
 }
 
 /* ── Text Animation Classes (Cuberto Style) ── */
