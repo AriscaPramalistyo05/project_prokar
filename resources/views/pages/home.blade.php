@@ -329,6 +329,8 @@
                   <img src="{{ $product->image_url }}"
                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     alt="{{ $product->name }}"
+                    loading="lazy"
+                    decoding="async"
                     onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&h=400&fit=crop'">
                   <span class="absolute top-4 left-4 bg-red-600 text-white text-xs font-black px-3 py-1.5 rounded-full uppercase">Promo</span>
                   <button type="button"

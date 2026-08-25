@@ -26,7 +26,7 @@ class OrderConfirmationMail extends Mailable
     /**
      * Get the message envelope.
      */
-    public function getEnvelope(): Envelope
+    public function envelope(): Envelope
     {
         return new Envelope(
             subject: 'Konfirmasi Pesanan - ' . $this->order->order_code,
@@ -36,7 +36,7 @@ class OrderConfirmationMail extends Mailable
     /**
      * Get the message content definition.
      */
-    public function getContent(): Content
+    public function content(): Content
     {
         return new Content(
             view: 'emails.order-confirmation',

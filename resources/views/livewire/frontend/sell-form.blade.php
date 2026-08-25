@@ -1,6 +1,6 @@
-<section id="form-penjualan" aria-labelledby="form-heading" class="section-overlap bg-white pt-20 pb-36 md:pb-48 z-30 relative">
+<section id="form-penjualan" aria-labelledby="form-heading" class="section-overlap bg-white pt-20 pb-48 md:pb-64 z-30 relative">
     <div class="max-w-4xl mx-auto px-6 lg:px-12">
-        <div class="bg-white border border-gray-200 rounded-[2.5rem] p-8 md:p-14 shadow-card relative overflow-hidden">
+        <div class="bg-white border border-gray-200 rounded-[2.5rem] p-6 sm:p-10 md:p-14 pb-14 sm:pb-20 md:pb-24 shadow-card relative overflow-hidden">
 
             <div wire:key="form-content" class="relative z-10 transition-opacity duration-500" :class="{ 'opacity-40 pointer-events-none': $wire.submitted }">
                 <div class="text-center mb-10">
@@ -61,9 +61,9 @@
                             <label for="kategori" class="block text-sm font-bold uppercase tracking-widest mb-2 text-gray-700 font-public">Kategori Barang</label>
                             <div class="select-wrap">
                                 <select wire:model="kategori" id="kategori"
-                                    class="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 text-base focus:bg-white focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all cursor-pointer">
+                                    class="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 text-base focus:bg-white focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all appearance-none cursor-pointer">
                                     <option value="">Pilih Kategori</option>
-                                    @foreach($categories as $cat)
+                                    @foreach ($categories as $cat)
                                         <option value="{{ $cat->id }}">{{ $cat->name }}</option>
                                     @endforeach
                                 </select>
@@ -109,38 +109,38 @@
 
                     <div>
                         <label for="deskripsi" class="block text-sm font-bold uppercase tracking-widest mb-2 text-gray-700 font-public">Detail / Kelengkapan Tambahan</label>
-                        <textarea wire:model="deskripsi" id="deskripsi" rows="4" placeholder="Jelaskan secara spesifik (Contoh: Remote hilang, dus box ada, dingin normal, dll)"
+                        <textarea wire:model="deskripsi" id="deskripsi" rows="3"
+                            placeholder="Jelaskan secara spesifik (Contoh: Remote hilang, dus box ada, dingin normal, dll)"
                             class="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 text-base focus:bg-white focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all resize-none"></textarea>
                         @error('deskripsi') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
-                    {{-- Upload Foto/Video dengan auto-compress --}}
-                    <div class="flex flex-col gap-2" x-data="mediaUploader()">
-                        <label for="upload-input" class="block text-sm font-bold uppercase tracking-widest mb-2 text-gray-700 font-public">Upload Foto/Video (Maks 5 file)</label>
-                        <label for="upload-input"
-                            class="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-[2rem] p-10 cursor-pointer bg-gray-50 hover:bg-gray-100 hover:border-black transition-all group"
-                            :class="{ 'pointer-events-none opacity-50': compressing }">
-                            <div class="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-sm mb-4 group-hover:scale-110 transition-transform">
-                                <i class="fa-solid fa-cloud-arrow-up text-2xl text-black"></i>
-                            </div>
-                            <p class="text-black font-bold text-base mb-1">Klik untuk mengunggah foto/video</p>
-                            <p class="text-gray-500 text-sm">Foto max 5MB, Video otomatis dikompres sebelum diunggah</p>
-                            <span class="px-5 py-2.5 bg-black text-white text-xs font-bold font-public uppercase tracking-widest rounded-full mt-3 group-hover:bg-brand-yellow group-hover:text-black transition-colors">Pilih File</span>
-                            <input x-ref="fileInput" x-on:change="handleFiles($event)" id="upload-input" type="file" multiple class="hidden" />
-                        </label>
-                        @error('media') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
-                        @error('media.*') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+                    <div x-data="mediaUploader">
+                        <label class="block text-sm font-bold uppercase tracking-widest mb-2 text-gray-700 font-public">Upload Foto/Video (Maks 5 File)</label>
 
-                        {{-- Compression Progress --}}
-                        <div x-show="compressing" x-transition class="border border-yellow-300 bg-yellow-50 p-4 rounded-2xl flex flex-col gap-2 mb-4" x-cloak>
-                            <div class="flex items-start gap-2">
-                                <svg class="animate-spin h-4 w-4 mt-1 flex-shrink-0 text-yellow-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <div class="border-2 border-dashed border-gray-300 hover:border-black rounded-2xl p-6 text-center transition-colors bg-white cursor-pointer relative"
+                            x-on:click="$refs.fileInput.click()">
+                            <input x-ref="fileInput" type="file" multiple accept="image/*,video/*" class="hidden"
+                                x-on:change="handleFiles($event)" />
+
+                            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-black">
+                                <i class="fa-solid fa-cloud-arrow-up text-2xl"></i>
+                            </div>
+                            <h4 class="font-public font-bold text-base text-black mb-1">Klik untuk mengunggah foto/video</h4>
+                            <p class="text-xs text-gray-400 font-inter mb-4">Foto max 5MB, Video otomatis dikompres sebelum diunggah</p>
+                            <span class="inline-block bg-brand-yellow text-black font-public font-bold uppercase text-xs tracking-wider px-6 py-2.5 rounded-full">Pilih File</span>
+                        </div>
+
+                        {{-- Progress Bar Kompresi --}}
+                        <div x-show="compressing" class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-2xl space-y-2" x-cloak>
+                            <div class="flex items-center gap-2">
+                                <svg class="animate-spin h-4 w-4 text-yellow-600" fill="none" viewBox="0 0 24 24">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                                 </svg>
                                 <span class="text-sm font-bold text-yellow-800 font-public break-all" x-text="compressionMessage"></span>
                             </div>
-                            <div class="w-full bg-yellow-200 h-2 rounded-full overflow-hidden mt-1">
+                            <div class="w-full bg-yellow-200 h-2 rounded-full overflow-hidden">
                                 <div class="bg-yellow-600 h-2 transition-all duration-300" :style="'width:' + compressionProgress + '%'"></div>
                             </div>
                             <p class="text-xs text-yellow-700 font-inter" x-text="compressionProgress + '% selesai'"></p>
@@ -170,19 +170,21 @@
                             </div>
                         </template>
 
-                        <button type="submit"
-                            class="mt-6 w-full bg-black text-brand-yellow py-5 rounded-full font-public font-black uppercase text-lg tracking-widest hover:bg-gray-800 transition-colors btn-hover flex justify-center items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
-                            :disabled="compressing || uploading">
-                            <span wire:loading.remove wire:target="submit" x-show="!uploading" class="flex items-center gap-2">
-                                Kirim Penawaran <i class="fa-solid fa-paper-plane"></i>
-                            </span>
-                            <span x-show="uploading" class="flex items-center gap-2" x-cloak>
-                                <i class="fa-solid fa-cloud-arrow-up fa-bounce"></i> Mengunggah file...
-                            </span>
-                            <span wire:loading wire:target="submit" class="flex items-center gap-2">
-                                <i class="fa-solid fa-spinner fa-spin"></i> Memproses...
-                            </span>
-                        </button>
+                        <div class="mt-8 mb-4 sm:mb-6">
+                            <button type="submit"
+                                class="w-full bg-black text-brand-yellow py-5 rounded-full font-public font-black uppercase text-lg tracking-widest hover:bg-gray-800 transition-colors btn-hover flex justify-center items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed shadow-xl active:scale-[0.99]"
+                                :disabled="compressing || uploading">
+                                <span wire:loading.remove wire:target="submit" x-show="!uploading" class="flex items-center gap-2">
+                                    Kirim Penawaran <i class="fa-solid fa-paper-plane"></i>
+                                </span>
+                                <span x-show="uploading" class="flex items-center gap-2" x-cloak>
+                                    <i class="fa-solid fa-cloud-arrow-up fa-bounce"></i> Mengunggah file...
+                                </span>
+                                <span wire:loading wire:target="submit" class="flex items-center gap-2">
+                                    <i class="fa-solid fa-spinner fa-spin"></i> Memproses...
+                                </span>
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -287,6 +289,14 @@ Alpine.data('mediaUploader', () => ({
                 this.refreshGSAP();
             }
         });
+    },
+
+    refreshGSAP() {
+        if (typeof ScrollTrigger !== 'undefined') {
+            setTimeout(() => {
+                ScrollTrigger.refresh();
+            }, 150);
+        }
     },
 
     formatSize(bytes) {

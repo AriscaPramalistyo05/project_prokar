@@ -160,11 +160,11 @@ class SellSubmissionDetail extends Component
 
             // Salin foto barang yang diupload customer ke galeri produk
             foreach ($this->submission->sellSubmissionImages as $index => $media) {
-                if ($media->type === 'photo') {
+                if ($media->type === 'photo' || $media->type === 'image') {
                     \App\Models\ProductImage::create([
                         'product_id' => $product->id,
                         'path' => $media->path,
-                        'type' => 'photo',
+                        'type' => 'image',
                         'is_primary' => $index === 0,
                         'order' => $index,
                     ]);

@@ -35,6 +35,8 @@ class TrackService extends Component
                 'status' => 'in_progress',
             ]);
             
+            event(new \App\Events\CustomerApprovalUpdated($this->serviceOrder, 'approved'));
+
             // Refresh model to get updated logs
             $this->serviceOrder->refresh();
         }
@@ -47,6 +49,8 @@ class TrackService extends Component
                 'status' => 'cancelled',
             ]);
             
+            event(new \App\Events\CustomerApprovalUpdated($this->serviceOrder, 'rejected'));
+
             // Refresh model
             $this->serviceOrder->refresh();
         }

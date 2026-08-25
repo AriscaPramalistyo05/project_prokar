@@ -11,6 +11,8 @@ class SettingService
         'mail_password',
         'midtrans_server_key',
         'midtrans_client_key',
+        'google_client_id',
+        'google_client_secret',
     ];
 
     public function set(string $key, mixed $value, string $group = 'general', string $type = 'text', ?string $label = null): void

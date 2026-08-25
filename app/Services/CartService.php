@@ -31,6 +31,7 @@ class CartService
      */
     public function addItem(int $productId, int $qty = 1): bool
     {
+        $qty = max(1, $qty);
         $product = Product::find($productId);
         if (!$product || $product->status !== 'available' || $product->stock < 1) {
             return false;

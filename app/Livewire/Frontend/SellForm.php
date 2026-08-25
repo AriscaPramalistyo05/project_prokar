@@ -49,15 +49,8 @@ class SellForm extends Component
             'media.*' => [
                 'required',
                 'file',
+                'mimes:jpg,jpeg,png,webp,mp4,mov,avi,webm',
                 'max:20480', // 20MB
-                function ($attribute, $value, $fail) {
-                    $extension = strtolower($value->getClientOriginalExtension());
-                    $imageExts = ['jpg', 'jpeg', 'png', 'webp'];
-                    $videoExts = ['mp4', 'mov', 'avi', 'webm'];
-                    if (!in_array($extension, array_merge($imageExts, $videoExts))) {
-                        $fail('File harus berupa foto (jpg, png, webp) atau video (mp4, mov, avi, webm).');
-                    }
-                },
             ],
         ];
     }
@@ -144,6 +137,8 @@ class SellForm extends Component
             'description' => $this->deskripsi,
             'status' => 'pending',
         ]);
+
+        event(new \App\Events\SellSubmissionCreated($submission));
 
         if (!empty($this->media)) {
             foreach ($this->media as $file) {

@@ -41,7 +41,12 @@ class CartList extends Component
         $cartService = app(CartService::class);
         foreach ($this->items as $item) {
             if ($item['id'] === $id) {
-                $cartService->updateQty($id, $item['quantity'] - 1);
+                $newQty = $item['quantity'] - 1;
+                if ($newQty <= 0) {
+                    $cartService->removeItem($id);
+                } else {
+                    $cartService->updateQty($id, $newQty);
+                }
                 break;
             }
         }
@@ -51,6 +56,7 @@ class CartList extends Component
 
     public function updateQuantity(int $id, int $value): void
     {
+        $value = max(1, $value);
         app(CartService::class)->updateQty($id, $value);
         $this->loadItems();
         $this->dispatchCartUpdate();

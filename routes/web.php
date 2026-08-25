@@ -86,6 +86,16 @@ Route::get('/checkout/success/{orderCode}', function ($orderCode, \App\Services\
                 // Clear user cart
                 $cartService = app(\App\Services\CartService::class);
                 $cartService->clear();
+
+                // Kirim email konfirmasi ke customer jika ada email
+                if (!empty($order->customer_email)) {
+                    try {
+                        \Illuminate\Support\Facades\Mail::to($order->customer_email)
+                            ->send(new \App\Mail\OrderConfirmationMail($order));
+                    } catch (\Throwable $e) {
+                        \Illuminate\Support\Facades\Log::error("Failed sending confirmation email for Order {$order->order_code}: " . $e->getMessage());
+                    }
+                }
             });
 
             $order->refresh();
@@ -122,8 +132,13 @@ Route::get('/video/stream/{filename}', [\App\Http\Controllers\VideoStreamControl
 
 Route::view('/keranjang', 'pages.cart')->name('keranjang.index');
 Route::post('/cart/add', function (Illuminate\Http\Request $request) {
+    $request->validate([
+        'product_id' => 'required|integer|exists:products,id',
+        'quantity'   => 'nullable|integer|min:1|max:100',
+    ]);
+
     $productId = (int) $request->input('product_id');
-    $qty = (int) $request->input('quantity', 1);
+    $qty = max(1, (int) $request->input('quantity', 1));
     
     $cartService = app(\App\Services\CartService::class);
     $success = $cartService->addItem($productId, $qty);
@@ -146,6 +161,8 @@ require __DIR__.'/auth.php';
 Route::middleware('guest')->group(function () {
     Route::get('/verifikasi-email', [\App\Http\Controllers\Auth\OtpController::class, 'show'])
         ->name('auth.otp');
+    Route::get('/verifikasi-email/auto', [\App\Http\Controllers\Auth\OtpController::class, 'verifyAuto'])
+        ->name('auth.otp.auto');
     Route::post('/verifikasi-email', [\App\Http\Controllers\Auth\OtpController::class, 'verify'])
         ->name('auth.otp.verify');
     Route::get('/verifikasi-email/kirim-ulang', [\App\Http\Controllers\Auth\OtpController::class, 'resend'])
@@ -209,3 +226,15 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         Route::get('/settings', \App\Livewire\Admin\SettingIndex::class)->name('settings');
     });
 });
+
+// ─── ERROR PAGES PREVIEW (LOCAL DEV) ───────────────────────────
+if (app()->environment('local')) {
+    Route::get('/errors/{code}', function ($code) {
+        if (!view()->exists("errors.{$code}")) {
+            abort(404);
+        }
+        return response()->view("errors.{$code}", [
+            'exception' => new \Exception("Ini adalah contoh pesan simulasi untuk Error {$code}."),
+        ], (int) $code);
+    })->name('errors.preview');
+}

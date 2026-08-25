@@ -10,11 +10,30 @@ use Laravel\Socialite\Facades\Socialite;
 
 class GoogleController extends Controller
 {
+    private function configureGoogleClient(): void
+    {
+        $clientId = setting('google_client_id', true) ?: config('services.google.client_id');
+        $clientSecret = setting('google_client_secret', true) ?: config('services.google.client_secret');
+        $redirect = setting('google_redirect_uri') ?: config('services.google.redirect');
+
+        if ($clientId) {
+            config(['services.google.client_id' => $clientId]);
+        }
+        if ($clientSecret) {
+            config(['services.google.client_secret' => $clientSecret]);
+        }
+        if ($redirect) {
+            config(['services.google.redirect' => $redirect]);
+        }
+    }
+
     /**
      * Redirect ke halaman OAuth Google.
      */
     public function redirect()
     {
+        $this->configureGoogleClient();
+
         return Socialite::driver('google')->redirect();
     }
 
@@ -25,6 +44,8 @@ class GoogleController extends Controller
      */
     public function callback()
     {
+        $this->configureGoogleClient();
+
         $googleUser = Socialite::driver('google')->stateless()->user();
 
         $user = User::firstOrCreate(

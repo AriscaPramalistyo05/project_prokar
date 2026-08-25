@@ -25,7 +25,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->decimal('offered_price', 12, 2)->nullable();
             $table->decimal('agreed_price', 12, 2)->nullable();
-            $table->enum('status', ['pending', 'reviewing', 'negotiating', 'accepted', 'rejected', 'paid'])->default('pending');
+            $table->enum('status', ['pending', 'reviewing', 'negotiating', 'accepted', 'rejected', 'paid', 'in_repair', 'ready_for_sale'])->default('pending');
             $table->text('admin_notes')->nullable();
             $table->timestamp('physical_check_at')->nullable();
             $table->timestamp('payment_at')->nullable();

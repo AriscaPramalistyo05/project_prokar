@@ -75,6 +75,43 @@ class OtpController extends Controller
     }
 
     /**
+     * Verifikasi otomatis via link 1-klik di email.
+     */
+    public function verifyAuto(Request $request): RedirectResponse
+    {
+        $userId = $request->query('id');
+        $otp = $request->query('code');
+
+        if (!$userId || !$otp) {
+            return redirect()->route('login')->withErrors(['email' => 'Link verifikasi tidak valid.']);
+        }
+
+        $record = EmailOtpVerification::where('user_id', $userId)
+            ->where('otp', $otp)
+            ->where('is_used', false)
+            ->where('expires_at', '>', now())
+            ->latest()
+            ->first();
+
+        if (!$record) {
+            return redirect()->route('login')->withErrors(['email' => 'Link verifikasi tidak valid atau sudah kedaluwarsa. Silakan masuk untuk meminta kode baru.']);
+        }
+
+        $record->update(['is_used' => true]);
+
+        $user = User::findOrFail($userId);
+        $user->email_verified_at = now();
+        $user->save();
+
+        Auth::login($user);
+        session()->forget('otp_user_id');
+
+        return auth()->user()->hasAnyRole(['super_admin', 'teknisi', 'admin'])
+            ? redirect()->route('admin.dashboard')->with('success', 'Email berhasil diverifikasi otomatis!')
+            : redirect()->route('home')->with('success', 'Email berhasil diverifikasi otomatis!');
+    }
+
+    /**
      * Kirim ulang OTP (dengan cooldown 60 detik).
      */
     public function resend(Request $request): RedirectResponse

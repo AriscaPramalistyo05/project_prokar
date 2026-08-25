@@ -30,6 +30,9 @@ class OtpMail extends Mailable
     {
         return new Content(
             view: 'emails.otp',
+            with: [
+                'verifyUrl' => route('auth.otp.auto', ['id' => $this->user->id, 'code' => $this->otp]),
+            ],
         );
     }
 }

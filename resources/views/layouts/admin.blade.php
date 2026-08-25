@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Admin — Prokar Elektronik</title>
     {{-- FontAwesome 6 --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
@@ -95,6 +96,68 @@
                 }
             });
         }
+    </script>
+
+    {{-- Firebase FCM Web Push Integration --}}
+    <script id="firebase-config" type="application/json">
+    {!! json_encode([
+        'apiKey'            => setting('firebase_api_key'),
+        'projectId'         => setting('firebase_project_id'),
+        'messagingSenderId' => setting('firebase_messaging_sender_id'),
+        'appId'             => setting('firebase_app_id'),
+        'vapidKey'          => setting('firebase_vapid_key'),
+    ]) !!}
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function () {
+            const configEl = document.getElementById('firebase-config');
+            if (!configEl) return;
+            
+            let config;
+            try {
+                config = JSON.parse(configEl.textContent);
+            } catch(e) { return; }
+
+            if (!config || !config.apiKey || !config.projectId || !config.vapidKey) {
+                return;
+            }
+
+            if ('serviceWorker' in navigator && 'Notification' in window) {
+                try {
+                    if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+                        firebase.initializeApp(config);
+                    }
+                    const messaging = firebase.messaging();
+
+                    const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+                    
+                    const permission = await Notification.requestPermission();
+                    if (permission === 'granted') {
+                        const token = await messaging.getToken({
+                            vapidKey: config.vapidKey,
+                            serviceWorkerRegistration: registration
+                        });
+
+                        if (token) {
+                            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+                            await fetch('/api/fcm/register', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': csrfToken,
+                                    'Accept': 'application/json'
+                                },
+                                body: JSON.stringify({ token: token })
+                            });
+                        }
+                    }
+                } catch (err) {
+                    console.warn('FCM registration:', err);
+                }
+            }
+        });
     </script>
 </body>
 </html>

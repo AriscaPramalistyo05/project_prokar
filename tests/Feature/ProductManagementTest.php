@@ -15,6 +15,8 @@ use Tests\TestCase;
 
 class ProductManagementTest extends TestCase
 {
+    use RefreshDatabase;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -23,8 +25,7 @@ class ProductManagementTest extends TestCase
 
     public function test_can_create_product_with_images_and_redirects_with_indicator()
     {
-        $user = User::factory()->create();
-        $user->assignRole('super_admin');
+        $user = $this->actingAsSuperAdmin();
 
         $category = Category::firstOrCreate(['name' => 'Kulkas'], ['slug' => 'kulkas']);
 
@@ -58,14 +59,11 @@ class ProductManagementTest extends TestCase
 
     public function test_can_edit_existing_product_and_replace_or_delete_photo()
     {
-        $user = User::factory()->create();
-        $user->assignRole('super_admin');
+        $user = $this->actingAsSuperAdmin();
 
-        $product = Product::first();
-        $this->assertNotNull($product);
-
+        $product = Product::factory()->create();
+        $firstImage = ProductImage::factory()->create(['product_id' => $product->id]);
         $initialCount = $product->productImages()->count();
-        $firstImage = $product->productImages()->first();
 
         $newImage = UploadedFile::fake()->image('replaced_photo.jpg', 600, 600);
 
