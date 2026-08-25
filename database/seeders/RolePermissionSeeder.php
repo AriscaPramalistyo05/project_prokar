@@ -50,5 +50,8 @@ class RolePermissionSeeder extends Seeder
             'view_services', 'create_service', 'edit_service', 'update_service_status',
             'input_service_cost',
         ]);
+
+        // ── Role: customer ─────────────────────────────────────
+        Role::firstOrCreate(['name' => 'customer']);
     }
 }

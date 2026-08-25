@@ -20,5 +20,14 @@ class SendServiceOrderCreatedNotification
             body:  "Servis {$serviceOrder->service_code} dari {$serviceOrder->customer_name}",
             data:  ['type' => 'service', 'id' => (string) $serviceOrder->id]
         );
+
+        if (!empty($serviceOrder->customer_email)) {
+            try {
+                \Illuminate\Support\Facades\Mail::to($serviceOrder->customer_email)
+                    ->send(new \App\Mail\ServiceConfirmationMail($serviceOrder));
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error("Failed sending service confirmation email: " . $e->getMessage());
+            }
+        }
     }
 }

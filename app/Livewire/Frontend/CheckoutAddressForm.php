@@ -164,10 +164,37 @@ class CheckoutAddressForm extends Component
             return;
         }
 
-        // 1. Hitung subtotal produk
+        // 1. Validasi ulang & hitung subtotal murni dari Database
         $subtotal = 0;
+        $verifiedItems = [];
+
         foreach ($cartItems as $item) {
-            $subtotal += ((int) $item['unit_price']) * ((int) $item['quantity']);
+            $product = Product::find($item['id']);
+            if (!$product || $product->status !== 'available' || $product->stock < 1) {
+                $this->addError('cart', "Produk {$item['name']} saat ini tidak tersedia atau stok habis.");
+                return;
+            }
+
+            $actualUnitPrice = ($product->is_promo && $product->promo_price) 
+                ? (int) $product->promo_price 
+                : (int) $product->price;
+
+            $itemQty = max(1, min((int) $product->stock, (int) ($item['quantity'] ?? 1)));
+            $itemSubtotal = $actualUnitPrice * $itemQty;
+            $subtotal += $itemSubtotal;
+
+            $verifiedItems[] = [
+                'id' => $product->id,
+                'name' => $product->name,
+                'unit_price' => $actualUnitPrice,
+                'quantity' => $itemQty,
+                'subtotal' => $itemSubtotal,
+            ];
+        }
+
+        if ($subtotal <= 0 || empty($verifiedItems)) {
+            $this->addError('cart', 'Total belanja tidak valid atau produk kosong.');
+            return;
         }
 
         // 2. Ongkos Kirim
@@ -198,7 +225,7 @@ class CheckoutAddressForm extends Component
             }
         }
 
-        $total = $subtotal + $shippingCost;
+        $total = max(1, $subtotal + $shippingCost);
 
         // 3. Kalkulasi DP & Sisa Pelunasan
         $paymentType = 'full';
@@ -243,15 +270,14 @@ class CheckoutAddressForm extends Component
 
         // 5. Buat OrderItem untuk setiap produk
         $midtransItems = [];
-        foreach ($cartItems as $item) {
-            $itemSubtotal = ((int) $item['unit_price']) * ((int) $item['quantity']);
+        foreach ($verifiedItems as $item) {
             OrderItem::create([
                 'order_id' => $order->id,
                 'product_id' => $item['id'],
                 'product_name' => $item['name'],
                 'product_price' => (int) $item['unit_price'],
                 'quantity' => (int) $item['quantity'],
-                'subtotal' => $itemSubtotal,
+                'subtotal' => (int) $item['subtotal'],
             ]);
 
             $midtransItems[] = [

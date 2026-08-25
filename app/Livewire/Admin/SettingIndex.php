@@ -134,6 +134,11 @@ class SettingIndex extends Component
     public int $warranty_duration_days = 30;
     public string $warranty_terms = '';
 
+    // ─── TAB 7: AUTENTIKASI & GOOGLE OAUTH ───────────────────────────
+    public string $google_client_id = '';
+    public string $google_client_secret = '';
+    public string $google_redirect_uri = '';
+
     public function mount(SettingService $settingService): void
     {
         // 1. Umum & Identitas
@@ -253,6 +258,11 @@ class SettingIndex extends Component
         // 6. Garansi
         $this->warranty_duration_days = (int) ($settingService->get('warranty_duration_days') ?? 30);
         $this->warranty_terms = (string) ($settingService->get('warranty_terms') ?? "1. Garansi mencakup kerusakan fungsi mesin bukan akibat kelalaian pemakaian.\n2. Segel toko pada unit barang/servis harus dalam keadaan utuh.\n3. Harap simpan invoice atau kartu garansi resmi digital ini.");
+
+        // 7. Autentikasi & Google OAuth
+        $this->google_client_id = (string) ($settingService->get('google_client_id', true) ?? config('services.google.client_id', ''));
+        $this->google_client_secret = (string) ($settingService->get('google_client_secret', true) ?? config('services.google.client_secret', ''));
+        $this->google_redirect_uri = (string) ($settingService->get('google_redirect_uri') ?? config('services.google.redirect', url('/auth/google/callback')));
     }
 
     public function addTestimonial(): void
@@ -449,6 +459,15 @@ class SettingIndex extends Component
         // 6. Simpan Tab Garansi
         $settingService->set('warranty_duration_days', (string) $this->warranty_duration_days, 'warranty', 'text', 'Durasi Garansi Toko');
         $settingService->set('warranty_terms', $this->warranty_terms, 'warranty', 'textarea', 'Syarat & Ketentuan Garansi');
+
+        // 7. Simpan Tab Autentikasi & Google OAuth
+        if (!empty($this->google_client_id)) {
+            $settingService->set('google_client_id', $this->google_client_id, 'auth', 'text', 'Google Client ID');
+        }
+        if (!empty($this->google_client_secret)) {
+            $settingService->set('google_client_secret', $this->google_client_secret, 'auth', 'text', 'Google Client Secret');
+        }
+        $settingService->set('google_redirect_uri', $this->google_redirect_uri, 'auth', 'text', 'Google Redirect URI');
 
         $this->success('Pengaturan toko & beranda berhasil disimpan!');
     }

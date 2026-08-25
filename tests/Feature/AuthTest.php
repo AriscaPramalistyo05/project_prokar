@@ -13,6 +13,12 @@ class AuthTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\PreventRequestForgery::class);
+    }
+
     public function test_user_receives_otp_email_after_register(): void
     {
         Mail::fake();
@@ -136,6 +142,28 @@ class AuthTest extends TestCase
         Mail::assertNothingSent();
     }
 
+    public function test_user_can_verify_otp_via_auto_link(): void
+    {
+        $user = User::factory()->create([
+            'email_verified_at' => null,
+        ]);
+
+        $otp = '654321';
+        EmailOtpVerification::create([
+            'user_id' => $user->id,
+            'otp' => $otp,
+            'expires_at' => now()->addMinutes(10),
+            'is_used' => false,
+        ]);
+
+        $response = $this->get(route('auth.otp.auto', ['id' => $user->id, 'code' => $otp]));
+
+        $response->assertRedirect(route('home'));
+        $this->assertAuthenticatedAs($user);
+        $this->assertNotNull($user->fresh()->email_verified_at);
+        $this->assertTrue(EmailOtpVerification::where('user_id', $user->id)->where('otp', $otp)->first()->is_used);
+    }
+
     public function test_unverified_user_cannot_access_protected_routes(): void
     {
         // ponytail: route home sekarang publik, jadi tidak redirect ke OTP.
@@ -149,4 +177,5 @@ class AuthTest extends TestCase
 
         $response = $this->get(route('home'));
         $response->assertOk(); // home is public now
-}}
+    }
+}

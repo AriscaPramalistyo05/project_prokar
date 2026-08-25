@@ -4,11 +4,8 @@
         <div>
             <div class="flex items-center gap-2 mb-1">
                 <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">Pengaturan Toko &amp; Sistem</h1>
-                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-200">
-                    Fase 8
-                </span>
             </div>
-            <p class="text-sm text-gray-500">Kelola identitas resmi toko, tampilan halaman depan, email SMTP, payment gateway, notifikasi, dan garansi.</p>
+            <p class="text-sm text-gray-500">Kelola identitas resmi toko, garansi, tampilan beranda, email SMTP, Google OAuth, payment gateway, dan notifikasi FCM.</p>
         </div>
         <div class="flex items-center gap-3 shrink-0">
             <x-button label="Simpan Semua Perubahan" icon="o-check" wire:click="save" class="bg-gray-900 text-white hover:bg-black font-semibold text-sm px-5 py-2.5 rounded-xl border-none shadow-sm transition-all" spinner="save" />
@@ -29,7 +26,7 @@
 
         <button type="button" wire:click="$set('selectedTab', 'mail-tab')" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all cursor-pointer {{ $selectedTab === 'mail-tab' ? 'bg-gray-900 text-white shadow-sm' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200/80' }}">
             <i class="fa-solid fa-envelope {{ $selectedTab === 'mail-tab' ? 'text-[#FFCC00]' : 'text-gray-400' }}"></i>
-            <span>3. Email (SMTP)</span>
+            <span>3. Email &amp; Autentikasi</span>
         </button>
 
         <button type="button" wire:click="$set('selectedTab', 'payment-tab')" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all cursor-pointer {{ $selectedTab === 'payment-tab' ? 'bg-gray-900 text-white shadow-sm' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200/80' }}">
@@ -40,11 +37,6 @@
         <button type="button" wire:click="$set('selectedTab', 'fcm-tab')" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all cursor-pointer {{ $selectedTab === 'fcm-tab' ? 'bg-gray-900 text-white shadow-sm' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200/80' }}">
             <i class="fa-solid fa-bell {{ $selectedTab === 'fcm-tab' ? 'text-[#FFCC00]' : 'text-gray-400' }}"></i>
             <span>5. Notifikasi (FCM)</span>
-        </button>
-
-        <button type="button" wire:click="$set('selectedTab', 'warranty-tab')" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all cursor-pointer {{ $selectedTab === 'warranty-tab' ? 'bg-gray-900 text-white shadow-sm' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200/80' }}">
-            <i class="fa-solid fa-shield-halved {{ $selectedTab === 'warranty-tab' ? 'text-[#FFCC00]' : 'text-gray-400' }}"></i>
-            <span>6. Garansi Toko</span>
         </button>
     </div>
 
@@ -160,6 +152,26 @@
                         <x-input label="TikTok URL" wire:model="social_tiktok" placeholder="https://tiktok.com/@..." class="bg-gray-50 border-gray-200 focus:bg-white text-xs" />
                         <x-input label="Facebook URL" wire:model="social_facebook" placeholder="https://facebook.com/..." class="bg-gray-50 border-gray-200 focus:bg-white text-xs" />
                         <x-input label="YouTube URL" wire:model="social_youtube" placeholder="https://youtube.com/@..." class="bg-gray-50 border-gray-200 focus:bg-white text-xs" />
+                    </div>
+                </div>
+
+                {{-- Section 4: Kebijakan Garansi Toko --}}
+                <div class="pt-6 border-t border-gray-100">
+                    <div class="flex items-center gap-2 pb-3 mb-5 border-b border-gray-100">
+                        <span class="w-8 h-8 rounded-lg bg-gray-100 text-gray-900 flex items-center justify-center text-sm font-bold">4</span>
+                        <div>
+                            <h3 class="text-base font-bold text-gray-900">Garansi Toko &amp; Kebijakan Layanan</h3>
+                            <p class="text-xs text-gray-500">Durasi garansi standar dan syarat ketentuan yang dicetak pada faktur invoice serta kartu garansi resmi digital.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                        <div class="md:col-span-1">
+                            <x-input label="Durasi Garansi Default (Hari)" type="number" min="1" max="365" wire:model="warranty_duration_days" hint="Standar garansi toko (cth: 30)" class="bg-gray-50 border-gray-200 focus:bg-white" required />
+                        </div>
+                        <div class="md:col-span-2">
+                            <x-textarea label="Syarat &amp; Ketentuan Garansi Toko" wire:model="warranty_terms" rows="4" hint="Klausul ini otomatis dicetak pada lembar invoice PDF dan kartu garansi digital pelanggan." class="bg-gray-50 border-gray-200 focus:bg-white text-xs" />
+                        </div>
                     </div>
                 </div>
 
@@ -687,6 +699,48 @@
                     <x-button label="Test Kirim Email" icon="o-paper-airplane" wire:click="testEmail" class="bg-gray-900 text-white hover:bg-black font-semibold text-xs rounded-xl border-none shadow-sm" spinner="testEmail" />
                 </div>
 
+                {{-- Section 2: Google Single Sign-On (OAuth 2.0) --}}
+                <div class="pt-6 border-t border-gray-100 space-y-6">
+                    <div class="flex items-center gap-2 pb-3 border-b border-gray-100">
+                        <span class="w-8 h-8 rounded-lg bg-gray-100 text-gray-900 flex items-center justify-center text-sm font-bold">2</span>
+                        <div>
+                            <h3 class="text-base font-bold text-gray-900">Google Single Sign-On (OAuth 2.0)</h3>
+                            <p class="text-xs text-gray-500">Login dan pendaftaran cepat 1-klik menggunakan akun Google pelanggan.</p>
+                        </div>
+                    </div>
+
+                    <div class="p-4 rounded-xl bg-blue-50 border border-blue-200 flex items-start gap-3">
+                        <i class="fa-brands fa-google text-blue-600 text-lg mt-0.5"></i>
+                        <div class="text-xs text-blue-900 leading-relaxed">
+                            <strong class="font-bold">Keamanan Kredensial OAuth:</strong>
+                            <p class="mt-1 text-blue-800">
+                                Kredensial <strong>Client ID</strong> dan <strong>Client Secret</strong> disimpan secara <strong>terenkripsi (AES-256)</strong> di database.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <x-input label="Google Client ID" wire:model="google_client_id" placeholder="xxxx-xxxx.apps.googleusercontent.com" hint="Didapatkan dari Google Cloud Console ➔ APIs &amp; Services ➔ Credentials" class="bg-gray-50 border-gray-200 focus:bg-white font-mono text-xs" />
+                        
+                        <x-input label="Google Client Secret" type="password" wire:model="google_client_secret" placeholder="GOCSPX-xxxx..." hint="Otomatis dienkripsi di database (Aman)" class="bg-gray-50 border-gray-200 focus:bg-white font-mono text-xs" />
+                    </div>
+
+                    <div class="p-4 rounded-xl bg-gray-50 border border-gray-200 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-bold text-xs uppercase tracking-wider text-gray-700">Authorized Redirect URI</h4>
+                                <p class="text-[11px] text-gray-500 mt-0.5">Salin URI ini dan tempelkan ke kolom <em>"Authorized redirect URIs"</em> di Google Cloud Console.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="text" readonly value="{{ url('/auth/google/callback') }}" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs font-mono text-gray-700 select-all" />
+                            <button type="button" onclick="navigator.clipboard.writeText('{{ url('/auth/google/callback') }}'); alert('Authorized Redirect URI berhasil disalin ke clipboard!');" class="px-4 py-2.5 bg-gray-900 hover:bg-black text-white text-xs font-bold rounded-xl transition-all whitespace-nowrap cursor-pointer">
+                                <i class="fa-regular fa-copy mr-1"></i> Salin
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         @endif
 
@@ -721,10 +775,10 @@
 
                 <div class="pt-6 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4 bg-gray-50 p-4 rounded-xl">
                     <div class="flex items-center gap-2">
-                        <i class="fa-solid fa-bolt text-amber-500"></i>
-                        <p class="text-xs text-gray-600">Uji otentikasi kunci Server Key langsung ke server API Midtrans.</p>
+                        <i class="fa-solid fa-bolt text-emerald-600"></i>
+                        <p class="text-xs text-gray-600">Validasi status API Key Midtrans ke server Midtrans (Sandbox/Production).</p>
                     </div>
-                    <x-button label="Test Koneksi Midtrans" icon="o-bolt" wire:click="testMidtrans" class="bg-gray-900 text-white hover:bg-black font-semibold text-xs rounded-xl border-none shadow-sm" spinner="testMidtrans" />
+                    <x-button label="Test Koneksi Midtrans" icon="o-check-badge" wire:click="testMidtrans" class="bg-gray-900 text-white hover:bg-black font-semibold text-xs rounded-xl border-none shadow-sm" spinner="testMidtrans" />
                 </div>
 
             </div>
@@ -740,31 +794,34 @@
                     <i class="fa-solid fa-bell text-purple-600 mt-0.5 text-base"></i>
                     <div>
                         <strong>Firebase Cloud Messaging (FCM Push Notification):</strong>
-                        <p class="text-xs text-purple-800 mt-0.5">Kirim notifikasi instan ke layar admin saat ada order baru, pesanan servis masuk, atau pengajuan jual barang elektronik bekas.</p>
+                        <p class="text-xs text-purple-800 mt-0.5">Menerima push notifikasi instan langsung ke browser/desktop saat ada transaksi, order, servis, atau pengajuan jual baru masuk.</p>
                     </div>
                 </div>
 
                 {{-- Upload Service Account JSON --}}
-                <div class="p-5 bg-gray-50 border border-gray-200 rounded-xl space-y-4">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <h4 class="font-bold text-sm text-gray-900">Service Account JSON (Kredensial Server)</h4>
-                            <p class="text-xs text-gray-500">File kunci privat Firebase Admin SDK untuk otentikasi pengiriman notifikasi dari server backend Laravel.</p>
-                        </div>
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-bold text-xs {{ $has_service_account_file ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-amber-100 text-amber-800 border border-amber-300' }}">
-                            {{ $has_service_account_file ? '✓ File Terpasang' : 'Belum Ada File' }}
-                        </span>
+                <div class="p-5 rounded-2xl bg-gray-50 border border-gray-200 space-y-4">
+                    <div>
+                        <h4 class="font-bold text-sm text-gray-900">1. Service Account SDK (Backend Laravel)</h4>
+                        <p class="text-xs text-gray-500">File kunci privat Firebase Admin SDK untuk otentikasi pengiriman notifikasi dari server backend Laravel.</p>
                     </div>
+
+                    <div class="flex items-center gap-3">
+                        <span class="badge {{ $has_service_account_file ? 'badge-success' : 'badge-error' }} badge-sm text-white font-bold">
+                            {{ $has_service_account_file ? '✓ File Terpasang' : '✗ Belum Ada File' }}
+                        </span>
+                        <span class="text-xs text-gray-500">storage/app/firebase/service-account.json</span>
+                    </div>
+
                     <x-file label="Upload / Ganti File Service Account (.json)" wire:model="service_account_file" accept=".json,application/json" hint="Disimpan aman di storage/app/firebase/service-account.json" class="file-input-sm w-full" />
                 </div>
 
-                {{-- Web App Credentials --}}
-                <div class="space-y-4 pt-2">
-                    <div class="flex items-center gap-2 pb-2 border-b border-gray-100">
-                        <i class="fa-brands fa-google text-amber-500"></i>
-                        <h4 class="font-bold text-sm text-gray-900">Kredensial Web App (Firebase Console)</h4>
+                {{-- Firebase Web App Credentials --}}
+                <div class="p-5 rounded-2xl bg-gray-50 border border-gray-200 space-y-4">
+                    <div>
+                        <h4 class="font-bold text-sm text-gray-900">2. Kredensial Web App (Firebase Console)</h4>
+                        <p class="text-xs text-gray-500">Digunakan oleh browser frontend / Service Worker untuk menerima sinyal push.</p>
                     </div>
-                    
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <x-input label="Firebase API Key" wire:model="firebase_api_key" placeholder="AIzaSy..." class="bg-gray-50 border-gray-200 focus:bg-white" />
                         <x-input label="Firebase Project ID" wire:model="firebase_project_id" placeholder="prokar-elektronik-..." class="bg-gray-50 border-gray-200 focus:bg-white" />

@@ -170,17 +170,8 @@ class ProductForm extends Component
             'media.*' => [
                 'nullable',
                 'file',
+                'mimes:jpg,jpeg,png,webp,mp4,mov,avi,webm',
                 'max:51200',
-                function ($attribute, $value, $fail) {
-                    if ($value && method_exists($value, 'getClientOriginalExtension')) {
-                        $extension = strtolower($value->getClientOriginalExtension());
-                        $imageExts = ['jpg', 'jpeg', 'png', 'webp'];
-                        $videoExts = ['mp4', 'mov', 'avi', 'webm'];
-                        if (!in_array($extension, array_merge($imageExts, $videoExts))) {
-                            $fail('File harus berupa foto (jpg, png, webp) atau video (mp4, mov, avi, webm).');
-                        }
-                    }
-                },
             ],
         ];
     }

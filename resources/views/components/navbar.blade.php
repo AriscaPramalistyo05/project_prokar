@@ -91,49 +91,55 @@
         @php
             $user = auth()->user();
             $hasAvatar = !empty($user->avatar);
-            $initials = collect(explode(' ', $user->name))
+            $initials = collect(explode(' ', trim($user->name)))
+                ->filter()
                 ->map(fn($part) => strtoupper(substr($part, 0, 1)))
+                ->take(2)
                 ->join('');
+            if (empty($initials)) {
+                $initials = 'U';
+            }
         @endphp
-        <div x-data="{ open: false }" class="relative">
+        <div x-data="{ open: false }" class="relative shrink-0">
             <button @click="open = !open" aria-label="Account"
-                class="w-10 h-10 rounded-full bg-black flex items-center justify-center hover:scale-110 transition-transform overflow-hidden">
+                class="w-10 h-10 min-w-[40px] min-h-[40px] shrink-0 aspect-square rounded-full bg-black flex items-center justify-center hover:scale-105 transition-transform overflow-hidden cursor-pointer">
                 @if($hasAvatar)
-                    <img src="{{ $user->avatar }}" alt="Avatar" class="rounded-full w-10 h-10 object-cover">
+                    <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}" class="w-full h-full rounded-full object-cover">
                 @else
-                    <span class="text-white font-bold text-lg">{{ $initials }}</span>
+                    <span class="text-white font-bold text-xs tracking-tight">{{ $initials }}</span>
                 @endif
             </button>
             <div x-show="open" @click.away="open = false" x-transition
-                class="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg z-20 border border-gray-100">
-                <div class="p-4 flex items-center gap-3 border-b">
+                class="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl z-20 border border-gray-100 overflow-hidden">
+                <div class="p-4 flex items-center gap-3 border-b border-gray-100 bg-gray-50/50">
                     @if($hasAvatar)
-                        <img src="{{ $user->avatar }}" alt="Avatar" class="w-12 h-12 rounded-full object-cover">
+                        <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}" class="w-11 h-11 min-w-[44px] min-h-[44px] shrink-0 aspect-square rounded-full object-cover border border-gray-200">
                     @else
-                        <div class="w-12 h-12 rounded-full bg-black flex items-center justify-center text-white text-lg font-bold">
+                        <div class="w-11 h-11 min-w-[44px] min-h-[44px] shrink-0 aspect-square rounded-full bg-black flex items-center justify-center text-white text-xs font-bold tracking-tight shadow-xs">
                             {{ $initials }}
                         </div>
                     @endif
-                    <div>
-                        <p class="text-sm font-medium text-gray-900">{{ $user->name }}</p>
-                        <p class="text-xs text-gray-500">{{ $user->email }}</p>
+                    <div class="min-w-0 flex-1">
+                        <p class="text-sm font-bold text-gray-900 truncate leading-snug">{{ $user->name }}</p>
+                        <p class="text-xs text-gray-500 truncate mt-0.5">{{ $user->email }}</p>
                     </div>
                 </div>
-                <hr class="my-1 border-gray-100">
-                <a href="{{ route('user.profile') }}" class="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-black">
-                    <i class="fa-regular fa-user mr-2 text-gray-400"></i> Profil Saya
-                </a>
-                <a href="{{ auth()->user()->hasRole('super_admin') ? route('admin.settings') : route('user.settings') }}" class="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-black">
-                    <i class="fa-solid fa-gear mr-2 text-gray-400"></i> Pengaturan
-                </a>
-                <hr class="my-1 border-gray-100">
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="w-full text-left px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 flex items-center gap-2 cursor-pointer">
-                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                        <span>Logout</span>
-                    </button>
-                </form>
+                <div class="py-1">
+                    <a href="{{ route('user.profile') }}" class="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-black">
+                        <i class="fa-regular fa-user mr-2 text-gray-400"></i> Profil Saya
+                    </a>
+                    <a href="{{ auth()->user()->hasRole('super_admin') ? route('admin.settings') : route('user.settings') }}" class="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-black">
+                        <i class="fa-solid fa-gear mr-2 text-gray-400"></i> Pengaturan
+                    </a>
+                    <div class="my-1 border-t border-gray-100"></div>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="w-full text-left px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 flex items-center gap-2 cursor-pointer">
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                            <span>Logout</span>
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
       @endauth
@@ -219,15 +225,17 @@
                 </a>
               @endguest
               @auth
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3 min-w-0">
                   @if($hasAvatar)
-                    <img src="{{ $user->avatar }}" alt="Avatar" class="w-10 h-10 rounded-full object-cover shadow-sm">
+                    <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}" class="w-10 h-10 min-w-[40px] min-h-[40px] shrink-0 aspect-square rounded-full object-cover shadow-sm border border-gray-200">
                   @else
-                    <div class="w-10 h-10 rounded-full bg-black flex items-center justify-center text-white font-bold shadow-sm">{{ $initials }}</div>
+                    <div class="w-10 h-10 min-w-[40px] min-h-[40px] shrink-0 aspect-square rounded-full bg-black flex items-center justify-center text-white text-xs font-bold tracking-tight shadow-sm">
+                      {{ $initials }}
+                    </div>
                   @endif
-                  <div>
-                    <p class="text-sm font-bold text-gray-900">{{ $user->name }}</p>
-                    <p class="text-xs text-gray-500 truncate w-48">{{ $user->email }}</p>
+                  <div class="min-w-0 flex-1">
+                    <p class="text-sm font-bold text-gray-900 truncate leading-snug">{{ $user->name }}</p>
+                    <p class="text-xs text-gray-500 truncate mt-0.5">{{ $user->email }}</p>
                   </div>
                 </div>
               @endauth

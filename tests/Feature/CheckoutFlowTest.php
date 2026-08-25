@@ -102,9 +102,9 @@ class CheckoutFlowTest extends TestCase
         Livewire::test('frontend.checkout-address-form')
             ->set('name', 'Andi Semarang')
             ->set('province_id', '33')
-            ->set('regency_id', 'KOTA SEMARANG')
-            ->set('district_id', 'TEMBALANG')
-            ->set('village_id', 'TEMBALANG')
+            ->set('regency_id', '3374')
+            ->set('district_id', '3374010')
+            ->set('village_id', '3374010001')
             ->set('postal_code', '50268')
             ->set('address_detail', 'Jl. Banjarsari Selatan No. 10')
             ->set('phone', '081234567891')
@@ -127,12 +127,9 @@ class CheckoutFlowTest extends TestCase
     public function test_webhook_rejects_invalid_signature(): void
     {
         $serverKey = 'test-server-key-123';
-        Setting::updateOrCreate(
-            ['key' => 'midtrans_server_key'],
-            ['value' => encrypt($serverKey), 'type' => 'text', 'group' => 'payment', 'label' => 'Server Key']
-        );
+        app(\App\Services\SettingService::class)->set('midtrans_server_key', $serverKey);
 
-        $response = $this->postJson('/payment/webhook', [
+        $response = $this->postJson(route('api.payment.webhook'), [
             'order_id' => 'ORD-20260817-9999',
             'status_code' => '200',
             'gross_amount' => '1550000.00',
@@ -189,17 +186,14 @@ class CheckoutFlowTest extends TestCase
         ]);
 
         $serverKey = 'test-server-key-123';
-        Setting::updateOrCreate(
-            ['key' => 'midtrans_server_key'],
-            ['value' => encrypt($serverKey), 'type' => 'text', 'group' => 'payment', 'label' => 'Server Key']
-        );
+        app(\App\Services\SettingService::class)->set('midtrans_server_key', $serverKey);
 
         $orderId = $order->order_code;
         $statusCode = '200';
         $grossAmount = '2050000.00';
         $validSignature = hash('sha512', $orderId . $statusCode . $grossAmount . $serverKey);
 
-        $response = $this->postJson('/payment/webhook', [
+        $response = $this->postJson(route('api.payment.webhook'), [
             'order_id' => $orderId,
             'status_code' => $statusCode,
             'gross_amount' => $grossAmount,

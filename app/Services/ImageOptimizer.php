@@ -40,7 +40,8 @@ class ImageOptimizer
             }
 
             $manager = new ImageManager(new Driver());
-            $image = $manager->read($file);
+            $filePath = $file instanceof UploadedFile ? $file->getRealPath() : $file;
+            $image = is_file($filePath) ? $manager->decodePath($filePath) : $manager->decode($filePath);
 
             // Scale down if larger than maxWidth
             if ($image->width() > $maxWidth) {
@@ -48,7 +49,7 @@ class ImageOptimizer
             }
 
             // Encode to WebP
-            $encoded = $image->toWebp($quality);
+            $encoded = $image->encodeUsingFileExtension('webp');
 
             $filename = Str::random(40) . '.webp';
             $path = trim($folder, '/') . '/' . $filename;

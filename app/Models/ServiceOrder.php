@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 class ServiceOrder extends Model
 {
-    use LogsActivity;
+    use HasFactory, LogsActivity;
 
     protected $fillable = [
         'service_code',
@@ -56,6 +57,17 @@ class ServiceOrder extends Model
     }
 
     // ── Auto-generate service_code ──
+    protected static function booted(): void
+    {
+        static::creating(function ($service) {
+            if (empty($service->service_code)) {
+                $date = now()->format('Ymd');
+                $last = static::whereDate('created_at', now()->toDateString())->latest('id')->first();
+                $sequence = $last ? ((int) substr($last->service_code, -4)) + 1 : 1;
+                $service->service_code = sprintf('SRV-%s-%04d', $date, $sequence);
+            }
+        });
+    }
 
     // ── Activity Log ──
     public function getActivitylogOptions(): LogOptions
