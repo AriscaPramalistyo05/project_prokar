@@ -244,8 +244,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
                 ];
                 foreach ($directories as $dir) {
                     if (!is_dir($dir)) {
-                        @mkdir($dir, 0775, true);
+                        @mkdir($dir, 0777, true);
                     }
+                    @chmod($dir, 0777);
                 }
 
                 // 2. Hubungkan symlink storage jika belum terhubung
@@ -282,6 +283,22 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         })->name('maintenance.migrate');
     });
 });
+
+// ─── STORAGE FILE FALLBACK (HOSTING TANPA SYMLINK) ───────────────
+Route::get('/storage/{path}', function (string $path) {
+    $basePath = realpath(storage_path('app/public'));
+    $targetPath = realpath(storage_path('app/public/' . $path));
+
+    if (!$targetPath || !$basePath || !str_starts_with($targetPath, $basePath) || !file_exists($targetPath)) {
+        abort(404);
+    }
+
+    $mime = mime_content_type($targetPath) ?: 'application/octet-stream';
+    return response()->file($targetPath, [
+        'Content-Type'  => $mime,
+        'Cache-Control' => 'public, max-age=86400',
+    ]);
+})->where('path', '.*')->name('storage.fallback');
 
 // ─── ERROR PAGES PREVIEW (LOCAL DEV) ───────────────────────────
 if (app()->environment('local')) {

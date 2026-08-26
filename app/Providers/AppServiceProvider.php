@@ -33,7 +33,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Auto-create required storage directories if missing
+        // Force HTTPS URL generation in production or when accessed via HTTPS proxy / SSL
+        if ($this->app->environment('production') || request()->header('X-Forwarded-Proto') === 'https' || str_starts_with(config('app.url'), 'https://')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+
+        // Auto-create required storage directories if missing with write permissions
         $directories = [
             storage_path('app/private/livewire-tmp'),
             storage_path('app/livewire-tmp'),
@@ -50,8 +55,9 @@ class AppServiceProvider extends ServiceProvider
 
         foreach ($directories as $dir) {
             if (!is_dir($dir)) {
-                @mkdir($dir, 0775, true);
+                @mkdir($dir, 0777, true);
             }
+            @chmod($dir, 0777);
         }
 
         // Register ProductObserver
