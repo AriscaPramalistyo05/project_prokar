@@ -34,4 +34,32 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    build: {
+        // Minifikasi CSS lebih agresif
+        cssMinify: true,
+        // Pisahkan chunk agar cache lebih efektif
+        rollupOptions: {
+            output: {
+                // Pisahkan vendor libraries dari app code
+                manualChunks(id) {
+                    if (id.includes('node_modules')) {
+                        return 'vendor';
+                    }
+                },
+                // Optimasi nama file
+                assetFileNames: 'assets/[name]-[hash][extname]',
+                chunkFileNames: 'assets/[name]-[hash].js',
+                entryFileNames: 'assets/[name]-[hash].js',
+            },
+        },
+        // Hapus console.log di production
+        terserOptions: {
+            compress: {
+                drop_console: true,
+                drop_debugger: true,
+            },
+        },
+        // Kurangi chunk size warning threshold
+        chunkSizeWarningLimit: 500,
+    },
 });

@@ -50,6 +50,9 @@ abstract class DuskTestCase extends BaseTestCase
             '--no-first-run',
             '--safebrowsing-disable-auto-update',
             '--remote-allow-origins=*',
+            '--disable-gcm',
+            '--log-level=3',
+            '--silent',
         ])->all());
 
         return RemoteWebDriver::create(

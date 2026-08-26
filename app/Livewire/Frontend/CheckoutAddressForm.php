@@ -345,6 +345,7 @@ class CheckoutAddressForm extends Component
         ];
 
         try {
+            // 👉 PEMBUATAN SNAP TOKEN DI SINI
             $this->snapToken = $midtransService->getSnapToken($params);
             $order->update(['midtrans_token' => $this->snapToken]);
             $this->orderCode = $order->order_code;

@@ -11,11 +11,11 @@ class HomeInteractionTest extends DuskTestCase
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/')
-                ->pause(1500)
+                ->waitForText('Prokar', 10)
                 ->assertSee('Prokar')
                 ->scrollIntoView('footer')
-                ->pause(500)
-                ->assertPresent('body');
+                ->pause(300)
+                ->assertPresent('footer');
         });
     }
 
@@ -23,13 +23,14 @@ class HomeInteractionTest extends DuskTestCase
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/')
-                ->pause(1500)
-                ->assertPresent('body');
+                ->waitFor('nav', 10)
+                ->assertPresent('nav');
 
-            if ($browser->element('[onclick*="openCartModal"], button[title*="Keranjang"]')) {
-                $browser->click('[onclick*="openCartModal"], button[title*="Keranjang"]')
+            if ($browser->element('a[aria-label="Keranjang"], a[href*="/keranjang"]')) {
+                $browser->click('a[aria-label="Keranjang"], a[href*="/keranjang"]')
                     ->pause(500);
             }
         });
     }
 }
+

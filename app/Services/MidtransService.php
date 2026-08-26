@@ -36,7 +36,7 @@ class MidtransService
     public function getSnapToken(array $params): string
     {
         $this->initConfig();
-        return Snap::getSnapToken($params);
+        return Snap::getSnapToken($params);// 👉 Memanggil SDK resmi Midtrans Snap API
     }
 
     /**

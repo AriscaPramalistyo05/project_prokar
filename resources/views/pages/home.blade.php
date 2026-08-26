@@ -83,7 +83,7 @@
               <div class="hero-parallax-col flex flex-col gap-5 w-[230px] xl:w-[250px] h-full justify-between" data-speed="-40">
                 <!-- Card 1: Kiri Atas (Mesin Cuci) -->
                 <a href="{{ route('produk.index') }}?kategori=mesin-cuci" class="hero-3card-card stagger-item h-[235px] xl:h-[255px] group block">
-                  <img src="{{ $hero3CardImg1 }}" alt="{{ $hero3CardTitle1 }}" onerror="this.src='https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=600&h=450&fit=crop'">
+                  <img src="{{ $hero3CardImg1 }}" alt="{{ $hero3CardTitle1 }}" width="250" height="255" fetchpriority="high" loading="eager" decoding="sync" onerror="this.src='https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=600&h=450&fit=crop&fm=webp&q=75'">
                   <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-50 group-hover:opacity-75 transition-opacity pointer-events-none"></div>
                   @if($hero3CardTitle1)
                     <span class="hero-3card-label">{{ $hero3CardTitle1 }}</span>
@@ -92,7 +92,7 @@
 
                 <!-- Card 2: Kiri Bawah (Televisi) -->
                 <a href="{{ route('produk.index') }}?kategori=tv" class="hero-3card-card stagger-item h-[235px] xl:h-[255px] group block">
-                  <img src="{{ $hero3CardImg2 }}" alt="{{ $hero3CardTitle2 }}" onerror="this.src='https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=600&h=450&fit=crop'">
+                  <img src="{{ $hero3CardImg2 }}" alt="{{ $hero3CardTitle2 }}" width="250" height="255" loading="lazy" decoding="async" onerror="this.src='https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=600&h=450&fit=crop&fm=webp&q=75'">
                   <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-50 group-hover:opacity-75 transition-opacity pointer-events-none"></div>
                   @if($hero3CardTitle2)
                     <span class="hero-3card-label">{{ $hero3CardTitle2 }}</span>
@@ -104,7 +104,7 @@
               <div class="hero-parallax-col flex flex-col gap-5 w-[230px] xl:w-[250px] h-full justify-center" data-speed="45">
                 <!-- Card 3: Kanan Tinggi (Kulkas) -->
                 <a href="{{ route('produk.index') }}?kategori=kulkas" class="hero-3card-card stagger-item h-[490px] xl:h-[530px] group block">
-                  <img src="{{ $hero3CardImg3 }}" alt="{{ $hero3CardTitle3 }}" onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=600&h=800&fit=crop'">
+                  <img src="{{ $hero3CardImg3 }}" alt="{{ $hero3CardTitle3 }}" width="250" height="530" loading="lazy" decoding="async" onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=600&h=800&fit=crop&fm=webp&q=75'">
                   <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-50 group-hover:opacity-75 transition-opacity pointer-events-none"></div>
                   @if($hero3CardTitle3)
                     <span class="hero-3card-label">{{ $hero3CardTitle3 }}</span>
@@ -119,7 +119,7 @@
           <div class="lg:hidden stagger-group w-full max-w-sm sm:max-w-md mx-auto space-y-4 pt-2">
             <!-- Card 1: Mesin Cuci -->
             <a href="{{ route('produk.index') }}?kategori=mesin-cuci" class="hero-3card-card h-[200px] sm:h-[240px] block stagger-item group">
-              <img src="{{ $hero3CardImg1 }}" alt="{{ $hero3CardTitle1 }}" onerror="this.src='https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=600&h=450&fit=crop'">
+              <img src="{{ $hero3CardImg1 }}" alt="{{ $hero3CardTitle1 }}" width="400" height="240" fetchpriority="high" loading="eager" decoding="sync" onerror="this.src='https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=600&h=450&fit=crop&fm=webp&q=75'">
               <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-50 group-hover:opacity-75 transition-opacity pointer-events-none"></div>
               @if($hero3CardTitle1)
                 <span class="hero-3card-label">{{ $hero3CardTitle1 }}</span>
@@ -128,7 +128,7 @@
 
             <!-- Card 2: Televisi -->
             <a href="{{ route('produk.index') }}?kategori=tv" class="hero-3card-card h-[200px] sm:h-[240px] block stagger-item group">
-              <img src="{{ $hero3CardImg2 }}" alt="{{ $hero3CardTitle2 }}" onerror="this.src='https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=600&h=450&fit=crop'">
+              <img src="{{ $hero3CardImg2 }}" alt="{{ $hero3CardTitle2 }}" width="400" height="240" loading="lazy" decoding="async" onerror="this.src='https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=600&h=450&fit=crop&fm=webp&q=75'">
               <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-50 group-hover:opacity-75 transition-opacity pointer-events-none"></div>
               @if($hero3CardTitle2)
                 <span class="hero-3card-label">{{ $hero3CardTitle2 }}</span>
@@ -137,7 +137,7 @@
 
             <!-- Card 3: Kulkas (Potret Panjang) -->
             <a href="{{ route('produk.index') }}?kategori=kulkas" class="hero-3card-card h-[360px] sm:h-[420px] block stagger-item group">
-              <img src="{{ $hero3CardImg3 }}" alt="{{ $hero3CardTitle3 }}" onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=600&h=800&fit=crop'">
+              <img src="{{ $hero3CardImg3 }}" alt="{{ $hero3CardTitle3 }}" width="400" height="420" loading="lazy" decoding="async" onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=600&h=800&fit=crop&fm=webp&q=75'">
               <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-50 group-hover:opacity-75 transition-opacity pointer-events-none"></div>
               @if($hero3CardTitle3)
                 <span class="hero-3card-label">{{ $hero3CardTitle3 }}</span>
@@ -152,11 +152,11 @@
               <!-- Kolom 1 -->
               <div class="hero-parallax-col flex flex-col gap-5" data-speed="-70">
                 <a href="{{ route('produk.index') }}?kategori=kulkas" class="hero-tile stagger-item w-[150px] xl:w-[170px] h-[180px] xl:h-[200px]">
-                  <img src="{{ setting('hero_image_kulkas') ? asset('storage/' . setting('hero_image_kulkas')) : 'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&h=400&fit=crop' }}" alt="Kulkas">
+                  <img src="{{ setting('hero_image_kulkas') ? asset('storage/' . setting('hero_image_kulkas')) : 'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&h=400&fit=crop&fm=webp&q=75' }}" alt="Kulkas" width="170" height="200" fetchpriority="high" loading="eager" decoding="sync">
                   <span class="hero-tile-label">Kulkas</span>
                 </a>
                 <a href="{{ route('produk.index') }}?kategori=dispenser" class="hero-tile stagger-item w-[150px] xl:w-[170px] h-[180px] xl:h-[200px]">
-                  <img src="{{ setting('hero_image_dispenser') ? asset('storage/' . setting('hero_image_dispenser')) : 'https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400&h=400&fit=crop' }}" alt="Dispenser">
+                  <img src="{{ setting('hero_image_dispenser') ? asset('storage/' . setting('hero_image_dispenser')) : 'https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400&h=400&fit=crop&fm=webp&q=75' }}" alt="Dispenser" width="170" height="200" loading="lazy" decoding="async">
                   <span class="hero-tile-label">Dispenser</span>
                 </a>
               </div>
@@ -164,11 +164,11 @@
               <!-- Kolom 2 -->
               <div class="hero-parallax-col flex flex-col gap-5 mt-16" data-speed="90">
                 <a href="{{ route('produk.index') }}?kategori=tv" class="hero-tile stagger-item w-[150px] xl:w-[170px] h-[180px] xl:h-[200px]">
-                  <img src="{{ setting('hero_image_tv') ? asset('storage/' . setting('hero_image_tv')) : 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&h=400&fit=crop' }}" alt="TV">
+                  <img src="{{ setting('hero_image_tv') ? asset('storage/' . setting('hero_image_tv')) : 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&h=400&fit=crop&fm=webp&q=75' }}" alt="TV" width="170" height="200" loading="lazy" decoding="async">
                   <span class="hero-tile-label">TV</span>
                 </a>
                 <a href="{{ route('produk.index') }}?kategori=microwave" class="hero-tile stagger-item w-[150px] xl:w-[170px] h-[180px] xl:h-[200px]">
-                  <img src="{{ setting('hero_image_microwave') ? asset('storage/' . setting('hero_image_microwave')) : 'https://images.unsplash.com/photo-1585659722983-3a675dabf23d?w=400&h=400&fit=crop' }}" alt="Microwave">
+                  <img src="{{ setting('hero_image_microwave') ? asset('storage/' . setting('hero_image_microwave')) : 'https://images.unsplash.com/photo-1585659722983-3a675dabf23d?w=400&h=400&fit=crop&fm=webp&q=75' }}" alt="Microwave" width="170" height="200" loading="lazy" decoding="async">
                   <span class="hero-tile-label">Microwave</span>
                 </a>
               </div>
@@ -176,11 +176,11 @@
               <!-- Kolom 3 -->
               <div class="hero-parallax-col flex flex-col gap-5" data-speed="-50">
                 <a href="{{ route('produk.index') }}?kategori=mesin-cuci" class="hero-tile stagger-item w-[150px] xl:w-[170px] h-[180px] xl:h-[200px]">
-                  <img src="{{ setting('hero_image_mesin_cuci') ? asset('storage/' . setting('hero_image_mesin_cuci')) : 'https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=400&h=400&fit=crop' }}" alt="Mesin Cuci">
+                  <img src="{{ setting('hero_image_mesin_cuci') ? asset('storage/' . setting('hero_image_mesin_cuci')) : 'https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=400&h=400&fit=crop&fm=webp&q=75' }}" alt="Mesin Cuci" width="170" height="200" loading="lazy" decoding="async">
                   <span class="hero-tile-label">Mesin Cuci</span>
                 </a>
                 <a href="{{ route('produk.index') }}?kategori=ac" class="hero-tile stagger-item w-[150px] xl:w-[170px] h-[180px] xl:h-[200px]">
-                  <img src="{{ setting('hero_image_ac') ? asset('storage/' . setting('hero_image_ac')) : 'https://images.unsplash.com/photo-1631545806609-947f38b3f6ea?w=400&h=400&fit=crop' }}" alt="AC">
+                  <img src="{{ setting('hero_image_ac') ? asset('storage/' . setting('hero_image_ac')) : 'https://images.unsplash.com/photo-1631545806609-947f38b3f6ea?w=400&h=400&fit=crop&fm=webp&q=75' }}" alt="AC" width="170" height="200" loading="lazy" decoding="async">
                   <span class="hero-tile-label">AC</span>
                 </a>
               </div>
@@ -245,7 +245,7 @@
         {{-- Servis TV --}}
         <div class="stagger-item">
           <a href="{{ route('servis.index') }}" class="group relative block h-[400px] lg:h-[500px] rounded-[2rem] overflow-hidden bg-black shadow-card transform hover:-translate-y-2 transition-all duration-500">
-            <img src="{{ setting('service_image_tv') ? asset('storage/' . setting('service_image_tv')) : 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=800&q=80' }}" alt="Service TV" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700">
+          <img src="{{ setting('service_image_tv') ? asset('storage/' . setting('service_image_tv')) : 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=800&q=75&fm=webp' }}" alt="Service TV" width="800" height="500" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700">
             <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-8">
               <h3 class="text-white text-3xl lg:text-4xl font-bold font-public uppercase leading-none">Service<br><span class="text-brand-yellow">TV</span></h3>
             </div>
@@ -494,12 +494,12 @@
     background-color: #4b5563;
   }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha384-g4NTh/Iv5PPU4xPyhEWqPcwtNXOvdaDI8LLnyYfyNZOjKJeYQyjzQ9X5275eBjpt" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha384-Z3REaz79l2IaAZqJsSABtTbhjgOUYyV3p90XNnAPCSHg3EMTz1fouunq9WZRtj3d" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js" integrity="sha384-0FwbSMlcCBgRZIAIN+i1xVrAbgrwSmKYej7zCCFlPpv50NGur87UfaeG1l13efmX" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha384-g4NTh/Iv5PPU4xPyhEWqPcwtNXOvdaDI8LLnyYfyNZOjKJeYQyjzQ9X5275eBjpt" crossorigin="anonymous" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha384-Z3REaz79l2IaAZqJsSABtTbhjgOUYyV3p90XNnAPCSHg3EMTz1fouunq9WZRtj3d" crossorigin="anonymous" defer></script>
+<script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js" integrity="sha384-0FwbSMlcCBgRZIAIN+i1xVrAbgrwSmKYej7zCCFlPpv50NGur87UfaeG1l13efmX" crossorigin="anonymous" defer></script>
 
-<script>
-  // Initialize Lenis
+<script defer>
+document.addEventListener('DOMContentLoaded', function() {
   const lenis = new Lenis({
     duration: 1.2,
     easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -675,5 +675,6 @@
     nextBtn.onclick = () => track.scrollBy({ left: 350, behavior: 'smooth' });
     prevBtn.onclick = () => track.scrollBy({ left: -350, behavior: 'smooth' });
   }
+}); // end DOMContentLoaded
 </script>
 @endpush

@@ -57,9 +57,19 @@
 
   @stack('schema')
 
-  <!-- Fonts & Icons Optimization (Non-render-blocking) -->
+  <!-- DNS Prefetch & Preconnect untuk domain eksternal -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
+  <link rel="dns-prefetch" href="https://images.unsplash.com" />
+  <link rel="dns-prefetch" href="https://www.gstatic.com" />
+  <link rel="dns-prefetch" href="https://fcm.googleapis.com" />
+  <link rel="dns-prefetch" href="https://storage.googleapis.com" />
+
+  <!-- Preload LCP resource -->
+  <link rel="preload" href="@yield('og_image', $shopLogo)" as="image" />
+
+  <!-- Fonts: Non-render-blocking via media="print" trick -->
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Public+Sans:wght@400;600;700&display=swap" />
   <link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Public+Sans:wght@400;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" media="print" onload="this.media='all'" />
@@ -69,6 +79,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha384-/o6I2CkkWC//PSjvWC/eYN7l3xM3tJm8ZzVkCOfp//W05QcE3mlGskpoHB6XqI+B" crossorigin="anonymous" />
   </noscript>
+
 
   <!-- Vite Production CSS & JS -->
   @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -441,8 +452,28 @@
         'vapidKey'           => setting('firebase_vapid_key'),
     ]) !!}
   </script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js" defer></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js" defer></script>
+  {{-- Firebase SDK: lazy load setelah halaman interaktif untuk kurangi TBT --}}
+  <script>
+    (function() {
+      var firebaseConfig = document.getElementById('firebase-config');
+      if (!firebaseConfig) return;
+      function loadFirebase() {
+        var s1 = document.createElement('script');
+        s1.src = 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js';
+        s1.onload = function() {
+          var s2 = document.createElement('script');
+          s2.src = 'https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js';
+          document.head.appendChild(s2);
+        };
+        document.head.appendChild(s1);
+      }
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(loadFirebase, { timeout: 3000 });
+      } else {
+        setTimeout(loadFirebase, 2500);
+      }
+    })();
+  </script>
 
   @livewireScripts
 </body>
