@@ -297,11 +297,9 @@ class CheckoutAddressForm extends Component
             ];
         }
 
-        // Kosongkan keranjang belanja
-        $cartService->clear();
-
         // 6. Tangani Pembayaran Non-Midtrans (Cash di Kasir & COD)
         if (in_array($this->paymentOption, ['cash_store', 'cod'])) {
+            $cartService->clear();
             $this->submitted = true;
             $this->orderCode = $order->order_code;
 
@@ -312,7 +310,8 @@ class CheckoutAddressForm extends Component
                 'delivery_type' => $this->deliveryType,
             ]);
 
-            $this->redirect(route('home'));
+            session(['last_order_code' => $order->order_code]);
+            $this->redirect(route('checkout.success', $order->order_code));
             return;
         }
 
@@ -350,6 +349,7 @@ class CheckoutAddressForm extends Component
             $order->update(['midtrans_token' => $this->snapToken]);
             $this->orderCode = $order->order_code;
             $this->submitted = true;
+            session(['checkout_order_code' => $order->order_code]);
 
             $this->dispatch('pay-midtrans', [
                 'snap_token' => $this->snapToken,

@@ -800,6 +800,7 @@
             <div class="bg-white rounded-2xl border border-gray-200/80 shadow-xs p-6 sm:p-8 space-y-6 animate-in fade-in duration-200">
                 
                 {{-- 1. Browser Push Notification Status & Interactive Toggle --}}
+                <div class="hidden" aria-hidden="true">
                 <div x-data="{
                     permission: (typeof Notification !== 'undefined') ? Notification.permission : 'unsupported',
                     loading: false,
@@ -881,6 +882,7 @@
                             </button>
                         </div>
                     </div>
+                </div>
                 </div>
 
                 {{-- 2. Kategori Notifikasi Akun (ProAcc UI Style) --}}

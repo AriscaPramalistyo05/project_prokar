@@ -47,7 +47,7 @@
     <div class="flex items-center gap-2 mt-4 pt-3 border-t border-gray-100">
         <button type="button" 
                 id="btn-enable-frontend-fcm"
-                onclick="window.requestFrontendFcm && window.requestFrontendFcm()"
+                onclick="if (window.requestFrontendFcm) { window.requestFrontendFcm(); } else if (window.requestAdminFcmPermission) { window.requestAdminFcmPermission(); }"
                 class="flex-1 py-2.5 px-3 bg-gray-900 hover:bg-black text-white text-xs font-bold rounded-xl transition-all text-center shadow-xs cursor-pointer">
             Aktifkan Notifikasi
         </button>

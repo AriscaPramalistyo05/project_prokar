@@ -40,7 +40,7 @@ class SecurityHeadersMiddleware
             "style-src-elem 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com https://fonts.bunny.net https://cdnjs.cloudflare.com https://cdn.jsdelivr.net" . $viteDev,
             "font-src 'self' https://fonts.gstatic.com https://fonts.bunny.net https://cdnjs.cloudflare.com data:" . $viteDev,
             "img-src 'self' data: blob: https://images.unsplash.com https://storage.googleapis.com https://*.midtrans.com https://*.googleusercontent.com https://ui-avatars.com" . $viteDev,
-            "connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://app.midtrans.com https://app.sandbox.midtrans.com https://api.midtrans.com https://api.sandbox.midtrans.com wss://*.firebaseio.com https://unpkg.com" . $viteDev,
+            "connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://app.midtrans.com https://app.sandbox.midtrans.com https://api.midtrans.com https://api.sandbox.midtrans.com https://www.emsifa.com wss://*.firebaseio.com https://unpkg.com" . $viteDev,
             "frame-src 'self' https://app.midtrans.com https://app.sandbox.midtrans.com https://www.google.com",
             "object-src 'none'",
             "base-uri 'self'",

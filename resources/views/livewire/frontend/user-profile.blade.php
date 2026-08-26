@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-[#F8FAFC] py-10 lg:py-16">
+<div wire:poll.15s="refreshData" class="min-h-screen bg-[#F8FAFC] py-10 lg:py-16">
     <div class="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-10">
 
         {{-- Top User Profile Card --}}

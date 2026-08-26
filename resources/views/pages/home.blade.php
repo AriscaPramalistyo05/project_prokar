@@ -651,13 +651,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  function changeTestimoni(dir) {
+  window.changeTestimoni = function changeTestimoni(dir) {
     currentIndex = Math.max(0, Math.min(testimonials.length - 1, currentIndex + dir));
     updateTestimoni();
-  }
+  };
 
   // FAQ Script
-  function toggleFaq(btn) {
+  window.toggleFaq = function toggleFaq(btn) {
     const item = btn.closest(".faq-item");
     const wasOpen = item.classList.contains("open");
     document.querySelectorAll(".faq-item").forEach((i) => i.classList.remove("open"));
@@ -665,7 +665,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
       ScrollTrigger.refresh();
     }, 450);
-  }
+  };
 
   // Horizontal Scroll Buttons
   const track = document.getElementById('onsale-track');

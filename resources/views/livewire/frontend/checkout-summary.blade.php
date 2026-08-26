@@ -42,16 +42,16 @@
 
       <!-- Kode promo -->
       <div>
-        <div class="flex gap-2">
+        <div class="flex flex-col sm:flex-row gap-2">
           <input
             type="text"
             wire:model.defer="discountCode"
             placeholder="KODE PROMO"
-            class="flex-grow bg-transparent border border-[#FCFCFA]/25 focus:border-[#FFCC00] rounded-xl px-3 py-2 text-xs font-mono uppercase tracking-wider text-[#FCFCFA] placeholder-[#FCFCFA]/35 outline-none transition-colors" />
+            class="min-w-0 w-full flex-grow bg-transparent border border-[#FCFCFA]/25 focus:border-[#FFCC00] rounded-xl px-3 py-2 text-xs font-mono uppercase tracking-wider text-[#FCFCFA] placeholder-[#FCFCFA]/35 outline-none transition-colors" />
           <button
             type="button"
             wire:click="applyDiscount"
-            class="bg-[#FFCC00] text-[#0A0A0A] border border-[#FFCC00] press rounded-xl px-4 py-2 font-public font-bold text-xs uppercase tracking-widest shrink-0 cursor-pointer">
+            class="w-full sm:w-auto bg-[#FFCC00] text-[#0A0A0A] border border-[#FFCC00] press rounded-xl px-4 py-2 font-public font-bold text-xs uppercase tracking-widest shrink-0 cursor-pointer">
             Pakai
           </button>
         </div>
@@ -247,16 +247,16 @@
 
     <!-- Kode promo mobile -->
     <div>
-      <div class="flex gap-2">
+      <div class="flex flex-col sm:flex-row gap-2">
         <input
           type="text"
           wire:model.defer="discountCode"
           placeholder="KODE PROMO"
-          class="flex-grow bg-transparent border border-[#FCFCFA]/25 focus:border-[#FFCC00] rounded-xl px-3 py-2 text-xs font-mono uppercase tracking-wider text-[#FCFCFA] placeholder-[#FCFCFA]/35 outline-none transition-colors" />
+          class="min-w-0 w-full flex-grow bg-transparent border border-[#FCFCFA]/25 focus:border-[#FFCC00] rounded-xl px-3 py-2 text-xs font-mono uppercase tracking-wider text-[#FCFCFA] placeholder-[#FCFCFA]/35 outline-none transition-colors" />
         <button
           type="button"
           wire:click="applyDiscount"
-          class="bg-[#FFCC00] text-[#0A0A0A] border border-[#FFCC00] press rounded-xl px-4 py-2 font-public font-bold text-xs uppercase tracking-widest shrink-0">
+          class="w-full sm:w-auto bg-[#FFCC00] text-[#0A0A0A] border border-[#FFCC00] press rounded-xl px-4 py-2 font-public font-bold text-xs uppercase tracking-widest shrink-0">
           Pakai
         </button>
       </div>

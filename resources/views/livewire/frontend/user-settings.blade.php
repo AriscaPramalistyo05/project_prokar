@@ -101,8 +101,8 @@
                             const res = await Notification.requestPermission();
                             this.permission = res;
                             if (res === 'granted') {
-                                if (window.requestFcmToken) {
-                                    await window.requestFcmToken();
+                                if (window.requestFrontendFcm) {
+                                    await window.requestFrontendFcm();
                                 }
                             }
                         } catch (e) {

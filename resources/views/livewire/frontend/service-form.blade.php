@@ -1,6 +1,6 @@
 <section id="form-servis" aria-labelledby="formulir-heading" class="section-overlap bg-white pt-20 pb-24 md:pt-28 md:pb-36 z-40 relative">
     <div class="max-w-4xl mx-auto px-6 lg:px-12">
-        <div class="bg-white border border-gray-200 rounded-[2.5rem] p-8 md:p-14 shadow-card relative overflow-hidden">
+        <div class="bg-white border border-gray-200 rounded-3xl p-5 sm:p-8 md:p-14 shadow-card relative overflow-hidden">
             
 
             
@@ -193,7 +193,7 @@
                         </template>
 
                         <button type="submit"
-                            class="mt-6 w-full bg-black text-white py-5 rounded-full font-public font-black uppercase text-lg tracking-widest hover:bg-gray-800 transition-colors btn-hover flex justify-center items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                            class="mt-6 w-full bg-black text-white py-4 sm:py-5 rounded-2xl font-public font-black uppercase text-base sm:text-lg tracking-widest hover:bg-gray-800 transition-colors btn-hover flex justify-center items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
                             :disabled="compressing || uploading">
                             <span wire:loading.remove wire:target="submit" x-show="!uploading" class="flex items-center gap-3">
                                 Kirim Pengajuan <i class="fa-solid fa-paper-plane text-brand-yellow"></i>
