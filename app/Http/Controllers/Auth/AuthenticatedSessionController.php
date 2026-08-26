@@ -28,29 +28,38 @@ class AuthenticatedSessionController extends Controller
 
         // Jika user belum verifikasi email (OTP), redirect ke halaman verifikasi OTP
         if ($user && is_null($user->email_verified_at) && \Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
-            session(['otp_user_id' => $user->id]);
+            // Otomatis verifikasi jika user memiliki role admin/teknisi agar tidak terkunci
+            if ($user->hasAnyRole(['super_admin', 'teknisi', 'admin'])) {
+                $user->forceFill(['email_verified_at' => now()])->save();
+            } else {
+                session(['otp_user_id' => $user->id]);
 
-            $activeOtp = \App\Models\EmailOtpVerification::where('user_id', $user->id)
-                ->where('is_used', false)
-                ->where('expires_at', '>', now())
-                ->latest()
-                ->first();
-
-            if (!$activeOtp) {
-                $newOtp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-                \App\Models\EmailOtpVerification::create([
-                    'user_id'    => $user->id,
-                    'otp'        => $newOtp,
-                    'expires_at' => now()->addMinutes(10),
-                ]);
                 try {
-                    \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\OtpMail($user, $newOtp));
+                    $activeOtp = \App\Models\EmailOtpVerification::where('user_id', $user->id)
+                        ->where('is_used', false)
+                        ->where('expires_at', '>', now())
+                        ->latest()
+                        ->first();
+
+                    if (!$activeOtp) {
+                        $newOtp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+                        \App\Models\EmailOtpVerification::create([
+                            'user_id'    => $user->id,
+                            'otp'        => $newOtp,
+                            'expires_at' => now()->addMinutes(10),
+                        ]);
+                        try {
+                            \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\OtpMail($user, $newOtp));
+                        } catch (\Throwable $e) {
+                            \Illuminate\Support\Facades\Log::error("Failed sending OTP email: " . $e->getMessage());
+                        }
+                    }
+
+                    return redirect()->route('auth.otp')->with('info', 'Akun Anda belum diverifikasi. Silakan masukkan kode OTP yang telah dikirimkan ke email Anda.');
                 } catch (\Throwable $e) {
-                    \Illuminate\Support\Facades\Log::error("Failed sending OTP email: " . $e->getMessage());
+                    \Illuminate\Support\Facades\Log::warning("OTP check error: " . $e->getMessage());
                 }
             }
-
-            return redirect()->route('auth.otp')->with('info', 'Akun Anda belum diverifikasi. Silakan masukkan kode OTP yang telah dikirimkan ke email Anda.');
         }
 
         $request->authenticate();

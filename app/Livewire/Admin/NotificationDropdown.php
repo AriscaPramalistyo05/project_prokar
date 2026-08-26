@@ -52,21 +52,25 @@ class NotificationDropdown extends Component
     public function render()
     {
         $user = Auth::user();
-        $unreadCount = $user ? $user->unreadNotifications()->count() : 0;
+        $unreadCount = 0;
+        $notifications = collect();
 
-        $notificationsQuery = $user ? $user->notifications() : collect();
+        try {
+            if ($user && \Illuminate\Support\Facades\Schema::hasTable('notifications')) {
+                $unreadCount = $user->unreadNotifications()->count();
 
-        if ($user) {
-            if ($this->tab === 'order') {
-                $notificationsQuery = $user->notifications()->where('data->type', 'order');
-            } elseif ($this->tab === 'service') {
-                $notificationsQuery = $user->notifications()->whereIn('data->type', ['service', 'approval']);
-            } elseif ($this->tab === 'sell') {
-                $notificationsQuery = $user->notifications()->where('data->type', 'sell');
+                $notificationsQuery = $user->notifications();
+                if ($this->tab === 'order') {
+                    $notificationsQuery = $user->notifications()->where('data->type', 'order');
+                } elseif ($this->tab === 'service') {
+                    $notificationsQuery = $user->notifications()->whereIn('data->type', ['service', 'approval']);
+                } elseif ($this->tab === 'sell') {
+                    $notificationsQuery = $user->notifications()->where('data->type', 'sell');
+                }
+                $notifications = $notificationsQuery->latest()->take(15)->get();
             }
-            $notifications = $notificationsQuery->latest()->take(15)->get();
-        } else {
-            $notifications = collect();
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('NotificationDropdown render error: ' . $e->getMessage());
         }
 
         return view('livewire.admin.notification-dropdown', [

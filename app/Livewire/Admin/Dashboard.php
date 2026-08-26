@@ -44,33 +44,43 @@ class Dashboard extends Component
 
         $startDate = Carbon::today()->subDays($this->chartPeriod - 1)->startOfDay();
 
-        // Single aggregate query for daily revenues
-        $dailyRevenues = Order::where('payment_status', 'paid')
-            ->where(function ($q) use ($startDate) {
-                $q->where('paid_at', '>=', $startDate)
-                  ->orWhere(function ($sub) use ($startDate) {
-                      $sub->whereNull('paid_at')->where('created_at', '>=', $startDate);
-                  });
-            })
-            ->selectRaw('DATE(COALESCE(paid_at, created_at)) as date_key, SUM(total) as total_revenue')
-            ->groupBy('date_key')
-            ->pluck('total_revenue', 'date_key')
-            ->toArray();
+        try {
+            // Single aggregate query for daily revenues
+            $dailyRevenues = Order::where('payment_status', 'paid')
+                ->where(function ($q) use ($startDate) {
+                    $q->where('paid_at', '>=', $startDate)
+                      ->orWhere(function ($sub) use ($startDate) {
+                          $sub->whereNull('paid_at')->where('created_at', '>=', $startDate);
+                      });
+                })
+                ->selectRaw('DATE(COALESCE(paid_at, created_at)) as date_key, SUM(total) as total_revenue')
+                ->groupBy(DB::raw('DATE(COALESCE(paid_at, created_at))'))
+                ->pluck('total_revenue', 'date_key')
+                ->toArray();
 
-        // Single aggregate query for daily orders
-        $dailyOrders = Order::where('created_at', '>=', $startDate)
-            ->selectRaw('DATE(created_at) as date_key, COUNT(*) as total_orders')
-            ->groupBy('date_key')
-            ->pluck('total_orders', 'date_key')
-            ->toArray();
+            // Single aggregate query for daily orders
+            $dailyOrders = Order::where('created_at', '>=', $startDate)
+                ->selectRaw('DATE(created_at) as date_key, COUNT(*) as total_orders')
+                ->groupBy(DB::raw('DATE(created_at)'))
+                ->pluck('total_orders', 'date_key')
+                ->toArray();
 
-        for ($i = $this->chartPeriod - 1; $i >= 0; $i--) {
-            $date = Carbon::today()->subDays($i);
-            $key = $date->toDateString();
-            $labels[] = $this->chartPeriod > 14 ? $date->format('d/m') : $date->translatedFormat('d M');
+            for ($i = $this->chartPeriod - 1; $i >= 0; $i--) {
+                $date = Carbon::today()->subDays($i);
+                $key = $date->toDateString();
+                $labels[] = $this->chartPeriod > 14 ? $date->format('d/m') : $date->translatedFormat('d M');
 
-            $revenueData[] = (float) ($dailyRevenues[$key] ?? 0);
-            $orderCountData[] = (int) ($dailyOrders[$key] ?? 0);
+                $revenueData[] = (float) ($dailyRevenues[$key] ?? 0);
+                $orderCountData[] = (int) ($dailyOrders[$key] ?? 0);
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Revenue/Order chart aggregate failed: ' . $e->getMessage());
+            for ($i = $this->chartPeriod - 1; $i >= 0; $i--) {
+                $date = Carbon::today()->subDays($i);
+                $labels[] = $this->chartPeriod > 14 ? $date->format('d/m') : $date->translatedFormat('d M');
+                $revenueData[] = 0;
+                $orderCountData[] = 0;
+            }
         }
 
         $this->revenueChartData = [

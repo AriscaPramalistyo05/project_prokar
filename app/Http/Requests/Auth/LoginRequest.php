@@ -42,13 +42,19 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        $user = \App\Models\User::where('email', $this->email)->first();
-        if ($user && $user->is_suspended) {
-            RateLimiter::hit($this->throttleKey());
+        try {
+            $user = \App\Models\User::where('email', $this->email)->first();
+            if ($user && ($user->is_suspended ?? false)) {
+                RateLimiter::hit($this->throttleKey());
 
-            throw ValidationException::withMessages([
-                'email' => 'Akun Anda sedang dinonaktifkan (disuspend) oleh Super Admin. Silakan hubungi admin toko.',
-            ]);
+                throw ValidationException::withMessages([
+                    'email' => 'Akun Anda sedang dinonaktifkan (disuspend) oleh Super Admin. Silakan hubungi admin toko.',
+                ]);
+            }
+        } catch (ValidationException $ve) {
+            throw $ve;
+        } catch (\Throwable $e) {
+            // Silently ignore if is_suspended column is missing
         }
 
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {

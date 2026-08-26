@@ -224,6 +224,33 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
 
         // Pengaturan Toko & Sistem (FASE 8)
         Route::get('/settings', \App\Livewire\Admin\SettingIndex::class)->name('settings');
+
+        // Helper Pemeliharaan Database (Khusus Super Admin)
+        Route::get('/maintenance/migrate', function () {
+            try {
+                \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+                $migrateOutput = \Illuminate\Support\Facades\Artisan::output();
+
+                \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+                $clearOutput = \Illuminate\Support\Facades\Artisan::output();
+
+                \Illuminate\Support\Facades\Artisan::call('permission:cache-reset');
+
+                return response("<div style='font-family:monospace;background:#0f172a;color:#10b981;padding:24px;border-radius:12px;max-width:800px;margin:40px auto;border:1px solid #334155;'>
+                    <h2 style='color:#facc15;margin-top:0;'>✅ Database Migration & Cache Clear Berhasil</h2>
+                    <h3>Migration Output:</h3>
+                    <pre style='background:#020617;padding:12px;border-radius:8px;overflow-x:auto;'>" . htmlspecialchars($migrateOutput) . "</pre>
+                    <h3>Cache Output:</h3>
+                    <pre style='background:#020617;padding:12px;border-radius:8px;overflow-x:auto;'>" . htmlspecialchars($clearOutput) . "</pre>
+                    <p><a href='" . route('admin.dashboard') . "' style='display:inline-block;padding:10px 18px;background:#facc15;color:#000;text-decoration:none;font-weight:bold;border-radius:8px;margin-top:12px;'>Kembali ke Dashboard</a></p>
+                </div>");
+            } catch (\Throwable $e) {
+                return response("<div style='font-family:monospace;background:#450a0a;color:#fca5a5;padding:24px;border-radius:12px;max-width:800px;margin:40px auto;'>
+                    <h2 style='color:#ef4444;margin-top:0;'>❌ Error saat Migrasi</h2>
+                    <pre>" . htmlspecialchars($e->getMessage()) . "</pre>
+                </div>", 500);
+            }
+        })->name('maintenance.migrate');
     });
 });
 
