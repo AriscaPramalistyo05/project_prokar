@@ -139,7 +139,7 @@
         </div>
         
         {{-- Info Card --}}
-        <div class="mt-8 bg-[#FCFCFA] border-2 border-[#0A0A0A] rounded-2xl p-6">
+        <div class="mt-8 mb-10 bg-[#FCFCFA] border-2 border-[#0A0A0A] rounded-2xl p-6">
             <h3 class="font-public font-bold text-sm uppercase tracking-wider text-[#0A0A0A]/70 mb-4 flex items-center gap-2">
                 <i class="fa-solid fa-circle-info text-[#0A0A0A]/40"></i> Informasi Selanjutnya
             </h3>

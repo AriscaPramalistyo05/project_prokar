@@ -48,57 +48,12 @@ Route::get('/servis/garansi/{code}/download', function ($code) {
     return $pdf->download('Kartu-Garansi-' . $code . '.pdf');
 })->name('servis.garansi.download');
 
-Route::get('/checkout/success/{orderCode}', function ($orderCode, \App\Services\MidtransService $midtransService, \App\Services\StockService $stockService) {
+Route::get('/checkout/success/{orderCode}', function ($orderCode) {
     $order = \App\Models\Order::where('order_code', $orderCode)->with('orderItems')->firstOrFail();
     
     // Store in session so user has access to invoice download
     session(['last_order_code' => $orderCode]);
 
-    // The browser callback is not trusted; only Midtrans API/webhook may mark an order paid.
-    if (!in_array($order->payment_status, ['paid', 'dp_paid'])) {
-        $statusObj = $midtransService->getTransactionStatus($orderCode);
-        $midtransStatus = $statusObj ? ($statusObj->transaction_status ?? null) : null;
-        $paymentType = $statusObj ? ($statusObj->payment_type ?? 'midtrans') : 'midtrans';
-
-        $isSuccess = in_array($midtransStatus, ['settlement', 'capture']);
-
-        if ($isSuccess) {
-            \Illuminate\Support\Facades\DB::transaction(function () use ($order, $stockService, $paymentType) {
-                $targetPaymentStatus = $order->payment_type === 'down_payment' ? 'dp_paid' : 'paid';
-                $order->update([
-                    'status' => 'processing',
-                    'payment_status' => $targetPaymentStatus,
-                    'paid_at' => now(),
-                    'payment_method' => $paymentType,
-                ]);
-
-                foreach ($order->orderItems as $item) {
-                    try {
-                        $stockService->reserveStock($item->product_id, $item->quantity);
-                    } catch (\Throwable $e) {
-                        \Illuminate\Support\Facades\Log::error("Failed to reserve stock for product {$item->product_id} in Order {$order->order_code}: " . $e->getMessage());
-                    }
-                }
-
-                // Clear the cart only after Midtrans confirms settlement.
-                $cartService = app(\App\Services\CartService::class);
-                $cartService->clear();
-
-                // Kirim email konfirmasi ke customer jika ada email
-                if (!empty($order->customer_email)) {
-                    try {
-                        \Illuminate\Support\Facades\Mail::to($order->customer_email)
-                            ->send(new \App\Mail\OrderConfirmationMail($order));
-                    } catch (\Throwable $e) {
-                        \Illuminate\Support\Facades\Log::error("Failed sending confirmation email for Order {$order->order_code}: " . $e->getMessage());
-                    }
-                }
-            });
-
-            $order->refresh();
-        }
-    }
-    
     return view('pages.checkout-success', compact('order'));
 })->name('checkout.success');
 
@@ -125,7 +80,9 @@ Route::get('/order/invoice/{code}/download', function ($code) {
     return $pdf->download('Invoice-' . $code . '.pdf');
 })->name('order.invoice.download');
 
-Route::get('/video/stream/{filename}', [\App\Http\Controllers\VideoStreamController::class, 'stream'])->name('video.stream');
+Route::get('/video/stream/{filename}', [\App\Http\Controllers\VideoStreamController::class, 'stream'])
+    ->where('filename', '.*')
+    ->name('video.stream');
 
 Route::view('/keranjang', 'pages.cart')->name('keranjang.index');
 Route::post('/cart/add', function (Illuminate\Http\Request $request) {

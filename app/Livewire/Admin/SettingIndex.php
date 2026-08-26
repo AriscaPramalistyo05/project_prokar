@@ -266,7 +266,8 @@ class SettingIndex extends Component
         $this->firebase_messaging_sender_id = (string) ($settingService->get('firebase_messaging_sender_id') ?? '');
         $this->firebase_app_id = (string) ($settingService->get('firebase_app_id') ?? '');
         $this->firebase_vapid_key = (string) ($settingService->get('firebase_vapid_key') ?? '');
-        $this->has_service_account_file = file_exists(storage_path('app/firebase/service-account.json')) || file_exists(base_path('storage/app/firebase/service-account.json'));
+        $this->has_service_account_file = file_exists(storage_path('app/firebase/service-account.json'))
+            || file_exists(storage_path('app/private/firebase/service-account.json'));
         $this->notify_new_order = (bool) ($settingService->get('notify_new_order') ?? true);
         $this->notify_new_service = (bool) ($settingService->get('notify_new_service') ?? true);
         $this->notify_new_sell = (bool) ($settingService->get('notify_new_sell') ?? true);
@@ -404,7 +405,8 @@ class SettingIndex extends Component
             if (!is_dir($targetDir)) {
                 mkdir($targetDir, 0755, true);
             }
-            $this->service_account_file->storeAs('firebase', 'service-account.json');
+            $this->service_account_file->storeAs('firebase', 'service-account.json', 'local');
+            config(['firebase.projects.app.credentials' => storage_path('app/firebase/service-account.json')]);
             $this->has_service_account_file = true;
             $this->service_account_file = null;
         }

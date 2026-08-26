@@ -13,6 +13,8 @@
   $isCart     = request()->routeIs('keranjang.index');
   $isCheckout = request()->routeIs('checkout.address');
   $cartCount  = (int) app(\App\Services\CartService::class)->count();
+  $savedLogo = setting('shop_logo');
+  $logoUrl = $savedLogo ? asset('storage/' . $savedLogo) . '?v=' . (file_exists(storage_path('app/public/' . $savedLogo)) ? filemtime(storage_path('app/public/' . $savedLogo)) : time()) : 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/brnriy48_expires_30_days.png';
 @endphp
 <!-- Navbar Wrapper to hoist Alpine data -->
 <div x-data="{ 
@@ -74,7 +76,7 @@
       </button>
       <a href="{{ route('home') }}" class="flex min-w-0 items-center gap-3">
         @if(function_exists('setting') && setting('shop_logo'))
-          <img src="{{ asset('storage/' . setting('shop_logo')) }}" onerror="this.onerror=null; this.src='https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/brnriy48_expires_30_days.png'" alt="{{ setting('shop_name', 'Prokar Elektronik') }}" class="h-9 sm:h-10 max-w-[150px] sm:max-w-none w-auto object-contain" />
+          <img src="{{ $logoUrl }}" alt="{{ setting('shop_name', 'Prokar Elektronik') }}" class="h-9 sm:h-10 max-w-[150px] sm:max-w-none w-auto object-contain" />
         @else
           <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/brnriy48_expires_30_days.png" alt="Prokar Elektronik" class="h-8 sm:h-10 max-w-[150px] sm:max-w-none w-auto object-contain" />
         @endif

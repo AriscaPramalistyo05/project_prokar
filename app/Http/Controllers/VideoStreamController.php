@@ -9,9 +9,14 @@ class VideoStreamController extends Controller
 {
     public function stream(Request $request, string $filename)
     {
-        // Sanitize filename
-        $cleanFilename = basename($filename);
-        $path = storage_path('app/public/products/' . $cleanFilename);
+        $cleanFilename = ltrim($filename, '/');
+        if (str_starts_with($cleanFilename, 'storage/')) {
+            $cleanFilename = substr($cleanFilename, 8);
+        }
+        if ($cleanFilename === '' || str_contains($cleanFilename, '..')) {
+            abort(404, 'Video tidak ditemukan');
+        }
+        $path = storage_path('app/public/' . $cleanFilename);
 
         if (!file_exists($path)) {
             abort(404, 'Video tidak ditemukan');
@@ -23,7 +28,7 @@ class VideoStreamController extends Controller
         $length = $size;
         $status = 200;
         $headers = [
-            'Content-Type' => 'video/mp4',
+            'Content-Type' => mime_content_type($path) ?: 'application/octet-stream',
             'Accept-Ranges' => 'bytes',
             'Cache-Control' => 'public, max-age=2592000, immutable',
         ];

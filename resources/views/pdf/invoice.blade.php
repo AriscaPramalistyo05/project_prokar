@@ -106,13 +106,6 @@
             color: #444;
             margin-top: 2px;
         }
-        .item-promo {
-            font-size: 9.5px;
-            font-weight: bold;
-            color: #b91c1c;
-            margin-left: 4px;
-        }
-
         .total-table {
             width: 100%;
             border-collapse: collapse;
@@ -284,9 +277,6 @@
         <div class="items-container">
             @foreach($order->orderItems as $item)
                 @php
-                    $prod = $item->product;
-                    $hasPromo = $prod && $prod->is_promo && $prod->promo_price && ($prod->price > $item->product_price);
-                    $savings = $hasPromo ? ($prod->price - $item->product_price) * $item->quantity : 0;
                 @endphp
                 <div class="item-row">
                     <table class="item-main-table">
@@ -297,9 +287,6 @@
                     </table>
                     <div class="item-meta">
                         <span>{{ $item->quantity }}x @ Rp {{ number_format($item->product_price, 0, ',', '.') }}</span>
-                        @if($hasPromo)
-                            <span class="item-promo">(Promo • Hemat Rp {{ number_format($savings, 0, ',', '.') }})</span>
-                        @endif
                     </div>
                 </div>
             @endforeach

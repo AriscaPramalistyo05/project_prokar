@@ -365,7 +365,7 @@
   @endif
 
   <!-- TESTIMONI SECTION -->
-  <section id="testimonials" class="section-overlap bg-black pt-20 pb-20 lg:pt-28 lg:pb-36 z-40">
+  <section id="testimonials" class="section-overlap bg-black pt-20 pb-36 lg:pt-28 lg:pb-44 z-40">
     <div class="max-w-[1000px] mx-auto px-6 text-center">
       <h2 class="text-white text-4xl md:text-6xl font-black uppercase tracking-tighter font-public mb-6">
         <span class="reveal-wrapper"><span class="reveal-line">Kata Pelanggan</span></span>

@@ -35,7 +35,7 @@ class ProductImage extends Model
         }
 
         if ($this->type === 'video') {
-            return route('video.stream', ['filename' => basename($cleanPath)]);
+            return route('video.stream', ['filename' => $cleanPath]);
         }
 
         return asset('storage/' . $cleanPath);

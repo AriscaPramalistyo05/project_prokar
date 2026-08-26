@@ -24,13 +24,13 @@
   <div class="max-w-4xl mx-auto px-6 lg:px-12 text-center">
     
     <!-- Form Pencarian -->
-    <div class="no-print bg-white rounded-full p-2 md:p-3 flex items-center shadow-card mb-12 reveal-fade border border-gray-200 max-w-2xl mx-auto relative z-30">
+    <div class="no-print bg-white rounded-3xl sm:rounded-full p-2 md:p-3 flex flex-col sm:flex-row items-stretch sm:items-center shadow-card mb-12 reveal-fade border border-gray-200 max-w-2xl mx-auto relative z-30">
       <div class="pl-4 md:pl-6 hidden sm:block">
         <i class="fa-solid fa-magnifying-glass text-xl text-gray-400"></i>
       </div>
       <input type="text" wire:model="newTicketCode" wire:keydown.enter="searchTicket" placeholder="Masukkan Nomor Tiket"
-        class="flex-1 border-none focus:ring-0 bg-transparent px-4 md:px-6 text-black font-public font-bold text-base md:text-xl focus:outline-none uppercase placeholder-gray-400" />
-      <button wire:click="searchTicket" wire:loading.attr="disabled" class="bg-black text-brand-yellow font-public font-bold text-sm md:text-base uppercase tracking-widest px-6 md:px-10 py-4 md:py-5 rounded-full hover:bg-gray-800 transition-colors shadow-card">
+        class="min-w-0 w-full flex-1 border-none focus:ring-0 bg-transparent px-4 md:px-6 py-3 sm:py-2 text-black font-public font-bold text-base md:text-xl focus:outline-none uppercase placeholder-gray-400" />
+      <button wire:click="searchTicket" wire:loading.attr="disabled" class="w-full sm:w-auto shrink-0 bg-black text-brand-yellow font-public font-bold text-sm md:text-base uppercase tracking-widest px-6 md:px-10 py-4 md:py-5 rounded-2xl sm:rounded-full hover:bg-gray-800 transition-colors shadow-card">
         Lacak
       </button>
     </div>
