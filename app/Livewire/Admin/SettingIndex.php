@@ -7,6 +7,7 @@ use App\Services\SettingService;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Mary\Traits\Toast;
@@ -16,6 +17,7 @@ class SettingIndex extends Component
 {
     use WithFileUploads, Toast;
 
+    #[Url(as: 'tab')]
     public string $selectedTab = 'general-tab';
 
     // ─── TAB 1: UMUM & IDENTITAS ─────────────────────────────────────
@@ -148,6 +150,10 @@ class SettingIndex extends Component
 
     public function mount(SettingService $settingService): void
     {
+        if (request()->filled('tab')) {
+            $this->selectedTab = (string) request('tab');
+        }
+
         // 1. Umum & Identitas
         $this->shop_name = (string) ($settingService->get('shop_name') ?? 'Prokar Elektronik');
         $this->shop_tagline = (string) ($settingService->get('shop_tagline') ?? 'Jual · Beli · Servis Elektronik Bekas Terpercaya');

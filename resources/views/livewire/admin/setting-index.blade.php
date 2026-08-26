@@ -1,66 +1,48 @@
 <div>
+    @php
+        $tabMeta = match($selectedTab) {
+            'home-tab' => [
+                'icon' => 'fa-solid fa-desktop',
+                'title' => 'Pengaturan Tampilan & Beranda',
+                'desc' => 'Hero banner, headline multi-warna, running text, galeri kategori, dan testimoni pelanggan.'
+            ],
+            'mail-tab' => [
+                'icon' => 'fa-solid fa-envelope',
+                'title' => 'Pengaturan Email & Autentikasi',
+                'desc' => 'Konfigurasi server SMTP email dan kredensial Google OAuth untuk login pelanggan.'
+            ],
+            'payment-tab' => [
+                'icon' => 'fa-solid fa-credit-card',
+                'title' => 'Pengaturan Payment Gateway (Midtrans)',
+                'desc' => 'Kredensial API Midtrans (Server Key, Client Key) untuk transaksi otomatis via QRIS, VA, dan e-Wallet.'
+            ],
+            'fcm-tab' => [
+                'icon' => 'fa-solid fa-bell',
+                'title' => 'Pengaturan Notifikasi (Firebase FCM)',
+                'desc' => 'Kredensial Firebase Cloud Messaging dan pengaturan kategori notifikasi push admin.'
+            ],
+            default => [
+                'icon' => 'fa-solid fa-store',
+                'title' => 'Pengaturan Umum & Identitas Toko',
+                'desc' => 'Identitas resmi toko, logo, favicon, kontak, alamat, media sosial, dan garansi toko.'
+            ]
+        };
+    @endphp
+
     {{-- Header --}}
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-5 mb-5 border-b border-gray-200 gap-3">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-5 mb-6 border-b border-gray-200 gap-3">
         <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl bg-gray-900 flex items-center justify-center shrink-0">
-                <i class="fa-solid fa-sliders text-[#FFCC00] text-sm"></i>
+            <div class="w-10 h-10 rounded-xl bg-gray-900 flex items-center justify-center shrink-0">
+                <i class="{{ $tabMeta['icon'] }} text-[#FFCC00] text-sm"></i>
             </div>
             <div>
-                <h1 class="text-xl font-black tracking-tight text-gray-900">Pengaturan Toko & Sistem</h1>
-                <p class="text-xs text-gray-400">Kelola identitas, tampilan, email, pembayaran, dan notifikasi.</p>
+                <h1 class="text-xl font-black tracking-tight text-gray-900">{{ $tabMeta['title'] }}</h1>
+                <p class="text-xs text-gray-400">{{ $tabMeta['desc'] }}</p>
             </div>
         </div>
         <x-button label="Simpan Perubahan" icon="o-check" wire:click="save"
             class="bg-gray-900 text-white hover:bg-black font-bold text-xs px-5 py-2.5 rounded-xl border-none shadow-sm shrink-0"
             spinner="save" />
-    </div>
-
-    {{-- Tab Navigation --}}
-    <div class="flex items-center gap-1.5 overflow-x-auto pb-4 mb-5 scrollbar-none border-b border-gray-200">
-        <button type="button" wire:click="$set('selectedTab', 'general-tab')"
-            class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all
-            {{ $selectedTab === 'general-tab'
-                ? 'bg-gray-900 text-white'
-                : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900 border border-gray-200' }}">
-            <i class="fa-solid fa-store {{ $selectedTab === 'general-tab' ? 'text-[#FFCC00]' : 'text-gray-400' }}"></i>
-            Umum & Identitas
-        </button>
-
-        <button type="button" wire:click="$set('selectedTab', 'home-tab')"
-            class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all
-            {{ $selectedTab === 'home-tab'
-                ? 'bg-gray-900 text-white'
-                : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900 border border-gray-200' }}">
-            <i class="fa-solid fa-desktop {{ $selectedTab === 'home-tab' ? 'text-[#FFCC00]' : 'text-gray-400' }}"></i>
-            Tampilan & Beranda
-        </button>
-
-        <button type="button" wire:click="$set('selectedTab', 'mail-tab')"
-            class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all
-            {{ $selectedTab === 'mail-tab'
-                ? 'bg-gray-900 text-white'
-                : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900 border border-gray-200' }}">
-            <i class="fa-solid fa-envelope {{ $selectedTab === 'mail-tab' ? 'text-[#FFCC00]' : 'text-gray-400' }}"></i>
-            Email & Autentikasi
-        </button>
-
-        <button type="button" wire:click="$set('selectedTab', 'payment-tab')"
-            class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all
-            {{ $selectedTab === 'payment-tab'
-                ? 'bg-gray-900 text-white'
-                : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900 border border-gray-200' }}">
-            <i class="fa-solid fa-credit-card {{ $selectedTab === 'payment-tab' ? 'text-[#FFCC00]' : 'text-gray-400' }}"></i>
-            Payment (Midtrans)
-        </button>
-
-        <button type="button" wire:click="$set('selectedTab', 'fcm-tab')"
-            class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all
-            {{ $selectedTab === 'fcm-tab'
-                ? 'bg-gray-900 text-white'
-                : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900 border border-gray-200' }}">
-            <i class="fa-solid fa-bell {{ $selectedTab === 'fcm-tab' ? 'text-[#FFCC00]' : 'text-gray-400' }}"></i>
-            Notifikasi (FCM)
-        </button>
     </div>
 
     {{-- Form --}}
