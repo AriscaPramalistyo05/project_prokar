@@ -431,7 +431,7 @@
 
   @stack('scripts')
 
-  {{-- Firebase web config — dibaca oleh fcm.js, nilainya dari tabel settings --}}
+  {{-- Firebase web config & SDK --}}
   <script id="firebase-config" type="application/json">
     {!! json_encode([
         'apiKey'             => setting('firebase_api_key'),
@@ -441,6 +441,8 @@
         'vapidKey'           => setting('firebase_vapid_key'),
     ]) !!}
   </script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js" defer></script>
 
   @livewireScripts
 </body>
