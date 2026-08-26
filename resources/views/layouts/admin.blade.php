@@ -62,56 +62,7 @@
                     <div class="font-bold text-lg lg:hidden ml-2">PROKAR ADMIN</div>
                 </x-slot:brand>
                 <x-slot:actions>
-                    {{-- Push Notification Status Chip (topbar) --}}
-                    <div x-data="{
-                        permission: (typeof Notification !== 'undefined') ? Notification.permission : 'unsupported',
-                        loading: false,
-                        async toggle() {
-                            if (this.permission === 'granted') {
-                                if (typeof Swal !== 'undefined') {
-                                    Swal.fire({ title: 'Notifikasi Aktif', text: 'Push notifikasi browser sudah diizinkan di perangkat ini.', icon: 'success', timer: 2000, showConfirmButton: false });
-                                }
-                                return;
-                            }
-                            if (this.permission === 'denied') {
-                                if (typeof Swal !== 'undefined') {
-                                    Swal.fire({ title: 'Notifikasi Diblokir', text: 'Izinkan notifikasi melalui pengaturan browser (klik ikon kunci/info di address bar).', icon: 'warning' });
-                                }
-                                return;
-                            }
-                            this.loading = true;
-                            try {
-                                if (window.requestAdminFcmPermission) await window.requestAdminFcmPermission();
-                                this.permission = (typeof Notification !== 'undefined') ? Notification.permission : 'unsupported';
-                            } catch(e) { console.error(e); } finally { this.loading = false; }
-                        }
-                    }"
-                    @fcm-permission-updated.window="permission = (typeof Notification !== 'undefined') ? Notification.permission : 'unsupported'"
-                    class="flex items-center">
-
-                        {{-- Single element that changes based on state — no template mess --}}
-                        <button type="button"
-                                @click="toggle()"
-                                :disabled="loading"
-                                :title="permission === 'granted' ? 'Push notifikasi aktif' : (permission === 'denied' ? 'Notifikasi diblokir di browser' : 'Klik untuk aktifkan push notifikasi')"
-                                class="group inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg border text-xs font-semibold transition-all duration-200 select-none"
-                                :class="{
-                                    'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100': permission === 'granted',
-                                    'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100': permission === 'default' || permission === 'unsupported',
-                                    'bg-red-50 text-red-600 border-red-200 cursor-not-allowed': permission === 'denied',
-                                    'opacity-60': loading
-                                }">
-                            {{-- Toggle track --}}
-                            <span class="relative inline-flex items-center w-7 h-4 rounded-full transition-colors duration-200"
-                                  :class="permission === 'granted' ? 'bg-emerald-500' : 'bg-gray-300'">
-                                <span class="absolute w-3 h-3 bg-white rounded-full shadow-xs transition-transform duration-200"
-                                      :class="permission === 'granted' ? 'translate-x-3.5' : 'translate-x-0.5'"></span>
-                            </span>
-                            <span x-text="loading ? '...' : (permission === 'granted' ? 'Notif On' : (permission === 'denied' ? 'Diblokir' : 'Notif Off'))"></span>
-                        </button>
-                    </div>
-
-                    {{-- Livewire Notification Dropdown (Image 3) --}}
+                    {{-- Livewire Notification Dropdown --}}
                     <livewire:admin.notification-dropdown />
 
                     <div class="hidden sm:flex flex-col text-right">

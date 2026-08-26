@@ -1,105 +1,69 @@
 <div>
-    {{-- ================================================================= --}}
-    {{-- HEADER — Elegant Settings Page --}}
-    {{-- ================================================================= --}}
-    <div class="flex flex-col sm:flex-row sm:items-start justify-between pb-6 mb-0 gap-4">
-        <div class="space-y-1">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gray-900 flex items-center justify-center shrink-0">
-                    <i class="fa-solid fa-sliders text-[#FFCC00] text-sm"></i>
-                </div>
-                <div>
-                    <h1 class="text-xl sm:text-2xl font-black tracking-tight text-gray-900">Pengaturan Toko & Sistem</h1>
-                    <p class="text-xs text-gray-400 leading-snug">Kelola identitas, tampilan, email, pembayaran, dan notifikasi toko.</p>
-                </div>
+    {{-- Header --}}
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-5 mb-5 border-b border-gray-200 gap-3">
+        <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-gray-900 flex items-center justify-center shrink-0">
+                <i class="fa-solid fa-sliders text-[#FFCC00] text-sm"></i>
+            </div>
+            <div>
+                <h1 class="text-xl font-black tracking-tight text-gray-900">Pengaturan Toko & Sistem</h1>
+                <p class="text-xs text-gray-400">Kelola identitas, tampilan, email, pembayaran, dan notifikasi.</p>
             </div>
         </div>
-        <div class="flex items-center gap-2.5 shrink-0">
-            <x-button label="Simpan Perubahan" icon="o-check" wire:click="save"
-                class="bg-gray-900 text-white hover:bg-black font-bold text-xs px-5 py-2.5 rounded-xl border-none shadow-sm transition-all"
-                spinner="save" />
-        </div>
+        <x-button label="Simpan Perubahan" icon="o-check" wire:click="save"
+            class="bg-gray-900 text-white hover:bg-black font-bold text-xs px-5 py-2.5 rounded-xl border-none shadow-sm shrink-0"
+            spinner="save" />
     </div>
 
-    {{-- ================================================================= --}}
-    {{-- TAB NAVIGATION — Sidebar style panel --}}
-    {{-- ================================================================= --}}
-    <div class="mt-6 grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-6 items-start">
+    {{-- Tab Navigation --}}
+    <div class="flex items-center gap-1.5 overflow-x-auto pb-4 mb-5 scrollbar-none border-b border-gray-200">
+        <button type="button" wire:click="$set('selectedTab', 'general-tab')"
+            class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all
+            {{ $selectedTab === 'general-tab'
+                ? 'bg-gray-900 text-white'
+                : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900 border border-gray-200' }}">
+            <i class="fa-solid fa-store {{ $selectedTab === 'general-tab' ? 'text-[#FFCC00]' : 'text-gray-400' }}"></i>
+            Umum & Identitas
+        </button>
 
-        {{-- Sidebar Tab Menu --}}
-        <div class="lg:sticky lg:top-6">
-            <div class="bg-white rounded-2xl border border-gray-200/80 shadow-xs overflow-hidden">
-                <div class="px-4 pt-4 pb-2">
-                    <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Menu Pengaturan</p>
-                </div>
-                <nav class="px-2 pb-2 space-y-0.5">
-                    <button type="button" wire:click="$set('selectedTab', 'general-tab')"
-                        class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-left transition-all
-                        {{ $selectedTab === 'general-tab'
-                            ? 'bg-gray-900 text-white'
-                            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}">
-                        <i class="fa-solid fa-store w-4 text-center {{ $selectedTab === 'general-tab' ? 'text-[#FFCC00]' : 'text-gray-400' }}"></i>
-                        <span>Umum & Identitas</span>
-                    </button>
+        <button type="button" wire:click="$set('selectedTab', 'home-tab')"
+            class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all
+            {{ $selectedTab === 'home-tab'
+                ? 'bg-gray-900 text-white'
+                : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900 border border-gray-200' }}">
+            <i class="fa-solid fa-desktop {{ $selectedTab === 'home-tab' ? 'text-[#FFCC00]' : 'text-gray-400' }}"></i>
+            Tampilan & Beranda
+        </button>
 
-                    <button type="button" wire:click="$set('selectedTab', 'home-tab')"
-                        class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-left transition-all
-                        {{ $selectedTab === 'home-tab'
-                            ? 'bg-gray-900 text-white'
-                            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}">
-                        <i class="fa-solid fa-desktop w-4 text-center {{ $selectedTab === 'home-tab' ? 'text-[#FFCC00]' : 'text-gray-400' }}"></i>
-                        <span>Tampilan & Beranda</span>
-                    </button>
+        <button type="button" wire:click="$set('selectedTab', 'mail-tab')"
+            class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all
+            {{ $selectedTab === 'mail-tab'
+                ? 'bg-gray-900 text-white'
+                : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900 border border-gray-200' }}">
+            <i class="fa-solid fa-envelope {{ $selectedTab === 'mail-tab' ? 'text-[#FFCC00]' : 'text-gray-400' }}"></i>
+            Email & Autentikasi
+        </button>
 
-                    <button type="button" wire:click="$set('selectedTab', 'mail-tab')"
-                        class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-left transition-all
-                        {{ $selectedTab === 'mail-tab'
-                            ? 'bg-gray-900 text-white'
-                            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}">
-                        <i class="fa-solid fa-envelope w-4 text-center {{ $selectedTab === 'mail-tab' ? 'text-[#FFCC00]' : 'text-gray-400' }}"></i>
-                        <span>Email & Autentikasi</span>
-                    </button>
+        <button type="button" wire:click="$set('selectedTab', 'payment-tab')"
+            class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all
+            {{ $selectedTab === 'payment-tab'
+                ? 'bg-gray-900 text-white'
+                : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900 border border-gray-200' }}">
+            <i class="fa-solid fa-credit-card {{ $selectedTab === 'payment-tab' ? 'text-[#FFCC00]' : 'text-gray-400' }}"></i>
+            Payment (Midtrans)
+        </button>
 
-                    <button type="button" wire:click="$set('selectedTab', 'payment-tab')"
-                        class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-left transition-all
-                        {{ $selectedTab === 'payment-tab'
-                            ? 'bg-gray-900 text-white'
-                            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}">
-                        <i class="fa-solid fa-credit-card w-4 text-center {{ $selectedTab === 'payment-tab' ? 'text-[#FFCC00]' : 'text-gray-400' }}"></i>
-                        <span>Payment (Midtrans)</span>
-                    </button>
+        <button type="button" wire:click="$set('selectedTab', 'fcm-tab')"
+            class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all
+            {{ $selectedTab === 'fcm-tab'
+                ? 'bg-gray-900 text-white'
+                : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900 border border-gray-200' }}">
+            <i class="fa-solid fa-bell {{ $selectedTab === 'fcm-tab' ? 'text-[#FFCC00]' : 'text-gray-400' }}"></i>
+            Notifikasi (FCM)
+        </button>
+    </div>
 
-                    <button type="button" wire:click="$set('selectedTab', 'fcm-tab')"
-                        class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-left transition-all
-                        {{ $selectedTab === 'fcm-tab'
-                            ? 'bg-gray-900 text-white'
-                            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}">
-                        <i class="fa-solid fa-bell w-4 text-center {{ $selectedTab === 'fcm-tab' ? 'text-[#FFCC00]' : 'text-gray-400' }}"></i>
-                        <span>Notifikasi (FCM)</span>
-                    </button>
-                </nav>
-
-                {{-- Quick Save Button in sidebar --}}
-                <div class="px-2 pt-1 pb-3 border-t border-gray-100 mt-1">
-                    <button type="button" wire:click="save" wire:loading.attr="disabled" wire:target="save"
-                        class="w-full flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold bg-[#FFCC00] hover:bg-yellow-400 text-gray-900 transition-all cursor-pointer">
-                        <i class="fa-solid fa-floppy-disk"></i>
-                        <span>Simpan Semua</span>
-                    </button>
-                </div>
-            </div>
-
-            {{-- Info Card --}}
-            <div class="mt-3 p-3.5 rounded-xl bg-blue-50 border border-blue-100 text-xs text-blue-700 space-y-1">
-                <p class="font-bold flex items-center gap-1.5"><i class="fa-solid fa-circle-info"></i> Tips</p>
-                <p class="leading-relaxed text-blue-600">Klik <strong>Simpan Semua</strong> setelah selesai mengubah pengaturan agar tersimpan permanen.</p>
-            </div>
-        </div>
-
-        {{-- Content Panel --}}
-        <div>
-
-    {{-- Form Container --}}
+    {{-- Form --}}
     <form wire:submit.prevent="save">
 
         {{-- ================================================================= --}}
@@ -1062,6 +1026,4 @@
 
     </form>
 
-        </div>{{-- /Content Panel --}}
-    </div>{{-- /Grid Layout --}}
 </div>
