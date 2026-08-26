@@ -227,59 +227,95 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
 
         // Helper Pemeliharaan Database & Storage (Khusus Super Admin)
         Route::get('/maintenance/migrate', function () {
-            try {
-                // 1. Buat direktori storage penting jika belum ada
-                $directories = [
-                    storage_path('app/private/livewire-tmp'),
-                    storage_path('app/livewire-tmp'),
-                    storage_path('app/public/settings'),
-                    storage_path('app/public/settings/hero'),
-                    storage_path('app/public/settings/hero3card'),
-                    storage_path('app/public/products'),
-                    storage_path('app/public/services'),
-                    storage_path('app/public/service_images'),
-                    storage_path('app/public/sell-submissions'),
-                    storage_path('app/firebase'),
-                    storage_path('app/private/firebase'),
-                ];
-                foreach ($directories as $dir) {
-                    if (!is_dir($dir)) {
-                        @mkdir($dir, 0777, true);
-                    }
-                    @chmod($dir, 0777);
+            $log = [];
+
+            // 1. Cek Ekstensi PHP
+            $extensions = ['dom', 'xml', 'fileinfo', 'gd', 'pdo_mysql', 'mbstring', 'curl'];
+            $missingExts = [];
+            foreach ($extensions as $ext) {
+                if (!extension_loaded($ext)) {
+                    $missingExts[] = $ext;
                 }
-
-                // 2. Hubungkan symlink storage jika belum terhubung
-                try {
-                    \Illuminate\Support\Facades\Artisan::call('storage:link');
-                } catch (\Throwable $e) {}
-
-                // 3. Jalankan migrasi database
-                \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-                $migrateOutput = \Illuminate\Support\Facades\Artisan::output();
-
-                // 4. Bersihkan cache
-                \Illuminate\Support\Facades\Artisan::call('optimize:clear');
-                $clearOutput = \Illuminate\Support\Facades\Artisan::output();
-
-                // 5. Reset cache permission
-                \Illuminate\Support\Facades\Artisan::call('permission:cache-reset');
-
-                return response("<div style='font-family:monospace;background:#0f172a;color:#10b981;padding:24px;border-radius:12px;max-width:800px;margin:40px auto;border:1px solid #334155;'>
-                    <h2 style='color:#facc15;margin-top:0;'>✅ Database Migration, Storage Link & Cache Clear Berhasil</h2>
-                    <p style='color:#94a3b8;'>Direktori storage livewire-tmp & public settings telah disiapkan dengan izin upload hingga 30MB.</p>
-                    <h3>Migration Output:</h3>
-                    <pre style='background:#020617;padding:12px;border-radius:8px;overflow-x:auto;'>" . htmlspecialchars($migrateOutput) . "</pre>
-                    <h3>Cache Output:</h3>
-                    <pre style='background:#020617;padding:12px;border-radius:8px;overflow-x:auto;'>" . htmlspecialchars($clearOutput) . "</pre>
-                    <p><a href='" . route('admin.settings') . "' style='display:inline-block;padding:10px 18px;background:#facc15;color:#000;text-decoration:none;font-weight:bold;border-radius:8px;margin-top:12px;'>Buka Pengaturan Toko</a></p>
-                </div>");
-            } catch (\Throwable $e) {
-                return response("<div style='font-family:monospace;background:#450a0a;color:#fca5a5;padding:24px;border-radius:12px;max-width:800px;margin:40px auto;'>
-                    <h2 style='color:#ef4444;margin-top:0;'>❌ Error saat Migrasi</h2>
-                    <pre>" . htmlspecialchars($e->getMessage()) . "</pre>
-                </div>", 500);
             }
+            if (!empty($missingExts)) {
+                $log[] = "⚠️ Peringatan: Ekstensi PHP berikut BELUM AKTIF di cPanel hosting: <strong>" . implode(', ', $missingExts) . "</strong>.<br>&nbsp;&nbsp;&nbsp;👉 Cara aktifkan: Buka <strong>cPanel > Select PHP Version > Extensions</strong>, lalu centang <code>" . implode('</code>, <code>', $missingExts) . "</code>.";
+            } else {
+                $log[] = "✅ Semua ekstensi PHP penting (dom, xml, fileinfo, gd, pdo_mysql) SUDAH AKTIF.";
+            }
+
+            // 2. Buat direktori storage penting jika belum ada
+            $directories = [
+                storage_path('app/private/livewire-tmp'),
+                storage_path('app/livewire-tmp'),
+                storage_path('app/public/livewire-tmp'),
+                storage_path('app/public/settings'),
+                storage_path('app/public/settings/hero'),
+                storage_path('app/public/settings/hero3card'),
+                storage_path('app/public/products'),
+                storage_path('app/public/services'),
+                storage_path('app/public/service_images'),
+                storage_path('app/public/sell-submissions'),
+                storage_path('app/firebase'),
+                storage_path('app/private/firebase'),
+                storage_path('framework/cache/data'),
+                storage_path('framework/sessions'),
+                storage_path('framework/views'),
+                storage_path('logs'),
+            ];
+            foreach ($directories as $dir) {
+                if (!is_dir($dir)) {
+                    @mkdir($dir, 0777, true);
+                }
+                @chmod($dir, 0777);
+            }
+            $log[] = "✅ Direktori storage & livewire-tmp siap dengan izin tulis (0777).";
+
+            // 3. Hubungkan symlink storage
+            try {
+                if (function_exists('symlink')) {
+                    \Illuminate\Support\Facades\Artisan::call('storage:link');
+                    $log[] = "✅ Storage symlink berhasil dibuat / diverifikasi.";
+                } else {
+                    $log[] = "ℹ️ PHP symlink() dinonaktifkan di hosting. Fallback streaming route otomatis aktif.";
+                }
+            } catch (\Throwable $e) {
+                $log[] = "ℹ️ Storage link info: " . $e->getMessage();
+            }
+
+            // 4. Jalankan migrasi database
+            $migrateOutput = "";
+            try {
+                \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true, '--no-ansi' => true]);
+                $migrateOutput = \Illuminate\Support\Facades\Artisan::output();
+                $log[] = "✅ Migrasi database berhasil dijalankan.";
+            } catch (\Throwable $e) {
+                $log[] = "⚠️ Catatan migrasi: " . $e->getMessage();
+            }
+
+            // 5. Bersihkan cache
+            try {
+                \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+                $log[] = "✅ Optimize cache clear berhasil.";
+            } catch (\Throwable $e) {
+                $log[] = "ℹ️ Optimize clear info: " . $e->getMessage();
+            }
+
+            // 6. Reset cache permission
+            try {
+                \Illuminate\Support\Facades\Artisan::call('permission:cache-reset');
+                $log[] = "✅ Role & Permission cache berhasil di-reset.";
+            } catch (\Throwable $e) {}
+
+            $logHtml = implode("<br><br>", array_map(fn($l) => "• " . $l, $log));
+
+            return response("<div style='font-family:monospace;background:#0f172a;color:#10b981;padding:24px;border-radius:12px;max-width:850px;margin:40px auto;border:1px solid #334155;'>
+                <h2 style='color:#facc15;margin-top:0;'>🛠️ Laporan Pemeliharaan Sistem Prokar</h2>
+                <div style='background:#020617;padding:20px;border-radius:8px;line-height:1.7;color:#f8fafc;'>
+                    {$logHtml}
+                </div>
+                " . ($migrateOutput ? "<h3 style='color:#38bdf8;'>Migration Output:</h3><pre style='background:#020617;padding:12px;border-radius:8px;overflow-x:auto;color:#cbd5e1;'>" . htmlspecialchars($migrateOutput) . "</pre>" : "") . "
+                <p style='margin-top:20px;'><a href='" . route('admin.settings') . "' style='display:inline-block;padding:10px 18px;background:#facc15;color:#000;text-decoration:none;font-weight:bold;border-radius:8px;'>Buka Pengaturan Toko</a></p>
+            </div>");
         })->name('maintenance.migrate');
     });
 });

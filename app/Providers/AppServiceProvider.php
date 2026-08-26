@@ -42,6 +42,7 @@ class AppServiceProvider extends ServiceProvider
         $directories = [
             storage_path('app/private/livewire-tmp'),
             storage_path('app/livewire-tmp'),
+            storage_path('app/public/livewire-tmp'),
             storage_path('app/public/settings'),
             storage_path('app/public/settings/hero'),
             storage_path('app/public/settings/hero3card'),
