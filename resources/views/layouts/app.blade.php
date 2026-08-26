@@ -427,6 +427,7 @@
 
   <x-cart-modal />
   <x-search-modal />
+  <x-notification-prompt />
 
   @stack('scripts')
 

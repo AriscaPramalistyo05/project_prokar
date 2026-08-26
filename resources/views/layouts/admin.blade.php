@@ -62,10 +62,26 @@
                     <div class="font-bold text-lg lg:hidden ml-2">PROKAR ADMIN</div>
                 </x-slot:brand>
                 <x-slot:actions>
-                    <span class="text-sm font-medium">{{ auth()->user()->name }}</span>
+                    {{-- FCM Push Enable Badge if not granted --}}
+                    <button id="admin-fcm-btn" 
+                            type="button"
+                            onclick="window.requestAdminFcmPermission && window.requestAdminFcmPermission()"
+                            class="hidden items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/50 text-amber-800 dark:text-amber-300 text-xs font-bold hover:bg-amber-100 transition-all shadow-2xs">
+                        <i class="fa-solid fa-bell-ring animate-bounce text-amber-600"></i>
+                        <span>Aktifkan Push Notif</span>
+                    </button>
+
+                    {{-- Livewire Notification Dropdown (Image 3) --}}
+                    <livewire:admin.notification-dropdown />
+
+                    <div class="hidden sm:flex flex-col text-right">
+                        <span class="text-xs font-bold leading-tight">{{ auth()->user()->name }}</span>
+                        <span class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Super Admin</span>
+                    </div>
+
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <x-button label="Keluar" icon="o-arrow-right-on-rectangle" class="btn-ghost btn-sm" type="submit" />
+                        <x-button label="Keluar" icon="o-arrow-right-on-rectangle" class="btn-ghost btn-sm text-slate-500 hover:text-rose-600" type="submit" />
                     </form>
                 </x-slot:actions>
             </x-nav>
@@ -120,30 +136,33 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', async function () {
+        window.requestAdminFcmPermission = async function() {
             const configEl = document.getElementById('firebase-config');
             if (!configEl) return;
-            
             let config;
-            try {
-                config = JSON.parse(configEl.textContent);
-            } catch(e) { return; }
-
+            try { config = JSON.parse(configEl.textContent); } catch(e) { return; }
             if (!config || !config.apiKey || !config.projectId || !config.vapidKey) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: 'Konfigurasi Firebase Belum Lengkap',
+                        text: 'Silakan lengkapi Firebase API Key, Project ID, dan VAPID Key di menu Setting Admin terlebih dahulu.',
+                        icon: 'info',
+                        confirmButtonText: 'Buka Setting',
+                        confirmButtonColor: '#0f172a'
+                    }).then((r) => { if (r.isConfirmed) window.location.href = "{{ route('admin.settings') }}"; });
+                }
                 return;
             }
 
             if ('serviceWorker' in navigator && 'Notification' in window) {
                 try {
-                    if (typeof firebase !== 'undefined' && !firebase.apps.length) {
-                        firebase.initializeApp(config);
-                    }
-                    const messaging = firebase.messaging();
-
-                    const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-                    
                     const permission = await Notification.requestPermission();
                     if (permission === 'granted') {
+                        if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+                            firebase.initializeApp(config);
+                        }
+                        const messaging = firebase.messaging();
+                        const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
                         const token = await messaging.getToken({
                             vapidKey: config.vapidKey,
                             serviceWorkerRegistration: registration
@@ -160,10 +179,34 @@
                                 },
                                 body: JSON.stringify({ token: token })
                             });
+
+                            document.getElementById('admin-fcm-btn')?.classList.add('hidden');
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({
+                                    title: 'Notifikasi Aktif!',
+                                    text: 'Perangkat browser ini siap menerima notifikasi order, servis, dan pengajuan jual secara langsung.',
+                                    icon: 'success',
+                                    timer: 3000,
+                                    showConfirmButton: false
+                                });
+                            }
                         }
                     }
                 } catch (err) {
-                    console.warn('FCM registration:', err);
+                    console.warn('FCM registration error:', err);
+                }
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', async function () {
+            if ('Notification' in window) {
+                const fcmBtn = document.getElementById('admin-fcm-btn');
+                if (Notification.permission === 'default' && fcmBtn) {
+                    fcmBtn.classList.remove('hidden');
+                    fcmBtn.classList.add('inline-flex');
+                } else if (Notification.permission === 'granted') {
+                    // Auto sync token in background
+                    window.requestAdminFcmPermission && window.requestAdminFcmPermission();
                 }
             }
         });
