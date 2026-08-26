@@ -9,61 +9,54 @@
         }, 2500);
      "
      x-show="show"
-     x-transition:enter="transition ease-out duration-400 transform"
-     x-transition:enter-start="opacity-0 translate-y-10 scale-95"
+     x-transition:enter="transition ease-out duration-300 transform"
+     x-transition:enter-start="opacity-0 translate-y-6 scale-95"
      x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-     x-transition:leave="transition ease-in duration-250 transform"
+     x-transition:leave="transition ease-in duration-200 transform"
      x-transition:leave-start="opacity-100 translate-y-0 scale-100"
-     x-transition:leave-end="opacity-0 translate-y-10 scale-95"
-     class="fixed bottom-5 right-5 z-[999] max-w-sm w-[calc(100vw-2.5rem)] bg-gray-950/95 backdrop-blur-xl text-white rounded-3xl p-5 shadow-2xl border border-gray-800/90 overflow-hidden"
+     x-transition:leave-end="opacity-0 translate-y-6 scale-95"
+     class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[99999] max-w-sm w-[calc(100vw-2rem)] bg-white text-gray-900 rounded-2xl p-4 sm:p-5 shadow-2xl border border-gray-200/90"
      style="display: none;">
-    
-    {{-- Ambient Top Glow Line --}}
-    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-[#FFCC00] to-yellow-500"></div>
 
-    <div class="relative">
-        {{-- Header Bar --}}
-        <div class="flex items-center justify-between gap-2 mb-2.5">
-            <div class="flex items-center gap-2">
-                <span class="px-2.5 py-0.5 rounded-full bg-[#FFCC00]/15 text-[#FFCC00] text-[10px] font-extrabold uppercase tracking-wider border border-[#FFCC00]/30 font-public">
-                    Info Real-Time
-                </span>
-                <span class="text-[11px] text-gray-400 font-medium">Prokar Update</span>
-            </div>
-
-            <button type="button" 
-                    @click="show = false; localStorage.setItem('fcm_prompt_dismissed', '1')"
-                    class="w-7 h-7 rounded-full bg-gray-900 hover:bg-gray-800 text-gray-400 hover:text-white flex items-center justify-center transition-colors text-xs cursor-pointer"
-                    aria-label="Tutup">
-                ✕
-            </button>
+    <div class="flex items-start gap-3.5">
+        {{-- Bell Icon --}}
+        <div class="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200/60 text-amber-600 flex items-center justify-center shrink-0 shadow-2xs">
+            <i class="fa-solid fa-bell text-base"></i>
         </div>
 
-        {{-- Content Area --}}
-        <div class="space-y-1.5 mb-4">
-            <h4 class="text-sm font-bold text-white font-public tracking-tight">
+        {{-- Content --}}
+        <div class="flex-1 min-w-0 pr-2">
+            <h4 class="text-sm font-bold text-gray-900 leading-snug">
                 Update Status Pesanan & Servis
             </h4>
-            <p class="text-xs text-gray-300 leading-relaxed font-inter">
-                Aktifkan pemberitahuan browser agar Anda langsung menerima info saat pesanan dikirim atau estimasi perbaikan servis selesai.
+            <p class="text-xs text-gray-500 leading-relaxed mt-1">
+                Aktifkan notifikasi browser agar Anda langsung menerima info saat pesanan dikirim atau estimasi servis selesai.
             </p>
         </div>
 
-        {{-- Action Buttons --}}
-        <div class="flex items-center gap-2.5 pt-1">
-            <button type="button" 
-                    id="btn-enable-frontend-fcm"
-                    onclick="window.requestFrontendFcm && window.requestFrontendFcm()"
-                    class="flex-1 py-2.5 px-4 bg-[#FFCC00] hover:bg-yellow-400 active:scale-[0.98] text-black text-xs font-bold font-public uppercase tracking-wider rounded-xl transition-all text-center shadow-md cursor-pointer">
-                Aktifkan Notifikasi
-            </button>
+        {{-- Close Button --}}
+        <button type="button" 
+                @click="show = false; localStorage.setItem('fcm_prompt_dismissed', '1')"
+                class="text-gray-400 hover:text-gray-700 p-1 -mr-1 -mt-1 transition-colors cursor-pointer"
+                aria-label="Tutup">
+            <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+    </div>
 
-            <button type="button" 
-                    @click="show = false; localStorage.setItem('fcm_prompt_dismissed', '1')"
-                    class="py-2.5 px-4 bg-gray-900 hover:bg-gray-800 active:scale-[0.98] text-gray-300 hover:text-white text-xs font-semibold rounded-xl transition-all cursor-pointer border border-gray-800">
-                Nanti Saja
-            </button>
-        </div>
+    {{-- Action Buttons --}}
+    <div class="flex items-center gap-2 mt-4 pt-3 border-t border-gray-100">
+        <button type="button" 
+                id="btn-enable-frontend-fcm"
+                onclick="window.requestFrontendFcm && window.requestFrontendFcm()"
+                class="flex-1 py-2.5 px-3 bg-gray-900 hover:bg-black text-white text-xs font-bold rounded-xl transition-all text-center shadow-xs cursor-pointer">
+            Aktifkan Notifikasi
+        </button>
+
+        <button type="button" 
+                @click="show = false; localStorage.setItem('fcm_prompt_dismissed', '1')"
+                class="py-2.5 px-3 text-gray-500 hover:text-gray-800 text-xs font-semibold rounded-xl hover:bg-gray-100 transition-all cursor-pointer">
+            Nanti Saja
+        </button>
     </div>
 </div>
 

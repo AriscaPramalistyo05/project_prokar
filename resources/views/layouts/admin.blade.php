@@ -69,6 +69,75 @@
                     <div class="font-bold text-lg lg:hidden ml-2">PROKAR ADMIN</div>
                 </x-slot:brand>
                 <x-slot:actions>
+                    {{-- Small Push Notification Toggle (beside Bell Icon) --}}
+                    <div x-data="{
+                        permission: (typeof Notification !== 'undefined') ? Notification.permission : 'unsupported',
+                        loading: false,
+                        async toggle() {
+                            if (typeof Notification === 'undefined') {
+                                if (typeof Swal !== 'undefined') {
+                                    Swal.fire({ title: 'Tidak Didukung', text: 'Browser Anda tidak mendukung push notifikasi.', icon: 'warning' });
+                                }
+                                return;
+                            }
+                            if (this.permission === 'granted') {
+                                if (typeof Swal !== 'undefined') {
+                                    Swal.fire({
+                                        title: 'Notifikasi Aktif',
+                                        text: 'Push notifikasi browser sudah aktif untuk akun Anda.',
+                                        icon: 'success',
+                                        timer: 1800,
+                                        showConfirmButton: false
+                                    });
+                                }
+                                return;
+                            }
+                            if (this.permission === 'denied') {
+                                if (typeof Swal !== 'undefined') {
+                                    Swal.fire({
+                                        title: 'Notifikasi Diblokir',
+                                        text: 'Izin notifikasi diblokir di browser. Klik ikon gembok di address bar untuk mengizinkan.',
+                                        icon: 'warning'
+                                    });
+                                }
+                                return;
+                            }
+                            this.loading = true;
+                            try {
+                                if (window.requestAdminFcmPermission) {
+                                    await window.requestAdminFcmPermission();
+                                }
+                                this.permission = (typeof Notification !== 'undefined') ? Notification.permission : 'unsupported';
+                            } catch (e) {
+                                console.error(e);
+                            } finally {
+                                this.loading = false;
+                            }
+                        }
+                    }"
+                    @fcm-permission-updated.window="permission = (typeof Notification !== 'undefined') ? Notification.permission : 'unsupported'"
+                    class="flex items-center mr-1">
+                        <button type="button"
+                                @click="toggle()"
+                                :disabled="loading"
+                                :title="permission === 'granted' ? 'Push notifikasi browser aktif' : (permission === 'denied' ? 'Notifikasi diblokir di browser' : 'Klik untuk aktifkan push notifikasi browser')"
+                                class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border text-xs font-semibold transition-all cursor-pointer select-none"
+                                :class="{
+                                    'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 shadow-2xs': permission === 'granted',
+                                    'bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100 shadow-2xs': permission === 'default' || permission === 'unsupported',
+                                    'bg-rose-50 text-rose-700 border-rose-200': permission === 'denied',
+                                    'opacity-60': loading
+                                }">
+                            {{-- Mini Toggle Switch --}}
+                            <span class="relative inline-flex items-center w-5 h-3 rounded-full transition-colors"
+                                  :class="permission === 'granted' ? 'bg-emerald-500' : (permission === 'denied' ? 'bg-rose-400' : 'bg-gray-300')">
+                                <span class="absolute w-2 h-2 bg-white rounded-full shadow-xs transition-transform"
+                                      :class="permission === 'granted' ? 'translate-x-2.5' : 'translate-x-0.5'"></span>
+                            </span>
+                            <span class="text-[11px] font-bold" x-text="loading ? '...' : (permission === 'granted' ? 'Notif ON' : (permission === 'denied' ? 'Blokir' : 'Aktifkan Notif'))"></span>
+                        </button>
+                    </div>
+
                     {{-- Livewire Notification Dropdown --}}
                     <livewire:admin.notification-dropdown />
 

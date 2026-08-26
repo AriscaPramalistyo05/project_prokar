@@ -203,47 +203,27 @@
                class="w-full bg-white shadow-xl flex flex-col justify-between overflow-y-auto">
             
             <div class="p-6">
-              <div class="flex items-center justify-between mb-8 pb-4 border-b border-gray-100">
+              <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
                 <span class="text-xl font-black font-public text-black uppercase tracking-tighter">Menu</span>
-                <button type="button" @click="mobileMenuOpen = false" class="text-gray-400 hover:text-black p-2 -mr-2">
+                <button type="button" @click="mobileMenuOpen = false" class="text-gray-400 hover:text-black p-2 -mr-2 cursor-pointer" aria-label="Tutup Menu">
                   <i class="fa-solid fa-xmark text-xl"></i>
                 </button>
               </div>
 
-              <nav class="flex flex-col space-y-4">
-                <a href="{{ route('home') }}" class="text-lg font-bold text-gray-900 {{ $isHome ? 'text-brand-orange' : '' }}">Home</a>
-                <a href="{{ route('produk.index') }}" class="text-lg font-bold text-gray-900 {{ $isProducts ? 'text-brand-orange' : '' }}">Produk</a>
-                <a href="{{ route('jual.index') }}" class="text-lg font-bold text-gray-900 {{ $isSell ? 'text-brand-orange' : '' }}">Jual</a>
-                <a href="{{ route('servis.index') }}" class="text-lg font-bold text-gray-900 {{ $isService ? 'text-brand-orange' : '' }}">Servis</a>
-                <a href="{{ route('servis.lacak') }}" class="text-lg font-bold text-gray-900 {{ $isTrack ? 'text-brand-orange' : '' }}">Track</a>
+              <nav class="flex flex-col space-y-2">
+                <a href="{{ route('home') }}" class="px-3 py-2.5 rounded-xl text-base font-bold transition-all {{ $isHome ? 'bg-amber-50 text-brand-orange font-extrabold' : 'text-gray-800 hover:bg-gray-50' }}">Home</a>
+                <a href="{{ route('produk.index') }}" class="px-3 py-2.5 rounded-xl text-base font-bold transition-all {{ $isProducts ? 'bg-amber-50 text-brand-orange font-extrabold' : 'text-gray-800 hover:bg-gray-50' }}">Produk</a>
+                <a href="{{ route('jual.index') }}" class="px-3 py-2.5 rounded-xl text-base font-bold transition-all {{ $isSell ? 'bg-amber-50 text-brand-orange font-extrabold' : 'text-gray-800 hover:bg-gray-50' }}">Jual</a>
+                <a href="{{ route('servis.index') }}" class="px-3 py-2.5 rounded-xl text-base font-bold transition-all {{ $isService ? 'bg-amber-50 text-brand-orange font-extrabold' : 'text-gray-800 hover:bg-gray-50' }}">Servis</a>
+                <a href="{{ route('servis.lacak') }}" class="px-3 py-2.5 rounded-xl text-base font-bold transition-all {{ $isTrack ? 'bg-amber-50 text-brand-orange font-extrabold' : 'text-gray-800 hover:bg-gray-50' }}">Track</a>
               </nav>
             </div>
 
-            <div class="p-6 border-t border-gray-100 bg-gray-50">
-              <a href="{{ route('keranjang.index') }}" class="flex items-center justify-between text-base font-bold text-gray-900 {{ $isCart ? 'text-brand-orange' : '' }}">
-                <div class="flex items-center gap-3">
-                  <i class="fa-solid fa-cart-shopping"></i> Keranjang
-                </div>
-                <span x-show="cartCount > 0" x-text="cartCount" class="bg-brand-yellow text-black text-xs font-bold px-2 py-0.5 rounded-full" style="{{ $cartCount > 0 ? '' : 'display: none;' }}">{{ $cartCount > 0 ? $cartCount : '' }}</span>
-              </a>
+            {{-- Footer Drawer --}}
+            <div class="p-6 border-t border-gray-100 bg-gray-50/70 text-xs text-gray-400">
+              <p class="font-bold text-gray-700">{{ setting('shop_name', 'Prokar Elektronik') }}</p>
+              <p class="mt-0.5 text-[11px] text-gray-400">{{ setting('shop_tagline', 'Jual, Beli & Servis Elektronik') }}</p>
             </div>
-
-            @auth
-            <div class="p-6 border-t border-gray-100 bg-gray-50 space-y-1">
-              <a href="{{ route('user.profile') }}" class="flex items-center gap-2 py-2 text-sm font-bold text-gray-800 hover:text-black">
-                <i class="fa-regular fa-user text-gray-400"></i> Profil Saya
-              </a>
-              <a href="{{ auth()->user()->hasRole('super_admin') ? route('admin.settings') : route('user.settings') }}" class="flex items-center gap-2 py-2 text-sm font-bold text-gray-800 hover:text-black">
-                <i class="fa-solid fa-gear text-gray-400"></i> Pengaturan
-              </a>
-              <form method="POST" action="{{ route('logout') }}" class="pt-2">
-                  @csrf
-                  <button type="submit" class="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-100 text-sm text-red-600 font-bold hover:bg-red-200 transition-colors cursor-pointer">
-                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
-                  </button>
-              </form>
-            </div>
-            @endauth
 
           </div>
         </div>

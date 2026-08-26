@@ -835,37 +835,34 @@
                     }
                 }"
                 @fcm-permission-updated.window="permission = (typeof Notification !== 'undefined') ? Notification.permission : 'unsupported'"
-                class="p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-slate-900 to-gray-900 text-white shadow-md border border-gray-800">
+                class="p-5 sm:p-6 rounded-2xl bg-white border border-gray-200/90 shadow-2xs">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
                         <div class="space-y-1">
                             <div class="flex items-center gap-2.5">
-                                <span class="px-2.5 py-0.5 rounded-full bg-[#FFCC00]/20 text-[#FFCC00] text-[10px] font-extrabold uppercase tracking-wider border border-[#FFCC00]/30 font-public">
-                                    Browser Web Push
-                                </span>
+                                <h3 class="text-base font-bold font-public text-gray-900 tracking-tight">
+                                    Izin Push Notifikasi Browser Admin
+                                </h3>
                                 <template x-if="permission === 'granted'">
-                                    <span class="inline-flex items-center gap-1.5 text-xs text-emerald-400 font-bold">
-                                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold">
+                                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                                         <span>Aktif & Terhubung</span>
                                     </span>
                                 </template>
                                 <template x-if="permission === 'default' || permission === 'unsupported'">
-                                    <span class="inline-flex items-center gap-1.5 text-xs text-amber-400 font-bold">
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 text-xs font-bold">
                                         <span class="w-2 h-2 rounded-full bg-amber-400"></span>
                                         <span>Belum Diaktifkan</span>
                                     </span>
                                 </template>
                                 <template x-if="permission === 'denied'">
-                                    <span class="inline-flex items-center gap-1.5 text-xs text-rose-400 font-bold">
-                                        <span class="w-2 h-2 rounded-full bg-rose-400"></span>
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200 text-xs font-bold">
+                                        <span class="w-2 h-2 rounded-full bg-rose-500"></span>
                                         <span>Diblokir di Browser</span>
                                     </span>
                                 </template>
                             </div>
-                            <h3 class="text-base sm:text-lg font-bold font-public text-white tracking-tight">
-                                Status Push Notifikasi Browser Admin
-                            </h3>
-                            <p class="text-xs text-gray-300 max-w-xl leading-relaxed font-inter">
-                                Klik toggle di samping untuk mengaktifkan izin notifikasi di browser Anda. Notifikasi akan berbunyi dan muncul seketika bahkan saat Anda sedang membuka tab lain atau browser di latar belakang.
+                            <p class="text-xs text-gray-500 max-w-xl leading-relaxed">
+                                Notifikasi akan berbunyi dan muncul seketika di layar Anda saat ada pesanan atau permohonan servis baru, bahkan saat browser sedang membuka tab lain.
                             </p>
                         </div>
 
@@ -874,8 +871,8 @@
                             <button type="button" 
                                     @click="togglePermission()" 
                                     :disabled="loading"
-                                    class="group relative inline-flex h-8 w-14 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none shadow-inner"
-                                    :class="permission === 'granted' ? 'bg-emerald-500 hover:bg-emerald-400' : 'bg-gray-700 hover:bg-gray-600'"
+                                    class="group relative inline-flex h-8 w-14 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
+                                    :class="permission === 'granted' ? 'bg-emerald-500 hover:bg-emerald-400' : 'bg-gray-300 hover:bg-gray-400'"
                                     :title="permission === 'granted' ? 'Notifikasi Aktif' : 'Klik untuk Aktifkan Notifikasi'">
                                 <span class="sr-only">Toggle Push Notification</span>
                                 <span aria-hidden="true" 
