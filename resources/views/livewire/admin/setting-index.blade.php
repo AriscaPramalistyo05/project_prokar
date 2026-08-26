@@ -813,18 +813,152 @@
         @if ($selectedTab === 'fcm-tab')
             <div class="bg-white rounded-2xl border border-gray-200/80 shadow-xs p-6 sm:p-8 space-y-6 animate-in fade-in duration-200">
                 
-                <div class="p-4 bg-purple-50 border border-purple-200 rounded-xl text-purple-900 text-xs sm:text-sm flex items-start gap-3">
-                    <i class="fa-solid fa-bell text-purple-600 mt-0.5 text-base"></i>
-                    <div>
-                        <strong>Firebase Cloud Messaging (FCM Push Notification):</strong>
-                        <p class="text-xs text-purple-800 mt-0.5">Menerima push notifikasi instan langsung ke browser/desktop saat ada transaksi, order, servis, atau pengajuan jual baru masuk.</p>
+                {{-- 1. Browser Push Notification Status & Interactive Toggle --}}
+                <div x-data="{
+                    permission: (typeof Notification !== 'undefined') ? Notification.permission : 'unsupported',
+                    loading: false,
+                    async togglePermission() {
+                        if (typeof Notification === 'undefined') {
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({ title: 'Tidak Didukung', text: 'Browser Anda tidak mendukung Web Push Notification.', icon: 'warning' });
+                            }
+                            return;
+                        }
+                        if (this.permission === 'granted') {
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({
+                                    title: 'Notifikasi Sudah Aktif',
+                                    text: 'Perangkat browser ini sudah terdaftar dan siap menerima push notification.',
+                                    icon: 'info',
+                                    confirmButtonColor: '#0f172a'
+                                });
+                            }
+                            return;
+                        }
+                        this.loading = true;
+                        try {
+                            if (window.requestAdminFcmPermission) {
+                                await window.requestAdminFcmPermission();
+                            }
+                            this.permission = (typeof Notification !== 'undefined') ? Notification.permission : 'unsupported';
+                        } catch (e) {
+                            console.error(e);
+                        } finally {
+                            this.loading = false;
+                        }
+                    }
+                }"
+                @fcm-permission-updated.window="permission = (typeof Notification !== 'undefined') ? Notification.permission : 'unsupported'"
+                class="p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-slate-900 to-gray-900 text-white shadow-md border border-gray-800">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2.5">
+                                <span class="px-2.5 py-0.5 rounded-full bg-[#FFCC00]/20 text-[#FFCC00] text-[10px] font-extrabold uppercase tracking-wider border border-[#FFCC00]/30 font-public">
+                                    Browser Web Push
+                                </span>
+                                <template x-if="permission === 'granted'">
+                                    <span class="inline-flex items-center gap-1.5 text-xs text-emerald-400 font-bold">
+                                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                        <span>Aktif & Terhubung</span>
+                                    </span>
+                                </template>
+                                <template x-if="permission === 'default' || permission === 'unsupported'">
+                                    <span class="inline-flex items-center gap-1.5 text-xs text-amber-400 font-bold">
+                                        <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                                        <span>Belum Diaktifkan</span>
+                                    </span>
+                                </template>
+                                <template x-if="permission === 'denied'">
+                                    <span class="inline-flex items-center gap-1.5 text-xs text-rose-400 font-bold">
+                                        <span class="w-2 h-2 rounded-full bg-rose-400"></span>
+                                        <span>Diblokir di Browser</span>
+                                    </span>
+                                </template>
+                            </div>
+                            <h3 class="text-base sm:text-lg font-bold font-public text-white tracking-tight">
+                                Status Push Notifikasi Browser Admin
+                            </h3>
+                            <p class="text-xs text-gray-300 max-w-xl leading-relaxed font-inter">
+                                Klik toggle di samping untuk mengaktifkan izin notifikasi di browser Anda. Notifikasi akan berbunyi dan muncul seketika bahkan saat Anda sedang membuka tab lain atau browser di latar belakang.
+                            </p>
+                        </div>
+
+                        {{-- Toggle Button Switch --}}
+                        <div class="shrink-0 flex items-center">
+                            <button type="button" 
+                                    @click="togglePermission()" 
+                                    :disabled="loading"
+                                    class="group relative inline-flex h-8 w-14 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none shadow-inner"
+                                    :class="permission === 'granted' ? 'bg-emerald-500 hover:bg-emerald-400' : 'bg-gray-700 hover:bg-gray-600'"
+                                    :title="permission === 'granted' ? 'Notifikasi Aktif' : 'Klik untuk Aktifkan Notifikasi'">
+                                <span class="sr-only">Toggle Push Notification</span>
+                                <span aria-hidden="true" 
+                                      class="pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out"
+                                      :class="permission === 'granted' ? 'translate-x-6' : 'translate-x-0'"></span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                {{-- Upload Service Account JSON --}}
+                {{-- 2. Kategori Notifikasi Akun (ProAcc UI Style) --}}
+                <div class="p-6 rounded-2xl bg-gray-50 border border-gray-200/90 space-y-4">
+                    <div class="pb-3 border-b border-gray-200">
+                        <h4 class="font-bold text-sm text-gray-900 font-public uppercase tracking-wider">Kategori Pemicu Notifikasi Admin</h4>
+                        <p class="text-xs text-gray-500">Pilih jenis peristiwa transaksi dan operasional yang akan mengirimkan push notifikasi ke perangkat admin:</p>
+                    </div>
+
+                    <div class="divide-y divide-gray-200">
+                        {{-- Kategori 1: Pesanan & Penjualan --}}
+                        <div class="py-3.5 flex items-center justify-between gap-4">
+                            <div class="space-y-0.5">
+                                <h5 class="text-sm font-bold text-gray-900">Pesanan Baru Masuk (Sales & Orders)</h5>
+                                <p class="text-xs text-gray-500">Kirim notifikasi saat pelanggan berhasil checkout atau membuat pesanan produk baru.</p>
+                            </div>
+                            <x-toggle wire:model="notify_new_order" class="toggle-primary" />
+                        </div>
+
+                        {{-- Kategori 2: Layanan Servis --}}
+                        <div class="py-3.5 flex items-center justify-between gap-4">
+                            <div class="space-y-0.5">
+                                <h5 class="text-sm font-bold text-gray-900">Booking Servis Baru (Service Requests)</h5>
+                                <p class="text-xs text-gray-500">Kirim notifikasi saat ada permohonan servis kulkas, TV, atau mesin cuci dari pelanggan.</p>
+                            </div>
+                            <x-toggle wire:model="notify_new_service" class="toggle-primary" />
+                        </div>
+
+                        {{-- Kategori 3: Pengajuan Jual Bekas --}}
+                        <div class="py-3.5 flex items-center justify-between gap-4">
+                            <div class="space-y-0.5">
+                                <h5 class="text-sm font-bold text-gray-900">Pengajuan Jual Elektronik (Purchases & Sell)</h5>
+                                <p class="text-xs text-gray-500">Kirim notifikasi saat pelanggan mengajukan penawaran barang bekas via formulir jual.</p>
+                            </div>
+                            <x-toggle wire:model="notify_new_sell" class="toggle-primary" />
+                        </div>
+
+                        {{-- Kategori 4: Pembayaran Lunas Midtrans --}}
+                        <div class="py-3.5 flex items-center justify-between gap-4">
+                            <div class="space-y-0.5">
+                                <h5 class="text-sm font-bold text-gray-900">Pembayaran Lunas & DP (Payments)</h5>
+                                <p class="text-xs text-gray-500">Kirim notifikasi saat pembayaran QRIS, Transfer VA, atau kartu kredit sukses terverifikasi.</p>
+                            </div>
+                            <x-toggle wire:model="notify_payment_settled" class="toggle-primary" />
+                        </div>
+
+                        {{-- Kategori 5: Approval / Pendaftaran Akun Pelanggan --}}
+                        <div class="py-3.5 flex items-center justify-between gap-4">
+                            <div class="space-y-0.5">
+                                <h5 class="text-sm font-bold text-gray-900">Persetujuan Biaya & Akun Pelanggan (Customer Actions)</h5>
+                                <p class="text-xs text-gray-500">Kirim notifikasi saat pelanggan menyetujui estimasi biaya servis atau mendaftar akun baru.</p>
+                            </div>
+                            <x-toggle wire:model="notify_customer_approval" class="toggle-primary" />
+                        </div>
+                    </div>
+                </div>
+
+                {{-- 3. Upload Service Account JSON --}}
                 <div class="p-5 rounded-2xl bg-gray-50 border border-gray-200 space-y-4">
                     <div>
-                        <h4 class="font-bold text-sm text-gray-900">1. Service Account SDK (Backend Laravel)</h4>
+                        <h4 class="font-bold text-sm text-gray-900 font-public">Kunci Privat Service Account (Backend Laravel)</h4>
                         <p class="text-xs text-gray-500">File kunci privat Firebase Admin SDK untuk otentikasi pengiriman notifikasi dari server backend Laravel.</p>
                     </div>
 
@@ -832,16 +966,16 @@
                         <span class="badge {{ $has_service_account_file ? 'badge-success' : 'badge-error' }} badge-sm text-white font-bold">
                             {{ $has_service_account_file ? '✓ File Terpasang' : '✗ Belum Ada File' }}
                         </span>
-                        <span class="text-xs text-gray-500">storage/app/firebase/service-account.json</span>
+                        <span class="text-xs text-gray-500 font-mono">storage/app/firebase/service-account.json</span>
                     </div>
 
                     <x-file label="Upload / Ganti File Service Account (.json)" wire:model="service_account_file" accept=".json,application/json" hint="Disimpan aman di storage/app/firebase/service-account.json" class="file-input-sm w-full" />
                 </div>
 
-                {{-- Firebase Web App Credentials --}}
+                {{-- 4. Firebase Web App Credentials --}}
                 <div class="p-5 rounded-2xl bg-gray-50 border border-gray-200 space-y-4">
                     <div>
-                        <h4 class="font-bold text-sm text-gray-900">2. Kredensial Web App (Firebase Console)</h4>
+                        <h4 class="font-bold text-sm text-gray-900 font-public">Kredensial Web App (Firebase Console)</h4>
                         <p class="text-xs text-gray-500">Digunakan oleh browser frontend / Service Worker untuk menerima sinyal push.</p>
                     </div>
 

@@ -62,14 +62,83 @@
                     <div class="font-bold text-lg lg:hidden ml-2">PROKAR ADMIN</div>
                 </x-slot:brand>
                 <x-slot:actions>
-                    {{-- FCM Push Enable Badge if not granted --}}
-                    <button id="admin-fcm-btn" 
-                            type="button"
-                            onclick="window.requestAdminFcmPermission && window.requestAdminFcmPermission()"
-                            class="hidden items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/50 text-amber-800 dark:text-amber-300 text-xs font-bold hover:bg-amber-100 transition-all shadow-2xs">
-                        <i class="fa-solid fa-bell-ring animate-bounce text-amber-600"></i>
-                        <span>Aktifkan Push Notif</span>
-                    </button>
+                    {{-- Interactive FCM Push Notification Toggle & Badge --}}
+                    <div x-data="{
+                        permission: (typeof Notification !== 'undefined') ? Notification.permission : 'unsupported',
+                        loading: false,
+                        async toggleFcm() {
+                            if (typeof Notification === 'undefined') {
+                                if (typeof Swal !== 'undefined') {
+                                    Swal.fire({ title: 'Tidak Didukung', text: 'Browser Anda tidak mendukung Web Push Notification.', icon: 'warning' });
+                                }
+                                return;
+                            }
+                            if (this.permission === 'granted') {
+                                if (typeof Swal !== 'undefined') {
+                                    Swal.fire({
+                                        title: 'Notifikasi Aktif',
+                                        text: 'Push notifikasi browser sudah aktif untuk akun Anda.',
+                                        icon: 'success',
+                                        timer: 2000,
+                                        showConfirmButton: false
+                                    });
+                                }
+                                return;
+                            }
+                            this.loading = true;
+                            try {
+                                if (window.requestAdminFcmPermission) {
+                                    await window.requestAdminFcmPermission();
+                                }
+                                this.permission = (typeof Notification !== 'undefined') ? Notification.permission : 'unsupported';
+                            } catch(e) {
+                                console.error(e);
+                            } finally {
+                                this.loading = false;
+                            }
+                        }
+                    }" 
+                    @fcm-permission-updated.window="permission = (typeof Notification !== 'undefined') ? Notification.permission : 'unsupported'"
+                    class="flex items-center">
+                        {{-- STATE 1: GRANTED (ACTIVE TOGGLE) --}}
+                        <template x-if="permission === 'granted'">
+                            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold shadow-2xs cursor-pointer"
+                                 @click="toggleFcm()"
+                                 title="Push Notifikasi Browser Aktif">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                <span class="hidden md:inline">Push Notif</span>
+                                <span>Aktif</span>
+                                {{-- Visual Toggle Switch ON --}}
+                                <div class="w-7 h-4 bg-emerald-500 rounded-full p-0.5 flex items-center justify-end transition-all">
+                                    <div class="w-3 h-3 bg-white rounded-full shadow-xs"></div>
+                                </div>
+                            </div>
+                        </template>
+
+                        {{-- STATE 2: DEFAULT (INACTIVE TOGGLE - CLICKABLE) --}}
+                        <template x-if="permission === 'default' || permission === 'unsupported'">
+                            <button type="button" 
+                                    @click="toggleFcm()" 
+                                    :disabled="loading"
+                                    class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold transition-all shadow-2xs cursor-pointer">
+                                <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                                <span x-text="loading ? 'Memproses...' : 'Push Notif'"></span>
+                                {{-- Visual Toggle Switch OFF --}}
+                                <div class="w-7 h-4 bg-gray-300 rounded-full p-0.5 flex items-center justify-start transition-all">
+                                    <div class="w-3 h-3 bg-white rounded-full shadow-xs"></div>
+                                </div>
+                            </button>
+                        </template>
+
+                        {{-- STATE 3: DENIED (BLOCKED) --}}
+                        <template x-if="permission === 'denied'">
+                            <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-50 text-rose-800 border border-rose-200 text-xs font-bold"
+                                 title="Izin notifikasi diblokir pada pengaturan browser">
+                                <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                                <span>Notif Diblokir</span>
+                            </div>
+                        </template>
+                    </div>
 
                     {{-- Livewire Notification Dropdown (Image 3) --}}
                     <livewire:admin.notification-dropdown />
@@ -180,7 +249,7 @@
                                 body: JSON.stringify({ token: token })
                             });
 
-                            document.getElementById('admin-fcm-btn')?.classList.add('hidden');
+                            window.dispatchEvent(new CustomEvent('fcm-permission-updated'));
                             if (typeof Swal !== 'undefined') {
                                 Swal.fire({
                                     title: 'Notifikasi Aktif!',

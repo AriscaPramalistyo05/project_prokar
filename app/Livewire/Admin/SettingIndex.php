@@ -130,6 +130,13 @@ class SettingIndex extends Component
     public $service_account_file = null;
     public bool $has_service_account_file = false;
 
+    // Notification Category Toggles (ProAcc UI Style)
+    public bool $notify_new_order = true;
+    public bool $notify_new_service = true;
+    public bool $notify_new_sell = true;
+    public bool $notify_payment_settled = true;
+    public bool $notify_customer_approval = true;
+
     // ─── TAB 6: GARANSI ──────────────────────────────────────────────
     public int $warranty_duration_days = 30;
     public string $warranty_terms = '';
@@ -254,6 +261,11 @@ class SettingIndex extends Component
         $this->firebase_app_id = (string) ($settingService->get('firebase_app_id') ?? '');
         $this->firebase_vapid_key = (string) ($settingService->get('firebase_vapid_key') ?? '');
         $this->has_service_account_file = file_exists(storage_path('app/firebase/service-account.json')) || file_exists(base_path('storage/app/firebase/service-account.json'));
+        $this->notify_new_order = (bool) ($settingService->get('notify_new_order') ?? true);
+        $this->notify_new_service = (bool) ($settingService->get('notify_new_service') ?? true);
+        $this->notify_new_sell = (bool) ($settingService->get('notify_new_sell') ?? true);
+        $this->notify_payment_settled = (bool) ($settingService->get('notify_payment_settled') ?? true);
+        $this->notify_customer_approval = (bool) ($settingService->get('notify_customer_approval') ?? true);
 
         // 6. Garansi
         $this->warranty_duration_days = (int) ($settingService->get('warranty_duration_days') ?? 30);
@@ -455,6 +467,11 @@ class SettingIndex extends Component
         $settingService->set('firebase_messaging_sender_id', $this->firebase_messaging_sender_id, 'notification', 'text', 'Firebase Sender ID');
         $settingService->set('firebase_app_id', $this->firebase_app_id, 'notification', 'text', 'Firebase App ID');
         $settingService->set('firebase_vapid_key', $this->firebase_vapid_key, 'notification', 'text', 'Firebase VAPID Key');
+        $settingService->set('notify_new_order', $this->notify_new_order ? '1' : '0', 'notification', 'boolean', 'Notif Pesanan Baru');
+        $settingService->set('notify_new_service', $this->notify_new_service ? '1' : '0', 'notification', 'boolean', 'Notif Servis Baru');
+        $settingService->set('notify_new_sell', $this->notify_new_sell ? '1' : '0', 'notification', 'boolean', 'Notif Jual Bekas Baru');
+        $settingService->set('notify_payment_settled', $this->notify_payment_settled ? '1' : '0', 'notification', 'boolean', 'Notif Pembayaran Lunas');
+        $settingService->set('notify_customer_approval', $this->notify_customer_approval ? '1' : '0', 'notification', 'boolean', 'Notif Approval Pelanggan');
 
         // 6. Simpan Tab Garansi
         $settingService->set('warranty_duration_days', (string) $this->warranty_duration_days, 'warranty', 'text', 'Durasi Garansi Toko');
