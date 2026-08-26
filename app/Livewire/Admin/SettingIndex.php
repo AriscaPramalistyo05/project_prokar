@@ -317,7 +317,7 @@ class SettingIndex extends Component
             'shop_name'     => 'required|string|max:100',
             'shop_whatsapp' => 'required|string|max:30',
             'shop_email'    => 'required|email|max:100',
-            'logo_file'     => 'nullable|image|max:10240',
+            'logo_file'     => 'nullable|file|mimes:png,jpg,jpeg,webp,svg|max:10240',
             'favicon_file'  => 'nullable|file|mimes:png,jpg,jpeg,ico,svg,vnd.microsoft.icon,x-icon|max:5120',
             'hero_image_kulkas_file' => 'nullable|image|max:10240',
             'hero_image_tv_file' => 'nullable|image|max:10240',

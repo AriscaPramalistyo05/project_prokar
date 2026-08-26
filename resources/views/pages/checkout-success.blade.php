@@ -1,7 +1,18 @@
 @extends('layouts.app')
 
-@section('title', 'Pembayaran Berhasil - ' . $order->order_code . ' | Prokar Elektronik')
-@section('description', 'Pembayaran untuk pesanan ' . $order->order_code . ' telah berhasil. Unduh invoice di sini.')
+@php
+    $isPaid = in_array($order->payment_status, ['paid', 'dp_paid']);
+    $paymentLabels = [
+        'cash_store' => 'Bayar di Kasir',
+        'cod' => 'COD',
+        'midtrans' => 'Midtrans',
+        'midtrans_dp' => 'Midtrans DP 50%',
+    ];
+    $paymentLabel = $paymentLabels[$order->payment_method ?? ''] ?? ucfirst($order->payment_method ?? 'Menunggu');
+@endphp
+
+@section('title', ($isPaid ? 'Pembayaran Berhasil' : 'Menunggu Pembayaran') . ' - ' . $order->order_code . ' | Prokar Elektronik')
+@section('description', 'Status pembayaran pesanan ' . $order->order_code . ' di Prokar Elektronik.')
 
 @section('content')
 <div class="min-h-screen bg-white py-10 lg:py-16">
@@ -14,11 +25,11 @@
             </div>
             
             <h1 class="font-public font-bold text-3xl sm:text-4xl uppercase tracking-tight text-[#0A0A0A] mb-2">
-                Pembayaran Berhasil!
+                {{ $isPaid ? 'Pembayaran Berhasil!' : 'Menunggu Pembayaran' }}
             </h1>
             
             <p class="text-lg text-[#0A0A0A]/60 font-inter mb-6">
-                Terima kasih telah berbelanja di Prokar Elektronik. Pesanan Anda telah dikonfirmasi.
+                {{ $isPaid ? 'Terima kasih telah berbelanja di Prokar Elektronik. Pesanan Anda telah dikonfirmasi.' : 'Pesanan tersimpan. Selesaikan pembayaran untuk memproses pesanan Anda.' }}
             </p>
             
         @php
@@ -39,14 +50,14 @@
                     <span class="text-brand-yellow font-public font-black text-xl tracking-tighter">PROKAR.</span>
                     <span class="text-white/60 text-[10px] font-public font-bold uppercase tracking-widest block">Elektronik Jepara</span>
                 </div>
-                <span class="bg-green-500/20 border border-green-500 text-green-400 text-[10px] font-bold font-public uppercase tracking-widest px-3 py-1.5 rounded-full">
-                    Lunas (Paid)
+                <span class="{{ $isPaid ? 'bg-green-500/20 border-green-500 text-green-400' : 'bg-amber-500/20 border-amber-500 text-amber-600' }} border text-[10px] font-bold font-public uppercase tracking-widest px-3 py-1.5 rounded-full">
+                    {{ $isPaid ? 'Lunas (Paid)' : strtoupper($order->payment_status ?? 'UNPAID') }}
                 </span>
             </div>
             
             <!-- Body Nota -->
             <div class="p-6 sm:p-8 text-left">
-                <div class="grid grid-cols-2 gap-y-4 gap-x-4 mb-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-4 mb-6">
                     <div>
                         <p class="text-[10px] font-public font-bold uppercase tracking-widest text-gray-400 mb-0.5">No. Invoice</p>
                         <p class="font-public font-black text-base text-black">{{ $displayNo }}</p>
@@ -61,15 +72,15 @@
                     </div>
                     <div>
                         <p class="text-[10px] font-public font-bold uppercase tracking-widest text-gray-400 mb-0.5">Metode Bayar</p>
-                        <p class="font-public font-black text-sm text-black">{{ strtoupper($order->payment_method ?? 'MIDTRANS') }}</p>
+                        <p class="font-public font-black text-sm text-black">{{ $paymentLabel }}</p>
                     </div>
                 </div>
 
                 {{-- Product Items --}}
                 <div class="border-t border-b border-dashed border-gray-200 py-3 my-4 space-y-2 text-sm font-inter">
                     @foreach($order->orderItems as $item)
-                        <div class="flex justify-between items-center">
-                            <div class="pr-2">
+                        <div class="flex flex-wrap justify-between items-start gap-2">
+                            <div class="min-w-0 flex-1 pr-2">
                                 <p class="font-bold text-black text-xs sm:text-sm">{{ $item->product_name }}</p>
                                 <p class="text-[11px] text-gray-500">{{ $item->quantity }}x @ Rp {{ number_format($item->product_price, 0, ',', '.') }}</p>
                             </div>
@@ -80,17 +91,17 @@
 
                 {{-- Summary --}}
                 <div class="space-y-2 text-xs sm:text-sm font-inter">
-                    <div class="flex justify-between text-gray-600">
+                    <div class="flex flex-wrap justify-between gap-2 text-gray-600">
                         <span>Subtotal Produk</span>
                         <span class="font-bold text-black">Rp {{ number_format($order->subtotal, 0, ',', '.') }}</span>
                     </div>
-                    <div class="flex justify-between text-gray-600">
+                    <div class="flex flex-wrap justify-between gap-2 text-gray-600">
                         <span>Ongkos Kirim ({{ strtoupper($order->courier_name ?? 'Kargo') }})</span>
                         <span class="font-bold text-black">Rp {{ number_format($order->shipping_cost, 0, ',', '.') }}</span>
                     </div>
-                    <div class="flex justify-between py-2 border-t-2 border-black font-public">
+                    <div class="flex flex-wrap justify-between items-end gap-2 py-2 border-t-2 border-black font-public">
                         <span class="font-black text-sm uppercase">Total Pembayaran</span>
-                        <span class="font-black text-base text-black">Rp {{ number_format($order->total, 0, ',', '.') }}</span>
+                        <span class="font-black text-base text-black whitespace-nowrap">Rp {{ number_format($order->total, 0, ',', '.') }}</span>
                     </div>
                 </div>
             </div>
@@ -133,21 +144,21 @@
                 <i class="fa-solid fa-circle-info text-[#0A0A0A]/40"></i> Informasi Selanjutnya
             </h3>
             <ul class="space-y-2 text-sm font-inter text-[#0A0A0A]/70">
-                <li class="flex items-start gap-2">
+                <li class="flex items-start gap-2 min-w-0">
                     <i class="fa-solid fa-check text-[#1E8A5F] mt-0.5"></i>
-                    <span>Invoice digital telah dikirim ke email <strong>{{ $order->customer_email }}</strong></span>
+                    <span class="min-w-0 wrap-break-word">Invoice digital tersedia untuk pesanan <strong>{{ $order->customer_email }}</strong></span>
                 </li>
-                <li class="flex items-start gap-2">
+                <li class="flex items-start gap-2 min-w-0">
                     <i class="fa-solid fa-check text-[#1E8A5F] mt-0.5"></i>
-                    <span>Pesanan akan diproses dan dikirim dalam <strong>1-2 hari kerja</strong></span>
+                    <span class="min-w-0 wrap-break-word">Pesanan akan diproses sesuai status pembayaran dan metode pengiriman.</span>
                 </li>
-                <li class="flex items-start gap-2">
+                <li class="flex items-start gap-2 min-w-0">
                     <i class="fa-solid fa-check text-[#1E8A5F] mt-0.5"></i>
-                    <span>Nomor resi pengiriman akan dikirim via email dan WhatsApp</span>
+                    <span class="min-w-0 wrap-break-word">Nomor resi pengiriman akan dikirim via email dan WhatsApp jika pesanan dikirim.</span>
                 </li>
-                <li class="flex items-start gap-2">
+                <li class="flex items-start gap-2 min-w-0">
                     <i class="fa-solid fa-check text-[#1E8A5F] mt-0.5"></i>
-                    <span>Produk bergaransi toko <strong>1 bulan</strong> sejak diterima</span>
+                    <span class="min-w-0 wrap-break-word">Produk bergaransi toko <strong>1 bulan</strong> sejak diterima.</span>
                 </li>
             </ul>
         </div>

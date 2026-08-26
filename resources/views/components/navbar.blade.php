@@ -67,16 +67,16 @@
 
 <!-- Navbar -->
 <header class="sticky top-0 z-[9999] bg-[#E8F4F8]/80 backdrop-blur-xl border-b border-gray-200 shadow-sm">
-  <nav class="max-w-[1440px] mx-auto flex justify-between items-center h-20 px-6 lg:px-12">
-    <div class="flex items-center gap-3">
+  <nav class="max-w-[1440px] mx-auto flex justify-between items-center h-20 px-4 sm:px-6 lg:px-12 gap-3">
+    <div class="flex min-w-0 items-center gap-2 sm:gap-3">
       <button @click="mobileMenuOpen = true" class="md:hidden cursor-pointer" aria-label="Buka Menu">
         <i class="fa-solid fa-bars text-xl"></i>
       </button>
-      <a href="{{ route('home') }}" class="flex items-center gap-3">
+      <a href="{{ route('home') }}" class="flex min-w-0 items-center gap-3">
         @if(function_exists('setting') && setting('shop_logo'))
-          <img src="{{ asset('storage/' . setting('shop_logo')) }}" onerror="this.onerror=null; this.src='https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/brnriy48_expires_30_days.png'" alt="{{ setting('shop_name', 'Prokar Elektronik') }}" class="h-9 sm:h-10 w-auto object-contain" />
+          <img src="{{ asset('storage/' . setting('shop_logo')) }}" onerror="this.onerror=null; this.src='https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/brnriy48_expires_30_days.png'" alt="{{ setting('shop_name', 'Prokar Elektronik') }}" class="h-9 sm:h-10 max-w-[150px] sm:max-w-none w-auto object-contain" />
         @else
-          <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/brnriy48_expires_30_days.png" alt="Prokar Elektronik" class="h-8 sm:h-10 w-auto object-contain" />
+          <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/brnriy48_expires_30_days.png" alt="Prokar Elektronik" class="h-8 sm:h-10 max-w-[150px] sm:max-w-none w-auto object-contain" />
         @endif
       </a>
     </div>
@@ -89,7 +89,7 @@
       <a href="{{ route('servis.lacak') }}" class="nav-link {{ $isTrack ? 'active' : '' }}">Track</a>
     </div>
 
-    <div class="flex items-center gap-5">
+    <div class="flex shrink-0 items-center gap-3 sm:gap-5">
       <button type="button" @click="$dispatch('open-search-modal')" aria-label="Cari Produk" class="hover:scale-110 transition-transform cursor-pointer text-black">
         <i class="fa-solid fa-magnifying-glass text-xl"></i>
       </button>

@@ -62,6 +62,10 @@ class UserProfile extends Component
         }
     }
 
+    public function refreshData(): void
+    {
+    }
+
     public function saveProfile(): void
     {
         $user = Auth::user();

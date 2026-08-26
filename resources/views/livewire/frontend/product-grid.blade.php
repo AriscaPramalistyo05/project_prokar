@@ -31,7 +31,7 @@
                         aria-label="Lihat detail {{ $p['name'] }}" class="flex flex-col h-full w-full outline-none block">
                         <div class="relative w-full aspect-square bg-white rounded-2xl overflow-hidden mb-4 flex items-center justify-center">
                             <img src="{{ $p['image'] }}"
-                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                class="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500"
                                 alt="{{ $p['name'] }}" loading="lazy"
                                 onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&q=80'">
                             @if ($p['on_sale'])

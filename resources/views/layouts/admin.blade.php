@@ -217,7 +217,7 @@
                         icon: 'info',
                         confirmButtonText: 'Buka Setting',
                         confirmButtonColor: '#0f172a'
-                    }).then((r) => { if (r.isConfirmed) window.location.href = "{{ route('admin.settings') }}"; });
+                        }).then((r) => { if (r.isConfirmed) window.location.href = "{{ route('admin.settings', ['tab' => 'fcm-tab']) }}"; });
                 }
                 return;
             }

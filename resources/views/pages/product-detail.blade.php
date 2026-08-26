@@ -198,7 +198,7 @@
         <li><i class="fa-solid fa-chevron-right text-[10px] text-[#0A0A0A]/30" aria-hidden="true"></i></li>
         <li><a href="{{ route('produk.index') }}?kategori={{ $product->category?->slug ?? 'lainnya' }}" class="hover:text-[#0A0A0A] transition-colors">{{ $product->category?->name ?? 'Lainnya' }}</a></li>
         <li><i class="fa-solid fa-chevron-right text-[10px] text-[#0A0A0A]/30" aria-hidden="true"></i></li>
-        <li aria-current="page" class="text-[#0A0A0A] font-extrabold truncate max-w-[200px] sm:max-w-xs">{{ $product->name }}</li>
+        <li aria-current="page" class="text-[#0A0A0A] font-extrabold min-w-0 break-words">{{ $product->name }}</li>
       </ol>
     </nav>
   </div>
@@ -468,7 +468,7 @@
         <a href="{{ route('produk.show', $related->slug) }}" class="flex flex-col h-full" aria-label="{{ $related->name }}">
           <div class="relative w-full aspect-square bg-gray-100 overflow-hidden">
             <img src="{{ $related->image_url }}"
-              class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+              class="w-full h-full object-contain p-2 hover:scale-105 transition-transform duration-300"
               alt="{{ $related->name }}" loading="lazy" decoding="async"
               onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&q=80'">
             @if ($related->is_promo)
@@ -480,27 +480,18 @@
             <h3 class="font-inter font-semibold text-[15px] sm:text-base leading-snug text-gray-800 line-clamp-2 mb-3 flex-1">{{ $related->name }}</h3>
             <div>
               @if ($related->is_promo && $related->promo_price)
-                <span class="block text-xs font-inter text-gray-400 line-through">Rp {{ number_format($related->promo_price, 0, ',', '.') }}</span>
+                <span class="block text-xs font-inter text-gray-400 line-through">Rp {{ number_format($related->price, 0, ',', '.') }}</span>
+                <span class="font-inter font-bold text-base sm:text-lg text-gray-900">Rp {{ number_format($related->promo_price, 0, ',', '.') }}</span>
+              @else
+                <span class="font-inter font-bold text-base sm:text-lg text-gray-900">Rp {{ number_format($related->price, 0, ',', '.') }}</span>
               @endif
-              <span class="font-inter font-bold text-base sm:text-lg text-gray-900">Rp {{ number_format($related->price, 0, ',', '.') }}</span>
             </div>
           </div>
         </a>
       </article>
 
       @empty
-      {{-- Skeleton/placeholder jika kosong --}}
-      @foreach (range(1, 4) as $_)
-      <div class="related-card opacity-40 pointer-events-none" role="listitem" aria-hidden="true">
-        <div class="w-full aspect-square bg-gray-200"></div>
-        <div class="p-3">
-          <div class="h-2.5 bg-gray-200 rounded mb-2 w-1/3"></div>
-          <div class="h-3.5 bg-gray-200 rounded mb-1 w-full"></div>
-          <div class="h-3.5 bg-gray-200 rounded mb-3 w-3/4"></div>
-          <div class="h-4 bg-gray-200 rounded w-1/2"></div>
-        </div>
-      </div>
-      @endforeach
+      <p class="col-span-full py-8 text-center text-sm text-gray-500 font-inter">Belum ada produk serupa.</p>
       @endforelse
 
     </div>

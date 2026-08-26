@@ -54,23 +54,20 @@ Route::get('/checkout/success/{orderCode}', function ($orderCode, \App\Services\
     // Store in session so user has access to invoice download
     session(['last_order_code' => $orderCode]);
 
-    // If order is still unpaid, check status via Midtrans API or confirm payment from Snap success callback
-    if ($order->payment_status !== 'paid') {
+    // The browser callback is not trusted; only Midtrans API/webhook may mark an order paid.
+    if (!in_array($order->payment_status, ['paid', 'dp_paid'])) {
         $statusObj = $midtransService->getTransactionStatus($orderCode);
         $midtransStatus = $statusObj ? ($statusObj->transaction_status ?? null) : null;
         $paymentType = $statusObj ? ($statusObj->payment_type ?? 'midtrans') : 'midtrans';
 
-        // Pastikan hanya sukses jika API Midtrans menyatakan settlement/capture, atau ada flag konfirmasi eksplisit dari callback success
-        $isSuccess = in_array($midtransStatus, ['settlement', 'capture']) 
-            || request()->query('status') === 'paid' 
-            || request()->query('transaction_status') === 'settlement'
-            || request()->query('transaction_status') === 'capture';
+        $isSuccess = in_array($midtransStatus, ['settlement', 'capture']);
 
         if ($isSuccess) {
             \Illuminate\Support\Facades\DB::transaction(function () use ($order, $stockService, $paymentType) {
+                $targetPaymentStatus = $order->payment_type === 'down_payment' ? 'dp_paid' : 'paid';
                 $order->update([
                     'status' => 'processing',
-                    'payment_status' => 'paid',
+                    'payment_status' => $targetPaymentStatus,
                     'paid_at' => now(),
                     'payment_method' => $paymentType,
                 ]);
@@ -83,7 +80,7 @@ Route::get('/checkout/success/{orderCode}', function ($orderCode, \App\Services\
                     }
                 }
 
-                // Clear user cart
+                // Clear the cart only after Midtrans confirms settlement.
                 $cartService = app(\App\Services\CartService::class);
                 $cartService->clear();
 
