@@ -188,7 +188,7 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <x-input label="Email Toko" type="email" wire:model="shop_email" placeholder="support@prokarelektronik.com" class="bg-gray-50 border-gray-200 focus:bg-white" required />
-                        <x-input label="Kota / Kabupaten" wire:model="shop_city" placeholder="Jepara, Jawa Tengah" class="bg-gray-50 border-gray-200 focus:bg-white" />
+                        {{-- Note: shop_city is part of shop_address --}}
                     </div>
 
                     <div class="mb-6">
@@ -196,33 +196,14 @@
                     </div>
 
                     <div>
-                        <x-textarea label="Google Maps Embed URL / Iframe" wire:model="shop_map_embed" rows="3" placeholder="https://www.google.com/maps/embed?..." hint="Salin link iframe Google Maps untuk menampilkan peta lokasi pada halaman Kontak." class="bg-gray-50 border-gray-200 focus:bg-white text-xs font-mono" />
+                        <x-textarea label="Google Maps Embed URL / Iframe" wire:model="shop_maps_embed" rows="3" placeholder="https://www.google.com/maps/embed?..." hint="Salin link iframe Google Maps untuk menampilkan peta lokasi pada halaman Kontak." class="bg-gray-50 border-gray-200 focus:bg-white text-xs font-mono" />
                     </div>
                 </div>
 
-                {{-- Section 3: Garansi Toko --}}
+                {{-- Section 3: Media Sosial --}}
                 <div class="pt-6 border-t border-gray-100">
                     <div class="flex items-center gap-2 pb-3 mb-5 border-b border-gray-100">
                         <span class="w-8 h-8 rounded-lg bg-gray-100 text-gray-900 flex items-center justify-center text-sm font-bold">3</span>
-                        <div>
-                            <h3 class="text-base font-bold text-gray-900">Garansi Toko & Kebijakan Layanan</h3>
-                            <p class="text-xs text-gray-500">Standar durasi garansi toko dan klausul resmi yang tertera pada nota digital.</p>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                        <x-input label="Durasi Garansi Default (Hari)" type="number" min="1" max="365" wire:model="warranty_duration_days" hint="Contoh: 30 untuk garansi 30 hari" class="bg-gray-50 border-gray-200 focus:bg-white" required />
-                    </div>
-
-                    <div>
-                        <x-textarea label="Syarat & Ketentuan Garansi Toko" wire:model="warranty_terms" rows="4" hint="Klausul ini otomatis dicetak pada lembar invoice PDF dan kartu garansi digital pelanggan." class="bg-gray-50 border-gray-200 focus:bg-white text-xs" />
-                    </div>
-                </div>
-
-                {{-- Section 4: Media Sosial --}}
-                <div>
-                    <div class="flex items-center gap-2 pb-3 mb-5 border-b border-gray-100">
-                        <span class="w-8 h-8 rounded-lg bg-gray-100 text-gray-900 flex items-center justify-center text-sm font-bold">4</span>
                         <div>
                             <h3 class="text-base font-bold text-gray-900">Tautan Media Sosial</h3>
                             <p class="text-xs text-gray-500">Ikon di footer website akan otomatis mengarah ke link akun media sosial toko Anda.</p>
@@ -237,7 +218,7 @@
                     </div>
                 </div>
 
-                {{-- Section 4: Kebijakan Garansi Toko --}}
+                {{-- Section 4: Garansi Toko & Kebijakan Layanan --}}
                 <div class="pt-6 border-t border-gray-100">
                     <div class="flex items-center gap-2 pb-3 mb-5 border-b border-gray-100">
                         <span class="w-8 h-8 rounded-lg bg-gray-100 text-gray-900 flex items-center justify-center text-sm font-bold">4</span>
