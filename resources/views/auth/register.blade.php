@@ -14,6 +14,8 @@
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Prokar Elektronik" />
   <link rel="canonical" href="{{ url('/register') }}" />
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ setting('shop_favicon') ? asset('storage/' . setting('shop_favicon')) : 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/rui8atrf_expires_30_days.png' }}" />
+  <link rel="apple-touch-icon" href="{{ setting('shop_favicon') ? asset('storage/' . setting('shop_favicon')) : 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/rui8atrf_expires_30_days.png' }}" />
   <!-- ================================================= -->
 
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>

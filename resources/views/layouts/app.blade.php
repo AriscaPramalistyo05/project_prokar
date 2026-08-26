@@ -29,6 +29,8 @@
   <meta name="ICBM" content="-6.514774, 110.712282" />
   <link rel="canonical" href="@yield('canonical', url()->current())" />
   <link rel="alternate" hreflang="id-ID" href="@yield('canonical', url()->current())" />
+  <link rel="shortcut icon"
+    href="{{ setting('shop_favicon') ? asset('storage/' . setting('shop_favicon')) : 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/rui8atrf_expires_30_days.png' }}" />
   <link rel="icon" type="image/png" sizes="32x32"
     href="{{ setting('shop_favicon') ? asset('storage/' . setting('shop_favicon')) : 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/rui8atrf_expires_30_days.png' }}" />
   <link rel="apple-touch-icon"

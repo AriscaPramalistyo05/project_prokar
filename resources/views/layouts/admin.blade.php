@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Admin — Prokar Elektronik</title>
+    <title>Admin — {{ setting('shop_name', 'Prokar Elektronik') }}</title>
+    {{-- Favicon --}}
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ setting('shop_favicon') ? asset('storage/' . setting('shop_favicon')) : 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/rui8atrf_expires_30_days.png' }}" />
+    <link rel="apple-touch-icon" href="{{ setting('shop_favicon') ? asset('storage/' . setting('shop_favicon')) : 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/rui8atrf_expires_30_days.png' }}" />
     {{-- FontAwesome 6 --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous" />
     @vite(['resources/css/admin.css', 'resources/js/admin.js'])
@@ -14,7 +17,13 @@
         {{-- Sidebar Mary UI --}}
         <x-slot:sidebar drawer="main-drawer" collapsible class="bg-base-100 border-r border-base-200">
             {{-- Logo --}}
-            <a href="{{ route('admin.dashboard') }}" wire:navigate.hover class="p-4 font-bold text-lg tracking-wider block hover:text-primary transition-colors">PROKAR ADMIN</a>
+            <a href="{{ route('admin.dashboard') }}" wire:navigate.hover class="p-4 flex items-center gap-2 hover:opacity-80 transition-opacity">
+                @if(function_exists('setting') && setting('shop_logo'))
+                    <img src="{{ asset('storage/' . setting('shop_logo')) }}" alt="{{ setting('shop_name', 'Prokar Elektronik') }}" class="h-8 max-w-[160px] object-contain" />
+                @else
+                    <span class="font-black text-base tracking-wider text-base-content">PROKAR <span class="text-primary">ADMIN</span></span>
+                @endif
+            </a>
 
             {{-- Menu Navigasi --}}
             <x-menu activate-by-route>

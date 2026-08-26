@@ -36,9 +36,13 @@ class SettingService
 
     public function get(string $key, bool $decrypt = false): mixed
     {
-        $value = Cache::remember('setting_' . $key, 3600, function () use ($key) {
-            return Setting::where('key', $key)->value('value');
-        });
+        try {
+            $value = Cache::remember('setting_' . $key, 3600, function () use ($key) {
+                return Setting::where('key', $key)->value('value');
+            });
+        } catch (\Throwable $e) {
+            return null;
+        }
 
         if ($decrypt && $value) {
             try {
