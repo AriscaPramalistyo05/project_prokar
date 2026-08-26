@@ -73,7 +73,7 @@
                         {{-- Logo --}}
                         <div class="p-4 rounded-xl bg-gray-50 border border-gray-200">
                             <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Logo Utama Toko</label>
-                            <x-file wire:model="logo_file" accept="image/png,image/jpeg,image/svg+xml,image/webp" hint="PNG, JPG, SVG, WebP (Maks 2MB)" class="file-input-sm w-full" />
+                            <x-file wire:model="logo_file" accept="image/png,image/jpeg,image/svg+xml,image/webp" hint="PNG, JPG, SVG, WebP (Maks 10MB)" class="file-input-sm w-full" />
                             
                             <div class="mt-3 flex items-center gap-4">
                                 @if ($logo_file)
@@ -84,7 +84,7 @@
                                 @elseif ($existing_logo)
                                     <div class="p-2 bg-white rounded-lg border border-gray-200">
                                         <p class="text-[10px] font-bold text-gray-400 mb-1">Logo Aktif:</p>
-                                        <img src="{{ asset('storage/' . $existing_logo) }}" alt="Logo Saat Ini" class="h-10 w-auto object-contain" />
+                                        <img src="{{ asset('storage/' . $existing_logo) }}" onerror="this.onerror=null; this.src='https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/brnriy48_expires_30_days.png'" alt="Logo Saat Ini" class="h-10 w-auto object-contain" />
                                     </div>
                                 @else
                                     <div class="p-2 bg-white rounded-lg border border-gray-200">
@@ -98,7 +98,7 @@
                         {{-- Favicon --}}
                         <div class="p-4 rounded-xl bg-gray-50 border border-gray-200">
                             <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Favicon Browser</label>
-                            <x-file wire:model="favicon_file" accept="image/png,image/x-icon,image/svg+xml" hint="PNG, ICO, SVG (Maks 1MB)" class="file-input-sm w-full" />
+                            <x-file wire:model="favicon_file" accept="image/png,image/x-icon,image/vnd.microsoft.icon,image/svg+xml,.ico" hint="PNG, ICO, SVG (Maks 5MB)" class="file-input-sm w-full" />
                             
                             <div class="mt-3 flex items-center gap-4">
                                 @if ($favicon_file)
@@ -109,7 +109,7 @@
                                 @elseif ($existing_favicon)
                                     <div class="p-2 bg-white rounded-lg border border-gray-200 flex items-center gap-2">
                                         <p class="text-[10px] font-bold text-gray-400">Favicon Aktif:</p>
-                                        <img src="{{ asset('storage/' . $existing_favicon) }}" alt="Favicon Saat Ini" class="w-6 h-6 object-contain" />
+                                        <img src="{{ asset('storage/' . $existing_favicon) }}" onerror="this.onerror=null; this.src='https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/rui8atrf_expires_30_days.png'" alt="Favicon Saat Ini" class="w-6 h-6 object-contain" />
                                     </div>
                                 @endif
                             </div>

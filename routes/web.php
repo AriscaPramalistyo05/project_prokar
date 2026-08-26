@@ -225,24 +225,53 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         // Pengaturan Toko & Sistem (FASE 8)
         Route::get('/settings', \App\Livewire\Admin\SettingIndex::class)->name('settings');
 
-        // Helper Pemeliharaan Database (Khusus Super Admin)
+        // Helper Pemeliharaan Database & Storage (Khusus Super Admin)
         Route::get('/maintenance/migrate', function () {
             try {
+                // 1. Buat direktori storage penting jika belum ada
+                $directories = [
+                    storage_path('app/private/livewire-tmp'),
+                    storage_path('app/livewire-tmp'),
+                    storage_path('app/public/settings'),
+                    storage_path('app/public/settings/hero'),
+                    storage_path('app/public/settings/hero3card'),
+                    storage_path('app/public/products'),
+                    storage_path('app/public/services'),
+                    storage_path('app/public/service_images'),
+                    storage_path('app/public/sell-submissions'),
+                    storage_path('app/firebase'),
+                    storage_path('app/private/firebase'),
+                ];
+                foreach ($directories as $dir) {
+                    if (!is_dir($dir)) {
+                        @mkdir($dir, 0775, true);
+                    }
+                }
+
+                // 2. Hubungkan symlink storage jika belum terhubung
+                try {
+                    \Illuminate\Support\Facades\Artisan::call('storage:link');
+                } catch (\Throwable $e) {}
+
+                // 3. Jalankan migrasi database
                 \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
                 $migrateOutput = \Illuminate\Support\Facades\Artisan::output();
 
+                // 4. Bersihkan cache
                 \Illuminate\Support\Facades\Artisan::call('optimize:clear');
                 $clearOutput = \Illuminate\Support\Facades\Artisan::output();
 
+                // 5. Reset cache permission
                 \Illuminate\Support\Facades\Artisan::call('permission:cache-reset');
 
                 return response("<div style='font-family:monospace;background:#0f172a;color:#10b981;padding:24px;border-radius:12px;max-width:800px;margin:40px auto;border:1px solid #334155;'>
-                    <h2 style='color:#facc15;margin-top:0;'>✅ Database Migration & Cache Clear Berhasil</h2>
+                    <h2 style='color:#facc15;margin-top:0;'>✅ Database Migration, Storage Link & Cache Clear Berhasil</h2>
+                    <p style='color:#94a3b8;'>Direktori storage livewire-tmp & public settings telah disiapkan dengan izin upload hingga 30MB.</p>
                     <h3>Migration Output:</h3>
                     <pre style='background:#020617;padding:12px;border-radius:8px;overflow-x:auto;'>" . htmlspecialchars($migrateOutput) . "</pre>
                     <h3>Cache Output:</h3>
                     <pre style='background:#020617;padding:12px;border-radius:8px;overflow-x:auto;'>" . htmlspecialchars($clearOutput) . "</pre>
-                    <p><a href='" . route('admin.dashboard') . "' style='display:inline-block;padding:10px 18px;background:#facc15;color:#000;text-decoration:none;font-weight:bold;border-radius:8px;margin-top:12px;'>Kembali ke Dashboard</a></p>
+                    <p><a href='" . route('admin.settings') . "' style='display:inline-block;padding:10px 18px;background:#facc15;color:#000;text-decoration:none;font-weight:bold;border-radius:8px;margin-top:12px;'>Buka Pengaturan Toko</a></p>
                 </div>");
             } catch (\Throwable $e) {
                 return response("<div style='font-family:monospace;background:#450a0a;color:#fca5a5;padding:24px;border-radius:12px;max-width:800px;margin:40px auto;'>

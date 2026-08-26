@@ -33,6 +33,27 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Auto-create required storage directories if missing
+        $directories = [
+            storage_path('app/private/livewire-tmp'),
+            storage_path('app/livewire-tmp'),
+            storage_path('app/public/settings'),
+            storage_path('app/public/settings/hero'),
+            storage_path('app/public/settings/hero3card'),
+            storage_path('app/public/products'),
+            storage_path('app/public/services'),
+            storage_path('app/public/service_images'),
+            storage_path('app/public/sell-submissions'),
+            storage_path('app/firebase'),
+            storage_path('app/private/firebase'),
+        ];
+
+        foreach ($directories as $dir) {
+            if (!is_dir($dir)) {
+                @mkdir($dir, 0775, true);
+            }
+        }
+
         // Register ProductObserver
         Product::observe(ProductObserver::class);
 
