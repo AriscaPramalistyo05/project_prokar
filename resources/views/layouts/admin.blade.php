@@ -62,82 +62,53 @@
                     <div class="font-bold text-lg lg:hidden ml-2">PROKAR ADMIN</div>
                 </x-slot:brand>
                 <x-slot:actions>
-                    {{-- Interactive FCM Push Notification Toggle & Badge --}}
+                    {{-- Push Notification Status Chip (topbar) --}}
                     <div x-data="{
                         permission: (typeof Notification !== 'undefined') ? Notification.permission : 'unsupported',
                         loading: false,
-                        async toggleFcm() {
-                            if (typeof Notification === 'undefined') {
+                        async toggle() {
+                            if (this.permission === 'granted') {
                                 if (typeof Swal !== 'undefined') {
-                                    Swal.fire({ title: 'Tidak Didukung', text: 'Browser Anda tidak mendukung Web Push Notification.', icon: 'warning' });
+                                    Swal.fire({ title: 'Notifikasi Aktif', text: 'Push notifikasi browser sudah diizinkan di perangkat ini.', icon: 'success', timer: 2000, showConfirmButton: false });
                                 }
                                 return;
                             }
-                            if (this.permission === 'granted') {
+                            if (this.permission === 'denied') {
                                 if (typeof Swal !== 'undefined') {
-                                    Swal.fire({
-                                        title: 'Notifikasi Aktif',
-                                        text: 'Push notifikasi browser sudah aktif untuk akun Anda.',
-                                        icon: 'success',
-                                        timer: 2000,
-                                        showConfirmButton: false
-                                    });
+                                    Swal.fire({ title: 'Notifikasi Diblokir', text: 'Izinkan notifikasi melalui pengaturan browser (klik ikon kunci/info di address bar).', icon: 'warning' });
                                 }
                                 return;
                             }
                             this.loading = true;
                             try {
-                                if (window.requestAdminFcmPermission) {
-                                    await window.requestAdminFcmPermission();
-                                }
+                                if (window.requestAdminFcmPermission) await window.requestAdminFcmPermission();
                                 this.permission = (typeof Notification !== 'undefined') ? Notification.permission : 'unsupported';
-                            } catch(e) {
-                                console.error(e);
-                            } finally {
-                                this.loading = false;
-                            }
+                            } catch(e) { console.error(e); } finally { this.loading = false; }
                         }
-                    }" 
+                    }"
                     @fcm-permission-updated.window="permission = (typeof Notification !== 'undefined') ? Notification.permission : 'unsupported'"
                     class="flex items-center">
-                        {{-- STATE 1: GRANTED (ACTIVE TOGGLE) --}}
-                        <template x-if="permission === 'granted'">
-                            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold shadow-2xs cursor-pointer"
-                                 @click="toggleFcm()"
-                                 title="Push Notifikasi Browser Aktif">
-                                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                                <span class="hidden md:inline">Push Notif</span>
-                                <span>Aktif</span>
-                                {{-- Visual Toggle Switch ON --}}
-                                <div class="w-7 h-4 bg-emerald-500 rounded-full p-0.5 flex items-center justify-end transition-all">
-                                    <div class="w-3 h-3 bg-white rounded-full shadow-xs"></div>
-                                </div>
-                            </div>
-                        </template>
 
-                        {{-- STATE 2: DEFAULT (INACTIVE TOGGLE - CLICKABLE) --}}
-                        <template x-if="permission === 'default' || permission === 'unsupported'">
-                            <button type="button" 
-                                    @click="toggleFcm()" 
-                                    :disabled="loading"
-                                    class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold transition-all shadow-2xs cursor-pointer">
-                                <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-                                <span x-text="loading ? 'Memproses...' : 'Push Notif'"></span>
-                                {{-- Visual Toggle Switch OFF --}}
-                                <div class="w-7 h-4 bg-gray-300 rounded-full p-0.5 flex items-center justify-start transition-all">
-                                    <div class="w-3 h-3 bg-white rounded-full shadow-xs"></div>
-                                </div>
-                            </button>
-                        </template>
-
-                        {{-- STATE 3: DENIED (BLOCKED) --}}
-                        <template x-if="permission === 'denied'">
-                            <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-50 text-rose-800 border border-rose-200 text-xs font-bold"
-                                 title="Izin notifikasi diblokir pada pengaturan browser">
-                                <span class="w-2 h-2 rounded-full bg-rose-500"></span>
-                                <span>Notif Diblokir</span>
-                            </div>
-                        </template>
+                        {{-- Single element that changes based on state — no template mess --}}
+                        <button type="button"
+                                @click="toggle()"
+                                :disabled="loading"
+                                :title="permission === 'granted' ? 'Push notifikasi aktif' : (permission === 'denied' ? 'Notifikasi diblokir di browser' : 'Klik untuk aktifkan push notifikasi')"
+                                class="group inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg border text-xs font-semibold transition-all duration-200 select-none"
+                                :class="{
+                                    'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100': permission === 'granted',
+                                    'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100': permission === 'default' || permission === 'unsupported',
+                                    'bg-red-50 text-red-600 border-red-200 cursor-not-allowed': permission === 'denied',
+                                    'opacity-60': loading
+                                }">
+                            {{-- Toggle track --}}
+                            <span class="relative inline-flex items-center w-7 h-4 rounded-full transition-colors duration-200"
+                                  :class="permission === 'granted' ? 'bg-emerald-500' : 'bg-gray-300'">
+                                <span class="absolute w-3 h-3 bg-white rounded-full shadow-xs transition-transform duration-200"
+                                      :class="permission === 'granted' ? 'translate-x-3.5' : 'translate-x-0.5'"></span>
+                            </span>
+                            <span x-text="loading ? '...' : (permission === 'granted' ? 'Notif On' : (permission === 'denied' ? 'Diblokir' : 'Notif Off'))"></span>
+                        </button>
                     </div>
 
                     {{-- Livewire Notification Dropdown (Image 3) --}}

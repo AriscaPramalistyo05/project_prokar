@@ -1,47 +1,106 @@
 <div>
-    {{-- Header --}}
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 mb-6 border-b border-gray-200 gap-4">
-        <div>
-            <div class="flex items-center gap-2 mb-1">
-                <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">Pengaturan Toko & Sistem</h1>
+    {{-- ================================================================= --}}
+    {{-- HEADER — Elegant Settings Page --}}
+    {{-- ================================================================= --}}
+    <div class="flex flex-col sm:flex-row sm:items-start justify-between pb-6 mb-0 gap-4">
+        <div class="space-y-1">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gray-900 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-sliders text-[#FFCC00] text-sm"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-black tracking-tight text-gray-900">Pengaturan Toko & Sistem</h1>
+                    <p class="text-xs text-gray-400 leading-snug">Kelola identitas, tampilan, email, pembayaran, dan notifikasi toko.</p>
+                </div>
             </div>
-            <p class="text-sm text-gray-500">Kelola identitas resmi toko, garansi, tampilan beranda, email SMTP, Google OAuth, payment gateway, dan notifikasi FCM.</p>
         </div>
-        <div class="flex items-center gap-3 shrink-0">
-            <x-button label="Simpan Semua Perubahan" icon="o-check" wire:click="save" class="bg-gray-900 text-white hover:bg-black font-semibold text-sm px-5 py-2.5 rounded-xl border-none shadow-sm transition-all" spinner="save" />
+        <div class="flex items-center gap-2.5 shrink-0">
+            <x-button label="Simpan Perubahan" icon="o-check" wire:click="save"
+                class="bg-gray-900 text-white hover:bg-black font-bold text-xs px-5 py-2.5 rounded-xl border-none shadow-sm transition-all"
+                spinner="save" />
         </div>
     </div>
 
-    {{-- Custom Elegant Tab Navigation --}}
-    <div class="flex items-center gap-2 overflow-x-auto pb-3 mb-6 scrollbar-none border-b border-gray-200">
-        <button type="button" wire:click="$set('selectedTab', 'general-tab')" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all cursor-pointer {{ $selectedTab === 'general-tab' ? 'bg-gray-900 text-white shadow-sm' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200/80' }}">
-            <i class="fa-solid fa-store {{ $selectedTab === 'general-tab' ? 'text-[#FFCC00]' : 'text-gray-400' }}"></i>
-            <span>1. Umum & Identitas</span>
-        </button>
+    {{-- ================================================================= --}}
+    {{-- TAB NAVIGATION — Sidebar style panel --}}
+    {{-- ================================================================= --}}
+    <div class="mt-6 grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-6 items-start">
 
-        <button type="button" wire:click="$set('selectedTab', 'home-tab')" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all cursor-pointer {{ $selectedTab === 'home-tab' ? 'bg-gray-900 text-white shadow-sm' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200/80' }}">
-            <i class="fa-solid fa-desktop {{ $selectedTab === 'home-tab' ? 'text-[#FFCC00]' : 'text-gray-400' }}"></i>
-            <span>2. Tampilan & Home</span>
-        </button>
+        {{-- Sidebar Tab Menu --}}
+        <div class="lg:sticky lg:top-6">
+            <div class="bg-white rounded-2xl border border-gray-200/80 shadow-xs overflow-hidden">
+                <div class="px-4 pt-4 pb-2">
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Menu Pengaturan</p>
+                </div>
+                <nav class="px-2 pb-2 space-y-0.5">
+                    <button type="button" wire:click="$set('selectedTab', 'general-tab')"
+                        class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-left transition-all
+                        {{ $selectedTab === 'general-tab'
+                            ? 'bg-gray-900 text-white'
+                            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}">
+                        <i class="fa-solid fa-store w-4 text-center {{ $selectedTab === 'general-tab' ? 'text-[#FFCC00]' : 'text-gray-400' }}"></i>
+                        <span>Umum & Identitas</span>
+                    </button>
 
-        <button type="button" wire:click="$set('selectedTab', 'mail-tab')" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all cursor-pointer {{ $selectedTab === 'mail-tab' ? 'bg-gray-900 text-white shadow-sm' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200/80' }}">
-            <i class="fa-solid fa-envelope {{ $selectedTab === 'mail-tab' ? 'text-[#FFCC00]' : 'text-gray-400' }}"></i>
-            <span>3. Email & Autentikasi</span>
-        </button>
+                    <button type="button" wire:click="$set('selectedTab', 'home-tab')"
+                        class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-left transition-all
+                        {{ $selectedTab === 'home-tab'
+                            ? 'bg-gray-900 text-white'
+                            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}">
+                        <i class="fa-solid fa-desktop w-4 text-center {{ $selectedTab === 'home-tab' ? 'text-[#FFCC00]' : 'text-gray-400' }}"></i>
+                        <span>Tampilan & Beranda</span>
+                    </button>
 
-        <button type="button" wire:click="$set('selectedTab', 'payment-tab')" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all cursor-pointer {{ $selectedTab === 'payment-tab' ? 'bg-gray-900 text-white shadow-sm' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200/80' }}">
-            <i class="fa-solid fa-credit-card {{ $selectedTab === 'payment-tab' ? 'text-[#FFCC00]' : 'text-gray-400' }}"></i>
-            <span>4. Payment (Midtrans)</span>
-        </button>
+                    <button type="button" wire:click="$set('selectedTab', 'mail-tab')"
+                        class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-left transition-all
+                        {{ $selectedTab === 'mail-tab'
+                            ? 'bg-gray-900 text-white'
+                            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}">
+                        <i class="fa-solid fa-envelope w-4 text-center {{ $selectedTab === 'mail-tab' ? 'text-[#FFCC00]' : 'text-gray-400' }}"></i>
+                        <span>Email & Autentikasi</span>
+                    </button>
 
-        <button type="button" wire:click="$set('selectedTab', 'fcm-tab')" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all cursor-pointer {{ $selectedTab === 'fcm-tab' ? 'bg-gray-900 text-white shadow-sm' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200/80' }}">
-            <i class="fa-solid fa-bell {{ $selectedTab === 'fcm-tab' ? 'text-[#FFCC00]' : 'text-gray-400' }}"></i>
-            <span>5. Notifikasi (FCM)</span>
-        </button>
-    </div>
+                    <button type="button" wire:click="$set('selectedTab', 'payment-tab')"
+                        class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-left transition-all
+                        {{ $selectedTab === 'payment-tab'
+                            ? 'bg-gray-900 text-white'
+                            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}">
+                        <i class="fa-solid fa-credit-card w-4 text-center {{ $selectedTab === 'payment-tab' ? 'text-[#FFCC00]' : 'text-gray-400' }}"></i>
+                        <span>Payment (Midtrans)</span>
+                    </button>
+
+                    <button type="button" wire:click="$set('selectedTab', 'fcm-tab')"
+                        class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-left transition-all
+                        {{ $selectedTab === 'fcm-tab'
+                            ? 'bg-gray-900 text-white'
+                            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}">
+                        <i class="fa-solid fa-bell w-4 text-center {{ $selectedTab === 'fcm-tab' ? 'text-[#FFCC00]' : 'text-gray-400' }}"></i>
+                        <span>Notifikasi (FCM)</span>
+                    </button>
+                </nav>
+
+                {{-- Quick Save Button in sidebar --}}
+                <div class="px-2 pt-1 pb-3 border-t border-gray-100 mt-1">
+                    <button type="button" wire:click="save" wire:loading.attr="disabled" wire:target="save"
+                        class="w-full flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold bg-[#FFCC00] hover:bg-yellow-400 text-gray-900 transition-all cursor-pointer">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>Simpan Semua</span>
+                    </button>
+                </div>
+            </div>
+
+            {{-- Info Card --}}
+            <div class="mt-3 p-3.5 rounded-xl bg-blue-50 border border-blue-100 text-xs text-blue-700 space-y-1">
+                <p class="font-bold flex items-center gap-1.5"><i class="fa-solid fa-circle-info"></i> Tips</p>
+                <p class="leading-relaxed text-blue-600">Klik <strong>Simpan Semua</strong> setelah selesai mengubah pengaturan agar tersimpan permanen.</p>
+            </div>
+        </div>
+
+        {{-- Content Panel --}}
+        <div>
 
     {{-- Form Container --}}
-    <form wire:submit.prevent="save" class="space-y-6">
+    <form wire:submit.prevent="save">
 
         {{-- ================================================================= --}}
         {{-- TAB 1: UMUM & IDENTITAS TOKO --}}
@@ -183,7 +242,7 @@
                     <div class="flex items-center gap-2 pb-3 mb-5 border-b border-gray-100">
                         <span class="w-8 h-8 rounded-lg bg-gray-100 text-gray-900 flex items-center justify-center text-sm font-bold">4</span>
                         <div>
-                            <h3 class="text-base font-bold text-gray-900">Garansi Toko &amp; Kebijakan Layanan</h3>
+                            <h3 class="text-base font-bold text-gray-900">Garansi Toko & Kebijakan Layanan</h3>
                             <p class="text-xs text-gray-500">Durasi garansi standar dan syarat ketentuan yang dicetak pada faktur invoice serta kartu garansi resmi digital.</p>
                         </div>
                     </div>
@@ -193,7 +252,7 @@
                             <x-input label="Durasi Garansi Default (Hari)" type="number" min="1" max="365" wire:model="warranty_duration_days" hint="Standar garansi toko (cth: 30)" class="bg-gray-50 border-gray-200 focus:bg-white" required />
                         </div>
                         <div class="md:col-span-2">
-                            <x-textarea label="Syarat &amp; Ketentuan Garansi Toko" wire:model="warranty_terms" rows="4" hint="Klausul ini otomatis dicetak pada lembar invoice PDF dan kartu garansi digital pelanggan." class="bg-gray-50 border-gray-200 focus:bg-white text-xs" />
+                            <x-textarea label="Syarat & Ketentuan Garansi Toko" wire:model="warranty_terms" rows="4" hint="Klausul ini otomatis dicetak pada lembar invoice PDF dan kartu garansi digital pelanggan." class="bg-gray-50 border-gray-200 focus:bg-white text-xs" />
                         </div>
                     </div>
                 </div>
@@ -1010,20 +1069,18 @@
             <div class="bg-white rounded-2xl border border-gray-200/80 shadow-xs p-6 sm:p-8 space-y-6 animate-in fade-in duration-200">
                 
                 <div class="max-w-xs">
-                    <x-input label="Durasi Garansi Toko Default (Hari)" type="number" min="1" max="365" wire:model="warranty_duration_days" hint="Standar garansi toko untuk produk &amp; servis elektronik bekas (cth: 30)" class="bg-gray-50 border-gray-200 focus:bg-white" required />
+                    <x-input label="Durasi Garansi Toko Default (Hari)" type="number" min="1" max="365" wire:model="warranty_duration_days" hint="Standar garansi toko untuk produk & servis elektronik bekas (cth: 30)" class="bg-gray-50 border-gray-200 focus:bg-white" required />
                 </div>
 
                 <div>
-                    <x-textarea label="Catatan Syarat &amp; Ketentuan Garansi Toko" wire:model="warranty_terms" rows="6" hint="Klausul ini akan otomatis dicetak pada lembar Kartu Garansi Digital (PDF) dan halaman status pesanan pelanggan." class="bg-gray-50 border-gray-200 focus:bg-white" />
+                    <x-textarea label="Catatan Syarat & Ketentuan Garansi Toko" wire:model="warranty_terms" rows="6" hint="Klausul ini akan otomatis dicetak pada lembar Kartu Garansi Digital (PDF) dan halaman status pesanan pelanggan." class="bg-gray-50 border-gray-200 focus:bg-white" />
                 </div>
 
             </div>
         @endif
 
-        {{-- Bottom Fixed Save Bar --}}
-        <div class="flex justify-end pt-4">
-            <x-button label="Simpan Semua Pengaturan" icon="o-check" type="submit" class="bg-gray-900 text-white hover:bg-black font-bold px-8 py-3 rounded-xl border-none shadow-md" spinner="save" />
-        </div>
-
     </form>
+
+        </div>{{-- /Content Panel --}}
+    </div>{{-- /Grid Layout --}}
 </div>

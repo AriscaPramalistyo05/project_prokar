@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Terjadi Kesalahan') — {{ setting('shop_name') ?: 'Prokar Elektronik' }}</title>
-    
+    <title>@yield('title', 'Terjadi Kesalahan') — {{ setting('shop_name', 'Prokar Elektronik') }}</title>
     {{-- Favicon --}}
     <link rel="icon" type="image/png" sizes="32x32" href="{{ setting('shop_favicon') ? asset('storage/' . setting('shop_favicon')) : 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/rui8atrf_expires_30_days.png' }}" />
     <link rel="apple-touch-icon" href="{{ setting('shop_favicon') ? asset('storage/' . setting('shop_favicon')) : 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/rui8atrf_expires_30_days.png' }}" />
@@ -14,31 +13,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Public+Sans:wght@700;800;900&display=swap" rel="stylesheet">
     
-    {{-- FontAwesome 6 --}}
+    {{-- FontAwesome --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous">
 
-    {{-- Tailwind CSS CDN (Fail-safe standalone styling) --}}
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script id="tailwind-config">
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            colors: {
-              "primary": "#0A0A0A",
-              "brand-yellow": "#FFCC00",
-              "brand-black": "#111111",
-            },
-            fontFamily: {
-              "public": ["Public Sans", "Inter", "sans-serif"],
-              "inter": ["Inter", "sans-serif"],
-            }
-          }
-        }
-      };
-    </script>
-
-    {{-- Vite CSS & JS --}}
+    {{-- Vite CSS --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
@@ -48,15 +26,16 @@
             margin: 0;
             padding: 0;
             font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
-            min-height: 100vh;
-            min-height: 100dvh;
+            height: 100vh !important;
+            height: 100dvh !important;
+            overflow: hidden !important;
         }
         .font-public {
             font-family: 'Public Sans', 'Inter', sans-serif;
         }
         .error-img {
-            max-width: 180px !important;
-            max-height: 180px !important;
+            max-width: 170px !important;
+            max-height: 170px !important;
             width: 100% !important;
             height: auto !important;
             object-fit: contain !important;
@@ -66,14 +45,14 @@
         }
         @media (max-width: 640px) {
             .error-img {
-                max-width: 135px !important;
-                max-height: 135px !important;
+                max-width: 130px !important;
+                max-height: 130px !important;
             }
         }
         @keyframes fadeUp {
             from {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: translateY(8px);
             }
             to {
                 opacity: 1;
@@ -87,7 +66,7 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col justify-between antialiased selection:bg-[#FFCC00] selection:text-black">
+<body class="bg-slate-50 text-slate-900 h-screen h-[100dvh] overflow-hidden flex flex-col justify-between antialiased selection:bg-[#FFCC00] selection:text-black">
 
     {{-- Development Quick Tab Switcher (HANYA tampil saat membuka URL preview /errors/*) --}}
     @if (app()->environment('local') && request()->is('errors/*'))
@@ -110,65 +89,61 @@
     @endif
 
     {{-- Top Minimal Brand Navbar --}}
-    <header class="w-full max-w-5xl mx-auto px-4 sm:px-6 py-4 sm:py-5 flex items-center justify-between shrink-0">
-        <a href="{{ url('/') }}" class="inline-flex items-center gap-2 group">
-            @if(function_exists('setting') && setting('shop_logo'))
-                <img src="{{ asset('storage/' . setting('shop_logo')) }}" alt="{{ setting('shop_name') ?: 'Prokar Elektronik' }}" class="h-8 sm:h-9 w-auto object-contain" />
-            @else
-                <span class="font-public font-black text-sm sm:text-base tracking-tight text-slate-900 group-hover:text-amber-600 transition-colors">
-                    {{ setting('shop_name') ?: 'PROKAR ELEKTRONIK' }}
-                </span>
-            @endif
+    <header class="w-full max-w-5xl mx-auto px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between shrink-0">
+        <a href="{{ url('/') }}" class="inline-flex items-center group">
+            <span class="font-public font-black text-sm sm:text-base tracking-tight text-black">
+                PROKAR ELEKTRONIK
+            </span>
         </a>
 
-        <a href="{{ url('/') }}" class="text-xs font-bold text-slate-600 hover:text-slate-900 transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-slate-200 shadow-2xs">
+        <a href="{{ url('/') }}" class="text-xs font-semibold text-gray-500 hover:text-black transition-colors flex items-center gap-1.5">
             <i class="fa-solid fa-house text-[11px]"></i>
             <span>Beranda</span>
         </a>
     </header>
 
     {{-- Main Content Section --}}
-    <main class="flex-1 flex flex-col items-center justify-center text-center px-4 py-6 max-w-lg mx-auto w-full my-auto animate-fade-up">
+    <main class="flex-1 flex flex-col items-center justify-center text-center px-4 max-w-lg mx-auto w-full min-h-0 my-auto animate-fade-up">
         
         {{-- Illustration Image --}}
-        <div class="mb-3 sm:mb-4 relative flex items-center justify-center w-full shrink-0">
-            <div class="absolute inset-0 bg-gradient-to-tr from-amber-100/70 to-blue-100/70 rounded-full blur-2xl -z-10 scale-95"></div>
+        <div class="mb-2 sm:mb-3 relative flex items-center justify-center w-full shrink-0">
+            <div class="absolute inset-0 bg-gradient-to-tr from-blue-100/60 to-amber-100/60 rounded-full blur-2xl -z-10 scale-95"></div>
             <img src="@yield('image', asset('images/errors/not_found.png'))"
                  alt="@yield('title')"
-                 class="error-img object-contain select-none drop-shadow-sm transition-transform hover:scale-105 duration-300"
+                 class="error-img object-contain select-none pointer-events-none drop-shadow-sm transition-transform hover:scale-105 duration-300"
                  onerror="this.style.display='none'">
         </div>
 
         {{-- Error Status Badge & Code --}}
-        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-200/90 border border-slate-300/70 text-slate-800 text-[10px] sm:text-xs font-black uppercase tracking-widest mb-2.5 shrink-0 shadow-2xs">
-            <span class="w-2 h-2 rounded-full @yield('badge_dot', 'bg-amber-500') animate-pulse"></span>
+        <div class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-slate-200/90 border border-slate-300/70 text-slate-800 text-[10px] sm:text-xs font-extrabold uppercase tracking-widest mb-2 shrink-0">
+            <span class="w-1.5 h-1.5 rounded-full @yield('badge_dot', 'bg-blue-600') animate-pulse"></span>
             <span>Error @yield('code', '404')</span>
         </div>
 
         {{-- Error Heading --}}
-        <h1 class="font-public font-black text-xl sm:text-2xl md:text-3xl text-slate-900 tracking-tight leading-tight mb-2 shrink-0">
+        <h1 class="font-public font-black text-xl sm:text-2xl md:text-3xl text-gray-900 tracking-tight leading-tight mb-1 sm:mb-1.5 shrink-0">
             @yield('heading', 'Terjadi Kesalahan')
         </h1>
 
         {{-- Error Description --}}
-        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-md mx-auto mb-6 font-normal shrink-0">
+        <p class="text-xs sm:text-sm text-gray-600 leading-relaxed max-w-md mx-auto mb-4 sm:mb-5 font-normal shrink-0">
             @yield('message', 'Halaman yang Anda tuju sedang tidak tersedia atau mengalami kendala.')
         </p>
 
         {{-- CTA Actions Container --}}
-        <div class="w-full flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-3 shrink-0">
+        <div class="w-full flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 shrink-0">
             @yield('actions')
         </div>
 
     </main>
 
     {{-- Footer Copyright & Help Link --}}
-    <footer class="w-full max-w-5xl mx-auto px-4 sm:px-6 py-4 text-center text-xs text-slate-400 border-t border-slate-200/60 flex flex-col sm:flex-row items-center justify-between gap-1.5 shrink-0">
-        <p>&copy; {{ date('Y') }} {{ setting('shop_name') ?: 'Prokar Elektronik' }}.</p>
-        <p class="text-slate-500">
-            Butuh bantuan teknisi? 
-            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', setting('shop_whatsapp', '6289504841279')) }}" target="_blank" rel="noopener" class="text-slate-800 hover:text-black font-bold underline decoration-slate-300 hover:decoration-black ml-1">
-                Hubungi WhatsApp
+    <footer class="w-full max-w-5xl mx-auto px-4 sm:px-6 py-2 sm:py-2.5 text-center text-[11px] text-gray-400 border-t border-slate-200/60 flex flex-col sm:flex-row items-center justify-between gap-1 shrink-0">
+        <p>&copy; {{ date('Y') }} Prokar Elektronik.</p>
+        <p class="text-gray-400">
+            Butuh bantuan? 
+            <a href="https://wa.me/6289504841279" target="_blank" rel="noopener" class="text-gray-700 hover:text-black font-semibold underline decoration-slate-300 hover:decoration-black">
+                Hubungi CS WhatsApp
             </a>
         </p>
     </footer>
