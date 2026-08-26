@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use Livewire\Component;
 
 class NotificationDropdown extends Component
@@ -28,10 +29,14 @@ class NotificationDropdown extends Component
     public function markAsRead(string $notificationId, ?string $redirectUrl = null)
     {
         $user = Auth::user();
-        if ($user) {
-            $notification = $user->notifications()->where('id', $notificationId)->first();
-            if ($notification) {
-                $notification->markAsRead();
+        if ($user && $this->notificationsTableExists()) {
+            try {
+                $notification = $user->notifications()->where('id', $notificationId)->first();
+                if ($notification) {
+                    $notification->markAsRead();
+                }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning('Unable to mark notification as read: ' . $e->getMessage());
             }
         }
 
@@ -44,8 +49,22 @@ class NotificationDropdown extends Component
     public function markAllAsRead(): void
     {
         $user = Auth::user();
-        if ($user) {
-            $user->unreadNotifications->markAsRead();
+        if ($user && $this->notificationsTableExists()) {
+            try {
+                $user->unreadNotifications->markAsRead();
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning('Unable to mark all notifications as read: ' . $e->getMessage());
+            }
+        }
+    }
+
+    private function notificationsTableExists(): bool
+    {
+        try {
+            return Schema::hasTable('notifications');
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Unable to inspect notifications table: ' . $e->getMessage());
+            return false;
         }
     }
 
@@ -56,7 +75,7 @@ class NotificationDropdown extends Component
         $notifications = collect();
 
         try {
-            if ($user && \Illuminate\Support\Facades\Schema::hasTable('notifications')) {
+            if ($user && $this->notificationsTableExists()) {
                 $unreadCount = $user->unreadNotifications()->count();
 
                 $notificationsQuery = $user->notifications();
