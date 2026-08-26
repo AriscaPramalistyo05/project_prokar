@@ -50,3 +50,19 @@ jobs:
             storage/**
             public/storage
             public/storage/**
+
+      - name: ⚡ Post-Deploy Optimize (clear & rebuild cache)
+        run: |
+          echo "Menunggu file FTP tersebar ke server..."
+          sleep 10
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "Cookie: laravel_session=" \
+            "https://prokarelektronik.com/admin/maintenance/optimize" \
+            --max-time 60 --retry 2)
+          echo "HTTP Status dari optimize route: $STATUS"
+          if [ "$STATUS" = "200" ] || [ "$STATUS" = "302" ]; then
+            echo "✅ Laravel cache berhasil di-optimize via HTTP trigger."
+          else
+            echo "⚠️ Optimize route returned $STATUS. Cache mungkin perlu di-refresh manual."
+          fi
+        continue-on-error: true

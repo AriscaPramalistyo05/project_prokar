@@ -306,6 +306,35 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
                 $log[] = "✅ Role & Permission cache berhasil di-reset.";
             } catch (\Throwable $e) {}
 
+            // 7. Optimasi cache Laravel (config, route, view, event)
+            try {
+                \Illuminate\Support\Facades\Artisan::call('config:cache');
+                $log[] = "✅ Config cache berhasil dibuat (config:cache).";
+            } catch (\Throwable $e) {
+                $log[] = "ℹ️ Config cache info: " . $e->getMessage();
+            }
+
+            try {
+                \Illuminate\Support\Facades\Artisan::call('route:cache');
+                $log[] = "✅ Route cache berhasil dibuat (route:cache).";
+            } catch (\Throwable $e) {
+                $log[] = "ℹ️ Route cache info: " . $e->getMessage();
+            }
+
+            try {
+                \Illuminate\Support\Facades\Artisan::call('view:cache');
+                $log[] = "✅ View cache berhasil dikompilasi (view:cache).";
+            } catch (\Throwable $e) {
+                $log[] = "ℹ️ View cache info: " . $e->getMessage();
+            }
+
+            try {
+                \Illuminate\Support\Facades\Artisan::call('event:cache');
+                $log[] = "✅ Event cache berhasil dibuat (event:cache).";
+            } catch (\Throwable $e) {
+                $log[] = "ℹ️ Event cache info: " . $e->getMessage();
+            }
+
             $logHtml = implode("<br><br>", array_map(fn($l) => "• " . $l, $log));
 
             return response("<div style='font-family:monospace;background:#0f172a;color:#10b981;padding:24px;border-radius:12px;max-width:850px;margin:40px auto;border:1px solid #334155;'>
@@ -317,6 +346,44 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
                 <p style='margin-top:20px;'><a href='" . route('admin.settings') . "' style='display:inline-block;padding:10px 18px;background:#facc15;color:#000;text-decoration:none;font-weight:bold;border-radius:8px;'>Buka Pengaturan Toko</a></p>
             </div>");
         })->name('maintenance.migrate');
+
+        // ─── ROUTE OPTIMIZE (jalankan setelah deploy via browser) ──
+        Route::get('/maintenance/optimize', function () {
+            $log = [];
+            $start = microtime(true);
+
+            $commands = [
+                'optimize:clear' => 'Semua cache lama dibersihkan',
+                'config:cache'   => 'Config di-cache (config:cache)',
+                'route:cache'    => 'Route di-cache (route:cache)',
+                'view:cache'     => 'View di-compile (view:cache)',
+                'event:cache'    => 'Event di-cache (event:cache)',
+            ];
+
+            foreach ($commands as $cmd => $label) {
+                try {
+                    \Illuminate\Support\Facades\Artisan::call($cmd);
+                    $log[] = "✅ $label";
+                } catch (\Throwable $e) {
+                    $log[] = "⚠️ $label — " . $e->getMessage();
+                }
+            }
+
+            try {
+                \Illuminate\Support\Facades\Artisan::call('permission:cache-reset');
+                $log[] = "✅ Role & Permission cache di-reset";
+            } catch (\Throwable $e) {}
+
+            $duration = round((microtime(true) - $start) * 1000) . 'ms';
+            $logHtml = implode("<br><br>", array_map(fn($l) => "• $l", $log));
+
+            return response("<div style='font-family:monospace;background:#0f172a;color:#10b981;padding:24px;border-radius:12px;max-width:700px;margin:40px auto;border:1px solid #334155;'>
+                <h2 style='color:#facc15;margin-top:0;'>⚡ Laravel Optimize — Selesai dalam {$duration}</h2>
+                <div style='background:#020617;padding:20px;border-radius:8px;line-height:1.9;color:#f8fafc;'>{$logHtml}</div>
+                <p style='margin-top:20px;color:#94a3b8;font-size:0.85rem;'>Jalankan setiap kali selesai deploy ke production untuk performa optimal.</p>
+                <p style='margin-top:12px;'><a href='" . route('admin.dashboard') . "' style='display:inline-block;padding:10px 18px;background:#facc15;color:#000;text-decoration:none;font-weight:bold;border-radius:8px;margin-right:8px;'>Dashboard Admin</a><a href='" . route('maintenance.migrate') . "' style='display:inline-block;padding:10px 18px;background:#1e293b;color:#fff;text-decoration:none;font-weight:bold;border-radius:8px;'>Full Maintenance</a></p>
+            </div>");
+        })->name('maintenance.optimize');
     });
 });
 
