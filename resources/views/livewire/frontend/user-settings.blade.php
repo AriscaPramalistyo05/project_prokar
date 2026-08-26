@@ -17,7 +17,7 @@
             @if ($user->hasRole('super_admin'))
                 <a href="{{ route('admin.settings') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-black hover:bg-gray-900 text-[#FFCC00] font-bold text-xs rounded-xl shadow-sm transition-all shrink-0">
                     <i class="fa-solid fa-sliders"></i>
-                    <span>Pengaturan Toko &amp; Sistem (Admin)</span>
+                    <span>Pengaturan Toko & Sistem (Admin)</span>
                 </a>
             @endif
         </div>
@@ -26,12 +26,12 @@
         <div class="flex items-center gap-2 overflow-x-auto pb-3 mb-6 scrollbar-none border-b border-gray-200">
             <button type="button" wire:click="setTab('security')" class="inline-flex items-center gap-2 px-5 py-3 rounded-2xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all cursor-pointer {{ $selectedTab === 'security' ? 'bg-black text-white shadow-md' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200' }}">
                 <i class="fa-solid fa-key {{ $selectedTab === 'security' ? 'text-[#FFCC00]' : 'text-gray-400' }}"></i>
-                <span>Keamanan &amp; Password</span>
+                <span>Keamanan & Password</span>
             </button>
 
             <button type="button" wire:click="setTab('preferences')" class="inline-flex items-center gap-2 px-5 py-3 rounded-2xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all cursor-pointer {{ $selectedTab === 'preferences' ? 'bg-black text-white shadow-md' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200' }}">
                 <i class="fa-solid fa-bell {{ $selectedTab === 'preferences' ? 'text-[#FFCC00]' : 'text-gray-400' }}"></i>
-                <span>Notifikasi &amp; Informasi Akun</span>
+                <span>Notifikasi & Informasi Akun</span>
             </button>
         </div>
 
@@ -83,7 +83,7 @@
         @if ($selectedTab === 'preferences')
             <div class="bg-white rounded-3xl border border-gray-200/90 shadow-sm p-6 sm:p-8 animate-in fade-in space-y-6">
                 <div class="pb-4 mb-2 border-b border-gray-100">
-                    <h3 class="text-base sm:text-lg font-black text-gray-900 font-public">Preferensi Notifikasi &amp; Akun</h3>
+                    <h3 class="text-base sm:text-lg font-black text-gray-900 font-public">Preferensi Notifikasi & Akun</h3>
                     <p class="text-xs text-gray-500">Pengaturan izin notifikasi browser (FCM) dan status keamanan akun Anda.</p>
                 </div>
 
@@ -130,7 +130,7 @@
                             <template x-if="permission === 'granted'">
                                 <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-900 border border-emerald-200">
                                     <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                                    <span>Aktif &amp; Diizinkan</span>
+                                    <span>Aktif & Diizinkan</span>
                                 </span>
                             </template>
 
@@ -159,7 +159,7 @@
                             <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
                             <span class="text-sm font-bold text-gray-900">Selalu Aktif (Default)</span>
                         </div>
-                        <p class="text-xs text-gray-500 mt-1">Faktur pembayaran &amp; nota servis dikirim ke {{ $user->email }}</p>
+                        <p class="text-xs text-gray-500 mt-1">Faktur pembayaran & nota servis dikirim ke {{ $user->email }}</p>
                     </div>
 
                     <div class="p-4 rounded-2xl bg-gray-50 border border-gray-100">

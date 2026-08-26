@@ -270,7 +270,7 @@
                                     </p>
                                 </div>
                                 <button wire:click="verifyStorePayment({{ $selectedOrder->id }})" class="btn btn-sm bg-emerald-600 hover:bg-emerald-700 text-white font-bold border-none rounded-lg shrink-0">
-                                    <x-icon name="o-check-badge" class="w-4 h-4" /> Terima Kasir &amp; Selesaikan
+                                    <x-icon name="o-check-badge" class="w-4 h-4" /> Terima Kasir & Selesaikan
                                 </button>
                             </div>
                         @elseif($selectedOrder->payment_method === 'cod' && $selectedOrder->payment_status !== 'paid')

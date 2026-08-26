@@ -100,7 +100,7 @@
                     {{ $pendingSellSubmissions }} <span class="text-xs font-normal text-gray-400">pending</span>
                 </div>
                 <div class="text-[11px] text-gray-500 mt-1.5 font-medium">
-                    Tukar tambah &amp; jual bekas
+                    Tukar tambah & jual bekas
                 </div>
             </div>
         </div>
@@ -130,7 +130,7 @@
         <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-200/80 p-5 sm:p-6 shadow-2xs flex flex-col justify-between">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                 <div>
-                    <h2 class="text-base font-bold text-gray-900 font-public">Tren Pendapatan &amp; Pesanan</h2>
+                    <h2 class="text-base font-bold text-gray-900 font-public">Tren Pendapatan & Pesanan</h2>
                     <p class="text-xs text-gray-500">Aktivitas penjualan lunas selama periode terpilih</p>
                 </div>
 
@@ -158,7 +158,7 @@
             <div class="flex items-center justify-between gap-2 mb-4">
                 <div>
                     <h2 class="text-base font-bold text-gray-900 font-public" x-text="chartType === 'category' ? 'Produk per Kategori' : 'Status Antrean Servis'"></h2>
-                    <p class="text-xs text-gray-500">Komposisi data katalog &amp; operasional</p>
+                    <p class="text-xs text-gray-500">Komposisi data katalog & operasional</p>
                 </div>
                 
                 <div class="inline-flex bg-gray-100 p-1 rounded-xl text-[11px] font-semibold">
@@ -234,7 +234,7 @@
             <div class="p-4 sm:p-5 border-b border-gray-100 flex items-center justify-between">
                 <div>
                     <h3 class="font-bold text-gray-900 font-public text-base">Antrean Servis Prioritas</h3>
-                    <p class="text-xs text-gray-500">Perangkat yang membutuhkan diagnosa &amp; tindakan</p>
+                    <p class="text-xs text-gray-500">Perangkat yang membutuhkan diagnosa & tindakan</p>
                 </div>
                 <a href="{{ route('admin.services.index') }}" class="text-xs font-bold text-gray-700 hover:text-black flex items-center gap-1">
                     Lihat Semua <x-icon name="o-arrow-right" class="w-3.5 h-3.5" />

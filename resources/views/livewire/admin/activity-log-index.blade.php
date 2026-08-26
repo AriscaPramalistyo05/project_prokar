@@ -255,7 +255,7 @@
 
                         @if($attributes || $old)
                             <div>
-                                <h4 class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Rincian Nilai &amp; Perubahan Data</h4>
+                                <h4 class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Rincian Nilai & Perubahan Data</h4>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     @if($old)
                                         <div>

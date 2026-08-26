@@ -3,7 +3,7 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 mb-6 border-b border-gray-200 gap-4">
         <div>
             <div class="flex items-center gap-2 mb-1">
-                <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">Pengaturan Toko &amp; Sistem</h1>
+                <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">Pengaturan Toko & Sistem</h1>
             </div>
             <p class="text-sm text-gray-500">Kelola identitas resmi toko, garansi, tampilan beranda, email SMTP, Google OAuth, payment gateway, dan notifikasi FCM.</p>
         </div>
@@ -16,17 +16,17 @@
     <div class="flex items-center gap-2 overflow-x-auto pb-3 mb-6 scrollbar-none border-b border-gray-200">
         <button type="button" wire:click="$set('selectedTab', 'general-tab')" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all cursor-pointer {{ $selectedTab === 'general-tab' ? 'bg-gray-900 text-white shadow-sm' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200/80' }}">
             <i class="fa-solid fa-store {{ $selectedTab === 'general-tab' ? 'text-[#FFCC00]' : 'text-gray-400' }}"></i>
-            <span>1. Umum &amp; Identitas</span>
+            <span>1. Umum & Identitas</span>
         </button>
 
         <button type="button" wire:click="$set('selectedTab', 'home-tab')" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all cursor-pointer {{ $selectedTab === 'home-tab' ? 'bg-gray-900 text-white shadow-sm' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200/80' }}">
             <i class="fa-solid fa-desktop {{ $selectedTab === 'home-tab' ? 'text-[#FFCC00]' : 'text-gray-400' }}"></i>
-            <span>2. Tampilan &amp; Home</span>
+            <span>2. Tampilan & Home</span>
         </button>
 
         <button type="button" wire:click="$set('selectedTab', 'mail-tab')" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all cursor-pointer {{ $selectedTab === 'mail-tab' ? 'bg-gray-900 text-white shadow-sm' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200/80' }}">
             <i class="fa-solid fa-envelope {{ $selectedTab === 'mail-tab' ? 'text-[#FFCC00]' : 'text-gray-400' }}"></i>
-            <span>3. Email &amp; Autentikasi</span>
+            <span>3. Email & Autentikasi</span>
         </button>
 
         <button type="button" wire:click="$set('selectedTab', 'payment-tab')" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all cursor-pointer {{ $selectedTab === 'payment-tab' ? 'bg-gray-900 text-white shadow-sm' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200/80' }}">
@@ -54,7 +54,7 @@
                     <div class="flex items-center gap-2 pb-3 mb-5 border-b border-gray-100">
                         <span class="w-8 h-8 rounded-lg bg-gray-100 text-gray-900 flex items-center justify-center text-sm font-bold">1</span>
                         <div>
-                            <h3 class="text-base font-bold text-gray-900">Identitas &amp; Logo Toko</h3>
+                            <h3 class="text-base font-bold text-gray-900">Identitas & Logo Toko</h3>
                             <p class="text-xs text-gray-500">Nama toko, slogan, dan logo yang tampil pada navbar, footer, serta faktur invoice.</p>
                         </div>
                     </div>
@@ -117,30 +117,53 @@
                     <div class="flex items-center gap-2 pb-3 mb-5 border-b border-gray-100">
                         <span class="w-8 h-8 rounded-lg bg-gray-100 text-gray-900 flex items-center justify-center text-sm font-bold">2</span>
                         <div>
-                            <h3 class="text-base font-bold text-gray-900">Kontak &amp; Lokasi Toko</h3>
-                            <p class="text-xs text-gray-500">Informasi layanan pelanggan yang akan terhubung ke tombol WhatsApp, telepon, dan peta.</p>
+                            <h3 class="text-base font-bold text-gray-900">Kontak & Lokasi Toko</h3>
+                            <p class="text-xs text-gray-500">Nomor WhatsApp, email, dan alamat fisik toko yang tampil di website dan invoice.</p>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                        <x-input label="WhatsApp CS (Aktif)" wire:model="shop_whatsapp" placeholder="089504841279" icon="o-chat-bubble-left-ellipsis" class="bg-gray-50 border-gray-200 focus:bg-white" required />
-                        <x-input label="Nomor Telepon Toko" wire:model="shop_phone" placeholder="0895-0484-1279" icon="o-phone" class="bg-gray-50 border-gray-200 focus:bg-white" />
-                        <x-input label="Email Resmi Toko" wire:model="shop_email" placeholder="support@prokar.id" icon="o-envelope" class="bg-gray-50 border-gray-200 focus:bg-white" required />
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <x-input label="Nomor WhatsApp Admin (Order & Info)" wire:model="shop_whatsapp" placeholder="6281234567890" hint="Gunakan format internasional tanpa tanda + (contoh: 6281234567890)" class="bg-gray-50 border-gray-200 focus:bg-white" required />
+                        <x-input label="Nomor WhatsApp Hotline Servis" wire:model="shop_phone" placeholder="6281234567890" hint="Nomor khusus konsultasi perbaikan & servis" class="bg-gray-50 border-gray-200 focus:bg-white" />
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <x-textarea label="Alamat Lengkap Toko" wire:model="shop_address" rows="3" class="bg-gray-50 border-gray-200 focus:bg-white" />
-                        <div class="space-y-4">
-                            <x-input label="Jam Operasional Toko" wire:model="shop_opening_hours" placeholder="Senin - Sabtu : 08.00 - 21.00" icon="o-clock" class="bg-gray-50 border-gray-200 focus:bg-white" />
-                            <x-input label="Link Embed Google Maps Toko" wire:model="shop_maps_embed" placeholder="https://www.google.com/maps/embed?pb=..." icon="o-map-pin" class="bg-gray-50 border-gray-200 focus:bg-white" />
-                        </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <x-input label="Email Toko" type="email" wire:model="shop_email" placeholder="support@prokarelektronik.com" class="bg-gray-50 border-gray-200 focus:bg-white" required />
+                        <x-input label="Kota / Kabupaten" wire:model="shop_city" placeholder="Jepara, Jawa Tengah" class="bg-gray-50 border-gray-200 focus:bg-white" />
+                    </div>
+
+                    <div class="mb-6">
+                        <x-textarea label="Alamat Lengkap Toko" wire:model="shop_address" rows="3" placeholder="Jl. Raya Mlonggo - Bondo, RT 02/03, Jepara" class="bg-gray-50 border-gray-200 focus:bg-white" required />
+                    </div>
+
+                    <div>
+                        <x-textarea label="Google Maps Embed URL / Iframe" wire:model="shop_map_embed" rows="3" placeholder="https://www.google.com/maps/embed?..." hint="Salin link iframe Google Maps untuk menampilkan peta lokasi pada halaman Kontak." class="bg-gray-50 border-gray-200 focus:bg-white text-xs font-mono" />
                     </div>
                 </div>
 
-                {{-- Section 3: Media Sosial --}}
-                <div>
+                {{-- Section 3: Garansi Toko --}}
+                <div class="pt-6 border-t border-gray-100">
                     <div class="flex items-center gap-2 pb-3 mb-5 border-b border-gray-100">
                         <span class="w-8 h-8 rounded-lg bg-gray-100 text-gray-900 flex items-center justify-center text-sm font-bold">3</span>
+                        <div>
+                            <h3 class="text-base font-bold text-gray-900">Garansi Toko & Kebijakan Layanan</h3>
+                            <p class="text-xs text-gray-500">Standar durasi garansi toko dan klausul resmi yang tertera pada nota digital.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <x-input label="Durasi Garansi Default (Hari)" type="number" min="1" max="365" wire:model="warranty_duration_days" hint="Contoh: 30 untuk garansi 30 hari" class="bg-gray-50 border-gray-200 focus:bg-white" required />
+                    </div>
+
+                    <div>
+                        <x-textarea label="Syarat & Ketentuan Garansi Toko" wire:model="warranty_terms" rows="4" hint="Klausul ini otomatis dicetak pada lembar invoice PDF dan kartu garansi digital pelanggan." class="bg-gray-50 border-gray-200 focus:bg-white text-xs" />
+                    </div>
+                </div>
+
+                {{-- Section 4: Media Sosial --}}
+                <div>
+                    <div class="flex items-center gap-2 pb-3 mb-5 border-b border-gray-100">
+                        <span class="w-8 h-8 rounded-lg bg-gray-100 text-gray-900 flex items-center justify-center text-sm font-bold">4</span>
                         <div>
                             <h3 class="text-base font-bold text-gray-900">Tautan Media Sosial</h3>
                             <p class="text-xs text-gray-500">Ikon di footer website akan otomatis mengarah ke link akun media sosial toko Anda.</p>
@@ -508,7 +531,7 @@
                     <div class="flex items-center gap-2 pb-3 mb-5 border-b border-gray-100">
                         <span class="w-8 h-8 rounded-lg bg-gray-100 text-gray-900 flex items-center justify-center text-sm font-bold">2</span>
                         <div>
-                            <h3 class="text-base font-bold text-gray-900">Running Text (Marquee) &amp; Brand Partner</h3>
+                            <h3 class="text-base font-bold text-gray-900">Running Text (Marquee) & Brand Partner</h3>
                             <p class="text-xs text-gray-500">Teks berjalan neobrutalist dan daftar logo/merek elektronik.</p>
                         </div>
                     </div>
