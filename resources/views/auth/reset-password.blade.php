@@ -13,32 +13,12 @@
   <link rel="apple-touch-icon" href="{{ setting('shop_favicon') ? asset('storage/' . setting('shop_favicon')) : 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/rui8atrf_expires_30_days.png' }}" />
   <!-- ================================================= -->
 
-  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous" />
 
-  <script id="tailwind-config">
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            "primary": "#0A0A0A",
-            "brand-yellow": "#FFCC00",
-            "surface": "#FFFFFF",
-            "error": "#DC2626",
-            "error-bg": "#FEF2F2",
-          },
-          fontFamily: {
-            "public": ["Public Sans", "sans-serif"],
-            "inter": ["Inter", "sans-serif"],
-          }
-        }
-      }
-    };
-  </script>
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
 
   <style>
     input:focus { outline: none; border-color: #0A0A0A !important; box-shadow: 0 0 0 2px #FFCC00 !important; }
@@ -61,7 +41,7 @@
         <div class="flex items-center justify-between mb-6 sm:mb-8 pb-4 border-b border-gray-100 lg:border-none lg:pb-0">
           <a href="{{ route('home') }}" class="group inline-flex items-center gap-3">
             @if(function_exists('setting') && setting('shop_logo'))
-              <img src="{{ asset('storage/' . setting('shop_logo')) }}" alt="{{ setting('shop_name', 'Prokar Elektronik') }}" class="h-9 sm:h-10 w-auto object-contain" />
+              <img src="{{ asset('storage/' . setting('shop_logo')) }}" onerror="this.onerror=null; this.src='https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/brnriy48_expires_30_days.png'" alt="{{ setting('shop_name', 'Prokar Elektronik') }}" class="h-9 sm:h-10 w-auto object-contain" />
             @else
               <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/brnriy48_expires_30_days.png" alt="Prokar Elektronik" class="h-8 sm:h-9 w-auto object-contain" />
             @endif
