@@ -352,23 +352,34 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
             $log = [];
             $start = microtime(true);
 
-            $commands = [
-                'optimize:clear' => 'Semua cache lama dibersihkan',
-                'config:cache'   => 'Config di-cache (config:cache)',
-                'route:cache'    => 'Route di-cache (route:cache)',
-                'view:cache'     => 'View di-compile (view:cache)',
-                'event:cache'    => 'Event di-cache (event:cache)',
-            ];
-
-            foreach ($commands as $cmd => $label) {
-                try {
-                    \Illuminate\Support\Facades\Artisan::call($cmd);
-                    $log[] = "✅ $label";
-                } catch (\Throwable $e) {
-                    $log[] = "⚠️ $label — " . $e->getMessage();
-                }
+            // Bersihkan cache lama dulu
+            try {
+                \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+                $log[] = "✅ Semua cache lama dibersihkan (optimize:clear)";
+            } catch (\Throwable $e) {
+                $log[] = "⚠️ optimize:clear — " . $e->getMessage();
             }
 
+            // Config cache (aman untuk semua jenis route)
+            try {
+                \Illuminate\Support\Facades\Artisan::call('config:cache');
+                $log[] = "✅ Config di-cache (config:cache)";
+            } catch (\Throwable $e) {
+                $log[] = "⚠️ config:cache — " . $e->getMessage();
+            }
+
+            // View cache (compile semua blade template)
+            try {
+                \Illuminate\Support\Facades\Artisan::call('view:cache');
+                $log[] = "✅ View di-compile (view:cache)";
+            } catch (\Throwable $e) {
+                $log[] = "⚠️ view:cache — " . $e->getMessage();
+            }
+
+            // CATATAN: route:cache TIDAK dijalankan karena
+            // web.php menggunakan closure routes yang tidak kompatibel.
+
+            // Permission cache reset
             try {
                 \Illuminate\Support\Facades\Artisan::call('permission:cache-reset');
                 $log[] = "✅ Role & Permission cache di-reset";
@@ -384,6 +395,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
                 <p style='margin-top:12px;'><a href='" . route('admin.dashboard') . "' style='display:inline-block;padding:10px 18px;background:#facc15;color:#000;text-decoration:none;font-weight:bold;border-radius:8px;margin-right:8px;'>Dashboard Admin</a><a href='" . route('maintenance.migrate') . "' style='display:inline-block;padding:10px 18px;background:#1e293b;color:#fff;text-decoration:none;font-weight:bold;border-radius:8px;'>Full Maintenance</a></p>
             </div>");
         })->name('maintenance.optimize');
+
     });
 });
 
