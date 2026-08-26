@@ -172,7 +172,7 @@
 
                         <div class="mt-8 mb-4 sm:mb-6">
                             <button type="submit"
-                                class="w-full bg-black text-brand-yellow py-4 sm:py-5 rounded-2xl font-public font-black uppercase text-base sm:text-lg tracking-widest hover:bg-gray-800 transition-colors btn-hover flex justify-center items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed shadow-xl active:scale-[0.99]"
+                                class="mb-10 sm:mb-14 w-full bg-black text-brand-yellow py-4 sm:py-5 rounded-2xl font-public font-black uppercase text-base sm:text-lg tracking-widest hover:bg-gray-800 transition-colors btn-hover flex justify-center items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed shadow-xl active:scale-[0.99]"
                                 :disabled="compressing || uploading">
                                 <span wire:loading.remove wire:target="submit" x-show="!uploading" class="flex items-center gap-2">
                                     Kirim Penawaran <i class="fa-solid fa-paper-plane"></i>

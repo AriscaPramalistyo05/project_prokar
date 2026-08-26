@@ -9,6 +9,7 @@ use App\Services\CartService;
 use App\Services\MidtransService;
 use App\Services\ShippingService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 
 class CheckoutAddressForm extends Component
@@ -300,6 +301,9 @@ class CheckoutAddressForm extends Component
         // 6. Tangani Pembayaran Non-Midtrans (Cash di Kasir & COD)
         if (in_array($this->paymentOption, ['cash_store', 'cod'])) {
             $cartService->clear();
+            if (!empty($order->customer_email)) {
+                Mail::to($order->customer_email)->send(new \App\Mail\OrderConfirmationMail($order));
+            }
             $this->submitted = true;
             $this->orderCode = $order->order_code;
 

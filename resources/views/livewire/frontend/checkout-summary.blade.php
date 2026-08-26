@@ -40,26 +40,6 @@
         @endforelse
       </ul>
 
-      <!-- Kode promo -->
-      <div>
-        <div class="flex flex-col sm:flex-row gap-2">
-          <input
-            type="text"
-            wire:model.defer="discountCode"
-            placeholder="KODE PROMO"
-            class="min-w-0 w-full flex-grow bg-transparent border border-[#FCFCFA]/25 focus:border-[#FFCC00] rounded-xl px-3 py-2 text-xs font-mono uppercase tracking-wider text-[#FCFCFA] placeholder-[#FCFCFA]/35 outline-none transition-colors" />
-          <button
-            type="button"
-            wire:click="applyDiscount"
-            class="w-full sm:w-auto bg-[#FFCC00] text-[#0A0A0A] border border-[#FFCC00] press rounded-xl px-4 py-2 font-public font-bold text-xs uppercase tracking-widest shrink-0 cursor-pointer">
-            Pakai
-          </button>
-        </div>
-        @if ($discountMessage)
-          <p class="text-[11px] font-mono mt-1 text-[#FFCC00]">{{ $discountMessage }}</p>
-        @endif
-      </div>
-
       <!-- Metode pengiriman & Hitungan -->
       <div>
         <p class="font-public font-bold text-xs uppercase tracking-wider text-[#FCFCFA]/50 mb-1.5">Metode Pengiriman</p>
@@ -244,26 +224,6 @@
         </li>
       @endforelse
     </ul>
-
-    <!-- Kode promo mobile -->
-    <div>
-      <div class="flex flex-col sm:flex-row gap-2">
-        <input
-          type="text"
-          wire:model.defer="discountCode"
-          placeholder="KODE PROMO"
-          class="min-w-0 w-full flex-grow bg-transparent border border-[#FCFCFA]/25 focus:border-[#FFCC00] rounded-xl px-3 py-2 text-xs font-mono uppercase tracking-wider text-[#FCFCFA] placeholder-[#FCFCFA]/35 outline-none transition-colors" />
-        <button
-          type="button"
-          wire:click="applyDiscount"
-          class="w-full sm:w-auto bg-[#FFCC00] text-[#0A0A0A] border border-[#FFCC00] press rounded-xl px-4 py-2 font-public font-bold text-xs uppercase tracking-widest shrink-0">
-          Pakai
-        </button>
-      </div>
-      @if ($discountMessage)
-        <p class="text-xs font-mono mt-1 text-[#FFCC00] min-h-[1rem]">{{ $discountMessage }}</p>
-      @endif
-    </div>
 
     <!-- Opsi Metode Pengiriman Mobile -->
     <div>

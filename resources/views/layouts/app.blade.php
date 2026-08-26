@@ -14,7 +14,10 @@
   @php
     $shopName = setting('shop_name', 'Prokar Elektronik');
     $shopTagline = setting('shop_tagline', 'Jual, Beli & Servis Elektronik Bekas Terpercaya');
-    $shopLogo = setting('shop_logo') ? asset('storage/' . setting('shop_logo')) : 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/mfbi92py_expires_30_days.png';
+    $savedLogo = setting('shop_logo');
+    $savedFavicon = setting('shop_favicon');
+    $shopLogo = $savedLogo ? asset('storage/' . $savedLogo) . '?v=' . (file_exists(storage_path('app/public/' . $savedLogo)) ? filemtime(storage_path('app/public/' . $savedLogo)) : time()) : 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/mfbi92py_expires_30_days.png';
+    $shopFavicon = $savedFavicon ? asset('storage/' . $savedFavicon) . '?v=' . (file_exists(storage_path('app/public/' . $savedFavicon)) ? filemtime(storage_path('app/public/' . $savedFavicon)) : time()) : 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/rui8atrf_expires_30_days.png';
   @endphp
 
   <title>@yield('title', $shopName . ' – ' . $shopTagline)</title>
@@ -30,11 +33,11 @@
   <link rel="canonical" href="@yield('canonical', url()->current())" />
   <link rel="alternate" hreflang="id-ID" href="@yield('canonical', url()->current())" />
   <link rel="shortcut icon"
-    href="{{ setting('shop_favicon') ? asset('storage/' . setting('shop_favicon')) : 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/rui8atrf_expires_30_days.png' }}" />
+    href="{{ $shopFavicon }}" />
   <link rel="icon" type="image/png" sizes="32x32"
-    href="{{ setting('shop_favicon') ? asset('storage/' . setting('shop_favicon')) : 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/rui8atrf_expires_30_days.png' }}" />
+    href="{{ $shopFavicon }}" />
   <link rel="apple-touch-icon"
-    href="{{ setting('shop_favicon') ? asset('storage/' . setting('shop_favicon')) : 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/rui8atrf_expires_30_days.png' }}" />
+    href="{{ $shopFavicon }}" />
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="@yield('og_type', 'website')" />

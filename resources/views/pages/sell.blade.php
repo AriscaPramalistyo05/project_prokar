@@ -9,7 +9,7 @@
 @section('og_description', 'Jual elektronik bekas Anda dengan mudah dan cepat. Penilaian transparan, jemput gratis ke lokasi, dan pembayaran langsung di tempat.')
 @section('twitter_title', 'Jual Elektronik Bekas – Penawaran Terbaik | Prokar Elektronik')
 @section('twitter_description', 'Jual elektronik bekas Anda dengan mudah dan cepat. Penilaian transparan, jemput gratis, dan pembayaran langsung.')
-@section('body_class', 'bg-brand-black')
+@section('body_class', 'bg-brand-black no-overlap-page')
 
 @push('schema')
 <script type="application/ld+json">
@@ -314,7 +314,9 @@
   gsap.ticker.lagSmoothing(0, 0);
 
   /* --- CUBERTO OVERLAPPING SCROLL EFFECT --- */
-  const overlapSections = gsap.utils.toArray('.section-overlap');
+  const overlapSections = document.body.classList.contains('no-overlap-page')
+    ? []
+    : gsap.utils.toArray('.section-overlap');
   overlapSections.forEach((section, index) => {
     if (index === overlapSections.length - 1) return;
     const nextSection = overlapSections[index + 1];

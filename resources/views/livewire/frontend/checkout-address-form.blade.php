@@ -284,7 +284,7 @@
                 window.snap.pay(data.snap_token, {
                     onSuccess: function(result) {
                         currentActiveSnapToken = null;
-                        window.location.href = successUrl + '?status=paid&transaction_status=settlement';
+                        window.location.href = successUrl;
                     },
                     onPending: function(result) {
                         currentActiveSnapToken = null;

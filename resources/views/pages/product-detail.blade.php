@@ -235,7 +235,7 @@
             @php $firstMedia = $product->productImages->first(); @endphp
             @if($firstMedia->type === 'video')
               <video id="mainImage"
-                class="w-full h-full object-contain max-h-full max-w-full rounded-xl bg-black/90 relative z-10"
+                class="w-full h-full object-contain max-h-full max-w-full rounded-xl bg-gray-100 relative z-10"
                 controls playsinline preload="metadata"
                 onloadedmetadata="document.getElementById('mainSkeleton')?.classList.add('hidden');"
                 onloadstart="document.getElementById('mainSkeleton')?.classList.add('hidden');">
@@ -590,7 +590,7 @@
 
     container.innerHTML = `
       <video id="mainImage" 
-        class="w-full h-full object-contain max-h-full max-w-full rounded-xl bg-black/90 relative z-10" 
+        class="w-full h-full object-contain max-h-full max-w-full rounded-xl bg-gray-100 relative z-10"
         controls autoplay playsinline preload="metadata">
         <source src="${src}" type="video/mp4">
         Browser Anda tidak mendukung tag video.

@@ -3,26 +3,6 @@
   <section class="on-dark hidden lg:flex w-full lg:w-2/5 lg:h-full lg:overflow-y-auto bg-[#0A0A0A] text-[#FCFCFA] p-8 lg:p-10 flex-col gap-6 border-l-4 border-[#0A0A0A] rounded-l-3xl">
     <h2 class="font-public font-bold text-2xl uppercase tracking-tight text-[#FCFCFA]">Ringkasan Pesanan</h2>
 
-    <!-- Kode promo -->
-    <div>
-      <div class="flex flex-col sm:flex-row gap-2">
-        <input
-          type="text"
-          wire:model.defer="discountCode"
-          placeholder="KODE PROMO"
-          class="min-w-0 w-full flex-grow bg-transparent border-2 border-[#FCFCFA]/25 focus:border-[#FFCC00] rounded-xl px-4 py-3 text-sm font-mono uppercase tracking-wider text-[#FCFCFA] placeholder-[#FCFCFA]/35 outline-none transition-colors" />
-        <button
-          type="button"
-          wire:click="applyDiscount"
-          class="w-full sm:w-auto bg-[#FFCC00] text-[#0A0A0A] border-2 border-[#FFCC00] press rounded-xl px-5 py-3 sm:py-0 font-public font-bold text-xs uppercase tracking-widest shrink-0 cursor-pointer">
-          Pakai
-        </button>
-      </div>
-      @if ($discountMessage)
-        <p class="text-xs font-mono mt-2 text-[#FFCC00] min-h-[1rem]">{{ $discountMessage }}</p>
-      @endif
-    </div>
-
     <!-- Hitungan Harga -->
     <div class="flex flex-col gap-3 py-5 border-y-2 border-[#FCFCFA]/15 font-inter text-sm">
       <div class="flex justify-between items-center">
@@ -48,25 +28,6 @@
   <!-- ===================== MOBILE: RINGKASAN (inline, di bawah list) ===================== -->
   <section class="on-dark lg:hidden bg-[#0A0A0A] text-[#FCFCFA] mx-4 mb-6 p-6 flex flex-col gap-5 rounded-2xl">
     <h2 class="font-public font-bold text-xl uppercase tracking-tight">Ringkasan Pesanan</h2>
-
-    <div>
-      <div class="flex flex-col sm:flex-row gap-2">
-        <input
-          type="text"
-          wire:model.defer="discountCode"
-          placeholder="KODE PROMO"
-          class="min-w-0 w-full flex-grow bg-transparent border-2 border-[#FCFCFA]/25 focus:border-[#FFCC00] rounded-xl px-4 py-3 text-sm font-mono uppercase tracking-wider text-[#FCFCFA] placeholder-[#FCFCFA]/35 outline-none transition-colors" />
-        <button
-          type="button"
-          wire:click="applyDiscount"
-          class="w-full sm:w-auto bg-[#FFCC00] text-[#0A0A0A] border-2 border-[#FFCC00] press rounded-xl px-5 py-3 sm:py-0 font-public font-bold text-xs uppercase tracking-widest shrink-0">
-          Pakai
-        </button>
-      </div>
-      @if ($discountMessage)
-        <p class="text-xs font-mono mt-2 text-[#FFCC00] min-h-[1rem]">{{ $discountMessage }}</p>
-      @endif
-    </div>
 
     <div class="flex flex-col gap-3 py-4 border-y-2 border-[#FCFCFA]/15 font-inter text-sm">
       <div class="flex justify-between items-center">
