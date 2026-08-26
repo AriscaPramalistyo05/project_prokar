@@ -336,6 +336,74 @@ Route::get('/storage/{path}', function (string $path) {
     ]);
 })->where('path', '.*')->name('storage.fallback');
 
+// ─── SYSTEM HEALTH & DIAGNOSTICS (CPANEL PHP EXTENSIONS & STORAGE) ───
+Route::get('/system-check', function () {
+    $results = [];
+    $results['status'] = 'ok';
+    $results['php_version'] = PHP_VERSION;
+
+    $requiredExtensions = [
+        'fileinfo'  => 'MIME type detector for Livewire file uploads',
+        'dom'       => 'DOMDocument for Termwind, MaryUI & SVG parsing',
+        'xml'       => 'XML & SVG parsing',
+        'gd'        => 'Image processing and compression',
+        'pdo_mysql' => 'MySQL database connection',
+        'mbstring'  => 'Multibyte string UTF-8',
+        'curl'      => 'HTTP API client (Midtrans, Firebase)',
+        'zip'       => 'Zip archive extraction',
+    ];
+
+    $extStatus = [];
+    $hasMissing = false;
+    foreach ($requiredExtensions as $ext => $desc) {
+        $loaded = extension_loaded($ext);
+        if (!$loaded) $hasMissing = true;
+        $extStatus[$ext] = [
+            'loaded'      => $loaded,
+            'status'      => $loaded ? 'OK' : 'MISSING (HARUS DIAKTIFKAN DI CPANEL)',
+            'description' => $desc,
+        ];
+    }
+    $results['has_missing_extensions'] = $hasMissing;
+    $results['extensions'] = $extStatus;
+
+    $results['php_ini'] = [
+        'upload_max_filesize' => ini_get('upload_max_filesize'),
+        'post_max_size'       => ini_get('post_max_size'),
+        'memory_limit'        => ini_get('memory_limit'),
+        'max_execution_time'  => ini_get('max_execution_time'),
+    ];
+
+    $testDirs = [
+        'storage_app_public'          => storage_path('app/public'),
+        'storage_app_public_livewire' => storage_path('app/public/livewire-tmp'),
+        'storage_app_public_settings' => storage_path('app/public/settings'),
+        'storage_app_private'         => storage_path('app/private'),
+        'storage_framework_views'     => storage_path('framework/views'),
+    ];
+
+    $storageStatus = [];
+    foreach ($testDirs as $name => $path) {
+        if (!is_dir($path)) {
+            @mkdir($path, 0777, true);
+        }
+        @chmod($path, 0777);
+        $testFile = $path . '/test_write_' . time() . '.tmp';
+        $canWrite = @file_put_contents($testFile, 'test') !== false;
+        if ($canWrite) {
+            @unlink($testFile);
+        }
+        $storageStatus[$name] = [
+            'path'      => $path,
+            'exists'    => is_dir($path),
+            'writable'  => $canWrite,
+        ];
+    }
+    $results['storage'] = $storageStatus;
+
+    return response()->json($results, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+})->name('system.check');
+
 // ─── ERROR PAGES PREVIEW (LOCAL DEV) ───────────────────────────
 if (app()->environment('local')) {
     Route::get('/errors/{code}', function ($code) {
