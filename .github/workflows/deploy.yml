@@ -47,3 +47,6 @@ jobs:
             .env
             .env.example
             tests/**
+            storage/**
+            public/storage
+            public/storage/**

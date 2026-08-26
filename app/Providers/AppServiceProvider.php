@@ -46,10 +46,13 @@ class AppServiceProvider extends ServiceProvider
             storage_path('app/public/settings'),
             storage_path('app/public/settings/hero'),
             storage_path('app/public/settings/hero3card'),
+            storage_path('app/public/settings/service'),
             storage_path('app/public/products'),
             storage_path('app/public/services'),
             storage_path('app/public/service_images'),
             storage_path('app/public/sell-submissions'),
+            storage_path('app/public/sell_submissions'),
+            storage_path('app/public/avatars'),
             storage_path('app/firebase'),
             storage_path('app/private/firebase'),
         ];

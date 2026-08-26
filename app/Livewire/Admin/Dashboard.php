@@ -24,6 +24,16 @@ class Dashboard extends Component
         $this->loadChartData();
     }
 
+    public function refreshDashboard(): void
+    {
+        $this->loadChartData();
+        $this->dispatch('chart-data-updated', [
+            'revenue' => $this->revenueChartData,
+            'category' => $this->categoryChartData,
+            'service' => $this->serviceStatusData,
+        ]);
+    }
+
     public function setPeriod(int $days): void
     {
         $this->chartPeriod = in_array($days, [7, 14, 30]) ? $days : 7;
@@ -126,6 +136,8 @@ class Dashboard extends Component
 
     public function render()
     {
+        $this->loadChartData();
+
         // Metric Stats
         $todayOrdersCount = Order::whereDate('created_at', today())->count();
         $todayRevenue = Order::where('payment_status', 'paid')

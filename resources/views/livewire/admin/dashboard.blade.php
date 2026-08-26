@@ -1,10 +1,10 @@
-<div class="space-y-6" wire:poll.60s>
+<div class="space-y-6" wire:poll.15s="refreshDashboard">
     {{-- ── 1. Header & Quick Actions ── --}}
     <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white border border-gray-200/80 rounded-2xl p-5 sm:p-6 shadow-2xs">
         <div class="space-y-1">
             <div class="flex items-center gap-2">
                 <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span class="text-xs font-bold uppercase tracking-wider text-gray-500 font-public">Live Overview</span>
+                <span class="text-xs font-bold uppercase tracking-wider text-gray-500 font-public">Live Dashboard (Auto-Sync 15s)</span>
             </div>
             <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-gray-900 font-public">
                 Selamat Datang, {{ auth()->user()->name }} 👋
@@ -16,6 +16,11 @@
 
         {{-- Quick Action Buttons --}}
         <div class="flex flex-wrap items-center gap-2.5">
+            <button wire:click="refreshDashboard" wire:loading.attr="disabled" class="btn btn-sm bg-white text-gray-800 hover:bg-gray-100 font-semibold rounded-xl border border-gray-300 gap-1.5 shadow-2xs">
+                <x-icon name="o-arrow-path" class="w-4 h-4" wire:loading.class="animate-spin" />
+                <span wire:loading.remove>Refresh</span>
+                <span wire:loading>Memperbarui...</span>
+            </button>
             @role('super_admin')
             <a href="{{ route('admin.products.create') }}" class="btn btn-sm bg-gray-900 text-white hover:bg-black font-semibold rounded-xl border-none gap-1.5 shadow-2xs">
                 <x-icon name="o-plus" class="w-4 h-4" /> Tambah Produk
@@ -389,37 +394,40 @@
 </div>
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
-    let revenueChartInstance = null;
-    let donutChartInstance = null;
+    (function() {
+        let revenueChartInstance = null;
+        let donutChartInstance = null;
+        let activeDonutType = 'category';
 
-    let chartDataState = {
-        revenue: @json($revenueChartData),
-        category: @json($categoryChartData),
-        service: @json($serviceStatusData),
-    };
+        let chartDataState = {
+            revenue: @json($revenueChartData),
+            category: @json($categoryChartData),
+            service: @json($serviceStatusData),
+        };
 
-    function initCharts() {
-        const revCtx = document.getElementById('revenueTrendChart');
-        const donutCtx = document.getElementById('distributionDonutChart');
+        function renderRevenueChart() {
+            const revCtx = document.getElementById('revenueTrendChart');
+            if (!revCtx || typeof Chart === 'undefined') return;
 
-        // 1. Revenue & Order Line Chart
-        if (revCtx) {
-            if (revenueChartInstance) revenueChartInstance.destroy();
+            if (revenueChartInstance) {
+                revenueChartInstance.destroy();
+                revenueChartInstance = null;
+            }
 
-            const gradient = revCtx.getContext('2d').createLinearGradient(0, 0, 0, 300);
+            const ctx = revCtx.getContext('2d');
+            const gradient = ctx.createLinearGradient(0, 0, 0, 300);
             gradient.addColorStop(0, 'rgba(15, 23, 42, 0.18)');
             gradient.addColorStop(1, 'rgba(15, 23, 42, 0.0)');
 
             revenueChartInstance = new Chart(revCtx, {
                 type: 'line',
                 data: {
-                    labels: chartDataState.revenue.labels,
+                    labels: chartDataState.revenue ? chartDataState.revenue.labels : [],
                     datasets: [
                         {
                             label: 'Pendapatan (Rp)',
-                            data: chartDataState.revenue.revenues,
+                            data: chartDataState.revenue ? chartDataState.revenue.revenues : [],
                             borderColor: '#0F172A',
                             borderWidth: 2.5,
                             backgroundColor: gradient,
@@ -434,7 +442,7 @@
                         },
                         {
                             label: 'Jumlah Pesanan',
-                            data: chartDataState.revenue.orders,
+                            data: chartDataState.revenue ? chartDataState.revenue.orders : [],
                             borderColor: '#F59E0B',
                             borderWidth: 2,
                             borderDash: [4, 4],
@@ -518,79 +526,102 @@
             });
         }
 
-        // 2. Distribution Donut Chart
-        renderDonut('category');
-    }
+        function renderDonutChart(type) {
+            if (type) activeDonutType = type;
+            const donutCtx = document.getElementById('distributionDonutChart');
+            if (!donutCtx || typeof Chart === 'undefined') return;
 
-    function renderDonut(type) {
-        const donutCtx = document.getElementById('distributionDonutChart');
-        if (!donutCtx) return;
+            if (donutChartInstance) {
+                donutChartInstance.destroy();
+                donutChartInstance = null;
+            }
 
-        if (donutChartInstance) donutChartInstance.destroy();
+            const dataset = activeDonutType === 'category' ? chartDataState.category : chartDataState.service;
+            if (!dataset || !dataset.labels) return;
 
-        const dataset = type === 'category' ? chartDataState.category : chartDataState.service;
-
-        donutChartInstance = new Chart(donutCtx, {
-            type: 'doughnut',
-            data: {
-                labels: dataset.labels,
-                datasets: [{
-                    data: dataset.data,
-                    backgroundColor: dataset.colors,
-                    borderWidth: 2,
-                    borderColor: '#ffffff',
-                    hoverOffset: 4,
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '70%',
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            boxWidth: 10,
-                            padding: 12,
-                            font: { size: 10, weight: 'bold', family: 'Inter, sans-serif' },
-                            color: '#475569',
-                        }
-                    },
-                    tooltip: {
-                        backgroundColor: '#0F172A',
-                        padding: 8,
-                        cornerRadius: 8,
-                        callbacks: {
-                            label: function(context) {
-                                return ` ${context.label}: ${context.parsed} unit`;
+            donutChartInstance = new Chart(donutCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: dataset.labels,
+                    datasets: [{
+                        data: dataset.data,
+                        backgroundColor: dataset.colors,
+                        borderWidth: 2,
+                        borderColor: '#ffffff',
+                        hoverOffset: 4,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 10,
+                                padding: 12,
+                                font: { size: 10, weight: 'bold', family: 'Inter, sans-serif' },
+                                color: '#475569',
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: '#0F172A',
+                            padding: 8,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    return ` ${context.label}: ${context.parsed} unit`;
+                                }
                             }
                         }
                     }
                 }
+            });
+        }
+
+        window.switchDonut = function(type) {
+            renderDonutChart(type);
+        };
+
+        function initAllCharts() {
+            if (typeof Chart === 'undefined') return;
+            renderRevenueChart();
+            renderDonutChart(activeDonutType);
+        }
+
+        // Initialize on DOM ready
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            setTimeout(initAllCharts, 80);
+        } else {
+            document.addEventListener('DOMContentLoaded', initAllCharts);
+        }
+
+        // Re-init on Livewire SPA navigation
+        document.addEventListener('livewire:navigated', () => {
+            setTimeout(initAllCharts, 80);
+        });
+
+        // Listen for data updates dispatched from Livewire polling / setPeriod
+        window.addEventListener('chart-data-updated', (event) => {
+            const data = event.detail ? (Array.isArray(event.detail) ? event.detail[0] : event.detail) : event;
+            if (data) {
+                chartDataState = data;
+                initAllCharts();
             }
         });
-    }
 
-    window.switchDonut = function(type) {
-        renderDonut(type);
-    };
+        document.addEventListener('livewire:initialized', () => {
+            initAllCharts();
 
-    if (document.readyState === 'complete' || document.readyState === 'interactive') {
-        setTimeout(initCharts, 50);
-    } else {
-        document.addEventListener('DOMContentLoaded', initCharts);
-    }
-
-    document.addEventListener('livewire:navigated', initCharts);
-
-    document.addEventListener('livewire:initialized', () => {
-        initCharts();
-
-        Livewire.on('chart-data-updated', (event) => {
-            const data = Array.isArray(event) ? event[0] : event;
-            chartDataState = data;
-            initCharts();
+            Livewire.on('chart-data-updated', (event) => {
+                const data = Array.isArray(event) ? event[0] : event;
+                if (data) {
+                    chartDataState = data;
+                    initAllCharts();
+                }
+            });
         });
-    });
+    })();
 </script>
 @endpush

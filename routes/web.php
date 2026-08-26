@@ -404,6 +404,38 @@ Route::get('/system-check', function () {
     return response()->json($results, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 })->name('system.check');
 
+// ─── STORAGE FILE FALLBACK ROUTE (CPANEL / HOSTING SAFEGUARD) ──
+Route::get('/storage/{path}', function (string $path) {
+    // Prevent directory traversal
+    $cleanPath = str_replace(['..', "\0"], '', $path);
+    $filePath = storage_path('app/public/' . $cleanPath);
+
+    if (!file_exists($filePath) || is_dir($filePath)) {
+        abort(404);
+    }
+
+    $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+    $mimeType = match ($ext) {
+        'jpg', 'jpeg' => 'image/jpeg',
+        'png'         => 'image/png',
+        'webp'        => 'image/webp',
+        'gif'         => 'image/gif',
+        'svg'         => 'image/svg+xml',
+        'ico'         => 'image/x-icon',
+        'mp4'         => 'video/mp4',
+        'webm'        => 'video/webm',
+        'mov'         => 'video/quicktime',
+        'avi'         => 'video/x-msvideo',
+        'pdf'         => 'application/pdf',
+        default       => mime_content_type($filePath) ?: 'application/octet-stream',
+    };
+
+    return response()->file($filePath, [
+        'Content-Type'  => $mimeType,
+        'Cache-Control' => 'public, max-age=86400',
+    ]);
+})->where('path', '.*')->name('storage.fallback');
+
 // ─── ERROR PAGES PREVIEW (LOCAL DEV) ───────────────────────────
 if (app()->environment('local')) {
     Route::get('/errors/{code}', function ($code) {
