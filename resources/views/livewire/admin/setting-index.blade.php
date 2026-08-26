@@ -541,9 +541,9 @@
                                     <img src="{{ $service_image_tv_file->temporaryUrl() }}" alt="Service TV" class="h-full w-full object-cover" />
                                 @elseif ($existing_service_image_tv)
                                     <img src="{{ asset('storage/' . $existing_service_image_tv) }}" alt="Service TV" class="h-full w-full object-cover" />
-                                @else
-                                    <img src="{{ asset('assets/images/service-tv.jpg') }}" alt="Service TV" class="h-full w-full object-cover opacity-75" />
-                                @endif
+                                 @else
+                                    <img src="https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&q=80" alt="Service TV" class="h-full w-full object-cover opacity-75" />
+                                 @endif
                             </div>
                         </div>
 
@@ -557,7 +557,7 @@
                                 @elseif ($existing_service_image_mesin_cuci)
                                     <img src="{{ asset('storage/' . $existing_service_image_mesin_cuci) }}" alt="Service Mesin Cuci" class="h-full w-full object-cover" />
                                 @else
-                                    <img src="{{ asset('assets/images/service-mesin-cuci.jpg') }}" alt="Service Mesin Cuci" class="h-full w-full object-cover opacity-75" />
+                                    <img src="https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=400&q=80" alt="Service Mesin Cuci" class="h-full w-full object-cover opacity-75" />
                                 @endif
                             </div>
                         </div>
@@ -572,7 +572,7 @@
                                 @elseif ($existing_service_image_kulkas)
                                     <img src="{{ asset('storage/' . $existing_service_image_kulkas) }}" alt="Service Kulkas" class="h-full w-full object-cover" />
                                 @else
-                                    <img src="{{ asset('assets/images/service-kulkas.jpg') }}" alt="Service Kulkas" class="h-full w-full object-cover opacity-75" />
+                                    <img src="https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&q=80" alt="Service Kulkas" class="h-full w-full object-cover opacity-75" />
                                 @endif
                             </div>
                         </div>

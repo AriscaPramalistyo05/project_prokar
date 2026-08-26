@@ -27,14 +27,19 @@ class SecurityHeadersMiddleware
 
         // 1. Content Security Policy (CSP)
         // Whitelist trusted CDNs (Google Fonts, Cloudflare CDNJS, Unpkg, Midtrans payment, Firebase, Unsplash)
+        // In local/dev mode, also allow Vite dev server (localhost:5173 / 127.0.0.1:5173)
+        $viteDev = (app()->environment('local', 'testing') || config('app.debug'))
+            ? ' http://localhost:5173 http://127.0.0.1:5173 ws://localhost:5173 ws://127.0.0.1:5173'
+            : '';
+
         $csp = implode('; ', [
             "default-src 'self'",
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://unpkg.com https://cdn.jsdelivr.net https://app.midtrans.com https://app.sandbox.midtrans.com https://www.gstatic.com https://*.firebaseio.com https://*.googleapis.com",
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net",
-            "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:",
-            "img-src 'self' data: blob: https://images.unsplash.com https://storage.googleapis.com https://*.midtrans.com https://*.googleusercontent.com https://ui-avatars.com",
-            "connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://app.midtrans.com https://app.sandbox.midtrans.com https://api.midtrans.com https://api.sandbox.midtrans.com wss://*.firebaseio.com",
-            "frame-src 'self' https://app.midtrans.com https://app.sandbox.midtrans.com",
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://unpkg.com https://cdn.jsdelivr.net https://app.midtrans.com https://app.sandbox.midtrans.com https://www.gstatic.com https://*.firebaseio.com https://*.googleapis.com" . $viteDev,
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net" . $viteDev,
+            "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:" . $viteDev,
+            "img-src 'self' data: blob: https://images.unsplash.com https://storage.googleapis.com https://*.midtrans.com https://*.googleusercontent.com https://ui-avatars.com" . $viteDev,
+            "connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://app.midtrans.com https://app.sandbox.midtrans.com https://api.midtrans.com https://api.sandbox.midtrans.com wss://*.firebaseio.com https://unpkg.com" . $viteDev,
+            "frame-src 'self' https://app.midtrans.com https://app.sandbox.midtrans.com https://www.google.com",
             "object-src 'none'",
             "base-uri 'self'",
             "form-action 'self' https://app.midtrans.com https://app.sandbox.midtrans.com",

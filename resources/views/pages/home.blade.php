@@ -152,11 +152,11 @@
               <!-- Kolom 1 -->
               <div class="hero-parallax-col flex flex-col gap-5" data-speed="-70">
                 <a href="{{ route('produk.index') }}?kategori=kulkas" class="hero-tile stagger-item w-[150px] xl:w-[170px] h-[180px] xl:h-[200px]">
-                  <img src="{{ setting('hero_image_kulkas') ? asset('storage/' . setting('hero_image_kulkas')) : asset('assets/images/kulkas0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&h=400&fit=crop'" alt="Kulkas">
+                  <img src="{{ setting('hero_image_kulkas') ? asset('storage/' . setting('hero_image_kulkas')) : 'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&h=400&fit=crop' }}" alt="Kulkas">
                   <span class="hero-tile-label">Kulkas</span>
                 </a>
                 <a href="{{ route('produk.index') }}?kategori=dispenser" class="hero-tile stagger-item w-[150px] xl:w-[170px] h-[180px] xl:h-[200px]">
-                  <img src="{{ setting('hero_image_dispenser') ? asset('storage/' . setting('hero_image_dispenser')) : asset('assets/images/dispenser0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400&h=400&fit=crop'" alt="Dispenser">
+                  <img src="{{ setting('hero_image_dispenser') ? asset('storage/' . setting('hero_image_dispenser')) : 'https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400&h=400&fit=crop' }}" alt="Dispenser">
                   <span class="hero-tile-label">Dispenser</span>
                 </a>
               </div>
@@ -164,11 +164,11 @@
               <!-- Kolom 2 -->
               <div class="hero-parallax-col flex flex-col gap-5 mt-16" data-speed="90">
                 <a href="{{ route('produk.index') }}?kategori=tv" class="hero-tile stagger-item w-[150px] xl:w-[170px] h-[180px] xl:h-[200px]">
-                  <img src="{{ setting('hero_image_tv') ? asset('storage/' . setting('hero_image_tv')) : asset('assets/images/tv0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&h=400&fit=crop'" alt="TV">
+                  <img src="{{ setting('hero_image_tv') ? asset('storage/' . setting('hero_image_tv')) : 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&h=400&fit=crop' }}" alt="TV">
                   <span class="hero-tile-label">TV</span>
                 </a>
                 <a href="{{ route('produk.index') }}?kategori=microwave" class="hero-tile stagger-item w-[150px] xl:w-[170px] h-[180px] xl:h-[200px]">
-                  <img src="{{ setting('hero_image_microwave') ? asset('storage/' . setting('hero_image_microwave')) : asset('assets/images/microwave0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1585659722983-3a675dabf23d?w=400&h=400&fit=crop'" alt="Microwave">
+                  <img src="{{ setting('hero_image_microwave') ? asset('storage/' . setting('hero_image_microwave')) : 'https://images.unsplash.com/photo-1585659722983-3a675dabf23d?w=400&h=400&fit=crop' }}" alt="Microwave">
                   <span class="hero-tile-label">Microwave</span>
                 </a>
               </div>
@@ -176,11 +176,11 @@
               <!-- Kolom 3 -->
               <div class="hero-parallax-col flex flex-col gap-5" data-speed="-50">
                 <a href="{{ route('produk.index') }}?kategori=mesin-cuci" class="hero-tile stagger-item w-[150px] xl:w-[170px] h-[180px] xl:h-[200px]">
-                  <img src="{{ setting('hero_image_mesin_cuci') ? asset('storage/' . setting('hero_image_mesin_cuci')) : asset('assets/images/mesin-cuci0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=400&h=400&fit=crop'" alt="Mesin Cuci">
+                  <img src="{{ setting('hero_image_mesin_cuci') ? asset('storage/' . setting('hero_image_mesin_cuci')) : 'https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=400&h=400&fit=crop' }}" alt="Mesin Cuci">
                   <span class="hero-tile-label">Mesin Cuci</span>
                 </a>
                 <a href="{{ route('produk.index') }}?kategori=ac" class="hero-tile stagger-item w-[150px] xl:w-[170px] h-[180px] xl:h-[200px]">
-                  <img src="{{ setting('hero_image_ac') ? asset('storage/' . setting('hero_image_ac')) : asset('assets/images/ac0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1631545806609-947f38b3f6ea?w=400&h=400&fit=crop'" alt="AC">
+                  <img src="{{ setting('hero_image_ac') ? asset('storage/' . setting('hero_image_ac')) : 'https://images.unsplash.com/photo-1631545806609-947f38b3f6ea?w=400&h=400&fit=crop' }}" alt="AC">
                   <span class="hero-tile-label">AC</span>
                 </a>
               </div>
@@ -192,12 +192,12 @@
           <div class="lg:hidden stagger-group">
             <p class="text-center font-bold text-gray-400 mb-5 tracking-widest uppercase text-sm reveal-fade">Kategori Pilihan</p>
             <ul class="grid grid-cols-3 gap-3">
-              <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=kulkas" class="hero-tile-mobile"><img src="{{ setting('hero_image_kulkas') ? asset('storage/' . setting('hero_image_kulkas')) : asset('assets/images/kulkas0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=300&h=300&fit=crop'" alt="Kulkas"><span class="hero-tile-label">Kulkas</span></a></li>
-              <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=tv" class="hero-tile-mobile"><img src="{{ setting('hero_image_tv') ? asset('storage/' . setting('hero_image_tv')) : asset('assets/images/tv0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=300&h=300&fit=crop'" alt="TV"><span class="hero-tile-label">TV</span></a></li>
-              <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=mesin-cuci" class="hero-tile-mobile"><img src="{{ setting('hero_image_mesin_cuci') ? asset('storage/' . setting('hero_image_mesin_cuci')) : asset('assets/images/mesin-cuci0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=300&h=300&fit=crop'" alt="Mesin Cuci"><span class="hero-tile-label">Mesin Cuci</span></a></li>
-              <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=ac" class="hero-tile-mobile"><img src="{{ setting('hero_image_ac') ? asset('storage/' . setting('hero_image_ac')) : asset('assets/images/ac0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1631545806609-947f38b3f6ea?w=300&h=300&fit=crop'" alt="AC"><span class="hero-tile-label">AC</span></a></li>
-              <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=dispenser" class="hero-tile-mobile"><img src="{{ setting('hero_image_dispenser') ? asset('storage/' . setting('hero_image_dispenser')) : asset('assets/images/dispenser0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=300&h=300&fit=crop'" alt="Dispenser"><span class="hero-tile-label">Dispenser</span></a></li>
-              <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=microwave" class="hero-tile-mobile"><img src="{{ setting('hero_image_microwave') ? asset('storage/' . setting('hero_image_microwave')) : asset('assets/images/microwave0.png') }}" onerror="this.src='https://images.unsplash.com/photo-1585659722983-3a675dabf23d?w=300&h=300&fit=crop'" alt="Microwave"><span class="hero-tile-label">Microwave</span></a></li>
+              <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=kulkas" class="hero-tile-mobile"><img src="{{ setting('hero_image_kulkas') ? asset('storage/' . setting('hero_image_kulkas')) : 'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=300&h=300&fit=crop' }}" alt="Kulkas"><span class="hero-tile-label">Kulkas</span></a></li>
+              <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=tv" class="hero-tile-mobile"><img src="{{ setting('hero_image_tv') ? asset('storage/' . setting('hero_image_tv')) : 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=300&h=300&fit=crop' }}" alt="TV"><span class="hero-tile-label">TV</span></a></li>
+              <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=mesin-cuci" class="hero-tile-mobile"><img src="{{ setting('hero_image_mesin_cuci') ? asset('storage/' . setting('hero_image_mesin_cuci')) : 'https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=300&h=300&fit=crop' }}" alt="Mesin Cuci"><span class="hero-tile-label">Mesin Cuci</span></a></li>
+              <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=ac" class="hero-tile-mobile"><img src="{{ setting('hero_image_ac') ? asset('storage/' . setting('hero_image_ac')) : 'https://images.unsplash.com/photo-1631545806609-947f38b3f6ea?w=300&h=300&fit=crop' }}" alt="AC"><span class="hero-tile-label">AC</span></a></li>
+              <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=dispenser" class="hero-tile-mobile"><img src="{{ setting('hero_image_dispenser') ? asset('storage/' . setting('hero_image_dispenser')) : 'https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=300&h=300&fit=crop' }}" alt="Dispenser"><span class="hero-tile-label">Dispenser</span></a></li>
+              <li class="stagger-item"><a href="{{ route('produk.index') }}?kategori=microwave" class="hero-tile-mobile"><img src="{{ setting('hero_image_microwave') ? asset('storage/' . setting('hero_image_microwave')) : 'https://images.unsplash.com/photo-1585659722983-3a675dabf23d?w=300&h=300&fit=crop' }}" alt="Microwave"><span class="hero-tile-label">Microwave</span></a></li>
             </ul>
           </div>
         @endif
@@ -245,7 +245,7 @@
         {{-- Servis TV --}}
         <div class="stagger-item">
           <a href="{{ route('servis.index') }}" class="group relative block h-[400px] lg:h-[500px] rounded-[2rem] overflow-hidden bg-black shadow-card transform hover:-translate-y-2 transition-all duration-500">
-            <img src="{{ setting('service_image_tv') ? asset('storage/' . setting('service_image_tv')) : asset('assets/images/service-tv.jpg') }}" onerror="this.src='https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=800&q=80'" alt="Service TV" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700">
+            <img src="{{ setting('service_image_tv') ? asset('storage/' . setting('service_image_tv')) : 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=800&q=80' }}" alt="Service TV" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700">
             <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-8">
               <h3 class="text-white text-3xl lg:text-4xl font-bold font-public uppercase leading-none">Service<br><span class="text-brand-yellow">TV</span></h3>
             </div>
@@ -255,7 +255,7 @@
         {{-- Servis Mesin Cuci --}}
         <div class="stagger-item md:mt-12">
           <a href="{{ route('servis.index') }}" class="group relative block h-[400px] lg:h-[500px] rounded-[2rem] overflow-hidden bg-black shadow-card transform hover:-translate-y-2 transition-all duration-500">
-            <img src="{{ setting('service_image_mesin_cuci') ? asset('storage/' . setting('service_image_mesin_cuci')) : asset('assets/images/service-mesin-cuci.jpg') }}" onerror="this.src='https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=800&q=80'" alt="Service Mesin Cuci" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700">
+            <img src="{{ setting('service_image_mesin_cuci') ? asset('storage/' . setting('service_image_mesin_cuci')) : 'https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=800&q=80' }}" alt="Service Mesin Cuci" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700">
             <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-8">
               <h3 class="text-white text-3xl lg:text-4xl font-bold font-public uppercase leading-none">Service<br><span class="text-brand-yellow">Mesin Cuci</span></h3>
             </div>
@@ -265,7 +265,7 @@
         {{-- Servis Kulkas --}}
         <div class="stagger-item">
           <a href="{{ route('servis.index') }}" class="group relative block h-[400px] lg:h-[500px] rounded-[2rem] overflow-hidden bg-black shadow-card transform hover:-translate-y-2 transition-all duration-500">
-            <img src="{{ setting('service_image_kulkas') ? asset('storage/' . setting('service_image_kulkas')) : asset('assets/images/service-kulkas.jpg') }}" onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=800&q=80'" alt="Service Kulkas" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700">
+            <img src="{{ setting('service_image_kulkas') ? asset('storage/' . setting('service_image_kulkas')) : 'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=800&q=80' }}" alt="Service Kulkas" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700">
             <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-8">
               <h3 class="text-white text-3xl lg:text-4xl font-bold font-public uppercase leading-none">Service<br><span class="text-brand-yellow">Kulkas</span></h3>
             </div>

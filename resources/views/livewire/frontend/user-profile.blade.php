@@ -136,7 +136,7 @@
                             @foreach ($order->orderItems as $item)
                                 <div class="flex items-center justify-between gap-4">
                                     <div class="flex items-center gap-3">
-                                        <img src="{{ $item->product->image_url ?? asset('assets/images/kulkas0.png') }}" alt="{{ $item->product_name }}" class="w-12 h-12 rounded-xl object-cover border border-gray-200 shrink-0 bg-gray-50" />
+                                        <img src="{{ $item->product->image_url ?? 'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=200&h=200&fit=crop' }}" alt="{{ $item->product_name }}" class="w-12 h-12 rounded-xl object-cover border border-gray-200 shrink-0 bg-gray-50" />
                                         <div>
                                             <p class="text-sm font-bold text-gray-900 line-clamp-1">{{ $item->product_name }}</p>
                                             <p class="text-xs text-gray-500">{{ $item->quantity }}x @ Rp {{ number_format($item->price, 0, ',', '.') }}</p>
