@@ -15,7 +15,7 @@ use Livewire\Component;
 class CheckoutAddressForm extends Component
 {
     public string $name = '';
-    
+
     // Delivery Type: 'delivery' (Dikirim ke Alamat) or 'pickup' (Ambil di Toko)
     public string $deliveryType = 'delivery';
 
@@ -176,8 +176,8 @@ class CheckoutAddressForm extends Component
                 return;
             }
 
-            $actualUnitPrice = ($product->is_promo && $product->promo_price) 
-                ? (int) $product->promo_price 
+            $actualUnitPrice = ($product->is_promo && $product->promo_price)
+                ? (int) $product->promo_price
                 : (int) $product->price;
 
             $itemQty = max(1, min((int) $product->stock, (int) ($item['quantity'] ?? 1)));
@@ -359,7 +359,6 @@ class CheckoutAddressForm extends Component
                 'snap_token' => $this->snapToken,
                 'order_code' => $this->orderCode,
             ]);
-
         } catch (\Throwable $e) {
             $this->addError('payment', 'Gagal menghubungkan ke payment gateway: ' . $e->getMessage());
         }

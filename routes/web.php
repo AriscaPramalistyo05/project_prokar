@@ -39,18 +39,18 @@ Route::view('/syarat-ketentuan', 'pages.terms')->name('terms');
 Route::view('/kebijakan-privasi', 'pages.privacy')->name('privacy');
 Route::get('/servis/garansi/{code}/download', function ($code) {
     $serviceOrder = \App\Models\ServiceOrder::where('service_code', $code)->firstOrFail();
-    
+
     if ($serviceOrder->status !== 'completed') {
         abort(403, 'Kartu Garansi resmi hanya dapat diunduh jika status perbaikan servis telah selesai.');
     }
-    
+
     $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.warranty', ['serviceOrder' => $serviceOrder]);
     return $pdf->download('Kartu-Garansi-' . $code . '.pdf');
 })->name('servis.garansi.download');
 
 Route::get('/checkout/success/{orderCode}', function ($orderCode) {
     $order = \App\Models\Order::where('order_code', $orderCode)->with('orderItems')->firstOrFail();
-    
+
     // Store in session so user has access to invoice download
     session(['last_order_code' => $orderCode]);
 
@@ -72,11 +72,11 @@ Route::get('/order/invoice/{code}/download', function ($code) {
     }
 
     $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.invoice', ['order' => $order]);
-    
+
     if (request()->query('view') === 'stream') {
         return $pdf->stream('Invoice-' . $code . '.pdf');
     }
-    
+
     return $pdf->download('Invoice-' . $code . '.pdf');
 })->name('order.invoice.download');
 
@@ -93,10 +93,10 @@ Route::post('/cart/add', function (Illuminate\Http\Request $request) {
 
     $productId = (int) $request->input('product_id');
     $qty = max(1, (int) $request->input('quantity', 1));
-    
+
     $cartService = app(\App\Services\CartService::class);
     $success = $cartService->addItem($productId, $qty);
-    
+
     return response()->json([
         'success' => $success,
         'count' => $cartService->count(),
@@ -109,7 +109,7 @@ Route::get('/api/search', [\App\Http\Controllers\Api\SearchController::class, 's
 Route::post('/payment/webhook', [\App\Http\Controllers\Api\PaymentWebhookController::class, 'handle'])->name('payment.webhook');
 
 // ─── AUTH (Breeze) ──────────────────────────────────────────────
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
 // ─── OTP EMAIL VERIFICATION ─────────────────────────────────────
 Route::middleware('guest')->group(function () {
@@ -144,6 +144,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         Route::get('/dashboard', \App\Livewire\Admin\Dashboard::class)->name('dashboard');
 
         Route::get('/servis', \App\Livewire\Admin\ServiceIndex::class)->name('services.index');
+        Route::get('/service-orders', \App\Livewire\Admin\ServiceIndex::class)->name('service-orders.index');
         Route::get('/servis/{serviceOrder}', \App\Livewire\Admin\ServiceDetail::class)->name('services.show');
     });
 
@@ -258,7 +259,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
             try {
                 \Illuminate\Support\Facades\Artisan::call('permission:cache-reset');
                 $log[] = "✅ Role & Permission cache berhasil di-reset.";
-            } catch (\Throwable $e) {}
+            } catch (\Throwable $e) {
+            }
 
             // 7. Optimasi cache Laravel (config, route, view, event)
             try {
@@ -337,7 +339,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
             try {
                 \Illuminate\Support\Facades\Artisan::call('permission:cache-reset');
                 $log[] = "✅ Role & Permission cache di-reset";
-            } catch (\Throwable $e) {}
+            } catch (\Throwable $e) {
+            }
 
             $duration = round((microtime(true) - $start) * 1000) . 'ms';
             $logHtml = implode("<br><br>", array_map(fn($l) => "• $l", $log));
@@ -349,7 +352,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
                 <p style='margin-top:12px;'><a href='" . route('admin.dashboard') . "' style='display:inline-block;padding:10px 18px;background:#facc15;color:#000;text-decoration:none;font-weight:bold;border-radius:8px;margin-right:8px;'>Dashboard Admin</a><a href='" . route('maintenance.migrate') . "' style='display:inline-block;padding:10px 18px;background:#1e293b;color:#fff;text-decoration:none;font-weight:bold;border-radius:8px;'>Full Maintenance</a></p>
             </div>");
         })->name('maintenance.optimize');
-
     });
 });
 

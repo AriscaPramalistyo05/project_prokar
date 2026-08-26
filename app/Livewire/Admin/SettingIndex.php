@@ -181,7 +181,7 @@ class SettingIndex extends Component
         $this->hero_headline_color_3 = (string) ($settingService->get('hero_headline_color_3') ?? 'biru');
         $this->hero_subheadline = (string) ($settingService->get('hero_subheadline') ?? 'Beragam elektronik rumah tangga berkualitas yang siap digunakan dan telah melalui proses pengecekan teknisi profesional.');
         $this->hero_card_mode = (string) ($settingService->get('hero_card_mode') ?? '6_card');
-        
+
         // 6 Hero Category Images (Mode 6 Card)
         $this->existing_hero_image_kulkas = $settingService->get('hero_image_kulkas');
         $this->existing_hero_image_tv = $settingService->get('hero_image_tv');
@@ -201,7 +201,7 @@ class SettingIndex extends Component
         $this->marquee_text_black = (string) ($settingService->get('marquee_text_black') ?? 'PRODUK BERGARANSI ★ KUALITAS TERUJI ★ TEKNISI BERPENGALAMAN ★ BISA COD ★');
         $this->marquee_text_blue = (string) ($settingService->get('marquee_text_blue') ?? 'tersedia berbagai produk elektronik rumah tangga • harga ramah barang berkualitas');
         $this->brand_partners = (string) ($settingService->get('brand_partners') ?? 'SHARP, POLYTRON, LG, AQUA, SAMSUNG, Panasonic, TOSHIBA, Hisense');
-        
+
         // 3 Service Card Images
         $this->existing_service_image_tv = $settingService->get('service_image_tv');
         $this->existing_service_image_mesin_cuci = $settingService->get('service_image_mesin_cuci');
@@ -210,7 +210,7 @@ class SettingIndex extends Component
         // Layanan Lainnya Box
         $this->service_other_title = (string) ($settingService->get('service_other_title') ?? 'Layanan Lainnya');
         $this->service_other_desc = (string) ($settingService->get('service_other_desc') ?? 'Kami juga menerima reparasi AC, Setrika, Speaker, dan peralatan elektronik lainnya.');
-        
+
         // Testimonials
         $rawTestimonials = $settingService->get('testimonials');
         $this->testimonials = is_array($rawTestimonials) ? $rawTestimonials : (json_decode($rawTestimonials ?? '[]', true) ?: [
@@ -523,8 +523,8 @@ class SettingIndex extends Component
         }
 
         try {
-            $baseUrl = $this->midtrans_is_production 
-                ? 'https://api.midtrans.com/v2' 
+            $baseUrl = $this->midtrans_is_production
+                ? 'https://api.midtrans.com/v2'
                 : 'https://api.sandbox.midtrans.com/v2';
 
             $response = Http::withBasicAuth($serverKey, '')
