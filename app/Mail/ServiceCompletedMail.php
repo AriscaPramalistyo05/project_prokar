@@ -2,25 +2,27 @@
 
 namespace App\Mail;
 
-use App\Models\Order;
+use App\Models\ServiceOrder;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class OrderConfirmationMail extends Mailable
+class ServiceCompletedMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public Order $order;
+    public ServiceOrder $order;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(Order $order)
+    public function __construct(ServiceOrder $order)
     {
-        $this->order = $order->load(['orderItems.product']);
+        $this->order = $order;
     }
 
     /**
@@ -29,7 +31,7 @@ class OrderConfirmationMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Konfirmasi Pesanan - ' . $this->order->order_code,
+            subject: 'Perbaikan Servis Selesai & Kartu Garansi - ' . $this->order->service_code,
         );
     }
 
@@ -39,21 +41,24 @@ class OrderConfirmationMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.order-confirmation',
+            view: 'emails.service-completed',
+            with: [
+                'order' => $this->order,
+            ]
         );
     }
 
     /**
      * Get the attachments for the message.
      *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
+     * @return array<int, Attachment>
      */
     public function attachments(): array
     {
         try {
-            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.invoice', ['order' => $this->order]);
+            $pdf = Pdf::loadView('pdf.warranty', ['serviceOrder' => $this->order]);
             return [
-                \Illuminate\Mail\Mailables\Attachment::fromData(fn () => $pdf->output(), 'Invoice-' . $this->order->order_code . '.pdf')
+                Attachment::fromData(fn () => $pdf->output(), 'Kartu-Garansi-' . $this->order->service_code . '.pdf')
                     ->withMime('application/pdf'),
             ];
         } catch (\Throwable $e) {

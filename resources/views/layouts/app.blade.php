@@ -112,11 +112,19 @@
     }
 
     body {
-      background: #0A0A0A;
+      background: #FFFFFF;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       font-size: 16px;
       color: #111;
+    }
+
+    body.bg-brand-black {
+      background: #0A0A0A !important;
+    }
+
+    body.bg-white {
+      background: #FFFFFF !important;
     }
 
     .material-symbols-outlined {

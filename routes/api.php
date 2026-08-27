@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 // ─── FCM TOKEN REGISTRATION ────────────────────────────────────
 // Dipanggil dari fcm.js setelah browser mendapat token dari Firebase
 Route::post('/fcm/register', [FcmController::class, 'register'])
-    ->middleware('auth')
+    ->middleware(['web', 'auth'])
     ->name('api.fcm.register');
 
 Route::post('/payment/webhook', [\App\Http\Controllers\Api\PaymentWebhookController::class, 'handle'])
