@@ -9,7 +9,7 @@
 @section('og_description', 'Servis TV, kulkas, mesin cuci, AC oleh teknisi berpengalaman. Teknisi datang ke lokasi atau kirim barang ke workshop. Bergaransi 30 hari.')
 @section('twitter_title', 'Servis Elektronik – Teknisi Berpengalaman | Prokar Elektronik')
 @section('twitter_description', 'Servis TV, kulkas, mesin cuci, AC oleh teknisi berpengalaman di Jepara. Bergaransi 30 hari.')
-@section('body_class', 'bg-brand-black no-overlap-page')
+@section('body_class', 'bg-brand-black')
 
 @push('schema')
 <script type="application/ld+json">
@@ -287,9 +287,8 @@
   gsap.ticker.lagSmoothing(0, 0);
 
   /* --- CUBERTO OVERLAPPING SCROLL EFFECT --- */
-  const overlapSections = document.body.classList.contains('no-overlap-page')
-    ? []
-    : gsap.utils.toArray('.section-overlap');
+  const overlapSections = gsap.utils.toArray('.section-overlap')
+    .filter((section) => section.id !== 'form-servis');
   overlapSections.forEach((section, index) => {
     if (index === overlapSections.length - 1) return;
     const nextSection = overlapSections[index + 1];
