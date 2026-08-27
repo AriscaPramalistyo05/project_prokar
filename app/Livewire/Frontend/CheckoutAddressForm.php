@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Frontend;
 
+use App\Events\OrderCreated;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
@@ -297,6 +298,9 @@ class CheckoutAddressForm extends Component
                 'name' => mb_strimwidth('Ongkir: ' . $shippingCourierName, 0, 45, '...'),
             ];
         }
+
+        // Trigger Event Notifikasi Pesanan Baru (Database & FCM Push)
+        event(new OrderCreated($order));
 
         // 6. Tangani Pembayaran Non-Midtrans (Cash di Kasir & COD)
         if (in_array($this->paymentOption, ['cash_store', 'cod'])) {

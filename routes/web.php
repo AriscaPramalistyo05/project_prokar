@@ -90,6 +90,34 @@ Route::get('/video/stream/{filename}', [\App\Http\Controllers\VideoStreamControl
     ->where('filename', '.*')
     ->name('video.stream');
 
+// ─── STORAGE FALLBACK (Untuk hosting cPanel jika symlink tidak aktif) ──
+Route::get('/storage/{path}', function (string $path) {
+    $publicStorage = storage_path('app/public');
+    $fullPath = realpath($publicStorage . '/' . $path);
+
+    if (!$fullPath || !str_starts_with($fullPath, realpath($publicStorage)) || !is_file($fullPath)) {
+        abort(404);
+    }
+
+    $mimeType = match (strtolower(pathinfo($fullPath, PATHINFO_EXTENSION))) {
+        'webp' => 'image/webp',
+        'jpg', 'jpeg' => 'image/jpeg',
+        'png' => 'image/png',
+        'gif' => 'image/gif',
+        'svg' => 'image/svg+xml',
+        'mp4' => 'video/mp4',
+        'mov' => 'video/quicktime',
+        'webm' => 'video/webm',
+        'pdf' => 'application/pdf',
+        default => mime_content_type($fullPath) ?: 'application/octet-stream',
+    };
+
+    return response()->file($fullPath, [
+        'Content-Type' => $mimeType,
+        'Cache-Control' => 'public, max-age=86400, stale-while-revalidate=604800',
+    ]);
+})->where('path', '.*')->name('storage.fallback');
+
 Route::view('/keranjang', 'pages.cart')->name('keranjang.index');
 Route::post('/cart/add', function (Illuminate\Http\Request $request) {
     $request->validate([

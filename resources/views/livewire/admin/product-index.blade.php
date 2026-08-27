@@ -84,7 +84,7 @@
                             <source src="{{ $product->primaryImage->url }}" type="video/mp4">
                         </video>
                     @else
-                        <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=150&q=80'" />
+                        <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="w-full h-full object-cover" onerror="this.src='/images/logo prokar.png'" />
                     @endif
                 </div>
             @endscope

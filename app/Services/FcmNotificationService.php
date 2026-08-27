@@ -30,4 +30,27 @@ class FcmNotificationService
 
         $messaging->sendMulticast($message, $tokens);
     }
+
+    /**
+     * Kirim notifikasi push ke perangkat milik user tertentu (Pelanggan/Customer).
+     */
+    public function sendToUser(\App\Models\User $user, string $title, string $body, array $data = []): void
+    {
+        $tokens = $user->fcmTokens()->pluck('token')->toArray();
+
+        if (empty($tokens)) {
+            return;
+        }
+
+        try {
+            $messaging = app('firebase.messaging');
+            $message = CloudMessage::new()
+                ->withNotification(Notification::create($title, $body))
+                ->withData($data);
+
+            $messaging->sendMulticast($message, $tokens);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('FCM sendToUser warning: ' . $e->getMessage());
+        }
+    }
 }

@@ -2,9 +2,25 @@
 importScripts('https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js');
 
+try {
+    if (!firebase.apps.length) {
+        firebase.initializeApp({
+            apiKey: "AIzaSyD5H8KezoIN4RsYUXNzDaUbJDmd5GftKrQ",
+            projectId: "prokar-elektronik-cb785",
+            messagingSenderId: "253295007889",
+            appId: "1:253295007889:web:a05cfc521f34af0b5d8730"
+        });
+    }
+} catch (e) {}
+
 self.addEventListener('push', function (event) {
     if (event.data) {
-        const payload = event.data.json();
+        let payload = {};
+        try {
+            payload = event.data.json();
+        } catch (e) {
+            payload = { data: { title: 'Prokar Elektronik', body: event.data.text() } };
+        }
         const title = payload.notification?.title || payload.data?.title || 'Prokar Elektronik';
         const options = {
             body: payload.notification?.body || payload.data?.body || '',

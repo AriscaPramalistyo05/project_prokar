@@ -103,6 +103,6 @@ class Product extends Model
             return $primary->url;
         }
 
-        return 'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&q=80';
+        return asset('images/logo prokar.png');
     }
 }

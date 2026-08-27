@@ -82,4 +82,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(SellSubmission::class, 'user_id');
     }
+
+    public function fcmTokens()
+    {
+        return $this->hasMany(FcmToken::class, 'user_id');
+    }
 }

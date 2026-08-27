@@ -22,7 +22,7 @@ class ProductImage extends Model
     public function getUrlAttribute(): string
     {
         if (empty($this->path)) {
-            return 'https://placehold.co/800x800/f3f4f6/9ca3af?text=No+Image';
+            return asset('images/logo prokar.png');
         }
 
         if (str_starts_with($this->path, 'http://') || str_starts_with($this->path, 'https://')) {

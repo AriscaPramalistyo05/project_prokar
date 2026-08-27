@@ -152,7 +152,7 @@
             @error('media') <p class="text-red-600 text-xs mt-1 font-bold">{{ $message }}</p> @enderror
             @error('media.*') <p class="text-red-600 text-xs mt-1 font-bold">{{ $message }}</p> @enderror
 
-            <div wire:loading wire:target="media, replacingPhoto" class="mt-2">
+            <div wire:loading wire:target="media" class="mt-2">
                 <div class="flex items-center gap-2 text-sm text-emerald-700 font-medium">
                     <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
                     Memproses & mengunggah file...
@@ -161,33 +161,41 @@
 
             {{-- Pratinjau File yang Baru Dipilih --}}
             @if(is_array($media) && count($media) > 0)
-                <div class="mt-4 pt-3 border-t border-gray-200">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs text-neutral-700 font-bold block">Pratinjau File yang Baru Dipilih ({{ count($media) }} file):</span>
+                <div class="mt-5 pt-4 border-t border-gray-200">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="inline-block w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                            <span class="text-xs font-bold text-neutral-800 uppercase tracking-wide">File Baru Siap Diunggah ({{ count($media) }} file)</span>
+                        </div>
+                        <span class="text-[11px] text-neutral-500">Klik ikon sampah untuk membatalkan</span>
                     </div>
-                    <div class="flex flex-wrap gap-3">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5">
                         @foreach($media as $idx => $file)
                             @if($file && method_exists($file, 'temporaryUrl'))
-                                <div class="relative group border-2 border-emerald-400 rounded-xl overflow-hidden bg-white shadow-2xs w-24 h-24 sm:w-28 sm:h-28 shrink-0">
-                                    @php
-                                        $ext = strtolower($file->getClientOriginalExtension());
-                                        $isVideo = in_array($ext, ['mp4', 'mov', 'avi', 'webm']);
-                                    @endphp
+                                @php
+                                    $ext = strtolower($file->getClientOriginalExtension());
+                                    $isVideo = in_array($ext, ['mp4', 'mov', 'avi', 'webm']);
+                                @endphp
+                                <div class="group relative aspect-square rounded-2xl overflow-hidden bg-slate-100 border-2 border-primary/40 shadow-xs hover:shadow-md transition-all duration-200">
                                     @if($isVideo)
-                                        <div class="w-full h-full bg-gray-900 flex items-center justify-center text-white">
-                                            <i class="fa-solid fa-video text-xl"></i>
+                                        <div class="w-full h-full bg-slate-900 flex flex-col items-center justify-center text-white">
+                                            <i class="fa-solid fa-film text-2xl text-blue-400 mb-1"></i>
+                                            <span class="text-[10px] font-semibold text-slate-300">Video</span>
                                         </div>
-                                        <div class="absolute top-1 left-1 bg-blue-600 text-white text-[8px] font-bold py-0.5 px-1.5 rounded shadow-xs uppercase">Video</div>
+                                        <div class="absolute top-2 left-2 z-10 bg-blue-600/90 backdrop-blur-sm text-white text-[9px] font-bold py-0.5 px-2 rounded-md shadow-xs uppercase tracking-wider">
+                                            Video Baru
+                                        </div>
                                     @else
-                                        <img src="{{ $file->temporaryUrl() }}" class="w-full h-full object-cover" alt="Preview" />
-                                        <div class="absolute top-1 left-1 bg-emerald-600 text-white text-[8px] font-bold py-0.5 px-1.5 rounded shadow-xs uppercase">Baru {{ $idx + 1 }}</div>
+                                        <img src="{{ $file->temporaryUrl() }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="Preview" />
+                                        <div class="absolute top-2 left-2 z-10 bg-primary/90 backdrop-blur-sm text-white text-[9px] font-bold py-0.5 px-2 rounded-md shadow-xs uppercase tracking-wider">
+                                            Baru #{{ $idx + 1 }}
+                                        </div>
                                     @endif
 
-                                    <button type="button" wire:click="removeMedia({{ $idx }})" class="absolute top-1.5 right-1.5 bg-red-600 hover:bg-red-700 text-white w-5 h-5 rounded-full flex items-center justify-center shadow-md cursor-pointer transition-all hover:scale-110 active:scale-95 z-10" title="Hapus dari antrean">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                                        </svg>
+                                    {{-- Overlay & Tombol Hapus --}}
+                                    <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"></div>
+                                    <button type="button" wire:click="removeMedia({{ $idx }})" class="absolute top-2 right-2 z-20 w-7 h-7 rounded-full bg-white/90 hover:bg-rose-600 text-slate-700 hover:text-white flex items-center justify-center shadow-md backdrop-blur-sm transition-all duration-150 hover:scale-110 active:scale-95 cursor-pointer border border-white/60" title="Batal unggah file ini">
+                                        <i class="fa-solid fa-xmark text-xs"></i>
                                     </button>
                                 </div>
                             @endif
@@ -198,42 +206,69 @@
 
             {{-- Foto yang Tersimpan di Katalog --}}
             @if(count($existingPhotos) > 0)
-                <div class="mt-4 pt-3 border-t border-gray-200">
-                    <span class="text-xs text-neutral-700 font-bold block mb-2">Foto/Video Tersimpan (Hover untuk ubah/hapus):</span>
-                    <div class="flex flex-wrap gap-3">
+                <div class="mt-5 pt-4 border-t border-gray-200">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-regular fa-images text-neutral-500 text-sm"></i>
+                            <span class="text-xs font-bold text-neutral-800 uppercase tracking-wide">Galeri Tersimpan ({{ count($existingPhotos) }} Media)</span>
+                        </div>
+                        <span class="text-[11px] text-neutral-500 hidden sm:inline">Arahkan kursor untuk mengatur foto utama atau menghapus</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5">
                         @foreach($existingPhotos as $photo)
                             @php
                                 $photoModel = new \App\Models\ProductImage($photo);
                                 $photoUrl = $photoModel->url;
+                                $isPrimary = (bool)($photo['is_primary'] ?? false);
+                                $isVideo = ($photo['type'] ?? 'image') === 'video';
                             @endphp
-                            <div class="relative group border border-gray-200 rounded-xl overflow-hidden bg-white shadow-2xs w-24 h-24 sm:w-28 sm:h-28 shrink-0">
-                                <div class="relative w-full h-full bg-gray-50 flex items-center justify-center overflow-hidden">
-                                    @if(($photo['type'] ?? 'image') === 'video')
+                            <div class="group relative aspect-square rounded-2xl overflow-hidden bg-slate-100 border {{ $isPrimary ? 'border-emerald-500 ring-2 ring-emerald-500/30 shadow-sm' : 'border-slate-200 hover:border-slate-300 shadow-2xs hover:shadow-md' }} transition-all duration-200">
+                                {{-- Media Display --}}
+                                @if($isVideo)
+                                    <div class="w-full h-full bg-slate-900 flex flex-col items-center justify-center text-white relative">
                                         <video class="w-full h-full object-cover" muted>
                                             <source src="{{ $photoUrl }}" type="video/mp4">
                                         </video>
-                                        <div class="absolute top-1 left-1 bg-blue-600 text-white text-[8px] font-bold py-0.5 px-1.5 rounded shadow-xs uppercase">Video</div>
-                                    @else
-                                        <img src="{{ $photoUrl }}" class="w-full h-full object-cover" alt="" onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=150&q=80'" />
-                                        @if($photo['is_primary'] ?? false)
-                                            <div class="absolute top-1 left-1 bg-emerald-600 text-white text-[8px] font-bold py-0.5 px-1.5 rounded shadow-xs uppercase">Utama</div>
-                                        @endif
-                                    @endif
-
-                                    <div class="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 flex flex-col justify-center items-center gap-1 transition-opacity duration-150 p-1.5">
-                                        @if(!($photo['is_primary'] ?? false))
-                                            <button type="button" class="w-full py-0.5 px-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[10px] font-bold cursor-pointer" wire:click="setPrimaryPhoto({{ $photo['id'] }})">
-                                                Set Utama
-                                            </button>
-                                        @endif
-                                        <label for="replace-photo-{{ $photo['id'] }}" class="w-full py-0.5 px-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-[10px] font-bold cursor-pointer text-center">
-                                            Ganti
-                                        </label>
-                                        <input type="file" id="replace-photo-{{ $photo['id'] }}" wire:model="replacingPhoto.{{ $photo['id'] }}" class="hidden" accept="image/*,video/*" />
-                                        <button type="button" class="w-full py-0.5 px-1 bg-red-600 hover:bg-red-700 text-white rounded text-[10px] font-bold cursor-pointer" wire:click="deleteExistingPhoto({{ $photo['id'] }})">
-                                            Hapus
-                                        </button>
+                                        <div class="absolute inset-0 bg-black/30 flex items-center justify-center pointer-events-none">
+                                            <div class="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white">
+                                                <i class="fa-solid fa-play text-xs ml-0.5"></i>
+                                            </div>
+                                        </div>
                                     </div>
+                                @else
+                                    <img src="{{ $photoUrl }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="" onerror="this.src='/images/logo prokar.png'" />
+                                @endif
+
+                                {{-- Soft Gradient Overlay saat Hover --}}
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"></div>
+
+                                {{-- Badge Kiri Atas: Status Utama / Video --}}
+                                <div class="absolute top-2 left-2 z-10 flex flex-col gap-1 pointer-events-none">
+                                    @if($isPrimary)
+                                        <span class="inline-flex items-center gap-1 bg-emerald-600/95 backdrop-blur-md text-white text-[10px] font-bold py-1 px-2.5 rounded-full shadow-sm border border-emerald-400/30">
+                                            <i class="fa-solid fa-star text-[9px] text-amber-300"></i>
+                                            <span>UTAMA</span>
+                                        </span>
+                                    @endif
+                                    @if($isVideo)
+                                        <span class="inline-flex items-center gap-1 bg-blue-600/90 backdrop-blur-md text-white text-[9px] font-bold py-0.5 px-2 rounded-md shadow-xs">
+                                            <i class="fa-solid fa-film text-[8px]"></i>
+                                            <span>VIDEO</span>
+                                        </span>
+                                    @endif
+                                </div>
+
+                                {{-- Action Buttons: Mengambang di Pojok Kanan Atas saat Hover --}}
+                                <div class="absolute top-2 right-2 z-20 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-all duration-200 transform translate-y-[-4px] group-hover:translate-y-0">
+                                    @if(!$isPrimary)
+                                        <button type="button" wire:click="setPrimaryPhoto({{ $photo['id'] }})" class="w-7 h-7 rounded-full bg-white/90 hover:bg-emerald-500 text-slate-700 hover:text-white flex items-center justify-center shadow-md backdrop-blur-md transition-all duration-150 hover:scale-110 active:scale-95 cursor-pointer border border-white/60" title="Jadikan Foto Utama">
+                                            <i class="fa-regular fa-star text-xs"></i>
+                                        </button>
+                                    @endif
+                                    <button type="button" wire:click="deleteExistingPhoto({{ $photo['id'] }})" class="w-7 h-7 rounded-full bg-white/90 hover:bg-rose-600 text-slate-700 hover:text-white flex items-center justify-center shadow-md backdrop-blur-md transition-all duration-150 hover:scale-110 active:scale-95 cursor-pointer border border-white/60" title="Hapus Foto">
+                                        <i class="fa-regular fa-trash-can text-xs"></i>
+                                    </button>
                                 </div>
                             </div>
                         @endforeach

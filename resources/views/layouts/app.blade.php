@@ -638,6 +638,38 @@
         s1.onload = function() {
           var s2 = document.createElement('script');
           s2.src = 'https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js';
+          s2.onload = async function() {
+            if ('serviceWorker' in navigator && 'Notification' in window && Notification.permission === 'granted') {
+              try {
+                let config = JSON.parse(firebaseConfig.textContent);
+                if (config && config.apiKey && config.vapidKey) {
+                  if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+                    firebase.initializeApp(config);
+                  }
+                  const messaging = firebase.messaging();
+                  const reg = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+                  await navigator.serviceWorker.ready;
+                  const token = await messaging.getToken({
+                    vapidKey: (config.vapidKey || '').trim(),
+                    serviceWorkerRegistration: reg
+                  });
+                  if (token && !localStorage.getItem('prokar_customer_fcm_token')) {
+                    localStorage.setItem('prokar_customer_fcm_token', token);
+                    const csrf = document.querySelector('meta[name="csrf-token"]')?.content;
+                    await fetch('/api/fcm/register', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrf,
+                        'Accept': 'application/json'
+                      },
+                      body: JSON.stringify({ token: token })
+                    });
+                  }
+                }
+              } catch (e) {}
+            }
+          };
           document.head.appendChild(s2);
         };
         document.head.appendChild(s1);

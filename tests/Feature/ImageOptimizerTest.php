@@ -44,4 +44,20 @@ class ImageOptimizerTest extends TestCase
         $this->assertStringEndsWith('.mp4', $storedPath);
         $this->assertTrue(Storage::disk('public')->exists($storedPath));
     }
+
+    public function test_storage_fallback_route_serves_files_when_accessible(): void
+    {
+        $testFile = storage_path('app/public/test_fallback.txt');
+        file_put_contents($testFile, 'hello fallback storage');
+
+        try {
+            $response = $this->get('/storage/test_fallback.txt');
+            $response->assertStatus(200);
+            $this->assertEquals('hello fallback storage', $response->streamedContent() ?: $response->getContent());
+        } finally {
+            if (file_exists($testFile)) {
+                @unlink($testFile);
+            }
+        }
+    }
 }
