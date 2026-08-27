@@ -1,4 +1,48 @@
-<div class="w-full min-h-full px-4 pt-5 pb-8 sm:px-6 lg:px-10 lg:pt-8 flex flex-col justify-between">
+<div x-data="{
+    isProcessing: false,
+    resetOverlay() {
+        this.isProcessing = false;
+    }
+}" 
+x-on:checkout-error.window="resetOverlay()"
+class="w-full min-h-full px-4 pt-5 pb-8 sm:px-6 lg:px-10 lg:pt-8 flex flex-col justify-between relative">
+
+  <!-- ===================== FULL SCREEN PROCESSING OVERLAY ===================== -->
+  <div x-show="isProcessing" 
+       x-transition:enter="transition ease-out duration-200"
+       x-transition:enter-start="opacity-0 scale-95"
+       x-transition:enter-end="opacity-100 scale-100"
+       x-transition:leave="transition ease-in duration-150"
+       x-transition:leave-start="opacity-100 scale-100"
+       x-transition:leave-end="opacity-0 scale-95"
+       class="fixed inset-0 z-[999999] bg-[#0A0A0A]/80 backdrop-blur-sm flex items-center justify-center p-4"
+       style="display: none;">
+       
+    <div class="bg-[#FCFCFA] border-2 border-[#0A0A0A] shadow-[8px_8px_0_0_#0A0A0A] rounded-3xl p-6 sm:p-8 max-w-sm w-full text-center flex flex-col items-center gap-4">
+      
+      <!-- Animated Spinner -->
+      <div class="w-16 h-16 rounded-2xl bg-[#FFCC00] border-2 border-[#0A0A0A] shadow-[4px_4px_0_0_#0A0A0A] flex items-center justify-center relative">
+        <i class="fa-solid fa-spinner fa-spin text-2xl text-[#0A0A0A]"></i>
+      </div>
+
+      <!-- Copywriting -->
+      <div class="flex flex-col gap-1.5">
+        <h3 class="font-public font-bold text-xl sm:text-2xl uppercase tracking-tight text-[#0A0A0A]">
+          Memproses Transaksi...
+        </h3>
+        <p class="font-inter text-xs sm:text-sm text-[#0A0A0A]/70 leading-relaxed max-w-xs mx-auto">
+          Mengamankan ketersediaan barang dan menyiapkan rincian pesanan Anda.
+        </p>
+      </div>
+
+      <!-- Trust Badge -->
+      <div class="flex items-center gap-2 text-[11px] font-mono text-[#0A0A0A]/50 bg-gray-100 px-3.5 py-1.5 rounded-full border border-gray-200 mt-1">
+        <i class="fa-solid fa-shield-halved text-[#15803d]"></i>
+        <span>Enkripsi 256-bit Terlindungi</span>
+      </div>
+
+    </div>
+  </div>
 
   <div>
     <!-- Header -->
@@ -24,14 +68,7 @@
       <p class="text-sm text-[#0A0A0A]/50 font-inter">Pilih opsi pengiriman dan metode pembayaran sesuai kebutuhan Anda.</p>
     </div>
 
-    @if ($submitted)
-      <div class="block-card rounded-2xl border-2 border-[#1E8A5F] bg-green-50 text-[#1E8A5F] p-4 font-inter text-sm mb-5 flex items-center gap-2">
-        <i class="fa-solid fa-circle-check text-lg"></i>
-        <span class="font-semibold">Pesanan tersimpan. Membuka jendela pembayaran...</span>
-      </div>
-    @endif
-
-    <form id="checkoutForm" wire:submit.prevent="submit" class="flex flex-col gap-5">
+    <form id="checkoutForm" @submit="isProcessing = true; processState = 'processing'" wire:submit.prevent="submit" class="flex flex-col gap-5">
 
       <!-- Blok: Metode Pengiriman (Delivery Type) -->
       <div class="block-card bg-[#FCFCFA] border-2 border-[#0A0A0A] rounded-2xl p-5 sm:p-6 flex flex-col gap-4">
@@ -269,6 +306,7 @@
     function triggerSnapPay(data) {
         if (!data || !data.snap_token) {
             console.error('Snap Token tidak ditemukan', data);
+            window.dispatchEvent(new CustomEvent('checkout-error'));
             return;
         }
 
@@ -288,19 +326,22 @@
                     },
                     onPending: function(result) {
                         currentActiveSnapToken = null;
-                        alert('Menunggu Pembayaran: Silakan selesaikan pembayaran QRIS / transfer Anda.');
+                        window.location.href = successUrl;
                     },
                     onError: function(result) {
                         currentActiveSnapToken = null;
+                        window.dispatchEvent(new CustomEvent('checkout-error'));
                         alert('Pembayaran Gagal: ' + (result.status_message || 'Terjadi kesalahan pada transaksi'));
                     },
                     onClose: function() {
                         currentActiveSnapToken = null;
+                        window.dispatchEvent(new CustomEvent('checkout-error'));
                         console.log('User menutup popup pembayaran sebelum transaksi selesai.');
                     }
                 });
             } else {
                 console.error('Midtrans Snap.js belum termuat sempurna.');
+                window.dispatchEvent(new CustomEvent('checkout-error'));
             }
         };
 
@@ -315,6 +356,21 @@
         Livewire.on('pay-midtrans', (event) => {
             const data = Array.isArray(event) ? event[0] : event;
             triggerSnapPay(data);
+        });
+
+        // Reset processing overlay if validation errors occur
+        Livewire.hook('commit', ({ succeed, fail }) => {
+            succeed(() => {
+                const errorElements = document.querySelector('.text-red-500');
+                if (errorElements) {
+                    setTimeout(() => {
+                        window.dispatchEvent(new CustomEvent('checkout-error'));
+                    }, 50);
+                }
+            });
+            fail(() => {
+                window.dispatchEvent(new CustomEvent('checkout-error'));
+            });
         });
     });
 </script>
