@@ -6,8 +6,12 @@
 <footer class="section-overlap bg-brand-black pt-20 pb-10 px-6 md:px-12 z-[70]">
   <div class="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-start border-b border-gray-800 pb-16 mb-10 gap-12">
     <div class="max-w-md">
-      @if(function_exists('setting') && setting('shop_logo'))
-        <img src="{{ asset('storage/' . setting('shop_logo')) }}" onerror="this.onerror=null; this.src='https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/mfbi92py_expires_30_days.png'" alt="{{ setting('shop_name', 'Prokar Elektronik') }}" class="w-56 sm:w-64 max-h-16 object-contain mb-6">
+      @php
+        $footerLogo = setting('shop_logo');
+        $footerLogoUrl = $footerLogo ? asset('storage/' . $footerLogo) . '?v=' . (file_exists(storage_path('app/public/' . $footerLogo)) ? filemtime(storage_path('app/public/' . $footerLogo)) : time()) : 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/mfbi92py_expires_30_days.png';
+      @endphp
+      @if(setting('shop_logo'))
+        <img src="{{ $footerLogoUrl }}" onerror="this.onerror=null; this.src='https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/mfbi92py_expires_30_days.png'" alt="{{ setting('shop_name', 'Prokar Elektronik') }}" class="w-56 sm:w-64 max-h-16 object-contain mb-6">
       @else
         <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/mfbi92py_expires_30_days.png" alt="{{ setting('shop_name', 'Prokar Elektronik') }}" class="w-64 mb-6">
       @endif

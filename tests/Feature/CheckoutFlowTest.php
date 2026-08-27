@@ -222,4 +222,100 @@ class CheckoutFlowTest extends TestCase
             return $mail->hasTo('siti@example.com') && $mail->order->id === $order->id;
         });
     }
+
+    public function test_buy_now_direct_checkout_only_checks_out_selected_product_and_preserves_regular_cart(): void
+    {
+        $category = Category::firstOrCreate(
+            ['slug' => 'test-direct-checkout'],
+            ['name' => 'Kategori Direct']
+        );
+
+        $productA = Product::create([
+            'category_id' => $category->id,
+            'name' => 'Produk A (Keranjang Reguler)',
+            'slug' => 'produk-a',
+            'brand' => 'Brand A',
+            'price' => 500000,
+            'stock' => 5,
+            'status' => 'available',
+        ]);
+
+        $productB = Product::create([
+            'category_id' => $category->id,
+            'name' => 'Produk B (Beli Sekarang)',
+            'slug' => 'produk-b',
+            'brand' => 'Brand B',
+            'price' => 1200000,
+            'stock' => 2,
+            'status' => 'available',
+        ]);
+
+        $cartService = app(CartService::class);
+
+        // 1. User memasukkan Produk A ke keranjang reguler
+        $cartService->addItem($productA->id, 1);
+        $this->assertEquals(1, $cartService->count());
+
+        // 2. User melihat Produk B lalu menekan "Beli Sekarang"
+        Livewire::test('frontend.add-to-cart-button', ['productId' => $productB->id])
+            ->call('buyNow')
+            ->assertRedirect(route('checkout.address'));
+
+        // 3. Verifikasi: Halaman checkout HANYA memuat Produk B (Bukan Produk A)
+        $checkoutItems = $cartService->getCheckoutItems();
+        $this->assertCount(1, $checkoutItems);
+        $this->assertEquals($productB->id, $checkoutItems[0]['id']);
+        $this->assertEquals(1200000, $checkoutItems[0]['unit_price']);
+
+        // 4. Lakukan Checkout untuk Produk B
+        Livewire::test('frontend.checkout-address-form')
+            ->set('name', 'Budi Pembeli')
+            ->set('deliveryType', 'pickup')
+            ->set('paymentOption', 'cash_store')
+            ->set('phone', '081234567899')
+            ->set('email', 'pembeli@example.com')
+            ->call('submit')
+            ->assertHasNoErrors();
+
+        // 5. Verifikasi: Order yang dibuat HANYA berisi Produk B
+        $order = Order::latest()->first();
+        $this->assertEquals(1200000, $order->subtotal);
+        $this->assertCount(1, $order->orderItems);
+        $this->assertEquals('Produk B (Beli Sekarang)', $order->orderItems[0]->product_name);
+
+        // 6. Verifikasi: Sesi direct checkout sudah dibersihkan, dan Produk A MASIH TERSIMPAN di keranjang reguler
+        $this->assertFalse($cartService->isDirectCheckout());
+        $remainingRegularItems = $cartService->getItems();
+        $this->assertCount(1, $remainingRegularItems);
+        $this->assertEquals($productA->id, $remainingRegularItems[0]['id']);
+    }
+
+    public function test_sold_out_products_are_auto_pruned_and_not_resurrected_in_cart(): void
+    {
+        $category = Category::firstOrCreate(
+            ['slug' => 'test-auto-prune'],
+            ['name' => 'Kategori Auto Prune']
+        );
+
+        $product = Product::create([
+            'category_id' => $category->id,
+            'name' => 'Barang Unik Bekas 1 Unit',
+            'slug' => 'barang-unik-bekas-1-unit',
+            'brand' => 'Sony',
+            'price' => 800000,
+            'stock' => 1,
+            'status' => 'available',
+        ]);
+
+        $cartService = app(CartService::class);
+        $cartService->addItem($product->id, 1);
+        $this->assertEquals(1, $cartService->count());
+
+        // Simulasi barang terjual / status 'sold'
+        $product->update(['stock' => 0, 'status' => 'sold']);
+
+        // Saat keranjang diakses kembali, barang yang sold otomatis di-prune (tidak muncul)
+        $items = $cartService->getItems();
+        $this->assertCount(0, $items);
+    }
 }
