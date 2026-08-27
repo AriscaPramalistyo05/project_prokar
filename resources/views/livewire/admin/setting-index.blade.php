@@ -71,45 +71,102 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-gray-100">
                         {{-- Logo --}}
-                        <div class="p-4 rounded-xl bg-gray-50 border border-gray-200">
-                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Logo Utama Toko</label>
+                        <div class="p-5 rounded-2xl bg-white border border-gray-200 shadow-2xs">
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="block text-xs font-bold text-gray-800 uppercase tracking-wider">Logo Utama Toko</label>
+                                @if ($existing_logo)
+                                    <button type="button" wire:click="deleteLogo" wire:confirm="Yakin ingin mereset logo toko ke default?" class="text-[11px] font-semibold text-rose-600 hover:text-rose-700 flex items-center gap-1 transition-colors cursor-pointer">
+                                        <i class="fa-regular fa-trash-can"></i> Reset Default
+                                    </button>
+                                @endif
+                            </div>
                             <x-file wire:model="logo_file" accept="image/png,image/jpeg,image/svg+xml,image/webp" hint="PNG, JPG, SVG, WebP (Maks 10MB)" class="file-input-sm w-full" />
                             
-                            <div class="mt-3 flex items-center gap-4">
+                            <div class="mt-4 p-3 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center gap-4">
                                 @if ($logo_file)
-                                    <div class="p-2 bg-white rounded-lg border border-gray-200">
-                                        <p class="text-[10px] font-bold text-emerald-600 mb-1">Preview Baru:</p>
-                                        <img src="{{ $logo_file->temporaryUrl() }}" alt="Preview Logo" class="h-10 w-auto object-contain" />
+                                    <div class="flex items-center gap-3">
+                                        <div class="p-2 bg-white rounded-lg border border-emerald-300 shadow-xs">
+                                            <img src="{{ $logo_file->temporaryUrl() }}" alt="Preview Logo" class="h-10 max-w-[140px] w-auto object-contain" />
+                                        </div>
+                                        <div>
+                                            <span class="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 text-[10px] font-bold py-0.5 px-2 rounded-full">
+                                                <i class="fa-solid fa-check text-[8px]"></i> Logo Baru Terpilih
+                                            </span>
+                                            <p class="text-[11px] text-gray-500 mt-1">Klik "Simpan Semua Pengaturan" di bawah untuk menerapkan.</p>
+                                        </div>
                                     </div>
                                 @elseif ($existing_logo)
-                                    <div class="p-2 bg-white rounded-lg border border-gray-200">
-                                        <p class="text-[10px] font-bold text-gray-400 mb-1">Logo Aktif:</p>
-                                        <img src="{{ asset('storage/' . $existing_logo) }}" onerror="this.onerror=null; this.src='https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/brnriy48_expires_30_days.png'" alt="Logo Saat Ini" class="h-10 w-auto object-contain" />
+                                    <div class="flex items-center gap-3">
+                                        <div class="p-2 bg-white rounded-lg border border-gray-200 shadow-xs">
+                                            <img src="{{ str_starts_with($existing_logo, 'images/') ? asset($existing_logo) : asset('storage/' . $existing_logo) }}" onerror="this.onerror=null; this.src='{{ asset('images/logo prokar simpel.png') }}'" alt="Logo Saat Ini" class="h-10 max-w-[140px] w-auto object-contain" />
+                                        </div>
+                                        <div>
+                                            <p class="text-[11px] font-bold text-gray-700">Logo Kustom Aktif</p>
+                                            <p class="text-[10px] text-gray-400">Tampil di navbar, footer, dan invoice.</p>
+                                        </div>
                                     </div>
                                 @else
-                                    <div class="p-2 bg-white rounded-lg border border-gray-200">
-                                        <p class="text-[10px] font-bold text-gray-400 mb-1">Logo Default:</p>
-                                        <span class="font-black text-sm tracking-tight text-black">PROKAR <span class="text-amber-500">ELEKTRONIK</span></span>
+                                    <div class="flex items-center gap-3">
+                                        <div class="p-2 bg-white rounded-lg border border-gray-200 shadow-xs">
+                                            <img src="{{ asset('images/logo prokar simpel.png') }}" alt="Logo Default" class="h-9 max-w-[140px] w-auto object-contain" />
+                                        </div>
+                                        <div>
+                                            <span class="inline-flex items-center gap-1 bg-slate-200 text-slate-700 text-[10px] font-bold py-0.5 px-2 rounded-full">
+                                                Logo Bawaan Sistem
+                                            </span>
+                                            <p class="text-[11px] text-gray-500 mt-1">Unggah file di atas untuk mengganti logo.</p>
+                                        </div>
                                     </div>
                                 @endif
                             </div>
                         </div>
 
                         {{-- Favicon --}}
-                        <div class="p-4 rounded-xl bg-gray-50 border border-gray-200">
-                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Favicon Browser</label>
-                            <x-file wire:model="favicon_file" accept="image/png,image/x-icon,image/vnd.microsoft.icon,image/svg+xml,.ico" hint="PNG, ICO, SVG (Maks 5MB)" class="file-input-sm w-full" />
+                        <div class="p-5 rounded-2xl bg-white border border-gray-200 shadow-2xs">
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="block text-xs font-bold text-gray-800 uppercase tracking-wider">Favicon Browser</label>
+                                @if ($existing_favicon)
+                                    <button type="button" wire:click="deleteFavicon" wire:confirm="Yakin ingin mereset favicon browser ke default?" class="text-[11px] font-semibold text-rose-600 hover:text-rose-700 flex items-center gap-1 transition-colors cursor-pointer">
+                                        <i class="fa-regular fa-trash-can"></i> Reset Default
+                                    </button>
+                                @endif
+                            </div>
+                            <x-file wire:model="favicon_file" accept="image/png,image/x-icon,image/vnd.microsoft.icon,image/svg+xml,.ico,.png" hint="PNG, ICO, SVG (Maks 5MB)" class="file-input-sm w-full" />
                             
-                            <div class="mt-3 flex items-center gap-4">
+                            <div class="mt-4 p-3 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center gap-4">
                                 @if ($favicon_file)
-                                    <div class="p-2 bg-white rounded-lg border border-gray-200 flex items-center gap-2">
-                                        <p class="text-[10px] font-bold text-emerald-600">Preview Baru:</p>
-                                        <img src="{{ $favicon_file->temporaryUrl() }}" alt="Preview Favicon" class="w-6 h-6 object-contain" />
+                                    <div class="flex items-center gap-3">
+                                        <div class="p-2 bg-white rounded-lg border border-emerald-300 shadow-xs">
+                                            <img src="{{ $favicon_file->temporaryUrl() }}" alt="Preview Favicon" class="w-8 h-8 object-contain" />
+                                        </div>
+                                        <div>
+                                            <span class="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 text-[10px] font-bold py-0.5 px-2 rounded-full">
+                                                <i class="fa-solid fa-check text-[8px]"></i> Favicon Baru Terpilih
+                                            </span>
+                                            <p class="text-[11px] text-gray-500 mt-1">Klik "Simpan Semua Pengaturan" di bawah untuk menerapkan.</p>
+                                        </div>
                                     </div>
                                 @elseif ($existing_favicon)
-                                    <div class="p-2 bg-white rounded-lg border border-gray-200 flex items-center gap-2">
-                                        <p class="text-[10px] font-bold text-gray-400">Favicon Aktif:</p>
-                                        <img src="{{ asset('storage/' . $existing_favicon) }}" onerror="this.onerror=null; this.src='https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/rui8atrf_expires_30_days.png'" alt="Favicon Saat Ini" class="w-6 h-6 object-contain" />
+                                    <div class="flex items-center gap-3">
+                                        <div class="p-2 bg-white rounded-lg border border-gray-200 shadow-xs">
+                                            <img src="{{ str_starts_with($existing_favicon, 'images/') ? asset($existing_favicon) : asset('storage/' . $existing_favicon) }}" onerror="this.onerror=null; this.src='{{ asset('images/logo prokar.png') }}'" alt="Favicon Saat Ini" class="w-8 h-8 object-contain" />
+                                        </div>
+                                        <div>
+                                            <p class="text-[11px] font-bold text-gray-700">Favicon Kustom Aktif</p>
+                                            <p class="text-[10px] text-gray-400">Tampil pada tab browser pengunjung.</p>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="flex items-center gap-3">
+                                        <div class="p-2 bg-white rounded-lg border border-gray-200 shadow-xs">
+                                            <img src="{{ asset('images/logo prokar.png') }}" alt="Favicon Default" class="w-8 h-8 object-contain" />
+                                        </div>
+                                        <div>
+                                            <span class="inline-flex items-center gap-1 bg-slate-200 text-slate-700 text-[10px] font-bold py-0.5 px-2 rounded-full">
+                                                Favicon Bawaan Sistem
+                                            </span>
+                                            <p class="text-[11px] text-gray-500 mt-1">Unggah icon di atas untuk mengganti favicon.</p>
+                                        </div>
                                     </div>
                                 @endif
                             </div>

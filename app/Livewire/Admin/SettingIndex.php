@@ -6,6 +6,7 @@ use App\Services\FcmNotificationService;
 use App\Services\SettingService;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -553,6 +554,28 @@ class SettingIndex extends Component
         } catch (\Exception $e) {
             $this->error('Gagal mengirim push notifikasi: ' . $e->getMessage());
         }
+    }
+
+    public function deleteLogo(SettingService $settingService): void
+    {
+        if ($this->existing_logo && !str_starts_with($this->existing_logo, 'http') && !str_starts_with($this->existing_logo, 'images/')) {
+            Storage::disk('public')->delete($this->existing_logo);
+        }
+        $settingService->set('shop_logo', '', 'general', 'image', 'Logo Utama Toko');
+        $this->existing_logo = null;
+        $this->logo_file = null;
+        $this->success('Logo toko berhasil direset ke default.');
+    }
+
+    public function deleteFavicon(SettingService $settingService): void
+    {
+        if ($this->existing_favicon && !str_starts_with($this->existing_favicon, 'http') && !str_starts_with($this->existing_favicon, 'images/')) {
+            Storage::disk('public')->delete($this->existing_favicon);
+        }
+        $settingService->set('shop_favicon', '', 'general', 'image', 'Favicon Toko');
+        $this->existing_favicon = null;
+        $this->favicon_file = null;
+        $this->success('Favicon browser berhasil direset ke default.');
     }
 
     public function render()
