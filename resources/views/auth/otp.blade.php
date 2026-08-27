@@ -6,8 +6,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Verifikasi Email | {{ setting('shop_name', 'Prokar Elektronik') }}</title>
     <meta name="robots" content="noindex, nofollow" />
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ setting('shop_favicon') ? asset('storage/' . setting('shop_favicon')) : 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/rui8atrf_expires_30_days.png' }}" />
-    <link rel="apple-touch-icon" href="{{ setting('shop_favicon') ? asset('storage/' . setting('shop_favicon')) : 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/rui8atrf_expires_30_days.png' }}" />
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/logo prokar.png') }}" />
+    <link rel="apple-touch-icon" href="{{ asset('images/logo prokar.png') }}" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -71,11 +71,11 @@
                     {{-- Header --}}
                     <div class="mb-6 text-center">
                         <a href="{{ route('home') }}" class="inline-block mb-5">
-                            @if(function_exists('setting') && setting('shop_logo'))
-                                <img src="{{ asset('storage/' . setting('shop_logo')) }}" onerror="this.onerror=null; this.src='https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/brnriy48_expires_30_days.png'" alt="{{ setting('shop_name', 'Prokar Elektronik') }}" class="h-9 sm:h-10 w-auto object-contain mx-auto" />
-                            @else
-                                <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/brnriy48_expires_30_days.png" alt="Prokar Elektronik" class="h-8 sm:h-9 w-auto object-contain mx-auto" />
-                            @endif
+                            @php
+                                $otpLogo = setting('shop_logo', 'images/logo prokar simpel.png');
+                                $otpLogoUrl = $otpLogo ? (str_starts_with($otpLogo, 'images/') ? asset($otpLogo) : asset('storage/' . $otpLogo)) : asset('images/logo prokar simpel.png');
+                            @endphp
+                            <img src="{{ $otpLogoUrl }}" onerror="this.onerror=null; this.src='{{ asset('images/logo prokar simpel.png') }}'" alt="{{ setting('shop_name', 'Prokar Elektronik') }}" class="h-9 sm:h-10 w-auto object-contain mx-auto" />
                         </a>
 
                       

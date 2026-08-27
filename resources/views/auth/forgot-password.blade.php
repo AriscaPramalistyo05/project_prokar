@@ -10,8 +10,8 @@
   <meta name="description" content="Atur ulang kata sandi akun Prokar Elektronik Anda secara aman melalui verifikasi email." />
   <meta name="theme-color" content="#0A0A0A" />
   <link rel="canonical" href="{{ url('/forgot-password') }}" />
-  <link rel="icon" type="image/png" sizes="32x32" href="{{ setting('shop_favicon') ? asset('storage/' . setting('shop_favicon')) : 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/rui8atrf_expires_30_days.png' }}" />
-  <link rel="apple-touch-icon" href="{{ setting('shop_favicon') ? asset('storage/' . setting('shop_favicon')) : 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/rui8atrf_expires_30_days.png' }}" />
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/logo prokar.png') }}" />
+  <link rel="apple-touch-icon" href="{{ asset('images/logo prokar.png') }}" />
   <!-- ================================================= -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -41,11 +41,11 @@
         <!-- Navbar / Logo Header -->
         <div class="flex items-center justify-between mb-6 sm:mb-8 pb-4 border-b border-gray-100 lg:border-none lg:pb-0">
           <a href="{{ route('home') }}" class="group inline-flex items-center gap-3">
-            @if(function_exists('setting') && setting('shop_logo'))
-              <img src="{{ asset('storage/' . setting('shop_logo')) }}" onerror="this.onerror=null; this.src='https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/brnriy48_expires_30_days.png'" alt="{{ setting('shop_name', 'Prokar Elektronik') }}" class="h-9 sm:h-10 w-auto object-contain" />
-            @else
-              <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/brnriy48_expires_30_days.png" alt="Prokar Elektronik" class="h-8 sm:h-9 w-auto object-contain" />
-            @endif
+            @php
+              $fpLogo = setting('shop_logo', 'images/logo prokar simpel.png');
+              $fpLogoUrl = $fpLogo ? (str_starts_with($fpLogo, 'images/') ? asset($fpLogo) : asset('storage/' . $fpLogo)) : asset('images/logo prokar simpel.png');
+            @endphp
+            <img src="{{ $fpLogoUrl }}" onerror="this.onerror=null; this.src='{{ asset('images/logo prokar simpel.png') }}'" alt="{{ setting('shop_name', 'Prokar Elektronik') }}" class="h-9 sm:h-10 w-auto object-contain" />
           </a>
 
           <a href="{{ route('login') }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-gray-700 hover:text-black transition-colors px-3 py-1.5 rounded-full bg-gray-50 border border-gray-200">

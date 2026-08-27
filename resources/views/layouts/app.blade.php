@@ -14,10 +14,10 @@
   @php
     $shopName = setting('shop_name', 'Prokar Elektronik');
     $shopTagline = setting('shop_tagline', 'Jual, Beli & Servis Elektronik Bekas Terpercaya');
-    $savedLogo = setting('shop_logo');
-    $savedFavicon = setting('shop_favicon');
-    $shopLogo = $savedLogo ? asset('storage/' . $savedLogo) . '?v=' . (file_exists(storage_path('app/public/' . $savedLogo)) ? filemtime(storage_path('app/public/' . $savedLogo)) : time()) : 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/mfbi92py_expires_30_days.png';
-    $shopFavicon = $savedFavicon ? asset('storage/' . $savedFavicon) . '?v=' . (file_exists(storage_path('app/public/' . $savedFavicon)) ? filemtime(storage_path('app/public/' . $savedFavicon)) : time()) : 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/rui8atrf_expires_30_days.png';
+    $savedLogo = setting('shop_logo', 'images/logo prokar simpel.png');
+    $savedFavicon = setting('shop_favicon', 'images/logo prokar.png');
+    $shopLogo = $savedLogo ? (str_starts_with($savedLogo, 'images/') ? asset($savedLogo) : asset('storage/' . $savedLogo)) : asset('images/logo prokar simpel.png');
+    $shopFavicon = $savedFavicon ? (str_starts_with($savedFavicon, 'images/') ? asset($savedFavicon) : asset('storage/' . $savedFavicon)) : asset('images/logo prokar.png');
   @endphp
 
   <title>@yield('title', $shopName . ' – ' . $shopTagline)</title>

@@ -14,8 +14,8 @@
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Prokar Elektronik" />
   <link rel="canonical" href="{{ url('/register') }}" />
-  <link rel="icon" type="image/png" sizes="32x32" href="{{ setting('shop_favicon') ? asset('storage/' . setting('shop_favicon')) : 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/rui8atrf_expires_30_days.png' }}" />
-  <link rel="apple-touch-icon" href="{{ setting('shop_favicon') ? asset('storage/' . setting('shop_favicon')) : 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/rui8atrf_expires_30_days.png' }}" />
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/logo prokar.png') }}" />
+  <link rel="apple-touch-icon" href="{{ asset('images/logo prokar.png') }}" />
   <!-- ================================================= -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -61,11 +61,11 @@
       <div class="max-w-md w-full mx-auto flex flex-col gap-3">
         <header class="mb-1">
           <a class="inline-block mb-4" href="{{ route('home') }}">
-            @if(function_exists('setting') && setting('shop_logo'))
-              <img src="{{ asset('storage/' . setting('shop_logo')) }}" onerror="this.onerror=null; this.src='https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/brnriy48_expires_30_days.png'" alt="{{ setting('shop_name', 'Prokar Elektronik') }}" class="h-9 sm:h-10 w-auto object-contain" />
-            @else
-              <img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/brnriy48_expires_30_days.png" alt="Prokar Elektronik" class="h-8 sm:h-9 w-auto object-contain" />
-            @endif
+            @php
+              $registerLogo = setting('shop_logo', 'images/logo prokar simpel.png');
+              $registerLogoUrl = $registerLogo ? (str_starts_with($registerLogo, 'images/') ? asset($registerLogo) : asset('storage/' . $registerLogo)) : asset('images/logo prokar simpel.png');
+            @endphp
+            <img src="{{ $registerLogoUrl }}" onerror="this.onerror=null; this.src='{{ asset('images/logo prokar simpel.png') }}'" alt="{{ setting('shop_name', 'Prokar Elektronik') }}" class="h-9 sm:h-10 w-auto object-contain" />
           </a>
 
           <h1 class="font-headline-md text-2xl sm:text-3xl font-bold mb-1">Buat Akun Baru</h1>

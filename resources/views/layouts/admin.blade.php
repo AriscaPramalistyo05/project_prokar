@@ -7,10 +7,10 @@
     <title>Admin — {{ setting('shop_name', 'Prokar Elektronik') }}</title>
     {{-- Favicon & Logo URLs --}}
     @php
-        $adminFavicon = setting('shop_favicon');
-        $adminFaviconUrl = $adminFavicon ? asset('storage/' . $adminFavicon) . '?v=' . (file_exists(storage_path('app/public/' . $adminFavicon)) ? filemtime(storage_path('app/public/' . $adminFavicon)) : time()) : 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/rui8atrf_expires_30_days.png';
-        $adminLogo = setting('shop_logo');
-        $adminLogoUrl = $adminLogo ? asset('storage/' . $adminLogo) . '?v=' . (file_exists(storage_path('app/public/' . $adminLogo)) ? filemtime(storage_path('app/public/' . $adminLogo)) : time()) : 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/brnriy48_expires_30_days.png';
+        $adminFavicon = setting('shop_favicon', 'images/logo prokar.png');
+        $adminFaviconUrl = $adminFavicon ? (str_starts_with($adminFavicon, 'images/') ? asset($adminFavicon) : asset('storage/' . $adminFavicon)) : asset('images/logo prokar.png');
+        $adminLogo = setting('shop_logo', 'images/logo prokar simpel.png');
+        $adminLogoUrl = $adminLogo ? (str_starts_with($adminLogo, 'images/') ? asset($adminLogo) : asset('storage/' . $adminLogo)) : asset('images/logo prokar simpel.png');
     @endphp
     <link rel="icon" type="image/png" sizes="32x32" href="{{ $adminFaviconUrl }}" />
     <link rel="apple-touch-icon" href="{{ $adminFaviconUrl }}" />

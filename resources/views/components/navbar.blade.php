@@ -13,14 +13,10 @@
     $isCart = request()->routeIs('keranjang.index');
     $isCheckout = request()->routeIs('checkout.address');
     $cartCount = (int) app(\App\Services\CartService::class)->count();
-    $savedLogo = setting('shop_logo');
-    $logoUrl = $savedLogo
-        ? asset('storage/' . $savedLogo) .
-            '?v=' .
-            (file_exists(storage_path('app/public/' . $savedLogo))
-                ? filemtime(storage_path('app/public/' . $savedLogo))
-                : time())
-        : 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/V9M2mMKXM6/brnriy48_expires_30_days.png';
+    $savedLogo = setting('shop_logo', 'images/logo prokar simpel.png');
+    $logoUrl = $savedLogo 
+        ? (str_starts_with($savedLogo, 'images/') ? asset($savedLogo) : asset('storage/' . $savedLogo))
+        : asset('images/logo prokar simpel.png');
 @endphp
 <!-- Navbar Wrapper to hoist Alpine data -->
 <div x-data="{

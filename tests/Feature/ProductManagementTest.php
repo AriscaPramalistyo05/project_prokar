@@ -74,4 +74,21 @@ class ProductManagementTest extends TestCase
 
         $this->assertEquals($initialCount, $product->fresh()->productImages()->count());
     }
+
+    public function test_can_delete_product_from_product_index()
+    {
+        $user = $this->actingAsSuperAdmin();
+        $product = Product::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(\App\Livewire\Admin\ProductIndex::class)
+            ->call('confirmDelete', $product->id)
+            ->assertSet('showDeleteModal', true)
+            ->assertSet('productIdToDelete', $product->id)
+            ->call('deleteProduct')
+            ->assertSet('showDeleteModal', false)
+            ->assertDispatched('mary-toast');
+
+        $this->assertSoftDeleted('products', ['id' => $product->id]);
+    }
 }

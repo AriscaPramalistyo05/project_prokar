@@ -43,7 +43,7 @@ class ProductIndex extends Component
     public function confirmDelete($id)
     {
         $this->productIdToDelete = $id;
-        $this->js("document.getElementById('product-delete-modal').showModal()");
+        $this->showDeleteModal = true;
     }
 
     public function deleteProduct()
@@ -53,7 +53,7 @@ class ProductIndex extends Component
             $product->delete(); // performs soft delete
             $this->dispatch('mary-toast', type: 'success', title: 'Produk berhasil dinonaktifkan (soft delete)');
         }
-        $this->js("document.getElementById('product-delete-modal').close()");
+        $this->showDeleteModal = false;
         $this->productIdToDelete = null;
     }
 

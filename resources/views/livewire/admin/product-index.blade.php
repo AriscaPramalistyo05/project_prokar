@@ -162,13 +162,13 @@
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <x-modal id="product-delete-modal" title="Konfirmasi Penghapusan">
+    <x-modal wire:model="showDeleteModal" title="Konfirmasi Penghapusan">
         <div class="mb-4 text-sm text-gray-700">
             Apakah Anda yakin ingin menonaktifkan/menghapus produk ini? Produk yang dihapus akan disimpan sebagai soft-delete dan tidak akan tampil di katalog pembeli.
         </div>
         <x-slot:actions>
-            <x-button label="Batal" onclick="document.getElementById('product-delete-modal').close()" class="btn-ghost" />
-            <x-button label="Ya, Hapus" wire:click="deleteProduct" class="bg-red-600 text-white border-none hover:bg-red-700 font-medium" />
+            <x-button label="Batal" @click="$wire.showDeleteModal = false" class="btn-ghost" />
+            <x-button label="Ya, Hapus" wire:click="deleteProduct" class="bg-red-600 text-white border-none hover:bg-red-700 font-medium" spinner="deleteProduct" />
         </x-slot:actions>
     </x-modal>
 </div>
