@@ -15,14 +15,20 @@
         async init() {
             window.emsifaCache = window.emsifaCache || {};
             await this.loadProvinces();
+            if (!this.province) {
+                // Default ke Jawa Tengah (ID: 33) agar praktis bagi warga lokal
+                this.province = '33';
+                this.push('province', '33');
+            }
             if (this.province) await this.loadRegencies();
             if (this.regency) await this.loadDistricts();
             if (this.district) await this.loadVillages();
 
             this.$watch('$wire.province_id', (val) => {
                 if (!val) {
-                    this.province = ''; this.regency = ''; this.district = ''; this.village = ''; this.address_detail = '';
+                    this.province = '33'; this.regency = ''; this.district = ''; this.village = ''; this.address_detail = '';
                     this.regencies = []; this.districts = []; this.villages = [];
+                    this.loadRegencies();
                 }
             });
         },
@@ -62,12 +68,41 @@
         async loadProvinces() {
             const k = 'provinces';
             if (window.emsifaCache[k]) { this.provinces = window.emsifaCache[k]; return; }
-            try { const r = await fetch('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json'); if(r.ok){const d=await r.json(); window.emsifaCache[k]=d; this.provinces=d;} } catch(e){}
+            try { 
+                const r = await fetch('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json'); 
+                if(r.ok){
+                    const d = await r.json(); 
+                    window.emsifaCache[k] = d; 
+                    this.provinces = d;
+                } 
+            } catch(e){}
         },
         async loadRegencies() {
             const k = 'reg_'+this.province;
-            if (window.emsifaCache[k]) { this.regencies = window.emsifaCache[k]; return; }
-            try { const r = await fetch('https://www.emsifa.com/api-wilayah-indonesia/api/regencies/'+this.province+'.json'); if(r.ok){const d=await r.json(); window.emsifaCache[k]=d; this.regencies=d;} } catch(e){}
+            if (window.emsifaCache[k]) { 
+                this.filterAndSetRegencies(window.emsifaCache[k]); 
+                return; 
+            }
+            try { 
+                const r = await fetch('https://www.emsifa.com/api-wilayah-indonesia/api/regencies/'+this.province+'.json'); 
+                if(r.ok){
+                    const d = await r.json(); 
+                    window.emsifaCache[k] = d; 
+                    this.filterAndSetRegencies(d);
+                } 
+            } catch(e){}
+        },
+        filterAndSetRegencies(allRegencies) {
+            if (this.province === '33') {
+                // Prioritas area cakupan: Jepara, Kudus, Demak, Pati, Semarang, Grobogan, Rembang
+                const priorityIds = ['3320', '3319', '3321', '3318', '3374', '3322', '3315', '3317'];
+                const priorityList = allRegencies.filter(r => priorityIds.includes(r.id));
+                const otherList = allRegencies.filter(r => !priorityIds.includes(r.id));
+                // Urutkan prioritas di atas
+                this.regencies = [...priorityList, ...otherList];
+            } else {
+                this.regencies = allRegencies;
+            }
         },
         async loadDistricts() {
             const k = 'dis_'+this.regency;
