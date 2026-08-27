@@ -158,7 +158,7 @@ class CheckoutAddressForm extends Component
         $this->validate();
 
         $cartService = app(CartService::class);
-        $cartItems = $cartService->getItems();
+        $cartItems = $cartService->getCheckoutItems();
 
         if (empty($cartItems)) {
             $this->addError('cart', 'Keranjang belanja kosong. Silakan tambahkan produk terlebih dahulu.');
@@ -300,7 +300,7 @@ class CheckoutAddressForm extends Component
 
         // 6. Tangani Pembayaran Non-Midtrans (Cash di Kasir & COD)
         if (in_array($this->paymentOption, ['cash_store', 'cod'])) {
-            $cartService->clear();
+            $cartService->clearCheckout();
             if (!empty($order->customer_email)) {
                 Mail::to($order->customer_email)->send(new \App\Mail\OrderConfirmationMail($order));
             }
@@ -354,6 +354,9 @@ class CheckoutAddressForm extends Component
             $this->orderCode = $order->order_code;
             $this->submitted = true;
             session(['checkout_order_code' => $order->order_code]);
+
+            // Bersihkan checkout item dari keranjang/session saat order & token berhasil digenerate
+            $cartService->clearCheckout();
 
             $this->dispatch('pay-midtrans', [
                 'snap_token' => $this->snapToken,

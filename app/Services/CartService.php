@@ -153,6 +153,69 @@ class CartService
     }
 
     /**
+     * Get items specifically for checkout.
+     * If user clicked 'Beli Sekarang' (direct checkout), returns only that single product.
+     * Otherwise returns all items from regular cart.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function getCheckoutItems(): array
+    {
+        $direct = session('direct_checkout_item');
+        if (!empty($direct) && !empty($direct['product_id'])) {
+            $product = Product::with(['primaryImage', 'category'])->find($direct['product_id']);
+            if ($product && $product->status === 'available' && $product->stock > 0) {
+                $salePrice = $product->promo_price && $product->is_promo
+                    ? (int) $product->promo_price
+                    : (int) $product->price;
+
+                return [[
+                    'id'             => $product->id,
+                    'name'           => $product->name,
+                    'brand'          => $product->brand ?? '',
+                    'category'       => $product->category?->name ?? '',
+                    'image'          => $product->image_url,
+                    'unit_price'     => $salePrice,
+                    'original_price' => (int) $product->price,
+                    'on_sale'        => (bool) ($product->is_promo && $product->promo_price),
+                    'quantity'       => (int) ($direct['qty'] ?? 1),
+                    'stock'          => (int) $product->stock,
+                    'status'         => $product->status,
+                ]];
+            }
+            session()->forget('direct_checkout_item');
+        }
+
+        return $this->getItems();
+    }
+
+    /**
+     * Check if the current checkout is a direct buy-now checkout.
+     */
+    public function isDirectCheckout(): bool
+    {
+        return session()->has('direct_checkout_item');
+    }
+
+    /**
+     * Clear checkout items.
+     * If direct checkout, clears only the direct checkout session & item.
+     * If regular cart checkout, clears the entire cart (DB + session).
+     */
+    public function clearCheckout(): void
+    {
+        $direct = session('direct_checkout_item');
+        if (!empty($direct) && !empty($direct['product_id'])) {
+            $directId = (int) $direct['product_id'];
+            session()->forget('direct_checkout_item');
+            $this->removeItem($directId);
+            return;
+        }
+
+        $this->clear();
+    }
+
+    /**
      * Clear the entire cart from DB & session (after successful order/checkout).
      */
     public function clear(): void
@@ -162,6 +225,7 @@ class CartService
         }
 
         session()->forget(self::SESSION_KEY);
+        session()->forget('direct_checkout_item');
     }
 
     /**
@@ -179,7 +243,7 @@ class CartService
         if (!empty($sessionCart)) {
             foreach ($sessionCart as $productId => $data) {
                 $product = Product::find($productId);
-                if (!$product) {
+                if (!$product || $product->status !== 'available' || $product->stock < 1) {
                     continue;
                 }
 
@@ -225,6 +289,7 @@ class CartService
 
     /**
      * Helper to load items from DB when authenticated.
+     * Auto-prunes items if the product is no longer available or stock < 1.
      */
     protected function getItemsFromDatabase(): array
     {
@@ -235,7 +300,7 @@ class CartService
         $items = [];
         foreach ($dbItems as $dbItem) {
             $product = $dbItem->product;
-            if (!$product) {
+            if (!$product || $product->status !== 'available' || $product->stock < 1) {
                 $dbItem->delete();
                 continue;
             }
@@ -264,6 +329,7 @@ class CartService
 
     /**
      * Helper to load items from session when guest.
+     * Auto-prunes items if the product is no longer available or stock < 1.
      */
     protected function getItemsFromSession(): array
     {
@@ -282,7 +348,7 @@ class CartService
         $items = [];
         foreach ($cart as $productId => $cartData) {
             $product = $products->get($productId);
-            if (!$product) {
+            if (!$product || $product->status !== 'available' || $product->stock < 1) {
                 $this->removeItem($productId);
                 continue;
             }

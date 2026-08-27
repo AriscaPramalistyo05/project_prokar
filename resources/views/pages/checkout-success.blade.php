@@ -22,24 +22,60 @@
 
 @section('title', ($isPaid ? 'Pembayaran Berhasil' : ($isCashStore ? 'Menunggu Pembayaran (Bayar Tunai / Cash)' : 'Menunggu Pembayaran')) . ' - ' . $order->order_code . ' | Prokar Elektronik')
 @section('description', 'Status pembayaran pesanan ' . $order->order_code . ' di Prokar Elektronik.')
-@section('body_class', 'bg-[#F8FAFC]')
+@section('body_class', 'bg-brand-black font-inter')
+
+@push('styles')
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Public+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+  .reveal-wrapper { overflow: hidden; }
+  .reveal-line { display: inline-block; }
+  .btn-hover { transition: transform .15s ease, box-shadow .15s ease; }
+  .btn-hover:hover { transform: translate(-2px, -2px); }
+  .btn-hover:active { transform: translate(1px, 1px); }
+</style>
+@endpush
 
 @section('content')
-<main class="min-h-screen bg-[#F8FAFC] py-10 lg:py-16 text-gray-900">
+<main class="bg-brand-black flex flex-col min-h-screen">
+
+  <!-- ═════════════════════ SECTION 1: HERO HEADER (BLACK) ═════════════════════ -->
+  <section class="section-overlap section-overlap-first bg-brand-black pt-16 pb-24 md:pt-24 md:pb-32 z-10 relative text-center">
+    <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-4 text-xs font-public font-bold uppercase tracking-widest {{ $isPaid ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-amber-400/20 text-amber-300 border border-amber-400/40' }} reveal-fade">
+        <i class="fa-solid {{ $isPaid ? 'fa-circle-check' : 'fa-clock' }}"></i>
+        <span>{{ $isPaid ? ($order->payment_status === 'dp_paid' ? 'DP 50% Diterima' : 'Pembayaran Lunas') : ($isCashStore ? 'Bayar Tunai di Kasir' : ($isCod ? 'Bayar di Tempat (COD)' : 'Menunggu Pembayaran')) }}</span>
+      </div>
+
+      <h1 class="text-white text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tighter font-public mb-4 reveal-wrapper">
+        <span class="reveal-line">
+          {{ $isPaid ? ($order->payment_status === 'dp_paid' ? 'Uang Muka Diterima' : 'Pembayaran Berhasil') : ($isCashStore ? 'Siap Diambil di Toko' : ($isCod ? 'Pesanan COD Dikonfirmasi' : 'Menunggu Pembayaran')) }}
+        </span>
+      </h1>
+
+      <p class="text-gray-400 text-xs sm:text-sm md:text-base font-bold tracking-widest uppercase reveal-fade">
+        Nomor Pesanan: <span class="text-[#FFCC00]">{{ $order->order_code }}</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- ═════════════════════ SECTION 2: CONTENT & RECEIPT (OVERLAPPING SOFT) ═════════════════════ -->
+  <section class="section-overlap bg-brand-soft pt-12 pb-32 md:pt-16 md:pb-40 z-20 flex-grow text-gray-900 rounded-t-[2.5rem] md:rounded-t-[3.5rem] -mt-8 relative shadow-2xl">
     <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {{-- ══════════════════════════════════════════════════════════════════
              STATE 1: SUDAH LUNAS / PEMBAYARAN BERHASIL (PAID / DP PAID)
         ══════════════════════════════════════════════════════════════════ --}}
         @if ($isPaid)
-            <div class="bg-white border-4 border-[#0A0A0A] rounded-3xl shadow-[8px_8px_0px_#0A0A0A] p-6 sm:p-10 text-center animate-in fade-in">
+            <div class="bg-white border-4 border-[#0A0A0A] rounded-3xl shadow-[8px_8px_0px_#0A0A0A] p-6 sm:p-10 text-center reveal-fade">
                 <div class="w-20 h-20 mx-auto mb-6 bg-emerald-500 text-white rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/20">
                     <i class="fa-solid fa-circle-check text-4xl"></i>
                 </div>
 
-                <h1 class="font-public font-black text-2xl sm:text-4xl uppercase tracking-tight text-[#0A0A0A] mb-2">
+                <h2 class="font-public font-black text-2xl sm:text-3xl uppercase tracking-tight text-[#0A0A0A] mb-2">
                     {{ $order->payment_status === 'dp_paid' ? 'Uang Muka (DP 50%) Diterima!' : 'Pembayaran Berhasil!' }}
-                </h1>
+                </h2>
 
                 <p class="text-sm sm:text-base text-gray-600 font-inter max-w-md mx-auto mb-6">
                     {{ $order->payment_status === 'dp_paid'
@@ -130,9 +166,9 @@
 
                     <!-- Perforated Line -->
                     <div class="relative flex items-center h-5">
-                        <div class="absolute -left-3 w-6 h-6 rounded-full bg-[#F8FAFC] border border-gray-300 z-10 shadow-inner"></div>
+                        <div class="absolute -left-3 w-6 h-6 rounded-full bg-brand-soft border border-gray-300 z-10 shadow-inner"></div>
                         <div class="w-full" style="background-image: repeating-linear-gradient(to right, #e5e7eb 0, #e5e7eb 8px, transparent 8px, transparent 16px); height: 3px;"></div>
-                        <div class="absolute -right-3 w-6 h-6 rounded-full bg-[#F8FAFC] border border-gray-300 z-10 shadow-inner"></div>
+                        <div class="absolute -right-3 w-6 h-6 rounded-full bg-brand-soft border border-gray-300 z-10 shadow-inner"></div>
                     </div>
 
                     <!-- Barcode Area -->
@@ -151,11 +187,11 @@
                 {{-- Action Buttons --}}
                 <div class="flex flex-col sm:flex-row gap-3 justify-center mb-8">
                     <a href="{{ route('order.invoice.download', $order->order_code) }}" target="_blank"
-                        class="bg-black hover:bg-gray-900 text-[#FFCC00] font-public font-bold text-sm sm:text-base uppercase tracking-wider px-8 py-4 rounded-2xl transition-all shadow-md flex items-center justify-center gap-2">
+                        class="bg-black hover:bg-gray-900 text-[#FFCC00] font-public font-bold text-sm sm:text-base uppercase tracking-wider px-8 py-4 rounded-2xl transition-all shadow-md flex items-center justify-center gap-2 btn-hover">
                         <i class="fa-solid fa-download text-base"></i> Unduh / Cetak Invoice PDF
                     </a>
                     <a href="{{ route('home') }}"
-                        class="bg-white border-2 border-black text-black hover:bg-gray-100 font-public font-bold text-sm sm:text-base uppercase tracking-wider px-8 py-4 rounded-2xl transition-colors flex items-center justify-center gap-2">
+                        class="bg-white border-2 border-black text-black hover:bg-gray-100 font-public font-bold text-sm sm:text-base uppercase tracking-wider px-8 py-4 rounded-2xl transition-colors flex items-center justify-center gap-2 btn-hover">
                         <i class="fa-solid fa-house text-base"></i> Beranda
                     </a>
                 </div>
@@ -182,16 +218,16 @@
              STATE 2: MENUNGGU PEMBAYARAN (BAYAR DI KASIR TOKO / ONLINE PENDING)
         ══════════════════════════════════════════════════════════════════ --}}
         @else
-            <div class="bg-white border-4 border-[#0A0A0A] rounded-3xl shadow-[8px_8px_0px_#0A0A0A] p-6 sm:p-10 text-center animate-in fade-in">
+            <div class="bg-white border-4 border-[#0A0A0A] rounded-3xl shadow-[8px_8px_0px_#0A0A0A] p-6 sm:p-10 text-center reveal-fade">
                 
                 {{-- Header Icon Amber --}}
                 <div class="w-20 h-20 mx-auto mb-6 bg-amber-400 text-black rounded-full flex items-center justify-center shadow-lg shadow-amber-400/20">
                     <i class="fa-solid fa-hourglass-half text-3xl"></i>
                 </div>
 
-                <h1 class="font-public font-black text-2xl sm:text-3xl uppercase tracking-tight text-[#0A0A0A] mb-2">
+                <h2 class="font-public font-black text-2xl sm:text-3xl uppercase tracking-tight text-[#0A0A0A] mb-2">
                     {{ $isCashStore ? 'Menunggu Pembayaran (Bayar Tunai / Cash)' : ($isCod ? 'Pesanan COD Dikonfirmasi' : 'Menunggu Pembayaran') }}
-                </h1>
+                </h2>
 
                 <p class="text-sm sm:text-base text-gray-600 font-inter max-w-md mx-auto mb-6">
                     @if ($isCashStore)
@@ -321,18 +357,18 @@
                 <div class="flex flex-col sm:flex-row gap-3 justify-center mb-6">
                     @if ($isCashStore)
                         <a href="https://maps.google.com/?q=Prokar+Elektronik+Jepara" target="_blank"
-                           class="bg-black hover:bg-gray-900 text-[#FFCC00] font-public font-bold text-sm uppercase tracking-wider px-6 py-3.5 rounded-2xl transition-all shadow-sm flex items-center justify-center gap-2">
+                           class="bg-black hover:bg-gray-900 text-[#FFCC00] font-public font-bold text-sm uppercase tracking-wider px-6 py-3.5 rounded-2xl transition-all shadow-sm flex items-center justify-center gap-2 btn-hover">
                             <i class="fa-solid fa-map-location-dot"></i> Petunjuk Arah ke Toko
                         </a>
                     @endif
 
-                    <a href="https://wa.me/{{ setting('whatsapp_number') }}?text=Halo%20Admin%20Prokar,%20saya%20ingin%20konfirmasi%20pesanan%20nomor%20{{ $order->order_code }}" target="_blank"
-                       class="bg-emerald-600 hover:bg-emerald-700 text-white font-public font-bold text-sm uppercase tracking-wider px-6 py-3.5 rounded-2xl transition-colors flex items-center justify-center gap-2">
+                    <a href="https://wa.me/{{ setting('shop_whatsapp', '089504841279') }}?text=Halo%20Admin%20Prokar,%20saya%20ingin%20konfirmasi%20pesanan%20nomor%20{{ $order->order_code }}" target="_blank"
+                       class="bg-emerald-600 hover:bg-emerald-700 text-white font-public font-bold text-sm uppercase tracking-wider px-6 py-3.5 rounded-2xl transition-colors flex items-center justify-center gap-2 btn-hover">
                         <i class="fa-brands fa-whatsapp text-lg"></i> Hubungi WhatsApp Toko
                     </a>
 
                     <a href="{{ route('home') }}"
-                       class="bg-white border-2 border-black text-black hover:bg-gray-100 font-public font-bold text-sm uppercase tracking-wider px-6 py-3.5 rounded-2xl transition-colors flex items-center justify-center gap-2">
+                       class="bg-white border-2 border-black text-black hover:bg-gray-100 font-public font-bold text-sm uppercase tracking-wider px-6 py-3.5 rounded-2xl transition-colors flex items-center justify-center gap-2 btn-hover">
                         <i class="fa-solid fa-house"></i> Beranda
                     </a>
                 </div>
@@ -341,5 +377,61 @@
         @endif
 
     </div>
+  </section>
+
 </main>
 @endsection
+
+@push('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha384-g4NTh/Iv5PPU4xPyhEWqPcwtNXOvdaDI8LLnyYfyNZOjKJeYQyjzQ9X5275eBjpt" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha384-Z3REaz79l2IaAZqJsSABtTbhjgOUYyV3p90XNnAPCSHg3EMTz1fouunq9WZRtj3d" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js" integrity="sha384-0FwbSMlcCBgRZIAIN+i1xVrAbgrwSmKYej7zCCFlPpv50NGur87UfaeG1l13efmX" crossorigin="anonymous"></script>
+<script>
+  // Initialize Lenis
+  const lenis = new Lenis({
+    duration: 1.2,
+    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    direction: 'vertical',
+    smooth: true,
+  });
+
+  function raf(time) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+  }
+  requestAnimationFrame(raf);
+
+  // Sync GSAP with Lenis
+  gsap.registerPlugin(ScrollTrigger);
+  lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add((time) => { lenis.raf(time * 1000) });
+  gsap.ticker.lagSmoothing(0, 0);
+
+  /* --- CUBERTO OVERLAPPING SCROLL EFFECT --- */
+  const overlapSections = gsap.utils.toArray('.section-overlap');
+  overlapSections.forEach((section, index) => {
+    if (index === overlapSections.length - 1) return;
+    const nextSection = overlapSections[index + 1];
+    ScrollTrigger.create({
+      trigger: section,
+      start: () => section.offsetHeight > window.innerHeight ? "bottom bottom" : "top top",
+      endTrigger: nextSection,
+      end: () => nextSection ? (nextSection.offsetHeight > window.innerHeight ? "bottom bottom" : "top top") : "bottom top",
+      pin: true,
+      pinSpacing: false,
+      invalidateOnRefresh: true,
+    });
+  });
+
+  /* --- GSAP ANIMATIONS --- */
+  gsap.fromTo("section:first-of-type .reveal-line",
+    { y: "110%" },
+    { y: "0%", duration: 1.2, ease: "power4.out", delay: 0.2 }
+  );
+  
+  gsap.fromTo(".reveal-fade",
+    { y: 30, autoAlpha: 0 },
+    { y: 0, autoAlpha: 1, duration: 1, stagger: 0.15, ease: "power3.out", delay: 0.4 }
+  );
+</script>
+@endpush

@@ -9,6 +9,7 @@ class TrackService extends Component
 {
     public ServiceOrder $serviceOrder;
     public string $newTicketCode = '';
+    public ?string $errorMessage = null;
 
     public function mount($code)
     {
@@ -23,8 +24,16 @@ class TrackService extends Component
     public function searchTicket()
     {
         $val = strtoupper(trim($this->newTicketCode));
-        if (!empty($val)) {
+        if (empty($val)) {
+            $this->errorMessage = 'Silakan masukkan nomor tiket.';
+            return;
+        }
+
+        $order = ServiceOrder::where('service_code', $val)->first();
+        if ($order) {
             return redirect()->route('servis.track', ['code' => $val]);
+        } else {
+            $this->errorMessage = "Nomor tiket {$val} tidak ditemukan. Pastikan kode sudah sesuai.";
         }
     }
 

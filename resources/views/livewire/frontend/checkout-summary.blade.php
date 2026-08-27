@@ -360,8 +360,18 @@
                     </span>
                 </div>
             @endif
+
+            <div class="flex justify-between items-center pt-2 border-t border-[#FCFCFA]/15 font-public">
+                <span class="font-bold text-sm uppercase tracking-wide text-[#FCFCFA]/80">Total Tagihan</span>
+                <span class="font-mono font-bold text-base text-[#FFCC00]">
+                    {{ $this->formatRupiah($paymentOption === 'dp' ? $this->downPaymentAmount() : $this->total()) }}
+                </span>
+            </div>
         </div>
     </section>
+
+    {{-- Spacer bawah agar konten tidak tertutup sticky bottom bar di mobile --}}
+    <div class="h-28 lg:hidden" aria-hidden="true"></div>
 
     <!-- ===================== MOBILE: STICKY BOTTOM BAR ===================== -->
     <div class="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-[#0A0A0A] text-[#FCFCFA] border-t-4 border-[#FFCC00] rounded-t-3xl"

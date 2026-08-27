@@ -15,25 +15,44 @@
 <section class="section-overlap bg-brand-soft pt-16 pb-32 md:pt-24 md:pb-40 z-20 flex-grow flex flex-col items-center">
   <div class="max-w-3xl w-full mx-auto px-6 lg:px-12 text-center">
     
-    <!-- Form Pencarian -->
-    <div class="bg-white rounded-full p-2 md:p-3 flex flex-col sm:flex-row items-stretch sm:items-center shadow-card reveal-fade border border-gray-200 w-full relative z-30">
-      <div class="pl-4 md:pl-6 hidden sm:block">
-        <i class="fa-solid fa-magnifying-glass text-xl text-gray-400"></i>
+    <!-- Form Pencarian (Unified Design) -->
+    <div class="bg-white rounded-2xl sm:rounded-full p-2 sm:p-2.5 flex flex-col sm:flex-row items-stretch sm:items-center shadow-lg shadow-black/5 border-2 border-black/10 max-w-2xl mx-auto w-full relative z-30 transition-all focus-within:border-black focus-within:shadow-xl">
+      <div class="pl-4 hidden sm:flex items-center text-gray-400">
+        <i class="fa-solid fa-magnifying-glass text-lg"></i>
       </div>
-      <input type="text" placeholder="Masukkan Nomor Tiket"
-        wire:model="ticketNumber"
-        wire:keydown.enter="search"
-        class="min-w-0 w-full flex-1 border-none focus:ring-0 bg-transparent px-4 md:px-6 py-3 sm:py-2 text-black font-public font-bold text-base md:text-xl focus:outline-none uppercase placeholder-gray-400" />
+      <div class="relative flex-1 min-w-0 flex items-center">
+        <input type="text" 
+          placeholder="MASUKKAN NOMOR TIKET (CONTOH: SRV-2026...)"
+          wire:model="ticketNumber"
+          wire:keydown.enter="search"
+          class="w-full bg-gray-50 sm:bg-transparent rounded-xl sm:rounded-none px-4 py-3 sm:py-2 text-black font-public font-bold text-sm sm:text-base md:text-lg focus:outline-none uppercase placeholder:normal-case placeholder:text-gray-400 placeholder:font-medium tracking-wide" />
+        @if(!empty($ticketNumber))
+          <button type="button" wire:click="$set('ticketNumber', '')" class="absolute right-3 text-gray-400 hover:text-black transition-colors" title="Hapus">
+            <i class="fa-solid fa-circle-xmark text-base"></i>
+          </button>
+        @endif
+      </div>
       <button 
         wire:click="search"
         wire:loading.attr="disabled"
-        class="w-full sm:w-auto shrink-0 bg-black text-brand-yellow font-public font-bold text-sm md:text-base uppercase tracking-widest px-6 md:px-10 py-4 md:py-5 rounded-full hover:bg-gray-800 transition-colors btn-hover shadow-card">
-        Cek Status
+        class="shrink-0 bg-black text-[#FFCC00] font-public font-black text-xs sm:text-sm uppercase tracking-widest px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl sm:rounded-full hover:bg-neutral-900 transition-all active:scale-95 shadow-md flex items-center justify-center gap-2 cursor-pointer mt-1 sm:mt-0">
+        <span wire:loading.remove wire:target="search" class="flex items-center gap-2">
+          <i class="fa-solid fa-magnifying-glass text-xs sm:hidden"></i>
+          <span>Lacak Status</span>
+          <i class="fa-solid fa-arrow-right text-xs hidden sm:inline-block"></i>
+        </span>
+        <span wire:loading.inline-flex wire:target="search" class="items-center gap-2">
+          <i class="fa-solid fa-circle-notch fa-spin text-xs"></i>
+          <span>Mencari...</span>
+        </span>
       </button>
     </div>
 
     @if ($errorMessage)
-      <p class="text-sm text-red-600 font-inter mt-3 font-bold">{{ $errorMessage }}</p>
+      <div class="mt-4 inline-flex items-center gap-2 bg-red-50 border border-red-200 text-red-600 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold font-inter shadow-xs animate-in fade-in">
+        <i class="fa-solid fa-circle-exclamation text-red-500"></i>
+        <span>{{ $errorMessage }}</span>
+      </div>
     @endif
 
     <!-- Empty State Illustration -->

@@ -33,9 +33,12 @@ class CheckoutSummary extends Component
     public function mount(): void
     {
         $cartService = app(CartService::class);
-        $this->items = $cartService->getItems();
-        $this->subtotal = $cartService->subtotal();
-        $this->totalQty = $cartService->totalQty();
+        $this->items = $cartService->getCheckoutItems();
+        $this->subtotal = array_sum(array_map(
+            fn ($item) => (int) $item['unit_price'] * (int) $item['quantity'],
+            $this->items
+        ));
+        $this->totalQty = array_sum(array_column($this->items, 'quantity'));
 
         $this->hasSelectedAddress = false;
         $this->shippingFee = 0;
