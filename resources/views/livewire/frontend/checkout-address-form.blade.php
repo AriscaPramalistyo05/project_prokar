@@ -184,8 +184,8 @@
                 @endif
               </div>
               <div class="flex-1">
-                <span class="font-public font-bold text-sm text-[#0A0A0A] uppercase tracking-wide block">Bayar Tunai di Kasir Toko (Cash)</span>
-                <p class="text-xs text-[#0A0A0A]/60 font-inter mt-0.5">Lakukan pembayaran tunai langsung di meja kasir toko Prokar saat mengambil barang.</p>
+                <span class="font-public font-bold text-sm text-[#0A0A0A] uppercase tracking-wide block">Bayar Tunai / Cash (Di Toko)</span>
+                <p class="text-xs text-[#0A0A0A]/60 font-inter mt-0.5">Lakukan pembayaran tunai/cash langsung di meja kasir toko Prokar saat mengambil barang.</p>
               </div>
             </label>
 

@@ -258,7 +258,7 @@
 @endpush
 
 @section('content')
-
+<main class="bg-white text-gray-900 min-h-screen">
     {{-- ══════════════════════════════════════════════
      BREADCRUMB
 ══════════════════════════════════════════════ --}}
@@ -285,7 +285,8 @@
     {{-- ══════════════════════════════════════════════
      MAIN: GALERI + INFO (2 kolom di desktop)
 ══════════════════════════════════════════════ --}}
-    <div class="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-10 py-6 lg:py-10" itemscope itemtype="https://schema.org/Product">
+    <div class="bg-white">
+        <div class="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-10 py-6 lg:py-10" itemscope itemtype="https://schema.org/Product">
         <meta itemprop="name" content="{{ $product->name }}" />
         <meta itemprop="sku" content="{{ $product->id }}" />
         <meta itemprop="brand" content="{{ $product->brand ?? 'Prokar Elektronik' }}" />
@@ -599,6 +600,7 @@
         @endif
     </div>
 
+</main>
 @endsection
 
 @push('scripts')

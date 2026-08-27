@@ -189,7 +189,7 @@
                         Bayar DP ({{ $this->formatRupiah($this->downPaymentAmount()) }}) <i
                             class="fa-solid fa-arrow-right ml-1.5 text-xs"></i>
                     @elseif ($paymentOption === 'cash_store')
-                        Konfirmasi (Bayar di Kasir) <i class="fa-solid fa-check ml-1.5 text-xs"></i>
+                        Konfirmasi (Bayar Tunai / Cash) <i class="fa-solid fa-check ml-1.5 text-xs"></i>
                     @elseif ($paymentOption === 'cod')
                         Konfirmasi (Bayar COD) <i class="fa-solid fa-check ml-1.5 text-xs"></i>
                     @else
@@ -381,7 +381,7 @@
                     @if ($paymentOption === 'dp')
                         Bayar DP
                     @elseif ($paymentOption === 'cash_store')
-                        Bayar Kasir
+                        Tunai / Cash
                     @elseif ($paymentOption === 'cod')
                         Bayar COD
                     @else

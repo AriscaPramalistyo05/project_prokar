@@ -265,7 +265,7 @@
                     <span class="meta-label">Email:</span> <span class="meta-val">{{ $order->customer_email ?: '-' }}</span>
                 </td>
                 <td style="width: 50%; text-align: right;">
-                    <span class="meta-label">Metode:</span> <span class="meta-val">{{ strtoupper($order->payment_method ?? 'MIDTRANS') }}</span>
+                    <span class="meta-label">Metode:</span> <span class="meta-val">{{ app(\App\Services\MidtransService::class)->formatPaymentMethod($order->payment_method, $order->midtrans_response) }}</span>
                 </td>
             </tr>
         </table>

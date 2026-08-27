@@ -49,7 +49,13 @@ Route::get('/servis/garansi/{code}/download', function ($code) {
 })->name('servis.garansi.download');
 
 Route::get('/checkout/success/{orderCode}', function ($orderCode) {
-    $order = \App\Models\Order::where('order_code', $orderCode)->with('orderItems')->firstOrFail();
+    $order = \App\Models\Order::where('order_code', $orderCode)->with('orderItems.product')->firstOrFail();
+
+    // Auto-sync status transaksi langsung dari API Midtrans jika belum lunas
+    if (!in_array($order->payment_status, ['paid', 'dp_paid']) && in_array($order->payment_method, ['midtrans', 'midtrans_dp', 'qris', 'bank_transfer', 'gopay', 'shopeepay', 'cstore', 'echannel', 'credit_card'])) {
+        $midtransService = app(\App\Services\MidtransService::class);
+        $order = $midtransService->syncOrderStatus($order);
+    }
 
     // Store in session so user has access to invoice download
     session(['last_order_code' => $orderCode]);

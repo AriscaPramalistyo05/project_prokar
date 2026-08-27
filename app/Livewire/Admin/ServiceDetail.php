@@ -169,9 +169,18 @@ class ServiceDetail extends Component
         ]);
         $this->serviceOrder->refresh();
         
+        // Kirim email notifikasi estimasi biaya ke customer jika email tersedia
+        if (!empty($this->serviceOrder->customer_email)) {
+            try {
+                \Illuminate\Support\Facades\Mail::to($this->serviceOrder->customer_email)->send(new \App\Mail\ServiceEstimateMail($this->serviceOrder));
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error("Failed sending service estimate email: " . $e->getMessage());
+            }
+        }
+
         $this->logStatusChange('Teknisi mengirimkan hasil diagnosa dan estimasi harga.');
         $this->diagnose_modal = false;
-        $this->success('Estimasi berhasil dikirim ke Admin.');
+        $this->success('Estimasi berhasil dikirim ke Admin & Email Pelanggan.');
     }
 
     public function openFinalModal()
@@ -213,9 +222,18 @@ class ServiceDetail extends Component
         $this->serviceOrder->update($updates);
         $this->serviceOrder->refresh();
 
+        // Kirim email Garansi & Penyelesaian Servis ke customer jika email tersedia
+        if (!empty($this->serviceOrder->customer_email)) {
+            try {
+                \Illuminate\Support\Facades\Mail::to($this->serviceOrder->customer_email)->send(new \App\Mail\ServiceCompletedMail($this->serviceOrder));
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error("Failed sending service completed email: " . $e->getMessage());
+            }
+        }
+
         $this->logStatusChange($logNote);
         $this->final_modal = false;
-        $this->success('Servis berhasil diselesaikan!');
+        $this->success('Servis berhasil diselesaikan & Kartu Garansi terbit!');
     }
 
     public function markAsPaid(string $method = 'cash')
