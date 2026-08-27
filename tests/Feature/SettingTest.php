@@ -138,4 +138,29 @@ class SettingTest extends TestCase
             ->get(route('admin.settings'))
             ->assertForbidden();
     }
+
+    public function test_admin_can_upload_logo_and_favicon_and_update_settings(): void
+    {
+        \Illuminate\Support\Facades\Storage::fake('public');
+
+        $admin = $this->actingAsSuperAdmin();
+        $logoFile = \Illuminate\Http\UploadedFile::fake()->image('custom_logo.png', 300, 100);
+        $faviconFile = \Illuminate\Http\UploadedFile::fake()->image('custom_favicon.png', 32, 32);
+
+        Livewire::actingAs($admin)
+            ->test(SettingIndex::class)
+            ->set('logo_file', $logoFile)
+            ->set('favicon_file', $faviconFile)
+            ->call('save')
+            ->assertHasNoErrors();
+
+        $savedLogo = setting('shop_logo');
+        $savedFavicon = setting('shop_favicon');
+
+        $this->assertNotNull($savedLogo);
+        $this->assertNotNull($savedFavicon);
+
+        \Illuminate\Support\Facades\Storage::disk('public')->assertExists($savedLogo);
+        \Illuminate\Support\Facades\Storage::disk('public')->assertExists($savedFavicon);
+    }
 }

@@ -26,16 +26,23 @@
     </section>
 
     <!-- ===================== MOBILE: RINGKASAN (inline, di bawah list) ===================== -->
-    <section class="on-dark lg:hidden bg-[#0A0A0A] text-[#FCFCFA] mx-4 mb-6 p-6 flex flex-col gap-5 rounded-2xl">
-        <h2 class="font-public font-bold text-xl uppercase tracking-tight">Ringkasan Pesanan</h2>
+    <section class="on-dark lg:hidden bg-[#0A0A0A] text-[#FCFCFA] mx-4 my-6 p-6 flex flex-col gap-4 rounded-3xl border-2 border-black">
+        <h2 class="font-public font-bold text-xl uppercase tracking-tight text-[#FCFCFA]">Ringkasan Pesanan</h2>
 
-        <div class="flex flex-col gap-3 py-4 border-y-2 border-[#FCFCFA]/15 font-inter text-sm">
+        <div class="flex flex-col gap-3 py-3 border-y-2 border-[#FCFCFA]/15 font-inter text-sm">
             <div class="flex justify-between items-center">
                 <span class="text-[#FCFCFA]/60">Subtotal ({{ $totalQty }} barang)</span>
                 <span class="font-mono font-semibold">{{ $this->formatRupiah($subtotal) }}</span>
             </div>
+            <div class="flex justify-between items-center pt-2 border-t border-[#FCFCFA]/15 font-public">
+                <span class="font-bold text-sm uppercase tracking-wide text-[#FCFCFA]/80">Total Tagihan</span>
+                <span class="font-mono font-bold text-base text-[#FFCC00]">{{ $this->formatRupiah($subtotal) }}</span>
+            </div>
         </div>
     </section>
+
+    {{-- Spacer bawah agar konten tidak tertutup sticky bottom bar di mobile --}}
+    <div class="h-28 lg:hidden" aria-hidden="true"></div>
 
     <!-- ===================== MOBILE: STICKY BOTTOM BAR ===================== -->
     <div class="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-[#0A0A0A] text-[#FCFCFA] border-t-4 border-[#FFCC00] rounded-t-3xl"

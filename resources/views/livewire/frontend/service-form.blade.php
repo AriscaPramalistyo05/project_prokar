@@ -78,7 +78,7 @@
                                 class="block text-sm font-bold uppercase tracking-widest mb-2 text-gray-700 font-public">Nama
                                 Lengkap</label>
                             <input wire:model="nama" id="nama" type="text" placeholder="Masukkan nama Anda"
-                                class="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 text-base focus:bg-white focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all" />
+                                class="w-full bg-gray-50 border @error('nama') border-red-500 bg-red-50/20 @else border-gray-200 @enderror rounded-2xl p-4 text-base focus:bg-white focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all" />
                             @error('nama')
                                 <p class="text-red-600 text-xs mt-1 font-inter">{{ $message }}</p>
                             @enderror
@@ -88,7 +88,7 @@
                                 class="block text-sm font-bold uppercase tracking-widest mb-2 text-gray-700 font-public">Nomor
                                 WhatsApp</label>
                             <input wire:model="whatsapp" id="whatsapp" type="tel" placeholder="Contoh: 08123456789"
-                                class="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 text-base focus:bg-white focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all" />
+                                class="w-full bg-gray-50 border @error('whatsapp') border-red-500 bg-red-50/20 @else border-gray-200 @enderror rounded-2xl p-4 text-base focus:bg-white focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all" />
                             @error('whatsapp')
                                 <p class="text-red-600 text-xs mt-1 font-inter">{{ $message }}</p>
                             @enderror
@@ -100,7 +100,7 @@
                             class="block text-sm font-bold uppercase tracking-widest mb-2 text-gray-700 font-public">Alamat
                             Email</label>
                         <input wire:model="email" id="email" type="email" placeholder="email@contoh.com"
-                            class="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 text-base focus:bg-white focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all" />
+                            class="w-full bg-gray-50 border @error('email') border-red-500 bg-red-50/20 @else border-gray-200 @enderror rounded-2xl p-4 text-base focus:bg-white focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all" />
                         @error('email')
                             <p class="text-red-600 text-xs mt-1 font-inter">{{ $message }}</p>
                         @enderror
@@ -113,7 +113,7 @@
                                 Perangkat</label>
                             <div class="select-wrap">
                                 <select wire:model="kategori" id="kategori"
-                                    class="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 text-base focus:bg-white focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all cursor-pointer">
+                                    class="w-full bg-gray-50 border @error('kategori') border-red-500 bg-red-50/20 @else border-gray-200 @enderror rounded-2xl p-4 text-base focus:bg-white focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all cursor-pointer">
                                     <option value="">Pilih Kategori</option>
                                     @foreach ($categories as $cat)
                                         <option value="{{ $cat->id }}">{{ $cat->name }}</option>
@@ -130,7 +130,7 @@
                                 &amp; Tipe</label>
                             <input wire:model="merek" id="merek" type="text"
                                 placeholder="Contoh: LG Smart TV 43 Inch / Kulkas Sharp 2 Pintu"
-                                class="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 text-base focus:bg-white focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all" />
+                                class="w-full bg-gray-50 border @error('merek') border-red-500 bg-red-50/20 @else border-gray-200 @enderror rounded-2xl p-4 text-base focus:bg-white focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all" />
                             @error('merek')
                                 <p class="text-red-600 text-xs mt-1 font-inter">{{ $message }}</p>
                             @enderror
@@ -143,7 +143,7 @@
                             Keluhan</label>
                         <textarea wire:model="deskripsi" id="deskripsi" rows="4"
                             placeholder="Jelaskan masalah yang dialami secara spesifik (Contoh: Kulkas kurang dingin, TV mati total, dll)"
-                            class="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 text-base focus:bg-white focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all resize-none"></textarea>
+                            class="w-full bg-gray-50 border @error('deskripsi') border-red-500 bg-red-50/20 @else border-gray-200 @enderror rounded-2xl p-4 text-base focus:bg-white focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all resize-none"></textarea>
                         @error('deskripsi')
                             <p class="text-red-600 text-xs mt-1 font-inter">{{ $message }}</p>
                         @enderror

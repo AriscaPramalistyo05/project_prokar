@@ -91,7 +91,7 @@
             wire:model.defer="name"
             placeholder="Nama pemesan"
             required
-            class="block w-full border-2 border-[#0A0A0A]/15 focus:border-[#0A0A0A] bg-[#FCFCFA] rounded-xl px-4 py-3 text-base font-inter text-[#0A0A0A] outline-none transition-colors" />
+            class="block w-full border-2 @error('name') border-red-500 bg-red-50/20 @else border-[#0A0A0A]/15 @enderror focus:border-[#0A0A0A] bg-[#FCFCFA] rounded-xl px-4 py-3 text-base font-inter text-[#0A0A0A] outline-none transition-colors" />
           @error('name') <span class="text-xs text-[#D8342B] font-bold mt-1 block">{{ $message }}</span> @enderror
         </div>
 
@@ -106,7 +106,7 @@
                 wire:model.defer="phone"
                 placeholder="08xxxxxxxxxx"
                 required
-                class="block w-full border-2 border-[#0A0A0A]/15 focus:border-[#0A0A0A] bg-[#FCFCFA] rounded-xl pl-11 pr-4 py-3 text-base font-inter text-[#0A0A0A] outline-none transition-colors" />
+                class="block w-full border-2 @error('phone') border-red-500 bg-red-50/20 @else border-[#0A0A0A]/15 @enderror focus:border-[#0A0A0A] bg-[#FCFCFA] rounded-xl pl-11 pr-4 py-3 text-base font-inter text-[#0A0A0A] outline-none transition-colors" />
             </div>
             @error('phone') <span class="text-xs text-[#D8342B] font-bold mt-1 block">{{ $message }}</span> @enderror
           </div>
@@ -121,7 +121,7 @@
                 wire:model.defer="email"
                 placeholder="email@domain.com"
                 required
-                class="block w-full border-2 border-[#0A0A0A]/15 focus:border-[#0A0A0A] bg-[#FCFCFA] rounded-xl pl-11 pr-4 py-3 text-base font-inter text-[#0A0A0A] outline-none transition-colors" />
+                class="block w-full border-2 @error('email') border-red-500 bg-red-50/20 @else border-[#0A0A0A]/15 @enderror focus:border-[#0A0A0A] bg-[#FCFCFA] rounded-xl pl-11 pr-4 py-3 text-base font-inter text-[#0A0A0A] outline-none transition-colors" />
             </div>
             @error('email') <span class="text-xs text-[#D8342B] font-bold mt-1 block">{{ $message }}</span> @enderror
           </div>
@@ -246,7 +246,7 @@
   </div>
 
   <!-- Kembali -->
-  <div class="pt-7 mt-7 border-t-2 border-[#0A0A0A]/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+  <div class="pt-6 mt-8 border-t-2 border-[#0A0A0A]/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-4">
     <a href="{{ route('keranjang.index') }}" class="flex items-center gap-2 font-public font-bold text-xs uppercase tracking-wider text-[#0A0A0A]/70 hover:text-[#0A0A0A] transition-colors">
       <i class="fa-solid fa-arrow-left text-sm" aria-hidden="true"></i>
       Kembali ke Keranjang

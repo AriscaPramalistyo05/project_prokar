@@ -72,7 +72,7 @@
   </div>
 
   <!-- ===================== 2. Ringkasan Pesanan & Ongkir (Livewire) ===================== -->
-  <div class="w-full lg:w-2/5 lg:h-full bg-[#0A0A0A] flex flex-col justify-between">
+  <div class="w-full lg:w-2/5 lg:h-full bg-[#FCFCFA] lg:bg-[#0A0A0A] flex flex-col justify-between">
     <livewire:frontend.checkout-summary />
   </div>
 

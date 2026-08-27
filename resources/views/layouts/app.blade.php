@@ -142,6 +142,36 @@
       font-family: "Font Awesome 6 Brands" !important;
     }
 
+    /* ── Smart Guidance Form Error Highlighting ── */
+    @keyframes errorPulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.6);
+        border-color: #dc2626;
+      }
+      50% {
+        box-shadow: 0 0 0 6px rgba(220, 38, 38, 0.25);
+        border-color: #ef4444;
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+        border-color: #dc2626;
+      }
+    }
+    .error-pulse-highlight {
+      animation: errorPulse 1.2s ease-out 2;
+      border-color: #dc2626 !important;
+      background-color: #fffafb !important;
+    }
+    
+    @keyframes shakeMicro {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-4px); }
+      40%, 80% { transform: translateX(4px); }
+    }
+    .btn-shake-error {
+      animation: shakeMicro 0.4s ease-in-out;
+    }
+
     /* ── Navbar ── */
     .nav-link {
       position: relative;
@@ -451,7 +481,141 @@
   <x-search-modal />
   <x-notification-prompt />
 
+  <!-- Global Floating Form Error Toast (Smart Guidance Form) -->
+  <div id="form-error-toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[10000] max-w-md w-[92%] sm:w-auto bg-[#0A0A0A] text-white border-2 border-red-500 rounded-2xl px-5 py-3.5 shadow-2xl flex items-center gap-3 transition-all duration-300 transform translate-y-24 opacity-0 pointer-events-none">
+    <div class="w-8 h-8 rounded-full bg-red-500/20 border border-red-500 flex items-center justify-center text-red-400 shrink-0">
+      <i class="fa-solid fa-circle-exclamation text-sm"></i>
+    </div>
+    <div class="flex-1 min-w-0 pr-2">
+      <p class="font-public font-bold text-xs uppercase tracking-wider text-red-400" id="form-error-toast-title">Periksa Formulir</p>
+      <p class="text-xs text-gray-300 font-inter truncate" id="form-error-toast-msg">Mohon lengkapi kolom yang ditandai merah.</p>
+    </div>
+    <button type="button" onclick="hideFormErrorToast()" class="text-gray-400 hover:text-white text-sm cursor-pointer p-1">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>
+
   @stack('scripts')
+
+  {{-- Smart Guidance Form: Auto-Scroll ke Error Pertama + Instant Feedback --}}
+  <script>
+    let errorToastTimeout = null;
+    function showFormErrorToast(message = 'Mohon lengkapi kolom yang ditandai merah.') {
+      const toast = document.getElementById('form-error-toast');
+      if (!toast) return;
+      const msgEl = document.getElementById('form-error-toast-msg');
+      if (msgEl) msgEl.textContent = message;
+      
+      toast.classList.remove('translate-y-24', 'opacity-0', 'pointer-events-none');
+      toast.classList.add('translate-y-0', 'opacity-100', 'pointer-events-auto');
+
+      if (errorToastTimeout) clearTimeout(errorToastTimeout);
+      errorToastTimeout = setTimeout(() => {
+        hideFormErrorToast();
+      }, 4000);
+    }
+
+    function hideFormErrorToast() {
+      const toast = document.getElementById('form-error-toast');
+      if (!toast) return;
+      toast.classList.add('translate-y-24', 'opacity-0', 'pointer-events-none');
+      toast.classList.remove('translate-y-0', 'opacity-100', 'pointer-events-auto');
+    }
+
+    function handleSmartFormValidation(rootEl, errors = {}) {
+      if (!rootEl) return;
+
+      // 1. Haptic Feedback if mobile
+      if (window.navigator && window.navigator.vibrate) {
+        try { window.navigator.vibrate([40, 50, 40]); } catch(e) {}
+      }
+
+      // 2. Shake submit button in current form
+      const submitBtn = rootEl.querySelector('button[type="submit"], input[type="submit"]');
+      if (submitBtn) {
+        submitBtn.classList.remove('btn-shake-error');
+        void submitBtn.offsetWidth; // trigger reflow
+        submitBtn.classList.add('btn-shake-error');
+        setTimeout(() => submitBtn.classList.remove('btn-shake-error'), 500);
+      }
+
+      // 3. Show Toast Notice
+      showFormErrorToast();
+
+      // 4. Find first visible invalid element
+      let target = null;
+      const errorKeys = Object.keys(errors || {});
+      
+      for (const key of errorKeys) {
+        const input = rootEl.querySelector(`[wire\\:model="${key}"], [wire\\:model\\.defer="${key}"], [wire\\:model\\.live="${key}"], [wire\\:model\\.blur="${key}"], [name="${key}"], #${key}`);
+        if (input && input.offsetParent !== null) {
+          target = input;
+          break;
+        }
+      }
+
+      if (!target) {
+        const errorText = rootEl.querySelector('.text-red-600, .text-red-500, .text-\\[\\#D8342B\\], [aria-invalid="true"]');
+        if (errorText && errorText.offsetParent !== null) {
+          const parentContainer = errorText.closest('.grid, div');
+          const inputInParent = parentContainer ? parentContainer.querySelector('input, select, textarea') : null;
+          target = inputInParent || errorText;
+        }
+      }
+
+      if (!target) {
+        const errorBox = rootEl.querySelector('.bg-red-50');
+        if (errorBox && errorBox.offsetParent !== null) {
+          target = errorBox;
+        }
+      }
+
+      if (target) {
+        // 5. Calculate smooth offset (110px below sticky navbar)
+        const navbarOffset = 110;
+        const rect = target.getBoundingClientRect();
+        const absoluteTargetTop = rect.top + window.pageYOffset - navbarOffset;
+
+        if (window.lenis && typeof window.lenis.scrollTo === 'function') {
+          window.lenis.scrollTo(absoluteTargetTop, {
+            duration: 0.9,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+          });
+        } else {
+          window.scrollTo({
+            top: Math.max(0, absoluteTargetTop),
+            behavior: 'smooth'
+          });
+        }
+
+        // 6. Pulse highlight
+        target.classList.add('error-pulse-highlight');
+        setTimeout(() => {
+          target.classList.remove('error-pulse-highlight');
+        }, 2500);
+
+        // 7. Focus softly without keyboard jarring
+        setTimeout(() => {
+          if (typeof target.focus === 'function' && target.tagName !== 'DIV') {
+            try { target.focus({ preventScroll: true }); } catch(e) {}
+          }
+        }, 400);
+      }
+    }
+
+    document.addEventListener('livewire:init', () => {
+      Livewire.hook('commit', ({ component, commit, respond, succeed, fail }) => {
+        succeed(({ snapshot, effect }) => {
+          const errors = effect?.errors || {};
+          if (Object.keys(errors).length > 0) {
+            setTimeout(() => {
+              handleSmartFormValidation(component.el, errors);
+            }, 80);
+          }
+        });
+      });
+    });
+  </script>
 
   {{-- Firebase web config & SDK --}}
   <script id="firebase-config" type="application/json">
