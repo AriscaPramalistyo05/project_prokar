@@ -1,34 +1,27 @@
-{{-- Address Picker Partial - digunakan di dalam form Livewire --}}
+{{-- Address Picker Partial - digunakan di dalam form Livewire (Servis & Jual) --}}
 {{-- $wire di sini merujuk ke parent Livewire component (ServiceForm/SellForm) --}}
 <div
     wire:ignore
     x-data="{
-        province: '{{ $province_id ?? '' }}',
+        province: '33',
         regency: '{{ $regency_id ?? '' }}',
         district: '{{ $district_id ?? '' }}',
         village: '{{ $village_id ?? '' }}',
         address_detail: '{{ addslashes($address_detail ?? '') }}',
-        provinces: [],
         regencies: [],
         districts: [],
         villages: [],
         async init() {
             window.emsifaCache = window.emsifaCache || {};
-            await this.loadProvinces();
-            if (!this.province) {
-                // Default ke Jawa Tengah (ID: 33) agar praktis bagi warga lokal
-                this.province = '33';
-                this.push('province', '33');
-            }
-            if (this.province) await this.loadRegencies();
+            this.push('province', '33');
+            await this.loadRegencies();
             if (this.regency) await this.loadDistricts();
             if (this.district) await this.loadVillages();
 
             this.$watch('$wire.province_id', (val) => {
-                if (!val) {
-                    this.province = '33'; this.regency = ''; this.district = ''; this.village = ''; this.address_detail = '';
-                    this.regencies = []; this.districts = []; this.villages = [];
-                    this.loadRegencies();
+                if (!val || val !== '33') {
+                    this.province = '33';
+                    this.push('province', '33');
                 }
             });
         },
@@ -41,13 +34,6 @@
         },
         pushDetail() {
             $wire.set('address_detail', this.address_detail);
-        },
-        async onProvince() {
-            this.push('province', this.province);
-            this.regency = ''; this.district = ''; this.village = '';
-            this.regencies = []; this.districts = []; this.villages = [];
-            $wire.set('regency_id',''); $wire.set('district_id',''); $wire.set('village_id','');
-            if (this.province) await this.loadRegencies();
         },
         async onRegency() {
             this.push('regency', this.regency);
@@ -65,43 +51,36 @@
         onVillage() {
             this.push('village', this.village);
         },
-        async loadProvinces() {
-            const k = 'provinces';
-            if (window.emsifaCache[k]) { this.provinces = window.emsifaCache[k]; return; }
-            try { 
-                const r = await fetch('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json'); 
-                if(r.ok){
-                    const d = await r.json(); 
-                    window.emsifaCache[k] = d; 
-                    this.provinces = d;
-                } 
-            } catch(e){}
-        },
         async loadRegencies() {
-            const k = 'reg_'+this.province;
+            const k = 'reg_33_target';
             if (window.emsifaCache[k]) { 
-                this.filterAndSetRegencies(window.emsifaCache[k]); 
+                this.regencies = window.emsifaCache[k]; 
                 return; 
             }
             try { 
-                const r = await fetch('https://www.emsifa.com/api-wilayah-indonesia/api/regencies/'+this.province+'.json'); 
+                const r = await fetch('https://www.emsifa.com/api-wilayah-indonesia/api/regencies/33.json'); 
                 if(r.ok){
                     const d = await r.json(); 
-                    window.emsifaCache[k] = d; 
-                    this.filterAndSetRegencies(d);
+                    // 8 Wilayah Cakupan Prokar di Jawa Tengah
+                    const targetIds = ['3320', '3319', '3321', '3318', '3374', '3322', '3315', '3317'];
+                    const filtered = d.filter(item => targetIds.includes(item.id));
+                    // Urutkan dengan Jepara paling atas
+                    filtered.sort((a, b) => (a.id === '3320' ? -1 : (b.id === '3320' ? 1 : a.name.localeCompare(b.name))));
+                    window.emsifaCache[k] = filtered; 
+                    this.regencies = filtered;
                 } 
-            } catch(e){}
-        },
-        filterAndSetRegencies(allRegencies) {
-            if (this.province === '33') {
-                // Prioritas area cakupan: Jepara, Kudus, Demak, Pati, Semarang, Grobogan, Rembang
-                const priorityIds = ['3320', '3319', '3321', '3318', '3374', '3322', '3315', '3317'];
-                const priorityList = allRegencies.filter(r => priorityIds.includes(r.id));
-                const otherList = allRegencies.filter(r => !priorityIds.includes(r.id));
-                // Urutkan prioritas di atas
-                this.regencies = [...priorityList, ...otherList];
-            } else {
-                this.regencies = allRegencies;
+            } catch(e){
+                // Fallback static jika offline
+                this.regencies = [
+                    { id: '3320', name: 'KABUPATEN JEPARA' },
+                    { id: '3319', name: 'KABUPATEN KUDUS' },
+                    { id: '3321', name: 'KABUPATEN DEMAK' },
+                    { id: '3318', name: 'KABUPATEN PATI' },
+                    { id: '3374', name: 'KOTA SEMARANG' },
+                    { id: '3322', name: 'KABUPATEN SEMARANG' },
+                    { id: '3315', name: 'KABUPATEN GROBOGAN' },
+                    { id: '3317', name: 'KABUPATEN REMBANG' }
+                ];
             }
         },
         async loadDistricts() {
@@ -117,26 +96,11 @@
     }"
     class="space-y-4">
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div>
-            <label class="{{ $labelClass ?? '' }}">Provinsi <span class="text-red-500">*</span></label>
+            <label class="{{ $labelClass ?? '' }}">Kabupaten / Kota <span class="text-red-500">*</span></label>
             <div class="relative">
-                <select x-model="province" @change="onProvince()" class="{{ $inputClass ?? '' }} appearance-none bg-transparent cursor-pointer">
-                    <option value="">-- Pilih Provinsi --</option>
-                    <template x-for="p in provinces" :key="p.id">
-                        <option :value="p.id" x-text="p.name"></option>
-                    </template>
-                </select>
-                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                    <span class="material-symbols-outlined" aria-hidden="true">expand_more</span>
-                </div>
-            </div>
-        </div>
-
-        <div>
-            <label class="{{ $labelClass ?? '' }}">Kabupaten/Kota <span class="text-red-500">*</span></label>
-            <div class="relative">
-                <select x-model="regency" @change="onRegency()" :disabled="!province" class="{{ $inputClass ?? '' }} appearance-none bg-transparent disabled:opacity-50 cursor-pointer">
+                <select x-model="regency" @change="onRegency()" class="{{ $inputClass ?? '' }} appearance-none bg-transparent cursor-pointer">
                     <option value="">-- Pilih Kab/Kota --</option>
                     <template x-for="r in regencies" :key="r.id">
                         <option :value="r.id" x-text="r.name"></option>
@@ -164,7 +128,7 @@
         </div>
 
         <div>
-            <label class="{{ $labelClass ?? '' }}">Desa/Kelurahan <span class="text-red-500">*</span></label>
+            <label class="{{ $labelClass ?? '' }}">Desa / Kelurahan <span class="text-red-500">*</span></label>
             <div class="relative">
                 <select x-model="village" @change="onVillage()" :disabled="!district" class="{{ $inputClass ?? '' }} appearance-none bg-transparent disabled:opacity-50 cursor-pointer">
                     <option value="">-- Pilih Desa/Kelurahan --</option>
@@ -180,7 +144,7 @@
     </div>
 
     <div>
-        <label class="{{ $labelClass ?? '' }}">Detail Alamat (Jalan, RT/RW, Patokan) <span class="text-red-500">*</span></label>
-        <textarea x-model="address_detail" @input.debounce.500ms="pushDetail()" rows="3" class="{{ $inputClass ?? '' }}" placeholder="Contoh: Jl. Diponegoro No.10, RT 01/RW 02, Samping Masjid"></textarea>
+        <label class="{{ $labelClass ?? '' }}">Detail Alamat (Jalan, RT/RW, Patokan Rumah) <span class="text-red-500">*</span></label>
+        <textarea x-model="address_detail" @input.debounce.500ms="pushDetail()" rows="3" class="{{ $inputClass ?? '' }}" placeholder="Contoh: Jl. Karanggondang RT 04/RW 02, Samping Masjid Al-Hikmah"></textarea>
     </div>
 </div>
