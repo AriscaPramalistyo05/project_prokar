@@ -237,16 +237,12 @@
                         }
                         const messaging = firebase.messaging();
                         const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-                        await navigator.serviceWorker.ready;
-
-                        const vapid = (config.vapidKey || '').trim();
                         const token = await messaging.getToken({
-                            vapidKey: vapid,
+                            vapidKey: config.vapidKey,
                             serviceWorkerRegistration: registration
                         });
 
                         if (token) {
-                            localStorage.setItem('prokar_admin_fcm_token', token);
                             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
                             await fetch('/api/fcm/register', {
                                 method: 'POST',
@@ -259,8 +255,7 @@
                             });
 
                             window.dispatchEvent(new CustomEvent('fcm-permission-updated'));
-                            if (typeof Swal !== 'undefined' && !sessionStorage.getItem('fcm_welcomed')) {
-                                sessionStorage.setItem('fcm_welcomed', '1');
+                            if (typeof Swal !== 'undefined') {
                                 Swal.fire({
                                     title: 'Notifikasi Aktif!',
                                     text: 'Perangkat browser ini siap menerima notifikasi order, servis, dan pengajuan jual secara langsung.',
@@ -272,10 +267,7 @@
                         }
                     }
                 } catch (err) {
-                    // Suppress noisy push service errors on environments with restrictive push policies
-                    if (err?.name !== 'AbortError') {
-                        console.warn('FCM registration warning:', err?.message || err);
-                    }
+                    console.warn('FCM registration error:', err);
                 }
             }
         };
@@ -287,11 +279,8 @@
                     fcmBtn.classList.remove('hidden');
                     fcmBtn.classList.add('inline-flex');
                 } else if (Notification.permission === 'granted') {
-                    // Sync only if not already synced or on explicit request
-                    const token = localStorage.getItem('prokar_admin_fcm_token');
-                    if (!token) {
-                        window.requestAdminFcmPermission && window.requestAdminFcmPermission();
-                    }
+                    // Auto sync token in background
+                    window.requestAdminFcmPermission && window.requestAdminFcmPermission();
                 }
             }
         });

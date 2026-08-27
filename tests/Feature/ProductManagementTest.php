@@ -86,8 +86,7 @@ class ProductManagementTest extends TestCase
             ->assertSet('showDeleteModal', true)
             ->assertSet('productIdToDelete', $product->id)
             ->call('deleteProduct')
-            ->assertSet('showDeleteModal', false)
-            ->assertDispatched('mary-toast');
+            ->assertSet('showDeleteModal', false);
 
         $this->assertSoftDeleted('products', ['id' => $product->id]);
     }

@@ -6,10 +6,11 @@ use App\Models\Category;
 use App\Models\Product;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Mary\Traits\Toast;
 
 class ProductIndex extends Component
 {
-    use WithPagination;
+    use WithPagination, Toast;
 
     public $search = '';
     public $filterCategory = '';
@@ -51,7 +52,7 @@ class ProductIndex extends Component
         if ($this->productIdToDelete) {
             $product = Product::findOrFail($this->productIdToDelete);
             $product->delete(); // performs soft delete
-            $this->dispatch('mary-toast', type: 'success', title: 'Produk berhasil dinonaktifkan (soft delete)');
+            $this->success('Produk berhasil dinonaktifkan (soft delete)');
         }
         $this->showDeleteModal = false;
         $this->productIdToDelete = null;
