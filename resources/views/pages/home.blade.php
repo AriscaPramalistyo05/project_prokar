@@ -464,7 +464,7 @@
                                                     alt="{{ $product->name }}" loading="lazy" decoding="async"
                                                     onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&h=400&fit=crop'">
                                                 <span
-                                                    class="absolute top-4 left-4 bg-red-600 text-white text-xs font-black px-3 py-1.5 rounded-full uppercase">Promo</span>
+                                                    class="absolute top-4 left-4 z-20 bg-red-600 text-white text-xs font-black px-3 py-1.5 rounded-full uppercase shadow-xs pointer-events-none">Promo</span>
                                                 <button type="button"
                                                     onclick="event.preventDefault(); event.stopPropagation(); openCartModal(this.closest('.onsale-card'))"
                                                     class="absolute bottom-4 right-4 w-12 h-12 bg-black text-white rounded-full flex items-center justify-center hover:bg-brand-yellow hover:text-black transition-colors z-10 btn-hover">

@@ -35,7 +35,7 @@
                                 alt="{{ $p['name'] }}" loading="lazy"
                                 onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&q=80'">
                             @if ($p['on_sale'])
-                                <span class="absolute top-2.5 left-2.5 bg-red-600 text-white text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider shadow-xs">PROMO</span>
+                                <span class="absolute top-2.5 left-2.5 z-20 bg-red-600 text-white text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider shadow-xs pointer-events-none">PROMO</span>
                             @endif
                             <button type="button"
                                 onclick="event.preventDefault(); event.stopPropagation(); window.openCartModal({ id: {{ $p['id'] }}, name: '{{ addslashes($p['name']) }}', price: 'Rp {{ number_format($p['price'], 0, ',', '.') }}', img: '{{ $p['image'] }}', stock: {{ $p['stock'] ?? 10 }} })"

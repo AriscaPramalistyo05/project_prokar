@@ -299,12 +299,23 @@
 
                 {{-- Gambar Utama --}}
                 <div
-                    class="relative w-full aspect-square bg-[#f8fafc] rounded-2xl sm:rounded-3xl overflow-hidden border border-gray-200/80 shadow-xs flex flex-col justify-between group">
+                    class="relative w-full aspect-square bg-[#f8fafc] rounded-2xl sm:rounded-3xl overflow-hidden border border-gray-200/80 shadow-xs flex flex-col justify-between group cursor-zoom-in"
+                    onclick="openImageModal()"
+                    title="Klik untuk memperbesar & zoom foto">
 
                     @if ($product->is_promo)
                         <span
-                            class="absolute top-3.5 left-3.5 z-10 bg-red-600 text-white text-[11px] font-inter font-black px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">PROMO</span>
+                            class="absolute top-3.5 left-3.5 z-30 bg-red-600 text-white text-[11px] sm:text-xs font-inter font-black px-3.5 py-1.5 rounded-full uppercase tracking-wider shadow-md pointer-events-none flex items-center gap-1.5">
+                            <i class="fa-solid fa-fire text-amber-300 text-[10px]"></i>
+                            <span>PROMO</span>
+                        </span>
                     @endif
+
+                    {{-- Floating Zoom Badge Indicator --}}
+                    <div class="absolute bottom-11 right-3 z-20 bg-black/70 text-white text-[11px] font-semibold px-2.5 py-1 rounded-lg backdrop-blur-xs flex items-center gap-1.5 opacity-90 group-hover:opacity-100 transition-opacity shadow-sm pointer-events-none">
+                        <i class="fa-solid fa-magnifying-glass-plus text-amber-300 text-xs"></i>
+                        <span class="hidden sm:inline font-inter">Klik untuk Zoom</span>
+                    </div>
 
                     <div id="mainImageContainer"
                         class="relative flex-1 min-h-0 w-full flex items-center justify-center p-3 sm:p-5 overflow-hidden">
@@ -366,9 +377,9 @@
                         @foreach ($images as $index => $image)
                             <button role="tab" type="button" aria-selected="{{ $loop->first ? 'true' : 'false' }}"
                                 aria-label="Media {{ $loop->iteration }}"
-                                @if ($image->type === 'video') onclick="setMainVideo(this, '{{ $image->url }}')"
+                                @if ($image->type === 'video') onclick="setMainVideo(this, '{{ $image->url }}', {{ $index }})"
               @else
-                onclick="setMain(this, '{{ $image->url }}')" @endif
+                onclick="setMain(this, '{{ $image->url }}', {{ $index }})" @endif
                                 class="gallery-thumb {{ $loop->first ? 'thumb-active' : 'opacity-70 hover:opacity-100' }} aspect-square w-full rounded-xl sm:rounded-2xl overflow-hidden border-2 bg-white flex items-center justify-center p-1 sm:p-1.5 transition-all duration-200 cursor-pointer relative shadow-2xs hover:-translate-y-0.5">
                                 @if ($image->type === 'video')
                                     <div
@@ -548,7 +559,7 @@
                                     onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&q=80'">
                                 @if ($related->is_promo)
                                     <span
-                                        class="absolute top-2 left-2 bg-red-600 text-white text-[10px] font-inter font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">PROMO</span>
+                                        class="absolute top-2.5 left-2.5 z-20 bg-red-600 text-white text-[10px] font-inter font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs pointer-events-none">PROMO</span>
                                 @endif
                             </div>
                             <div class="p-4 flex flex-col flex-1">
@@ -600,11 +611,130 @@
         @endif
     </div>
 
+    {{-- ══════════════════════════════════════════════
+         FULLSCREEN IMAGE ZOOM LIGHTBOX (Shopee / Tokopedia Style)
+    ══════════════════════════════════════════════ --}}
+    @php
+        $galleryItems = [];
+        if ($product->productImages->isNotEmpty()) {
+            foreach ($product->productImages as $img) {
+                $galleryItems[] = [
+                    'type' => $img->type ?? 'image',
+                    'url' => $img->url,
+                ];
+            }
+        } else {
+            $galleryItems[] = [
+                'type' => 'image',
+                'url' => $product->image_url,
+            ];
+        }
+    @endphp
+
+    <div id="productImageModal" 
+         class="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md hidden flex flex-col justify-between select-none opacity-0 transition-opacity duration-200"
+         role="dialog" aria-modal="true" aria-label="Zoom Gambar Produk">
+
+        {{-- Top Header Bar --}}
+        <div class="px-4 sm:px-6 py-3.5 flex items-center justify-between text-white border-b border-white/10 z-30 shrink-0 bg-black/40">
+            <div class="flex items-center gap-3 min-w-0">
+                <span id="modalCounter" class="px-2.5 py-1 rounded-full bg-white/15 text-xs font-bold font-inter tracking-wider shrink-0">
+                    1 / {{ count($galleryItems) }}
+                </span>
+                <h3 class="text-xs sm:text-sm font-semibold text-white/90 truncate max-w-[180px] sm:max-w-md">
+                    {{ $product->name }}
+                </h3>
+            </div>
+
+            <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                {{-- Zoom Out Button --}}
+                <button type="button" id="btnZoomOut" onclick="zoomModalImage(-0.3)" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/10 hover:bg-white/25 flex items-center justify-center text-white text-xs sm:text-sm transition-all cursor-pointer" title="Perkecil (-)">
+                    <i class="fa-solid fa-magnifying-glass-minus"></i>
+                </button>
+                {{-- Zoom Reset Button --}}
+                <button type="button" id="btnZoomReset" onclick="resetModalZoom()" class="px-2 sm:px-2.5 h-8 sm:h-9 rounded-full bg-white/10 hover:bg-white/25 flex items-center justify-center text-white text-[11px] sm:text-xs font-bold transition-all cursor-pointer" title="Reset Ukuran (100%)">
+                    <span id="zoomPercentLabel">100%</span>
+                </button>
+                {{-- Zoom In Button --}}
+                <button type="button" id="btnZoomIn" onclick="zoomModalImage(0.3)" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/10 hover:bg-white/25 flex items-center justify-center text-white text-xs sm:text-sm transition-all cursor-pointer" title="Perbesar (+)">
+                    <i class="fa-solid fa-magnifying-glass-plus"></i>
+                </button>
+                <div class="h-4 w-px bg-white/20 mx-1"></div>
+                {{-- Close Button --}}
+                <button type="button" onclick="closeImageModal()" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/15 hover:bg-red-600 flex items-center justify-center text-white text-sm sm:text-base transition-all cursor-pointer" title="Tutup (Esc)">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+
+        {{-- Main Viewport (Image with Drag / Zoom / Pan) --}}
+        <div id="modalViewport" class="relative flex-1 min-h-0 w-full flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing p-2 sm:p-6">
+            {{-- Previous Button --}}
+            @if(count($galleryItems) > 1)
+            <button type="button" onclick="prevModalImage()" class="absolute left-3 sm:left-6 z-30 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/60 hover:bg-white text-white hover:text-black border border-white/20 flex items-center justify-center transition-all shadow-xl cursor-pointer" title="Foto Sebelumnya (Panah Kiri)">
+                <i class="fa-solid fa-chevron-left text-sm sm:text-base"></i>
+            </button>
+            @endif
+
+            {{-- Image / Video Stage --}}
+            <div id="modalMediaStage" class="w-full h-full flex items-center justify-center">
+                <img id="modalImgElement" src="" alt="{{ $product->name }}" class="max-w-full max-h-full object-contain transition-transform duration-100 ease-out select-none shadow-2xl pointer-events-none" draggable="false" />
+                <video id="modalVideoElement" class="max-w-full max-h-full object-contain rounded-xl hidden" controls playsinline></video>
+            </div>
+
+            {{-- Next Button --}}
+            @if(count($galleryItems) > 1)
+            <button type="button" onclick="nextModalImage()" class="absolute right-3 sm:right-6 z-30 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/60 hover:bg-white text-white hover:text-black border border-white/20 flex items-center justify-center transition-all shadow-xl cursor-pointer" title="Foto Selanjutnya (Panah Kanan)">
+                <i class="fa-solid fa-chevron-right text-sm sm:text-base"></i>
+            </button>
+            @endif
+
+            {{-- Mobile / Desktop Hint --}}
+            <div class="absolute bottom-2.5 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-xs text-white/80 text-[10px] sm:text-[11px] px-3 py-1 rounded-full pointer-events-none z-20 border border-white/10 flex items-center gap-1.5">
+                <i class="fa-solid fa-hand-pointer text-amber-300"></i>
+                <span>Dobel klik untuk zoom • Geser mouse/sentuh untuk navigasi</span>
+            </div>
+        </div>
+
+        {{-- Bottom Thumbnail Strip --}}
+        @if(count($galleryItems) > 1)
+        <div id="modalThumbStrip" class="px-4 py-2.5 bg-black/60 border-t border-white/10 flex items-center justify-center gap-2 sm:gap-3 overflow-x-auto z-30 shrink-0">
+            @foreach($galleryItems as $idx => $item)
+                <button type="button" 
+                        onclick="goToModalMedia({{ $idx }})"
+                        data-modal-thumb="{{ $idx }}"
+                        class="modal-thumb-btn w-11 h-11 sm:w-13 sm:h-13 rounded-lg overflow-hidden border-2 transition-all p-0.5 bg-black/50 shrink-0 cursor-pointer {{ $idx === 0 ? 'border-amber-400 scale-105 opacity-100' : 'border-white/20 opacity-60 hover:opacity-100' }}"
+                        title="Foto {{ $idx + 1 }}">
+                    @if($item['type'] === 'video')
+                        <div class="w-full h-full bg-gray-900 flex items-center justify-center text-white text-[10px]">
+                            <i class="fa-solid fa-play"></i>
+                        </div>
+                    @else
+                        <img src="{{ $item['url'] }}" alt="Thumb {{ $idx + 1 }}" class="w-full h-full object-contain rounded-md" />
+                    @endif
+                </button>
+            @endforeach
+        </div>
+        @endif
+    </div>
+
 </main>
 @endsection
 
 @push('scripts')
     <script>
+        /* ─── GALLERY & LIGHTBOX ZOOM STATE ─── */
+        const productGallery = @json($galleryItems);
+        let activeMediaIndex = 0;
+        let zoomScale = 1.0;
+        let panX = 0;
+        let panY = 0;
+        let isDragging = false;
+        let startDragX = 0;
+        let startDragY = 0;
+        let lastTapTime = 0;
+        let isModalOpen = false;
+
         /* ─── THUMBNAIL SWITCHER (Smooth Skeleton & Fade-In) ─── */
         function cleanupExistingVideo(container) {
             const existingVideo = container.querySelector('video');
@@ -617,17 +747,16 @@
             }
         }
 
-        window.setMain = function(thumbEl, src) {
+        window.setMain = function(thumbEl, src, index = 0) {
+            activeMediaIndex = index;
             const container = document.getElementById('mainImageContainer');
             const skeleton = document.getElementById('mainSkeleton');
             if (!container) return;
 
             cleanupExistingVideo(container);
 
-            // Show skeleton while loading new image
             if (skeleton) skeleton.classList.remove('hidden');
 
-            // Preload image in memory first to prevent progressive line rendering
             const imgPreloader = new Image();
             imgPreloader.src = src;
 
@@ -638,7 +767,7 @@
           <i class="fa-solid fa-image text-gray-300 text-3xl animate-bounce"></i>
         </div>
         <img id="mainImage" src="${src}" 
-          class="w-full h-full object-contain max-h-full max-w-full transition-all duration-300 group-hover:scale-105 relative z-10 opacity-0" 
+          class="w-full h-full object-contain max-h-full max-w-full transition-all duration-300 group-hover:scale-105 relative z-10 opacity-0 pointer-events-none" 
           alt="{{ $product->name }}" itemprop="image" loading="eager" decoding="async"
           onload="this.classList.remove('opacity-0');"
           onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=800&q=80'; this.classList.remove('opacity-0');" />`;
@@ -661,12 +790,15 @@
                 el.classList.add('opacity-70');
                 el.setAttribute('aria-selected', 'false');
             });
-            thumbEl.classList.add('thumb-active');
-            thumbEl.classList.remove('opacity-70');
-            thumbEl.setAttribute('aria-selected', 'true');
+            if (thumbEl) {
+                thumbEl.classList.add('thumb-active');
+                thumbEl.classList.remove('opacity-70');
+                thumbEl.setAttribute('aria-selected', 'true');
+            }
         };
 
-        window.setMainVideo = function(thumbEl, src) {
+        window.setMainVideo = function(thumbEl, src, index = 0) {
+            activeMediaIndex = index;
             const container = document.getElementById('mainImageContainer');
             if (!container) return;
 
@@ -690,9 +822,261 @@
                 el.classList.add('opacity-70');
                 el.setAttribute('aria-selected', 'false');
             });
-            thumbEl.classList.add('thumb-active');
-            thumbEl.classList.remove('opacity-70');
-            thumbEl.setAttribute('aria-selected', 'true');
+            if (thumbEl) {
+                thumbEl.classList.add('thumb-active');
+                thumbEl.classList.remove('opacity-70');
+                thumbEl.setAttribute('aria-selected', 'true');
+            }
         };
+
+        /* ─── FULLSCREEN LIGHTBOX ZOOM CONTROLLER (Shopee / Tokopedia Style) ─── */
+        window.openImageModal = function(index = null) {
+            if (index !== null) {
+                activeMediaIndex = index;
+            }
+            const modal = document.getElementById('productImageModal');
+            if (!modal) return;
+
+            isModalOpen = true;
+            modal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+            }, 10);
+
+            resetModalZoom();
+            renderModalMedia();
+        };
+
+        window.closeImageModal = function() {
+            const modal = document.getElementById('productImageModal');
+            if (!modal) return;
+
+            isModalOpen = false;
+            modal.classList.add('opacity-0');
+            document.body.classList.remove('overflow-hidden');
+
+            const modalVid = document.getElementById('modalVideoElement');
+            if (modalVid) {
+                try { modalVid.pause(); } catch(e) {}
+            }
+
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 200);
+
+            // Sync back to page gallery
+            const thumbs = document.querySelectorAll('.gallery-thumb');
+            if (thumbs[activeMediaIndex]) {
+                thumbs[activeMediaIndex].click();
+            }
+        };
+
+        function renderModalMedia() {
+            if (!productGallery || productGallery.length === 0) return;
+            const item = productGallery[activeMediaIndex];
+            if (!item) return;
+
+            const modalImg = document.getElementById('modalImgElement');
+            const modalVid = document.getElementById('modalVideoElement');
+            const counter = document.getElementById('modalCounter');
+
+            if (counter) {
+                counter.innerText = `${activeMediaIndex + 1} / ${productGallery.length}`;
+            }
+
+            resetModalZoom();
+
+            if (item.type === 'video') {
+                if (modalImg) modalImg.classList.add('hidden');
+                if (modalVid) {
+                    modalVid.classList.remove('hidden');
+                    modalVid.src = item.url;
+                    modalVid.play().catch(() => {});
+                }
+            } else {
+                if (modalVid) {
+                    try { modalVid.pause(); } catch(e) {}
+                    modalVid.classList.add('hidden');
+                }
+                if (modalImg) {
+                    modalImg.classList.remove('hidden');
+                    modalImg.src = item.url;
+                }
+            }
+
+            // Update modal thumbnails
+            document.querySelectorAll('.modal-thumb-btn').forEach((btn, idx) => {
+                if (idx === activeMediaIndex) {
+                    btn.classList.add('border-amber-400', 'scale-105', 'opacity-100');
+                    btn.classList.remove('border-white/20', 'opacity-60');
+                } else {
+                    btn.classList.remove('border-amber-400', 'scale-105', 'opacity-100');
+                    btn.classList.add('border-white/20', 'opacity-60');
+                }
+            });
+        }
+
+        window.prevModalImage = function() {
+            if (activeMediaIndex > 0) {
+                activeMediaIndex--;
+            } else {
+                activeMediaIndex = productGallery.length - 1;
+            }
+            renderModalMedia();
+        };
+
+        window.nextModalImage = function() {
+            if (activeMediaIndex < productGallery.length - 1) {
+                activeMediaIndex++;
+            } else {
+                activeMediaIndex = 0;
+            }
+            renderModalMedia();
+        };
+
+        window.goToModalMedia = function(idx) {
+            activeMediaIndex = idx;
+            renderModalMedia();
+        };
+
+        window.zoomModalImage = function(delta) {
+            const item = productGallery[activeMediaIndex];
+            if (item && item.type === 'video') return; // Do not zoom video
+
+            zoomScale = Math.min(Math.max(zoomScale + delta, 1.0), 3.5);
+            if (zoomScale <= 1.0) {
+                panX = 0;
+                panY = 0;
+            }
+            applyModalTransform();
+        };
+
+        window.resetModalZoom = function() {
+            zoomScale = 1.0;
+            panX = 0;
+            panY = 0;
+            applyModalTransform();
+        };
+
+        function applyModalTransform() {
+            const modalImg = document.getElementById('modalImgElement');
+            const zoomLabel = document.getElementById('zoomPercentLabel');
+            if (modalImg) {
+                modalImg.style.transform = `translate3d(${panX}px, ${panY}px, 0px) scale(${zoomScale})`;
+            }
+            if (zoomLabel) {
+                zoomLabel.innerText = Math.round(zoomScale * 100) + '%';
+            }
+        }
+
+        // Viewport Drag & Pan Events
+        const viewport = document.getElementById('modalViewport');
+        if (viewport) {
+            // Mouse Wheel Zoom
+            viewport.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const delta = e.deltaY < 0 ? 0.25 : -0.25;
+                zoomModalImage(delta);
+            }, { passive: false });
+
+            // Mouse Drag Pan
+            viewport.addEventListener('mousedown', (e) => {
+                if (e.target.closest('button')) return;
+                isDragging = true;
+                startDragX = e.clientX - panX;
+                startDragY = e.clientY - panY;
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                if (zoomScale > 1.0) {
+                    panX = e.clientX - startDragX;
+                    panY = e.clientY - startDragY;
+                    applyModalTransform();
+                }
+            });
+
+            window.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+
+            // Double Click / Double Tap to Toggle Zoom
+            viewport.addEventListener('click', (e) => {
+                if (e.target.closest('button')) return;
+                const now = Date.now();
+                if (now - lastTapTime < 300) {
+                    // Double Click detected!
+                    if (zoomScale > 1.0) {
+                        resetModalZoom();
+                    } else {
+                        zoomScale = 2.2;
+                        panX = 0;
+                        panY = 0;
+                        applyModalTransform();
+                    }
+                }
+                lastTapTime = now;
+            });
+
+            // Touch Drag / Pinch
+            let touchStartX = 0;
+            let touchStartY = 0;
+            let initialDistance = 0;
+
+            viewport.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 1) {
+                    isDragging = true;
+                    touchStartX = e.touches[0].clientX - panX;
+                    touchStartY = e.touches[0].clientY - panY;
+                } else if (e.touches.length === 2) {
+                    isDragging = false;
+                    initialDistance = Math.hypot(
+                        e.touches[0].clientX - e.touches[1].clientX,
+                        e.touches[0].clientY - e.touches[1].clientY
+                    );
+                }
+            }, { passive: true });
+
+            viewport.addEventListener('touchmove', (e) => {
+                if (e.touches.length === 1 && isDragging && zoomScale > 1.0) {
+                    panX = e.touches[0].clientX - touchStartX;
+                    panY = e.touches[0].clientY - touchStartY;
+                    applyModalTransform();
+                } else if (e.touches.length === 2 && initialDistance > 0) {
+                    const currentDistance = Math.hypot(
+                        e.touches[0].clientX - e.touches[1].clientX,
+                        e.touches[0].clientY - e.touches[1].clientY
+                    );
+                    const diff = (currentDistance - initialDistance) / 200;
+                    zoomScale = Math.min(Math.max(zoomScale + diff, 1.0), 3.5);
+                    applyModalTransform();
+                }
+            }, { passive: true });
+
+            viewport.addEventListener('touchend', () => {
+                isDragging = false;
+                initialDistance = 0;
+            });
+        }
+
+        // Keyboard Shortcuts
+        window.addEventListener('keydown', (e) => {
+            if (!isModalOpen) return;
+            if (e.key === 'Escape') {
+                closeImageModal();
+            } else if (e.key === 'ArrowLeft') {
+                prevModalImage();
+            } else if (e.key === 'ArrowRight') {
+                nextModalImage();
+            } else if (e.key === '+' || e.key === '=') {
+                zoomModalImage(0.3);
+            } else if (e.key === '-') {
+                zoomModalImage(-0.3);
+            } else if (e.key === '0') {
+                resetModalZoom();
+            }
+        });
     </script>
 @endpush
+
