@@ -612,7 +612,7 @@
     </div>
 
     {{-- ══════════════════════════════════════════════
-         FULLSCREEN IMAGE ZOOM LIGHTBOX (Shopee / Tokopedia Style)
+         FULLSCREEN SHOPEE-STYLE PRODUCT MEDIA VIEWER
     ══════════════════════════════════════════════ --}}
     @php
         $galleryItems = [];
@@ -632,90 +632,105 @@
     @endphp
 
     <div id="productImageModal" 
-         class="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md hidden flex flex-col justify-between select-none opacity-0 transition-opacity duration-200"
-         role="dialog" aria-modal="true" aria-label="Zoom Gambar Produk">
+         class="fixed inset-0 z-[100] bg-black text-white hidden flex flex-col justify-between select-none opacity-0 transition-opacity duration-200"
+         role="dialog" aria-modal="true" aria-label="Lihat Gambar Produk">
 
-        {{-- Top Header Bar --}}
-        <div class="px-4 sm:px-6 py-3.5 flex items-center justify-between text-white border-b border-white/10 z-30 shrink-0 bg-black/40">
-            <div class="flex items-center gap-3 min-w-0">
-                <span id="modalCounter" class="px-2.5 py-1 rounded-full bg-white/15 text-xs font-bold font-inter tracking-wider shrink-0">
+        {{-- Top Bar (Shopee Style: Back Icon Button & Counter) --}}
+        <div class="absolute top-0 left-0 right-0 z-40 px-4 sm:px-6 py-4 flex items-center justify-between pointer-events-auto bg-gradient-to-b from-black/80 via-black/40 to-transparent">
+            {{-- Tombol Back Icon --}}
+            <button type="button" 
+                    onclick="closeImageModal()" 
+                    class="w-10 h-10 rounded-full bg-black/40 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white text-lg transition-all cursor-pointer border border-white/10" 
+                    title="Kembali">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+
+            {{-- Counter (Shopee Badge Style e.g. 1/4) --}}
+            <div class="flex items-center gap-2">
+                <span id="modalCounter" class="px-3 py-1 rounded-full bg-black/60 border border-white/15 text-xs sm:text-sm font-medium font-inter tracking-wider text-white">
                     1 / {{ count($galleryItems) }}
                 </span>
-                <h3 class="text-xs sm:text-sm font-semibold text-white/90 truncate max-w-[180px] sm:max-w-md">
-                    {{ $product->name }}
-                </h3>
-            </div>
-
-            <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-                {{-- Zoom Out Button --}}
-                <button type="button" id="btnZoomOut" onclick="zoomModalImage(-0.3)" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/10 hover:bg-white/25 flex items-center justify-center text-white text-xs sm:text-sm transition-all cursor-pointer" title="Perkecil (-)">
-                    <i class="fa-solid fa-magnifying-glass-minus"></i>
-                </button>
-                {{-- Zoom Reset Button --}}
-                <button type="button" id="btnZoomReset" onclick="resetModalZoom()" class="px-2 sm:px-2.5 h-8 sm:h-9 rounded-full bg-white/10 hover:bg-white/25 flex items-center justify-center text-white text-[11px] sm:text-xs font-bold transition-all cursor-pointer" title="Reset Ukuran (100%)">
-                    <span id="zoomPercentLabel">100%</span>
-                </button>
-                {{-- Zoom In Button --}}
-                <button type="button" id="btnZoomIn" onclick="zoomModalImage(0.3)" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/10 hover:bg-white/25 flex items-center justify-center text-white text-xs sm:text-sm transition-all cursor-pointer" title="Perbesar (+)">
-                    <i class="fa-solid fa-magnifying-glass-plus"></i>
-                </button>
-                <div class="h-4 w-px bg-white/20 mx-1"></div>
-                {{-- Close Button --}}
-                <button type="button" onclick="closeImageModal()" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/15 hover:bg-red-600 flex items-center justify-center text-white text-sm sm:text-base transition-all cursor-pointer" title="Tutup (Esc)">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
             </div>
         </div>
 
-        {{-- Main Viewport (Image with Drag / Zoom / Pan) --}}
-        <div id="modalViewport" class="relative flex-1 min-h-0 w-full flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing p-2 sm:p-6">
-            {{-- Previous Button --}}
+        {{-- Center Viewport (Image / Video with Natural Black Letterbox Bars) --}}
+        <div id="modalViewport" class="relative flex-1 w-full h-full flex items-center justify-center overflow-hidden touch-pan-y">
+            {{-- Desktop Only: Previous Button --}}
             @if(count($galleryItems) > 1)
-            <button type="button" onclick="prevModalImage()" class="absolute left-3 sm:left-6 z-30 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/60 hover:bg-white text-white hover:text-black border border-white/20 flex items-center justify-center transition-all shadow-xl cursor-pointer" title="Foto Sebelumnya (Panah Kiri)">
-                <i class="fa-solid fa-chevron-left text-sm sm:text-base"></i>
+            <button type="button" 
+                    onclick="prevModalImage()" 
+                    class="hidden md:flex absolute left-4 lg:left-8 z-30 w-11 h-11 lg:w-12 lg:h-12 rounded-full bg-black/60 hover:bg-white text-white hover:text-black border border-white/20 items-center justify-center transition-all shadow-2xl cursor-pointer active:scale-95" 
+                    title="Sebelumnya (Panah Kiri)">
+                <i class="fa-solid fa-chevron-left text-base lg:text-lg"></i>
             </button>
             @endif
 
-            {{-- Image / Video Stage --}}
-            <div id="modalMediaStage" class="w-full h-full flex items-center justify-center">
-                <img id="modalImgElement" src="" alt="{{ $product->name }}" class="max-w-full max-h-full object-contain transition-transform duration-100 ease-out select-none shadow-2xl pointer-events-none" draggable="false" />
-                <video id="modalVideoElement" class="max-w-full max-h-full object-contain rounded-xl hidden" controls playsinline></video>
+            {{-- Media Container --}}
+            <div id="modalMediaStage" class="w-full h-full flex items-center justify-center p-2 sm:p-6">
+                <img id="modalImgElement" 
+                     src="" 
+                     alt="{{ $product->name }}" 
+                     class="max-w-full max-h-full object-contain select-none transition-opacity duration-150 pointer-events-none" 
+                     draggable="false" />
+                <video id="modalVideoElement" 
+                       class="max-w-full max-h-full object-contain rounded-xl hidden" 
+                       controls 
+                       playsinline></video>
             </div>
 
-            {{-- Next Button --}}
+            {{-- Desktop Only: Next Button --}}
             @if(count($galleryItems) > 1)
-            <button type="button" onclick="nextModalImage()" class="absolute right-3 sm:right-6 z-30 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/60 hover:bg-white text-white hover:text-black border border-white/20 flex items-center justify-center transition-all shadow-xl cursor-pointer" title="Foto Selanjutnya (Panah Kanan)">
-                <i class="fa-solid fa-chevron-right text-sm sm:text-base"></i>
+            <button type="button" 
+                    onclick="nextModalImage()" 
+                    class="hidden md:flex absolute right-4 lg:right-8 z-30 w-11 h-11 lg:w-12 lg:h-12 rounded-full bg-black/60 hover:bg-white text-white hover:text-black border border-white/20 items-center justify-center transition-all shadow-2xl cursor-pointer active:scale-95" 
+                    title="Selanjutnya (Panah Kanan)">
+                <i class="fa-solid fa-chevron-right text-base lg:text-lg"></i>
             </button>
             @endif
-
-            {{-- Mobile / Desktop Hint --}}
-            <div class="absolute bottom-2.5 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-xs text-white/80 text-[10px] sm:text-[11px] px-3 py-1 rounded-full pointer-events-none z-20 border border-white/10 flex items-center gap-1.5">
-                <i class="fa-solid fa-hand-pointer text-amber-300"></i>
-                <span>Dobel klik untuk zoom • Geser mouse/sentuh untuk navigasi</span>
-            </div>
         </div>
 
-        {{-- Bottom Thumbnail Strip --}}
-        @if(count($galleryItems) > 1)
-        <div id="modalThumbStrip" class="px-4 py-2.5 bg-black/60 border-t border-white/10 flex items-center justify-center gap-2 sm:gap-3 overflow-x-auto z-30 shrink-0">
-            @foreach($galleryItems as $idx => $item)
-                <button type="button" 
-                        onclick="goToModalMedia({{ $idx }})"
-                        data-modal-thumb="{{ $idx }}"
-                        class="modal-thumb-btn w-11 h-11 sm:w-13 sm:h-13 rounded-lg overflow-hidden border-2 transition-all p-0.5 bg-black/50 shrink-0 cursor-pointer {{ $idx === 0 ? 'border-amber-400 scale-105 opacity-100' : 'border-white/20 opacity-60 hover:opacity-100' }}"
-                        title="Foto {{ $idx + 1 }}">
-                    @if($item['type'] === 'video')
-                        <div class="w-full h-full bg-gray-900 flex items-center justify-center text-white text-[10px]">
-                            <i class="fa-solid fa-play"></i>
-                        </div>
+        {{-- Bottom Area (Dash Indicators & Shopee Floating Mini Card) --}}
+        <div class="px-4 pb-4 sm:pb-6 pt-2 z-40 bg-gradient-to-t from-black via-black/80 to-transparent">
+            {{-- Dash Indicators --}}
+            @if(count($galleryItems) > 1)
+            <div class="flex items-center justify-center gap-1.5 mb-3">
+                @foreach($galleryItems as $idx => $item)
+                    <div data-dash-index="{{ $idx }}" class="modal-dash-dot h-1 rounded-full transition-all duration-300 {{ $idx === 0 ? 'w-6 bg-white' : 'w-2 bg-white/30' }}"></div>
+                @endforeach
+            </div>
+            @endif
+
+            {{-- Floating Mini Product Card ala Shopee --}}
+            <div class="max-w-md mx-auto bg-white text-gray-900 rounded-2xl p-2.5 sm:p-3 shadow-2xl flex items-center justify-between gap-3">
+                <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                    <img id="modalCardThumb" 
+                         src="{{ $galleryItems[0]['url'] ?? $product->image_url }}" 
+                         alt="{{ $product->name }}" 
+                         class="w-10 h-10 sm:w-11 sm:h-11 rounded-lg object-contain bg-gray-50 border border-gray-100 shrink-0" />
+                    <div class="min-w-0">
+                        <p class="font-inter font-bold text-sm sm:text-base text-gray-900 leading-tight">
+                            Rp {{ number_format($product->price, 0, ',', '.') }}
+                        </p>
+                        <p class="text-xs text-gray-500 truncate">
+                            {{ $product->name }}
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                    @if($product->status === 'available')
+                        <button type="button" 
+                                onclick="closeImageModal(); if(window.openCartModal){ window.openCartModal({ id: {{ $product->id }}, name: '{{ addslashes($product->name) }}', price: 'Rp {{ number_format($product->promo_price ?: $product->price, 0, ',', '.') }}', img: '{{ $product->image_url }}', stock: {{ $product->stock ?? 10 }} }); }"
+                                class="bg-[#FECB00] hover:bg-yellow-400 text-black font-inter font-bold text-xs sm:text-sm px-3.5 sm:px-4 py-2 rounded-xl transition-colors shadow-xs cursor-pointer">
+                            Beli Sekarang
+                        </button>
                     @else
-                        <img src="{{ $item['url'] }}" alt="Thumb {{ $idx + 1 }}" class="w-full h-full object-contain rounded-md" />
+                        <span class="bg-gray-200 text-gray-500 font-inter font-medium text-xs px-3 py-2 rounded-xl">
+                            Habis
+                        </span>
                     @endif
-                </button>
-            @endforeach
+                </div>
+            </div>
         </div>
-        @endif
     </div>
 
 </main>
@@ -723,19 +738,12 @@
 
 @push('scripts')
     <script>
-        /* ─── GALLERY & LIGHTBOX ZOOM STATE ─── */
+        /* ─── GALLERY & LIGHTBOX STATE ─── */
         const productGallery = @json($galleryItems);
         let activeMediaIndex = 0;
-        let zoomScale = 1.0;
-        let panX = 0;
-        let panY = 0;
-        let isDragging = false;
-        let startDragX = 0;
-        let startDragY = 0;
-        let lastTapTime = 0;
         let isModalOpen = false;
 
-        /* ─── THUMBNAIL SWITCHER (Smooth Skeleton & Fade-In) ─── */
+        /* ─── THUMBNAIL SWITCHER (Detail Page) ─── */
         function cleanupExistingVideo(container) {
             const existingVideo = container.querySelector('video');
             if (existingVideo) {
@@ -829,7 +837,7 @@
             }
         };
 
-        /* ─── FULLSCREEN LIGHTBOX ZOOM CONTROLLER (Shopee / Tokopedia Style) ─── */
+        /* ─── SHOPEE STYLE FULLSCREEN MEDIA VIEWER ─── */
         window.openImageModal = function(index = null) {
             if (index !== null) {
                 activeMediaIndex = index;
@@ -844,7 +852,6 @@
                 modal.classList.remove('opacity-0');
             }, 10);
 
-            resetModalZoom();
             renderModalMedia();
         };
 
@@ -880,12 +887,15 @@
             const modalImg = document.getElementById('modalImgElement');
             const modalVid = document.getElementById('modalVideoElement');
             const counter = document.getElementById('modalCounter');
+            const cardThumb = document.getElementById('modalCardThumb');
 
             if (counter) {
                 counter.innerText = `${activeMediaIndex + 1} / ${productGallery.length}`;
             }
 
-            resetModalZoom();
+            if (cardThumb && item.url) {
+                cardThumb.src = item.url;
+            }
 
             if (item.type === 'video') {
                 if (modalImg) modalImg.classList.add('hidden');
@@ -905,14 +915,14 @@
                 }
             }
 
-            // Update modal thumbnails
-            document.querySelectorAll('.modal-thumb-btn').forEach((btn, idx) => {
+            // Update dash dots
+            document.querySelectorAll('.modal-dash-dot').forEach((dot, idx) => {
                 if (idx === activeMediaIndex) {
-                    btn.classList.add('border-amber-400', 'scale-105', 'opacity-100');
-                    btn.classList.remove('border-white/20', 'opacity-60');
+                    dot.classList.add('w-6', 'bg-white');
+                    dot.classList.remove('w-2', 'bg-white/30');
                 } else {
-                    btn.classList.remove('border-amber-400', 'scale-105', 'opacity-100');
-                    btn.classList.add('border-white/20', 'opacity-60');
+                    dot.classList.remove('w-6', 'bg-white');
+                    dot.classList.add('w-2', 'bg-white/30');
                 }
             });
         }
@@ -935,132 +945,53 @@
             renderModalMedia();
         };
 
-        window.goToModalMedia = function(idx) {
-            activeMediaIndex = idx;
-            renderModalMedia();
-        };
-
-        window.zoomModalImage = function(delta) {
-            const item = productGallery[activeMediaIndex];
-            if (item && item.type === 'video') return; // Do not zoom video
-
-            zoomScale = Math.min(Math.max(zoomScale + delta, 1.0), 3.5);
-            if (zoomScale <= 1.0) {
-                panX = 0;
-                panY = 0;
-            }
-            applyModalTransform();
-        };
-
-        window.resetModalZoom = function() {
-            zoomScale = 1.0;
-            panX = 0;
-            panY = 0;
-            applyModalTransform();
-        };
-
-        function applyModalTransform() {
-            const modalImg = document.getElementById('modalImgElement');
-            const zoomLabel = document.getElementById('zoomPercentLabel');
-            if (modalImg) {
-                modalImg.style.transform = `translate3d(${panX}px, ${panY}px, 0px) scale(${zoomScale})`;
-            }
-            if (zoomLabel) {
-                zoomLabel.innerText = Math.round(zoomScale * 100) + '%';
-            }
-        }
-
-        // Viewport Drag & Pan Events
+        // Mobile Touch Swipe Gesture (Geser Kiri / Geser Kanan)
         const viewport = document.getElementById('modalViewport');
         if (viewport) {
-            // Mouse Wheel Zoom
-            viewport.addEventListener('wheel', (e) => {
-                e.preventDefault();
-                const delta = e.deltaY < 0 ? 0.25 : -0.25;
-                zoomModalImage(delta);
-            }, { passive: false });
-
-            // Mouse Drag Pan
-            viewport.addEventListener('mousedown', (e) => {
-                if (e.target.closest('button')) return;
-                isDragging = true;
-                startDragX = e.clientX - panX;
-                startDragY = e.clientY - panY;
-            });
-
-            window.addEventListener('mousemove', (e) => {
-                if (!isDragging) return;
-                if (zoomScale > 1.0) {
-                    panX = e.clientX - startDragX;
-                    panY = e.clientY - startDragY;
-                    applyModalTransform();
-                }
-            });
-
-            window.addEventListener('mouseup', () => {
-                isDragging = false;
-            });
-
-            // Double Click / Double Tap to Toggle Zoom
-            viewport.addEventListener('click', (e) => {
-                if (e.target.closest('button')) return;
-                const now = Date.now();
-                if (now - lastTapTime < 300) {
-                    // Double Click detected!
-                    if (zoomScale > 1.0) {
-                        resetModalZoom();
-                    } else {
-                        zoomScale = 2.2;
-                        panX = 0;
-                        panY = 0;
-                        applyModalTransform();
-                    }
-                }
-                lastTapTime = now;
-            });
-
-            // Touch Drag / Pinch
             let touchStartX = 0;
             let touchStartY = 0;
-            let initialDistance = 0;
+            let touchEndX = 0;
+            let touchEndY = 0;
+            let isSwiping = false;
 
             viewport.addEventListener('touchstart', (e) => {
                 if (e.touches.length === 1) {
-                    isDragging = true;
-                    touchStartX = e.touches[0].clientX - panX;
-                    touchStartY = e.touches[0].clientY - panY;
-                } else if (e.touches.length === 2) {
-                    isDragging = false;
-                    initialDistance = Math.hypot(
-                        e.touches[0].clientX - e.touches[1].clientX,
-                        e.touches[0].clientY - e.touches[1].clientY
-                    );
+                    touchStartX = e.touches[0].clientX;
+                    touchStartY = e.touches[0].clientY;
+                    touchEndX = touchStartX;
+                    touchEndY = touchStartY;
+                    isSwiping = true;
                 }
             }, { passive: true });
 
             viewport.addEventListener('touchmove', (e) => {
-                if (e.touches.length === 1 && isDragging && zoomScale > 1.0) {
-                    panX = e.touches[0].clientX - touchStartX;
-                    panY = e.touches[0].clientY - touchStartY;
-                    applyModalTransform();
-                } else if (e.touches.length === 2 && initialDistance > 0) {
-                    const currentDistance = Math.hypot(
-                        e.touches[0].clientX - e.touches[1].clientX,
-                        e.touches[0].clientY - e.touches[1].clientY
-                    );
-                    const diff = (currentDistance - initialDistance) / 200;
-                    zoomScale = Math.min(Math.max(zoomScale + diff, 1.0), 3.5);
-                    applyModalTransform();
-                }
+                if (!isSwiping || e.touches.length !== 1) return;
+                touchEndX = e.touches[0].clientX;
+                touchEndY = e.touches[0].clientY;
             }, { passive: true });
 
             viewport.addEventListener('touchend', () => {
-                isDragging = false;
-                initialDistance = 0;
+                if (!isSwiping) return;
+                isSwiping = false;
+                const diffX = touchEndX - touchStartX;
+                const diffY = touchEndY - touchStartY;
+
+                // Trigger swipe if horizontal movement is dominant and > 40px
+                if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
+                    if (diffX < 0) {
+                        nextModalImage(); // Geser ke kiri -> Foto Selanjutnya
+                    } else {
+                        prevModalImage(); // Geser ke kanan -> Foto Sebelumnya
+                    }
+                }
+                touchStartX = 0;
+                touchEndX = 0;
+                touchStartY = 0;
+                touchEndY = 0;
             });
         }
 
-        // Keyboard Shortcuts
+        // Keyboard Shortcuts (Desktop)
         window.addEventListener('keydown', (e) => {
             if (!isModalOpen) return;
             if (e.key === 'Escape') {
@@ -1069,12 +1000,6 @@
                 prevModalImage();
             } else if (e.key === 'ArrowRight') {
                 nextModalImage();
-            } else if (e.key === '+' || e.key === '=') {
-                zoomModalImage(0.3);
-            } else if (e.key === '-') {
-                zoomModalImage(-0.3);
-            } else if (e.key === '0') {
-                resetModalZoom();
             }
         });
     </script>
