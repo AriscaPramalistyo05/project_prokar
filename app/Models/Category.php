@@ -32,4 +32,9 @@ class Category extends Model
     {
         return $this->hasMany(ServiceOrder::class);
     }
+
+    public function sellSubmissions()
+    {
+        return $this->hasMany(SellSubmission::class);
+    }
 }
