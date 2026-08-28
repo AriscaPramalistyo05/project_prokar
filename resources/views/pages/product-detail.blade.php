@@ -631,16 +631,35 @@
         }
     @endphp
 
+    <style>
+        html.product-media-fullscreen-active,
+        body.product-media-fullscreen-active {
+            overflow: hidden !important;
+            height: 100% !important;
+            touch-action: none !important;
+        }
+        body.product-media-fullscreen-active header,
+        body.product-media-fullscreen-active .cta-bar,
+        body.product-media-fullscreen-active [role="banner"],
+        body.product-media-fullscreen-active #form-error-toast,
+        body.product-media-fullscreen-active footer {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+    </style>
+
     <div id="productImageModal" 
-         class="fixed inset-0 z-[100] bg-black text-white hidden flex flex-col justify-between select-none opacity-0 transition-opacity duration-200"
+         class="fixed inset-0 z-[999999] w-screen h-screen bg-black text-white hidden flex flex-col justify-between select-none opacity-0 transition-opacity duration-200 overflow-hidden"
          role="dialog" aria-modal="true" aria-label="Lihat Gambar Produk">
 
         {{-- Top Bar (Shopee Style: Back Icon Button & Counter) --}}
-        <div class="absolute top-0 left-0 right-0 z-40 px-4 sm:px-6 py-4 flex items-center justify-between pointer-events-auto bg-gradient-to-b from-black/80 via-black/40 to-transparent">
+        <div class="absolute top-0 left-0 right-0 z-50 px-4 sm:px-6 py-4 flex items-center justify-between pointer-events-auto bg-gradient-to-b from-black/80 via-black/40 to-transparent">
             {{-- Tombol Back Icon --}}
             <button type="button" 
                     onclick="closeImageModal()" 
-                    class="w-10 h-10 rounded-full bg-black/40 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white text-lg transition-all cursor-pointer border border-white/10" 
+                    class="w-10 h-10 rounded-full bg-black/50 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white text-lg transition-all cursor-pointer border border-white/10" 
                     title="Kembali">
                 <i class="fa-solid fa-arrow-left"></i>
             </button>
@@ -653,7 +672,7 @@
             </div>
         </div>
 
-        {{-- Center Viewport (Image / Video with Natural Black Letterbox Bars) --}}
+        {{-- Center Viewport (Image / Video with Pure Black Space) --}}
         <div id="modalViewport" class="relative flex-1 w-full h-full flex items-center justify-center overflow-hidden touch-pan-y">
             {{-- Desktop Only: Previous Button --}}
             @if(count($galleryItems) > 1)
@@ -689,48 +708,18 @@
             @endif
         </div>
 
-        {{-- Bottom Area (Dash Indicators & Shopee Floating Mini Card) --}}
-        <div class="px-4 pb-4 sm:pb-6 pt-2 z-40 bg-gradient-to-t from-black via-black/80 to-transparent">
-            {{-- Dash Indicators --}}
-            @if(count($galleryItems) > 1)
-            <div class="flex items-center justify-center gap-1.5 mb-3">
+        {{-- Bottom Area (Dash Indicators Only - Clean Shopee Fullscreen) --}}
+        @if(count($galleryItems) > 1)
+        <div class="px-4 pb-6 pt-2 z-40 bg-gradient-to-t from-black via-black/80 to-transparent flex items-center justify-center">
+            <div class="flex items-center justify-center gap-1.5">
                 @foreach($galleryItems as $idx => $item)
                     <div data-dash-index="{{ $idx }}" class="modal-dash-dot h-1 rounded-full transition-all duration-300 {{ $idx === 0 ? 'w-6 bg-white' : 'w-2 bg-white/30' }}"></div>
                 @endforeach
             </div>
-            @endif
-
-            {{-- Floating Mini Product Card ala Shopee --}}
-            <div class="max-w-md mx-auto bg-white text-gray-900 rounded-2xl p-2.5 sm:p-3 shadow-2xl flex items-center justify-between gap-3">
-                <div class="flex items-center gap-2.5 min-w-0 flex-1">
-                    <img id="modalCardThumb" 
-                         src="{{ $galleryItems[0]['url'] ?? $product->image_url }}" 
-                         alt="{{ $product->name }}" 
-                         class="w-10 h-10 sm:w-11 sm:h-11 rounded-lg object-contain bg-gray-50 border border-gray-100 shrink-0" />
-                    <div class="min-w-0">
-                        <p class="font-inter font-bold text-sm sm:text-base text-gray-900 leading-tight">
-                            Rp {{ number_format($product->price, 0, ',', '.') }}
-                        </p>
-                        <p class="text-xs text-gray-500 truncate">
-                            {{ $product->name }}
-                        </p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-2 shrink-0">
-                    @if($product->status === 'available')
-                        <button type="button" 
-                                onclick="closeImageModal(); if(window.openCartModal){ window.openCartModal({ id: {{ $product->id }}, name: '{{ addslashes($product->name) }}', price: 'Rp {{ number_format($product->promo_price ?: $product->price, 0, ',', '.') }}', img: '{{ $product->image_url }}', stock: {{ $product->stock ?? 10 }} }); }"
-                                class="bg-[#FECB00] hover:bg-yellow-400 text-black font-inter font-bold text-xs sm:text-sm px-3.5 sm:px-4 py-2 rounded-xl transition-colors shadow-xs cursor-pointer">
-                            Beli Sekarang
-                        </button>
-                    @else
-                        <span class="bg-gray-200 text-gray-500 font-inter font-medium text-xs px-3 py-2 rounded-xl">
-                            Habis
-                        </span>
-                    @endif
-                </div>
-            </div>
         </div>
+        @else
+        <div class="h-6 z-40"></div>
+        @endif
     </div>
 
 </main>
@@ -847,7 +836,8 @@
 
             isModalOpen = true;
             modal.classList.remove('hidden');
-            document.body.classList.add('overflow-hidden');
+            document.documentElement.classList.add('product-media-fullscreen-active');
+            document.body.classList.add('product-media-fullscreen-active');
             setTimeout(() => {
                 modal.classList.remove('opacity-0');
             }, 10);
@@ -861,7 +851,8 @@
 
             isModalOpen = false;
             modal.classList.add('opacity-0');
-            document.body.classList.remove('overflow-hidden');
+            document.documentElement.classList.remove('product-media-fullscreen-active');
+            document.body.classList.remove('product-media-fullscreen-active');
 
             const modalVid = document.getElementById('modalVideoElement');
             if (modalVid) {
@@ -887,14 +878,9 @@
             const modalImg = document.getElementById('modalImgElement');
             const modalVid = document.getElementById('modalVideoElement');
             const counter = document.getElementById('modalCounter');
-            const cardThumb = document.getElementById('modalCardThumb');
 
             if (counter) {
                 counter.innerText = `${activeMediaIndex + 1} / ${productGallery.length}`;
-            }
-
-            if (cardThumb && item.url) {
-                cardThumb.src = item.url;
             }
 
             if (item.type === 'video') {
