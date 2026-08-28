@@ -93,5 +93,22 @@ class AppServiceProvider extends ServiceProvider
                     'token' => $token,
                 ]);
         });
+
+        // Log Viewer Security Gates (Super Admin Only)
+        \Illuminate\Support\Facades\Gate::define('viewLogViewer', function (?\App\Models\User $user) {
+            return $user && $user->hasRole('super_admin');
+        });
+        \Illuminate\Support\Facades\Gate::define('downloadLogFile', function (?\App\Models\User $user) {
+            return $user && $user->hasRole('super_admin');
+        });
+        \Illuminate\Support\Facades\Gate::define('deleteLogFile', function (?\App\Models\User $user) {
+            return $user && $user->hasRole('super_admin');
+        });
+        \Illuminate\Support\Facades\Gate::define('downloadLogFolder', function (?\App\Models\User $user) {
+            return $user && $user->hasRole('super_admin');
+        });
+        \Illuminate\Support\Facades\Gate::define('deleteLogFolder', function (?\App\Models\User $user) {
+            return $user && $user->hasRole('super_admin');
+        });
     }
 }

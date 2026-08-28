@@ -21,6 +21,7 @@
         "laravel/tinker": "^3.0",
         "livewire/livewire": "*",
         "midtrans/midtrans-php": "^2.6",
+        "opcodesio/log-viewer": "^3.24",
         "picqer/php-barcode-generator": "^3.2",
         "robsontenorio/mary": "*",
         "spatie/laravel-activitylog": "^4.12",

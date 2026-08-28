@@ -19,3 +19,24 @@ if (!function_exists('setting')) {
         }
     }
 }
+
+// Fallback PSR-4 Autoloader for Opcodes Log Viewer (ensures seamless operation on shared hosting without SSH/terminal)
+spl_autoload_register(function ($class) {
+    if (str_starts_with($class, 'Opcodes\\LogViewer\\')) {
+        $relative = substr($class, strlen('Opcodes\\LogViewer\\'));
+        $file = __DIR__ . '/../vendor/opcodesio/log-viewer/src/' . str_replace('\\', '/', $relative) . '.php';
+        if (file_exists($file)) {
+            require_once $file;
+            return true;
+        }
+    }
+    if (str_starts_with($class, 'Opcodes\\MailParser\\')) {
+        $relative = substr($class, strlen('Opcodes\\MailParser\\'));
+        $file = __DIR__ . '/../vendor/opcodesio/mail-parser/src/' . str_replace('\\', '/', $relative) . '.php';
+        if (file_exists($file)) {
+            require_once $file;
+            return true;
+        }
+    }
+    return false;
+});

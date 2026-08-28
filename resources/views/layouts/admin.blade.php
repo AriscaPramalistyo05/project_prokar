@@ -51,6 +51,7 @@
                 <x-admin.sidebar-item route="admin.roles.index" icon="o-shield-check" label="Role & Hak Akses" />
                 <x-admin.sidebar-item route="admin.reports.index" icon="o-chart-bar" label="Laporan" />
                 <x-admin.sidebar-item route="admin.activity-log" icon="o-clipboard-document-list" label="Activity Log" />
+                <x-menu-item title="System Logs" icon="o-document-text" link="{{ url('admin/logs') }}" :active="request()->is('admin/logs*')" />
                 <x-admin.sidebar-item route="admin.additional-fees.index" icon="o-currency-dollar" label="Biaya Tambahan" />
                 
                 {{-- Dropdown Submenu Setting (Image 2 style) --}}
