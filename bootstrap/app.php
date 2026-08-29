@@ -20,9 +20,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'verified' => \App\Http\Middleware\EnsureEmailVerified::class,
         ]);
 
-        $middleware->web(append: [
+        $middleware->append(
             \App\Http\Middleware\SecurityHeadersMiddleware::class,
-        ]);
+        );
 
         $middleware->trustProxies(at: '*', headers: Request::HEADER_X_FORWARDED_FOR |
             Request::HEADER_X_FORWARDED_HOST |
