@@ -604,6 +604,16 @@
     }
 
     document.addEventListener('livewire:init', () => {
+      // Gracefully handle session expiration (HTTP 419) without annoying browser alert dialogs
+      Livewire.hook('request', ({ fail }) => {
+        fail(({ status, preventDefault }) => {
+          if (status === 419) {
+            preventDefault();
+            window.location.reload();
+          }
+        });
+      });
+
       Livewire.hook('commit', ({ component, commit, respond, succeed, fail }) => {
         succeed(({ snapshot, effect }) => {
           const errors = effect?.errors || {};

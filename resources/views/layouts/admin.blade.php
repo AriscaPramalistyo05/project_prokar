@@ -290,9 +290,19 @@
                     const token = localStorage.getItem('prokar_admin_fcm_token');
                     if (!token) {
                         window.requestAdminFcmPermission && window.requestAdminFcmPermission();
-                    }
                 }
             }
+        });
+
+        document.addEventListener('livewire:init', () => {
+            Livewire.hook('request', ({ fail }) => {
+                fail(({ status, preventDefault }) => {
+                    if (status === 419) {
+                        preventDefault();
+                        window.location.reload();
+                    }
+                });
+            });
         });
     </script>
 </body>

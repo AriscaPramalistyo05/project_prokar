@@ -43,6 +43,16 @@ class SeoAndSitemapTest extends TestCase
         $this->assertStringContainsString('kulkas-polytron-belleza-khusus', $sitemapContent);
         $this->assertStringContainsString('kulkas-showcase', $sitemapContent);
         $this->assertStringContainsString('/produk', $sitemapContent);
+        $this->assertStringNotContainsString('192.168.', $sitemapContent);
+        $this->assertStringNotContainsString('localhost:8000', $sitemapContent);
+    }
+
+    public function test_sitemap_xml_route_returns_valid_xml_response(): void
+    {
+        $response = $this->get('/sitemap.xml');
+        $response->assertOk();
+        $response->assertHeader('Content-Type', 'application/xml; charset=utf-8');
+        $this->assertStringNotContainsString('192.168.', $response->getContent());
     }
 
     public function test_robots_txt_allows_public_and_blocks_admin_checkout_profile(): void

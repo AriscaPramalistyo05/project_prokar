@@ -26,9 +26,15 @@
         @endscope
 
         @scope('cell_products_count', $category)
-            <span class="badge badge-sm {{ $category->products_count > 0 ? 'badge-primary' : 'badge-ghost' }} font-bold">
-                {{ $category->products_count }} Produk
-            </span>
+            @if($category->products_count > 0)
+                <span class="badge badge-sm badge-primary font-bold">
+                    {{ $category->products_count }} Produk
+                </span>
+            @else
+                <span class="badge badge-sm badge-ghost text-neutral-400 font-medium">
+                    0 Produk (Kosong)
+                </span>
+            @endif
         @endscope
 
         @scope('actions', $category)

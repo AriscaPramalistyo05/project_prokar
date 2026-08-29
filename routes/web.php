@@ -23,6 +23,15 @@ Route::get('/firebase-messaging-sw.js', function () {
         ->header('Content-Type', 'application/javascript');
 });
 
+Route::get('/sitemap.xml', function () {
+    $path = public_path('sitemap.xml');
+    if (!file_exists($path)) {
+        \Illuminate\Support\Facades\Artisan::call('sitemap:generate');
+    }
+    return response(file_get_contents($path), 200)
+        ->header('Content-Type', 'application/xml; charset=utf-8');
+});
+
 // ─── FRONTEND PUBLIC ────────────────────────────────────────────
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
