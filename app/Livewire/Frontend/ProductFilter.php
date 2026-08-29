@@ -13,7 +13,8 @@ class ProductFilter extends Component
 
     public function mount()
     {
-        $this->activeCategory = request()->query('kategori', 'semua');
+        $rawCat = (string) request()->query('kategori', 'semua');
+        $this->activeCategory = preg_replace('/[^a-zA-Z0-9\-_]/', '', trim($rawCat)) ?: 'semua';
 
         $this->categories = [
             ['key' => 'semua', 'label' => 'Semua'],
@@ -26,8 +27,9 @@ class ProductFilter extends Component
 
     public function select($key)
     {
-        $this->activeCategory = $key;
-        $this->dispatch('category-changed', $key);
+        $cleanKey = preg_replace('/[^a-zA-Z0-9\-_]/', '', trim((string) $key)) ?: 'semua';
+        $this->activeCategory = $cleanKey;
+        $this->dispatch('category-changed', $cleanKey);
     }
 
     public function render()

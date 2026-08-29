@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Response;
 
 class SecurityHeadersMiddleware
@@ -25,6 +26,11 @@ class SecurityHeadersMiddleware
         $response->headers->remove('X-Powered-By');
         $response->headers->remove('Server');
 
+        // Minimize redirect body to eliminate "Big Redirect Detected" alerts
+        if ($response->isRedirection()) {
+            $response->setContent('');
+        }
+
         // 1. Content Security Policy (CSP)
         // Whitelist trusted CDNs (Google Fonts, Cloudflare CDNJS, Unpkg, Midtrans payment, Firebase, Unsplash)
         // In local/dev mode, also allow Vite dev server (localhost:5173 / 127.0.0.1:5173)
@@ -42,6 +48,7 @@ class SecurityHeadersMiddleware
             "img-src 'self' data: blob: https://images.unsplash.com https://storage.googleapis.com https://*.midtrans.com https://*.googleusercontent.com https://ui-avatars.com" . $viteDev,
             "connect-src 'self' https://cdn.jsdelivr.net https://www.gstatic.com https://*.firebaseio.com https://*.googleapis.com https://firebaseinstallations.googleapis.com https://fcmregistrations.googleapis.com https://www.googleapis.com https://fcm.googleapis.com https://app.midtrans.com https://app.sandbox.midtrans.com https://api.midtrans.com https://api.sandbox.midtrans.com https://www.emsifa.com wss://*.firebaseio.com https://unpkg.com" . $viteDev,
             "frame-src 'self' https://app.midtrans.com https://app.sandbox.midtrans.com https://www.google.com",
+            "frame-ancestors 'self'",
             "worker-src 'self' blob:",
             "object-src 'none'",
             "base-uri 'self'",
@@ -67,9 +74,31 @@ class SecurityHeadersMiddleware
         // 7. X-XSS-Protection
         $response->headers->set('X-XSS-Protection', '1; mode=block');
 
-        // 8. Cache-Control for non-static HTML responses
-        if ($request->isMethod('GET') && str_contains($response->headers->get('Content-Type', ''), 'text/html')) {
-            $response->headers->set('Cache-Control', 'no-cache, private, must-revalidate');
+        // 8. Cache-Control for dynamic HTML responses
+        $contentType = (string) $response->headers->get('Content-Type', '');
+        if ($request->isMethod('GET') && (str_contains($contentType, 'text/html') || empty($contentType))) {
+            $response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+            $response->headers->set('Pragma', 'no-cache');
+            $response->headers->set('Expires', '0');
+        }
+
+        // 9. Enforce HttpOnly on all session & application cookies
+        foreach ($response->headers->getCookies() as $cookie) {
+            if (!$cookie->isHttpOnly()) {
+                $response->headers->setCookie(
+                    Cookie::create(
+                        $cookie->getName(),
+                        $cookie->getValue(),
+                        $cookie->getExpiresTime(),
+                        $cookie->getPath() ?: '/',
+                        $cookie->getDomain(),
+                        $cookie->isSecure(),
+                        true, // HttpOnly = true
+                        $cookie->isRaw(),
+                        $cookie->getSameSite() ?: 'lax'
+                    )
+                );
+            }
         }
 
         return $response;

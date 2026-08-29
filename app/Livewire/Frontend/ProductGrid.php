@@ -19,13 +19,16 @@ class ProductGrid extends Component
 
     public function mount()
     {
-        $this->category = request()->query('kategori', 'semua');
-        $this->search = trim((string) request()->query('search', ''));
+        $rawCat = (string) request()->query('kategori', 'semua');
+        $this->category = preg_replace('/[^a-zA-Z0-9\-_]/', '', trim($rawCat)) ?: 'semua';
+        
+        $rawSearch = (string) request()->query('search', '');
+        $this->search = e(strip_tags(trim($rawSearch)));
     }
 
     public function updateCategory($key)
     {
-        $this->category = $key;
+        $this->category = preg_replace('/[^a-zA-Z0-9\-_]/', '', trim((string) $key)) ?: 'semua';
         $this->perPage = 8; // Reset perPage saat ganti kategori
         $this->dispatch('category-updated');
     }
@@ -90,10 +93,30 @@ class ProductGrid extends Component
             ];
         });
 
+        $categoryLabel = 'Semua Produk';
+        if ($this->category !== 'semua') {
+            if ($this->category === 'lainnya') {
+                $categoryLabel = 'Lainnya';
+            } else {
+                $categoryModel = Category::where('slug', $this->category)->first();
+                $categoryLabel = $categoryModel ? $categoryModel->name : e(strip_tags(str_replace('-', ' ', $this->category)));
+            }
+        }
+
         return view('livewire.frontend.product-grid', [
             'products' => $products,
             'hasMore' => $paginator->hasMorePages(),
+            'categoryLabel' => $categoryLabel,
+            'activeCategoryKey' => $this->category,
         ]);
+    }
+
+    public function resetCategory(): void
+    {
+        $this->category = 'semua';
+        $this->search = '';
+        $this->perPage = 8;
+        $this->dispatch('category-changed', 'semua');
     }
 
     public function addToCart(int $productId): void
