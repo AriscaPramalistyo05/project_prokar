@@ -20,6 +20,13 @@ if (!function_exists('setting')) {
     }
 }
 
+if (!function_exists('format_rupiah')) {
+    function format_rupiah(float|int|string|null $amount): string
+    {
+        return 'Rp ' . number_format((float) ($amount ?? 0), 0, ',', '.');
+    }
+}
+
 // Fallback PSR-4 Autoloader for Opcodes Log Viewer (ensures seamless operation on shared hosting without SSH/terminal)
 spl_autoload_register(function ($class) {
     if (str_starts_with($class, 'Opcodes\\LogViewer\\')) {
