@@ -60,17 +60,7 @@
                 <x-menu-item title="System Logs" icon="o-document-text" link="{{ url('admin/logs') }}" :active="request()->is('admin/logs*')" />
                 <x-admin.sidebar-item route="admin.additional-fees.index" icon="o-currency-dollar" label="Biaya Tambahan" />
                 
-                {{-- Dropdown Submenu Setting (Image 2 style) --}}
-                <x-menu-sub title="Setting" icon="o-cog-6-tooth" :open="request()->routeIs('admin.settings*')">
-                    <x-menu-item title="Umum & Identitas" icon="o-building-storefront" link="{{ route('admin.settings', ['tab' => 'general-tab']) }}" :active="request()->routeIs('admin.settings*') && (request('tab', 'general-tab') === 'general-tab')" wire:navigate.hover />
-                    <x-menu-item title="Tampilan & Beranda" icon="o-computer-desktop" link="{{ route('admin.settings', ['tab' => 'home-tab']) }}" :active="request()->routeIs('admin.settings*') && request('tab') === 'home-tab'" wire:navigate.hover />
-                    <x-menu-item title="Email & Autentikasi" icon="o-envelope" link="{{ route('admin.settings', ['tab' => 'mail-tab']) }}" :active="request()->routeIs('admin.settings*') && request('tab') === 'mail-tab'" wire:navigate.hover />
-                    <x-menu-item title="Payment (Midtrans)" icon="o-credit-card" link="{{ route('admin.settings', ['tab' => 'payment-tab']) }}" :active="request()->routeIs('admin.settings*') && request('tab') === 'payment-tab'" wire:navigate.hover />
-                    <x-menu-item title="Notifikasi (FCM)" icon="o-bell" link="{{ route('admin.settings', ['tab' => 'fcm-tab']) }}" :active="request()->routeIs('admin.settings*') && request('tab') === 'fcm-tab'" wire:navigate.hover />
-                </x-menu-sub>
-
-                <hr class="my-2 border-base-200" />
-                <x-menu-item title="Lihat Toko / Web" icon="o-arrow-top-right-on-square" link="{{ route('home', ['view_as_guest' => 1]) }}" target="_blank" />
+                <x-admin.sidebar-item route="admin.settings" icon="o-cog-6-tooth" label="Setting" />
                 @endrole
             </x-menu>
         </x-slot:sidebar>
