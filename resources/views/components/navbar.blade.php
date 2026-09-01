@@ -132,7 +132,7 @@
                         <button @click="open = !open" aria-label="Account"
                             class="w-10 h-10 min-w-[40px] min-h-[40px] shrink-0 aspect-square rounded-full bg-black flex items-center justify-center hover:scale-105 transition-transform overflow-hidden cursor-pointer">
                             @if ($hasAvatar)
-                                <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}"
+                                <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}" referrerpolicy="no-referrer"
                                     class="w-full h-full rounded-full object-cover">
                             @else
                                 <span class="text-white font-bold text-xs tracking-tight">{{ $initials }}</span>
@@ -142,7 +142,7 @@
                             class="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl z-20 border border-gray-100 overflow-hidden">
                             <div class="p-4 flex items-center gap-3 border-b border-gray-100 bg-gray-50/50">
                                 @if ($hasAvatar)
-                                    <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}"
+                                    <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}" referrerpolicy="no-referrer"
                                         class="w-11 h-11 min-w-[44px] min-h-[44px] shrink-0 aspect-square rounded-full object-cover border border-gray-200">
                                 @else
                                     <div

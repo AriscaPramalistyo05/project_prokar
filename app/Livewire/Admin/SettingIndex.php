@@ -495,6 +495,30 @@ class SettingIndex extends Component
         $settingService->set('notify_payment_settled', $this->notify_payment_settled ? '1' : '0', 'notification', 'boolean', 'Notif Pembayaran Lunas');
         $settingService->set('notify_customer_approval', $this->notify_customer_approval ? '1' : '0', 'notification', 'boolean', 'Notif Approval Pelanggan');
 
+        // Handle Firebase Service Account JSON file upload
+        if ($this->service_account_file) {
+            try {
+                $content = file_get_contents($this->service_account_file->getRealPath());
+                $json = json_decode($content, true);
+                if (is_array($json) && !empty($json['project_id'])) {
+                    $firebaseDir = storage_path('app/firebase');
+                    if (!File::isDirectory($firebaseDir)) {
+                        File::makeDirectory($firebaseDir, 0755, true);
+                    }
+                    File::put($firebaseDir . '/service-account.json', $content);
+                    $this->has_service_account_file = true;
+
+                    if (!empty($this->firebase_project_id) && $json['project_id'] !== $this->firebase_project_id) {
+                        $this->warning("Perhatian: Project ID di file JSON ({$json['project_id']}) berbeda dengan Project ID di form ({$this->firebase_project_id}). Pastikan keduanya dari project Firebase yang sama.");
+                    }
+                } else {
+                    $this->error('File yang diunggah bukan format JSON Service Account Firebase yang valid.');
+                }
+            } catch (\Throwable $e) {
+                $this->error('Gagal menyimpan file Service Account: ' . $e->getMessage());
+            }
+        }
+
         // 6. Simpan Tab Garansi
         $settingService->set('warranty_duration_days', (string) $this->warranty_duration_days, 'warranty', 'text', 'Durasi Garansi Toko');
         $settingService->set('warranty_terms', $this->warranty_terms, 'warranty', 'textarea', 'Syarat & Ketentuan Garansi');

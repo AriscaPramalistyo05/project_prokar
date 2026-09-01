@@ -58,6 +58,11 @@ class GoogleController extends Controller
             ]
         );
 
+        // Update avatar if empty or previously set via OAuth URL
+        if (empty($user->avatar) || str_starts_with((string)$user->avatar, 'http')) {
+            $user->update(['avatar' => $googleUser->getAvatar()]);
+        }
+
         // Kalau user sudah ada tapi belum verified (daftar manual sebelumnya)
         if (is_null($user->email_verified_at)) {
             $user->update(['email_verified_at' => now()]);
