@@ -573,6 +573,7 @@
   @include('components.cart-modal')
   @include('components.search-modal')
   @include('components.notification-prompt')
+  @include('components.pwa-install-banner')
 
   <!-- Global Floating Form Error Toast (Smart Guidance Form) -->
   <div id="form-error-toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[10000] max-w-md w-[92%] sm:w-auto bg-[#0A0A0A] text-white border-2 border-red-500 rounded-2xl px-5 py-3.5 shadow-2xl flex items-center gap-3 transition-all duration-300 transform translate-y-24 opacity-0 pointer-events-none">
