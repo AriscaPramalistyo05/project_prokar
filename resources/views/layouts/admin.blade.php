@@ -60,7 +60,59 @@
                 <x-menu-item title="System Logs" icon="o-document-text" link="{{ url('admin/logs') }}" :active="request()->is('admin/logs*')" />
                 <x-admin.sidebar-item route="admin.additional-fees.index" icon="o-currency-dollar" label="Biaya Tambahan" />
                 
-                <x-admin.sidebar-item route="admin.settings" icon="o-cog-6-tooth" label="Setting" />
+                {{-- Dropdown Submenu Setting --}}
+                <li x-data="{ open: {{ request()->routeIs('admin.settings*') ? 'true' : 'false' }} }" class="w-full">
+                    <button type="button" @click="open = !open"
+                            class="flex items-center justify-between w-full px-3 py-2 rounded-lg text-sm font-semibold transition-colors cursor-pointer {{ request()->routeIs('admin.settings*') ? 'bg-base-200 text-black font-bold' : 'text-gray-700 hover:bg-base-200/70 hover:text-black' }}">
+                        <div class="flex items-center gap-3">
+                            <x-icon name="o-cog-6-tooth" class="w-5 h-5 shrink-0" />
+                            <span>Setting</span>
+                        </div>
+                        <x-icon name="o-chevron-down" class="w-4 h-4 shrink-0 transition-transform duration-200" ::class="open ? 'rotate-180' : ''" />
+                    </button>
+                    <ul x-show="open" x-collapse x-cloak class="pl-4 pr-1 py-1 space-y-1">
+                        <li>
+                            <a href="{{ route('admin.settings', ['tab' => 'general-tab']) }}"
+                               wire:navigate.hover
+                               class="flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-semibold transition-colors {{ (request()->routeIs('admin.settings*') && request('tab', 'general-tab') === 'general-tab') ? 'bg-amber-100 text-amber-950 font-bold shadow-2xs' : 'text-gray-600 hover:bg-base-200 hover:text-black' }}">
+                                <x-icon name="o-building-storefront" class="w-4 h-4 shrink-0" />
+                                <span>Umum & Identitas</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.settings', ['tab' => 'home-tab']) }}"
+                               wire:navigate.hover
+                               class="flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-semibold transition-colors {{ (request()->routeIs('admin.settings*') && request('tab') === 'home-tab') ? 'bg-amber-100 text-amber-950 font-bold shadow-2xs' : 'text-gray-600 hover:bg-base-200 hover:text-black' }}">
+                                <x-icon name="o-computer-desktop" class="w-4 h-4 shrink-0" />
+                                <span>Tampilan & Beranda</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.settings', ['tab' => 'mail-tab']) }}"
+                               wire:navigate.hover
+                               class="flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-semibold transition-colors {{ (request()->routeIs('admin.settings*') && request('tab') === 'mail-tab') ? 'bg-amber-100 text-amber-950 font-bold shadow-2xs' : 'text-gray-600 hover:bg-base-200 hover:text-black' }}">
+                                <x-icon name="o-envelope" class="w-4 h-4 shrink-0" />
+                                <span>Email & Autentikasi</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.settings', ['tab' => 'payment-tab']) }}"
+                               wire:navigate.hover
+                               class="flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-semibold transition-colors {{ (request()->routeIs('admin.settings*') && request('tab') === 'payment-tab') ? 'bg-amber-100 text-amber-950 font-bold shadow-2xs' : 'text-gray-600 hover:bg-base-200 hover:text-black' }}">
+                                <x-icon name="o-credit-card" class="w-4 h-4 shrink-0" />
+                                <span>Payment (Midtrans)</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.settings', ['tab' => 'fcm-tab']) }}"
+                               wire:navigate.hover
+                               class="flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-semibold transition-colors {{ (request()->routeIs('admin.settings*') && request('tab') === 'fcm-tab') ? 'bg-amber-100 text-amber-950 font-bold shadow-2xs' : 'text-gray-600 hover:bg-base-200 hover:text-black' }}">
+                                <x-icon name="o-bell" class="w-4 h-4 shrink-0" />
+                                <span>Notifikasi (FCM)</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
                 @endrole
             </x-menu>
         </x-slot:sidebar>
