@@ -174,6 +174,7 @@
         </x-slot:content>
     </x-main>
 
+    @include('components.pwa-install-banner')
     <x-toast />
     
     @stack('scripts')
