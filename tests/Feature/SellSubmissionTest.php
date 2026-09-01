@@ -30,12 +30,14 @@ class SellSubmissionTest extends TestCase
     public function test_customer_can_submit_sell_form_with_photos(): void
     {
         RateLimiter::clear('submit-sell:' . request()->ip());
+        \Illuminate\Support\Facades\Mail::fake();
 
         $category = Category::factory()->create(['name' => 'Mesin Cuci', 'slug' => 'mesin-cuci']);
         $photo = UploadedFile::fake()->image('mesin_cuci.jpg', 600, 600);
 
         Livewire::test(SellForm::class)
             ->set('nama', 'Joko Widodo')
+            ->set('email', 'joko@example.com')
             ->set('whatsapp', '081234567890')
             ->set('province_id', '33')
             ->set('regency_id', '3320')
@@ -52,10 +54,15 @@ class SellSubmissionTest extends TestCase
 
         $this->assertDatabaseHas('sell_submissions', [
             'customer_name' => 'Joko Widodo',
+            'customer_email' => 'joko@example.com',
             'device_brand' => 'LG Smart Inverter 10KG',
             'condition' => 'good',
             'status' => 'pending',
         ]);
+
+        \Illuminate\Support\Facades\Mail::assertSent(\App\Mail\SellSubmissionConfirmationMail::class, function ($mail) {
+            return $mail->hasTo('joko@example.com');
+        });
     }
 
     public function test_sell_submission_code_generated_format_sell_yyyymmdd_xxxx(): void
@@ -75,11 +82,12 @@ class SellSubmissionTest extends TestCase
 
         Livewire::test(SellForm::class)
             ->set('whatsapp', '')
+            ->set('email', '')
             ->set('merek', '')
             ->set('kondisi', '')
             ->set('kategori', '')
             ->call('submit')
-            ->assertHasErrors(['whatsapp', 'merek', 'kondisi', 'kategori']);
+            ->assertHasErrors(['whatsapp', 'email', 'merek', 'kondisi', 'kategori']);
     }
 
     public function test_admin_can_review_and_approve_sell_submission(): void
@@ -97,6 +105,29 @@ class SellSubmissionTest extends TestCase
 
         $this->assertEquals('accepted', $submission->fresh()->status);
         $this->assertEquals(1400000, $submission->fresh()->agreed_price);
+    }
+
+    public function test_admin_mark_paid_sends_completed_email_to_customer(): void
+    {
+        \Illuminate\Support\Facades\Mail::fake();
+        $admin = $this->actingAsSuperAdmin();
+        $submission = SellSubmission::factory()->create([
+            'customer_email' => 'penjual@example.com',
+            'status' => 'accepted',
+            'agreed_price' => 1200000,
+            'physical_check_at' => now(),
+        ]);
+
+        Livewire::actingAs($admin)
+            ->test(SellSubmissionDetail::class, ['sellSubmission' => $submission])
+            ->call('markPaid', 'transfer');
+
+        $this->assertEquals('paid', $submission->fresh()->status);
+        $this->assertEquals('transfer', $submission->fresh()->payment_method);
+
+        \Illuminate\Support\Facades\Mail::assertSent(\App\Mail\SellSubmissionCompletedMail::class, function ($mail) {
+            return $mail->hasTo('penjual@example.com');
+        });
     }
 
     public function test_approved_sell_submission_can_be_converted_to_product_catalog(): void

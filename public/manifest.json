@@ -1,0 +1,53 @@
+{
+    "name": "Prokar Elektronik – Jual · Beli · Servis Elektronik Bekas Terpercaya",
+    "short_name": "Prokar Elektronik",
+    "description": "Platform jual, beli, dan servis elektronik bekas terpercaya di Jepara dengan garansi toko resmi.",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "orientation": "portrait",
+    "background_color": "#FFFFFF",
+    "theme_color": "#0A0A0A",
+    "lang": "id",
+    "categories": [
+        "shopping",
+        "business",
+        "utilities"
+    ],
+    "icons": [
+        {
+            "src": "/icons/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/icons/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Katalog Produk",
+            "url": "/produk",
+            "description": "Lihat produk elektronik bekas bergaransi"
+        },
+        {
+            "name": "Layanan Servis",
+            "url": "/servis",
+            "description": "Ajukan servis perbaikan elektronik"
+        },
+        {
+            "name": "Lacak Servis",
+            "url": "/servis/lacak",
+            "description": "Lacak progres pengerjaan servis"
+        },
+        {
+            "name": "Jual Elektronik",
+            "url": "/jual",
+            "description": "Ajukan penjualan barang elektronik bekas"
+        }
+    ]
+}

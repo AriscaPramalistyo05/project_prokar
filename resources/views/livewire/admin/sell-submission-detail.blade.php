@@ -38,9 +38,10 @@
             <x-card title="Informasi Pelanggan">
                 <div class="space-y-2">
                     <p><strong>Nama:</strong> {{ $submission->customer_name }}</p>
+                    <p><strong>Email:</strong> {{ $submission->customer_email ?: '-' }}</p>
                     <p><strong>No. HP:</strong> {{ $submission->customer_phone }}</p>
                     <p><strong>WhatsApp:</strong> {{ $submission->customer_whatsapp ?: '-' }}</p>
-                    <p><strong>Kota:</strong> {{ $submission->customer_city }}</p>
+                    <p><strong>Alamat:</strong> {{ $submission->full_address }}</p>
                 </div>
             </x-card>
             

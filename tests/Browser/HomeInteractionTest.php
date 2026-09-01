@@ -13,6 +13,7 @@ class HomeInteractionTest extends DuskTestCase
             $browser->visit('/')
                 ->waitForText('Prokar', 10)
                 ->assertSee('Prokar')
+                ->waitFor('footer', 10)
                 ->scrollIntoView('footer')
                 ->pause(300)
                 ->assertPresent('footer');
@@ -26,8 +27,8 @@ class HomeInteractionTest extends DuskTestCase
                 ->waitFor('nav', 10)
                 ->assertPresent('nav');
 
-            if ($browser->element('a[aria-label="Keranjang"], a[href*="/keranjang"]')) {
-                $browser->click('a[aria-label="Keranjang"], a[href*="/keranjang"]')
+            if ($browser->element('a[aria-label="Keranjang"], a[href*="/keranjang"], button[aria-label*="Keranjang"]')) {
+                $browser->click('a[aria-label="Keranjang"], a[href*="/keranjang"], button[aria-label*="Keranjang"]')
                     ->pause(500);
             }
         });

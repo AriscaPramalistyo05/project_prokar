@@ -32,12 +32,17 @@
   <meta name="ICBM" content="-6.514774, 110.712282" />
   <link rel="canonical" href="@yield('canonical', url()->current())" />
   <link rel="alternate" hreflang="id-ID" href="@yield('canonical', url()->current())" />
-  <link rel="shortcut icon"
-    href="{{ $shopFavicon }}" />
-  <link rel="icon" type="image/png" sizes="32x32"
-    href="{{ $shopFavicon }}" />
-  <link rel="apple-touch-icon"
-    href="{{ $shopFavicon }}" />
+
+  <!-- PWA Manifest & Multi-size Mobile Icons -->
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="{{ $shopName }}" />
+  <link rel="shortcut icon" href="{{ file_exists(public_path('icons/favicon-32x32.png')) ? asset('icons/favicon-32x32.png') : $shopFavicon }}" />
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ file_exists(public_path('icons/favicon-32x32.png')) ? asset('icons/favicon-32x32.png') : $shopFavicon }}" />
+  <link rel="icon" type="image/png" sizes="192x192" href="{{ file_exists(public_path('icons/icon-192x192.png')) ? asset('icons/icon-192x192.png') : $shopLogo }}" />
+  <link rel="apple-touch-icon" href="{{ file_exists(public_path('icons/apple-touch-icon.png')) ? asset('icons/apple-touch-icon.png') : $shopLogo }}" />
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="@yield('og_type', 'website')" />
@@ -59,6 +64,94 @@
   <meta name="twitter:image:alt" content="{{ $shopName }} – {{ $shopTagline }}" />
 
   @stack('schema')
+
+  <!-- Google Sitelinks & Global Organization Schema (JSON-LD) -->
+  <script type="application/ld+json">
+  {!! json_encode([
+    '@context' => 'https://schema.org',
+    '@graph' => [
+      [
+        '@type' => 'WebSite',
+        '@id' => url('/') . '/#website',
+        'url' => url('/'),
+        'name' => $shopName,
+        'description' => $shopTagline,
+        'inLanguage' => 'id-ID',
+        'potentialAction' => [
+          '@type' => 'SearchAction',
+          'target' => [
+            '@type' => 'EntryPoint',
+            'urlTemplate' => url('/produk') . '?cari={search_term_string}'
+          ],
+          'query-input' => 'required name=search_term_string'
+        ]
+      ],
+      [
+        '@type' => 'LocalBusiness',
+        '@id' => url('/') . '/#localbusiness',
+        'name' => $shopName,
+        'url' => url('/'),
+        'logo' => $shopLogo,
+        'image' => $shopLogo,
+        'telephone' => setting('shop_whatsapp', '081234567890'),
+        'email' => setting('shop_email', 'info@prokarelektronik.com'),
+        'priceRange' => 'Rp 50.000 - Rp 10.000.000',
+        'address' => [
+          '@type' => 'PostalAddress',
+          'streetAddress' => setting('shop_address', 'Jl. Raya Mlonggo - Bondo KM 1'),
+          'addressLocality' => 'Mlonggo',
+          'addressRegion' => 'Jawa Tengah',
+          'postalCode' => '59452',
+          'addressCountry' => 'ID'
+        ],
+        'geo' => [
+          '@type' => 'GeoCoordinates',
+          'latitude' => -6.514774,
+          'longitude' => 110.712282
+        ],
+        'openingHoursSpecification' => [
+          [
+            '@type' => 'OpeningHoursSpecification',
+            'dayOfWeek' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+            'opens' => '08:00',
+            'closes' => '17:00'
+          ]
+        ]
+      ],
+      [
+        '@type' => 'SiteNavigationElement',
+        '@id' => url('/') . '/#navigation',
+        'name' => 'Navigasi Utama Prokar Elektronik',
+        'hasPart' => [
+          [
+            '@type' => 'WebPage',
+            'name' => 'Katalog Produk',
+            'url' => route('produk.index'),
+            'description' => 'Katalog produk elektronik bekas bergaransi resmi'
+          ],
+          [
+            '@type' => 'WebPage',
+            'name' => 'Layanan Servis',
+            'url' => route('servis.index'),
+            'description' => 'Layanan perbaikan dan servis elektronik rumah tangga'
+          ],
+          [
+            '@type' => 'WebPage',
+            'name' => 'Jual Elektronik',
+            'url' => route('jual.index'),
+            'description' => 'Jual barang elektronik bekas Anda dengan taksiran harga wajar'
+          ],
+          [
+            '@type' => 'WebPage',
+            'name' => 'Lacak Servis',
+            'url' => route('servis.lacak'),
+            'description' => 'Lacak progres servis elektronik secara real-time'
+          ]
+        ]
+      ]
+    ]
+  ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+  </script>
 
   <!-- DNS Prefetch & Preconnect untuk domain eksternal -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -467,19 +560,19 @@
 
 
   @if(!request()->routeIs('keranjang.index') && !request()->routeIs('checkout.address'))
-    <x-navbar />
+    @include('components.navbar')
   @endif
 
   {{ $slot ?? '' }}
   @yield('content')
 
   @if(!request()->routeIs('keranjang.index') && !request()->routeIs('checkout.address'))
-    <x-footer />
+    @include('components.footer')
   @endif
 
-  <x-cart-modal />
-  <x-search-modal />
-  <x-notification-prompt />
+  @include('components.cart-modal')
+  @include('components.search-modal')
+  @include('components.notification-prompt')
 
   <!-- Global Floating Form Error Toast (Smart Guidance Form) -->
   <div id="form-error-toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[10000] max-w-md w-[92%] sm:w-auto bg-[#0A0A0A] text-white border-2 border-red-500 rounded-2xl px-5 py-3.5 shadow-2xl flex items-center gap-3 transition-all duration-300 transform translate-y-24 opacity-0 pointer-events-none">
@@ -690,6 +783,43 @@
         setTimeout(loadFirebase, 2500);
       }
     })();
+  </script>
+
+  <!-- PWA Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/firebase-messaging-sw.js', { scope: '/' })
+          .then(function(registration) {
+            // Service worker successfully registered
+          })
+          .catch(function(err) {
+            console.warn('PWA ServiceWorker registration failed: ', err);
+          });
+      });
+
+      window.addEventListener('trigger-browser-notification', async function(e) {
+        const data = e.detail?.[0] || e.detail || {};
+        try {
+          const reg = await navigator.serviceWorker.ready;
+          if (reg) {
+            reg.showNotification(data.title || 'Prokar Elektronik', {
+              body: data.body || '',
+              icon: '/icons/icon-192x192.png',
+              badge: '/icons/favicon-32x32.png',
+              vibrate: [250, 100, 250, 100, 250],
+              tag: data.tag || ('prokar-notif-' + Date.now()),
+              renotify: true,
+              requireInteraction: true,
+              data: { url: data.url || '/' },
+              actions: [{ action: 'open', title: 'Buka Sekarang' }]
+            });
+          }
+        } catch (err) {
+          console.warn('Direct notification error:', err);
+        }
+      });
+    }
   </script>
 
   @livewireScripts

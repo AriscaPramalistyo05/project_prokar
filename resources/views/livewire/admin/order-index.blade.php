@@ -346,17 +346,37 @@
                                             </button>
                                         </div>
                                     @elseif($selectedOrder->payment_status === 'dp_paid')
-                                        <div class="pt-2">
-                                            <p class="text-[11px] text-gray-500 font-semibold mb-1.5">Verifikasi Pelunasan Sisa COD:</p>
-                                            <div class="flex flex-col sm:flex-row gap-2">
-                                                <button wire:click="settleRemainingPayment({{ $selectedOrder->id }}, 'cash')" class="btn btn-xs btn-success text-white font-bold flex-1">
-                                                    <x-icon name="o-banknotes" class="w-3.5 h-3.5" /> Pelunasan Tunai (Cash COD)
-                                                </button>
-                                                <button wire:click="settleRemainingPayment({{ $selectedOrder->id }}, 'transfer')" class="btn btn-xs btn-info text-white font-bold flex-1">
-                                                    <x-icon name="o-credit-card" class="w-3.5 h-3.5" /> Pelunasan Transfer Bank
+                                        @if($selectedOrder->status === 'shipped')
+                                            <div class="pt-2 bg-white p-3 rounded-lg border border-gray-200 shadow-2xs">
+                                                <p class="text-[11px] text-gray-600 font-bold mb-1.5 flex items-center gap-1.5">
+                                                    <x-icon name="o-truck" class="w-3.5 h-3.5 text-blue-600" />
+                                                    <span>Verifikasi Pelunasan Sisa COD (Barang Sedang Dikirim):</span>
+                                                </p>
+                                                <div class="flex flex-col sm:flex-row gap-2">
+                                                    <button wire:click="settleRemainingPayment({{ $selectedOrder->id }}, 'cash')" class="btn btn-xs btn-success text-white font-bold flex-1">
+                                                        <x-icon name="o-banknotes" class="w-3.5 h-3.5" /> Pelunasan Tunai (Cash COD)
+                                                    </button>
+                                                    <button wire:click="settleRemainingPayment({{ $selectedOrder->id }}, 'transfer')" class="btn btn-xs btn-info text-white font-bold flex-1">
+                                                        <x-icon name="o-credit-card" class="w-3.5 h-3.5" /> Pelunasan Transfer Bank
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        @elseif($selectedOrder->status === 'completed')
+                                            <div class="pt-2 text-xs font-semibold text-emerald-700 bg-emerald-50 p-2.5 rounded-lg border border-emerald-200 flex items-center gap-1.5">
+                                                <x-icon name="o-check-circle" class="w-4 h-4 text-emerald-600" />
+                                                <span>Pesanan telah selesai dan sisa tagihan telah lunas.</span>
+                                            </div>
+                                        @else
+                                            <div class="pt-2 text-xs text-amber-800 bg-amber-50/90 p-2.5 rounded-lg border border-amber-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                                                <div class="flex items-center gap-1.5">
+                                                    <x-icon name="o-information-circle" class="w-4 h-4 text-amber-600 shrink-0" />
+                                                    <span>Tombol pelunasan aktif setelah status diubah ke <strong>Dikirim (Shipped)</strong>.</span>
+                                                </div>
+                                                <button wire:click="updateStatus({{ $selectedOrder->id }}, 'shipped')" class="btn btn-xs bg-amber-500 hover:bg-amber-600 text-white font-bold border-none rounded-md shrink-0">
+                                                    <x-icon name="o-truck" class="w-3 h-3" /> Ubah ke Shipped
                                                 </button>
                                             </div>
-                                        </div>
+                                        @endif
                                     @endif
                                 </div>
                             @endif

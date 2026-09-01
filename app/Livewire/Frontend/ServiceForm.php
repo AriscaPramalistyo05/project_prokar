@@ -130,7 +130,9 @@ class ServiceForm extends Component
 
         $this->validate();
 
-        \Illuminate\Support\Facades\DB::transaction(function () {
+        $createdOrder = null;
+
+        \Illuminate\Support\Facades\DB::transaction(function () use (&$createdOrder) {
             $serviceOrder = \App\Models\ServiceOrder::create([
                 'user_id' => \Illuminate\Support\Facades\Auth::id(), // null if guest
                 'customer_name' => $this->nama,
@@ -174,7 +176,19 @@ class ServiceForm extends Component
                     ->get()
                     ->toArray();
             }
+
+            $createdOrder = $serviceOrder;
         });
+
+        // Kirim email konfirmasi tiket servis ke pelanggan (sama seperti checkout order)
+        if ($createdOrder && !empty($createdOrder->customer_email)) {
+            try {
+                \Illuminate\Support\Facades\Mail::to($createdOrder->customer_email)
+                    ->send(new \App\Mail\ServiceConfirmationMail($createdOrder));
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error("Failed sending service confirmation email {$createdOrder->service_code}: " . $e->getMessage());
+            }
+        }
 
         $this->submitted = true;
         $this->submittedWhatsapp = $this->whatsapp;

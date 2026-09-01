@@ -1037,9 +1037,15 @@
                 <div class="pt-6 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4 bg-gray-50 p-4 rounded-xl">
                     <div class="flex items-center gap-2">
                         <i class="fa-solid fa-tower-broadcast text-purple-600"></i>
-                        <p class="text-xs text-gray-600">Kirim notifikasi broadcast uji coba ke seluruh perangkat admin yang terdaftar.</p>
+                        <div>
+                            <p class="text-xs font-bold text-gray-800">Uji Coba Push Notifikasi PWA & FCM</p>
+                            <p class="text-[11px] text-gray-500">Test format notifikasi pesanan untuk layar HP Admin dan Pelanggan.</p>
+                        </div>
                     </div>
-                    <x-button label="Test Push Notification" icon="o-megaphone" wire:click="testFcm" class="bg-gray-900 text-white hover:bg-black font-semibold text-xs rounded-xl border-none shadow-sm" spinner="testFcm" />
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <x-button label="Test Notif Admin (Order Baru)" icon="o-bell" wire:click="testFcmAdmin" class="bg-purple-700 text-white hover:bg-purple-800 font-semibold text-xs rounded-xl border-none shadow-sm" spinner="testFcmAdmin" />
+                        <x-button label="Test Notif Customer (Dikirim)" icon="o-paper-airplane" wire:click="testFcmCustomer" class="bg-gray-900 text-white hover:bg-black font-semibold text-xs rounded-xl border-none shadow-sm" spinner="testFcmCustomer" />
+                    </div>
                 </div>
 
             </div>

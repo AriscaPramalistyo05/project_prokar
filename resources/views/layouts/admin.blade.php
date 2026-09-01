@@ -12,8 +12,14 @@
         $adminLogo = setting('shop_logo', 'images/logo prokar simpel.png');
         $adminLogoUrl = $adminLogo ? (str_starts_with($adminLogo, 'images/') ? asset($adminLogo) : asset('storage/' . $adminLogo)) : asset('images/logo prokar simpel.png');
     @endphp
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ $adminFaviconUrl }}" />
-    <link rel="apple-touch-icon" href="{{ $adminFaviconUrl }}" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Admin — {{ setting('shop_name', 'Prokar Elektronik') }}" />
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ file_exists(public_path('icons/favicon-32x32.png')) ? asset('icons/favicon-32x32.png') : $adminFaviconUrl }}" />
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ file_exists(public_path('icons/icon-192x192.png')) ? asset('icons/icon-192x192.png') : $adminLogoUrl }}" />
+    <link rel="apple-touch-icon" href="{{ file_exists(public_path('icons/apple-touch-icon.png')) ? asset('icons/apple-touch-icon.png') : $adminFaviconUrl }}" />
     {{-- FontAwesome 6 --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
@@ -281,6 +287,11 @@
         };
 
         document.addEventListener('DOMContentLoaded', async function () {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/firebase-messaging-sw.js', { scope: '/' })
+                    .catch(function(err) { console.warn('Admin SW error:', err); });
+            }
+
             if ('Notification' in window) {
                 const fcmBtn = document.getElementById('admin-fcm-btn');
                 if (Notification.permission === 'default' && fcmBtn) {
@@ -290,8 +301,33 @@
                     const token = localStorage.getItem('prokar_admin_fcm_token');
                     if (!token) {
                         window.requestAdminFcmPermission && window.requestAdminFcmPermission();
+                    }
                 }
             }
+
+            window.addEventListener('trigger-browser-notification', async function(e) {
+                const data = e.detail?.[0] || e.detail || {};
+                if ('serviceWorker' in navigator) {
+                    try {
+                        const reg = await navigator.serviceWorker.ready;
+                        if (reg) {
+                            reg.showNotification(data.title || 'Prokar Elektronik', {
+                                body: data.body || '',
+                                icon: '/icons/icon-192x192.png',
+                                badge: '/icons/favicon-32x32.png',
+                                vibrate: [250, 100, 250, 100, 250],
+                                tag: data.tag || ('prokar-notif-' + Date.now()),
+                                renotify: true,
+                                requireInteraction: true,
+                                data: { url: data.url || '/' },
+                                actions: [{ action: 'open', title: 'Buka Sekarang' }]
+                            });
+                        }
+                    } catch (err) {
+                        console.warn('Direct notification error:', err);
+                    }
+                }
+            });
         });
 
         document.addEventListener('livewire:init', () => {

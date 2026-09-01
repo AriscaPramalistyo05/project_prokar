@@ -15,7 +15,9 @@ class SellSubmission extends Model
 
     protected $fillable = [
         'submission_code',
+        'user_id',
         'customer_name',
+        'customer_email',
         'customer_phone',
         'customer_whatsapp',
         'province_id',
@@ -71,6 +73,11 @@ class SellSubmission extends Model
         });
     }
 
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
@@ -84,5 +91,74 @@ class SellSubmission extends Model
     public function sellSubmissionImages(): HasMany
     {
         return $this->hasMany(SellSubmissionImage::class);
+    }
+
+    public function getFullAddressAttribute(): string
+    {
+        if (!$this->province_id) {
+            return $this->address_detail ?: ($this->customer_city ?? '-');
+        }
+
+        $isNumeric = is_numeric($this->province_id) || is_numeric($this->regency_id);
+
+        if (!$isNumeric) {
+            $parts = array_filter([
+                $this->address_detail,
+                $this->village_id,
+                $this->district_id,
+                $this->regency_id,
+                $this->province_id,
+            ]);
+            return implode(', ', $parts);
+        }
+
+        $province = \Illuminate\Support\Facades\Cache::remember("prov_{$this->province_id}", 86400 * 30, function () {
+            if (!$this->province_id) return '';
+            try {
+                $response = \Illuminate\Support\Facades\Http::timeout(0.4)->get("https://www.emsifa.com/api-wilayah-indonesia/api/province/{$this->province_id}.json");
+                return $response->successful() ? ($response->json('name') ?? '') : '';
+            } catch (\Throwable $e) {
+                return '';
+            }
+        });
+
+        $regency = \Illuminate\Support\Facades\Cache::remember("reg_{$this->regency_id}", 86400 * 30, function () {
+            if (!$this->regency_id) return '';
+            try {
+                $response = \Illuminate\Support\Facades\Http::timeout(0.4)->get("https://www.emsifa.com/api-wilayah-indonesia/api/regency/{$this->regency_id}.json");
+                return $response->successful() ? ($response->json('name') ?? '') : '';
+            } catch (\Throwable $e) {
+                return '';
+            }
+        });
+
+        $district = \Illuminate\Support\Facades\Cache::remember("dist_{$this->district_id}", 86400 * 30, function () {
+            if (!$this->district_id) return '';
+            try {
+                $response = \Illuminate\Support\Facades\Http::timeout(0.4)->get("https://www.emsifa.com/api-wilayah-indonesia/api/district/{$this->district_id}.json");
+                return $response->successful() ? ($response->json('name') ?? '') : '';
+            } catch (\Throwable $e) {
+                return '';
+            }
+        });
+
+        $village = \Illuminate\Support\Facades\Cache::remember("vill_{$this->village_id}", 86400 * 30, function () {
+            if (!$this->village_id) return '';
+            try {
+                $response = \Illuminate\Support\Facades\Http::timeout(0.4)->get("https://www.emsifa.com/api-wilayah-indonesia/api/village/{$this->village_id}.json");
+                return $response->successful() ? ($response->json('name') ?? '') : '';
+            } catch (\Throwable $e) {
+                return '';
+            }
+        });
+
+        $parts = array_filter([
+            $this->address_detail,
+            $village ? ucwords(strtolower($village)) : null,
+            $district ? 'Kec. ' . ucwords(strtolower($district)) : null,
+            $regency ? ucwords(strtolower($regency)) : null,
+            $province ? ucwords(strtolower($province)) : null,
+        ]);
+        return implode(', ', $parts) ?: '-';
     }
 }

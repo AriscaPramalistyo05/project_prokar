@@ -338,6 +338,10 @@ class SettingIndex extends Component
             $path = $this->logo_file->store('settings', 'public');
             $settingService->set('shop_logo', $path, 'general', 'image', 'Logo Utama Toko');
             $this->existing_logo = $path;
+            
+            // Auto generate PWA multi-resolution icons & manifest
+            \App\Services\PwaService::generateIcons(storage_path('app/public/' . $path));
+
             $this->logo_file = null;
         }
 
@@ -346,8 +350,17 @@ class SettingIndex extends Component
             $path = $this->favicon_file->store('settings', 'public');
             $settingService->set('shop_favicon', $path, 'general', 'image', 'Favicon Toko');
             $this->existing_favicon = $path;
+
+            // If no logo was just uploaded, update PWA icons from favicon
+            if (!$this->logo_file) {
+                \App\Services\PwaService::generateIcons(storage_path('app/public/' . $path));
+            }
+
             $this->favicon_file = null;
         }
+
+        // Always sync manifest with latest shop name / tagline
+        \App\Services\PwaService::generateManifest();
 
         // Upload 6 Hero Category Images
         $heroCategories = [
@@ -543,17 +556,56 @@ class SettingIndex extends Component
 
     public function testFcm(FcmNotificationService $fcmService): void
     {
-        try {
-            $fcmService->sendToAdmins(
-                'Test Notifikasi Admin',
-                'Ini adalah notifikasi uji coba Firebase Cloud Messaging dari Pengaturan Prokar Elektronik.',
-                ['type' => 'test']
-            );
+        $this->testFcmAdmin($fcmService);
+    }
 
-            $this->success('Perintah push notifikasi berhasil dikirim ke perangkat admin yang terdaftar!');
-        } catch (\Exception $e) {
-            $this->error('Gagal mengirim push notifikasi: ' . $e->getMessage());
+    public function testFcmAdmin(FcmNotificationService $fcmService): void
+    {
+        $title = '🛒 Pesanan Baru Masuk #ORD-20260901-0002';
+        $body = 'Pesanan Smart TV 4K UHD 55" dari Dimas Arya (Rp 5.524.000) siap diproses.';
+        $url = '/admin/orders';
+
+        try {
+            $fcmService->sendToAdmins($title, $body, ['type' => 'new_order', 'url' => $url]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('FCM sendToAdmins notice: ' . $e->getMessage());
         }
+
+        // Trigger live browser Service Worker notification
+        $this->dispatch('trigger-browser-notification', [
+            'title' => $title,
+            'body' => $body,
+            'url' => $url,
+            'tag' => 'prokar-admin-test-' . time(),
+        ]);
+
+        $this->success('Notifikasi Admin berhasil dikirim & ditampilkan!');
+    }
+
+    public function testFcmCustomer(FcmNotificationService $fcmService): void
+    {
+        $title = '🚚 Pesanan Sedang Dikirim!';
+        $body = 'Pesanan #ORD-20260901-0003 sedang diantar oleh kurir Prokar Elektronik ke alamat tujuan.';
+        $url = '/dashboard';
+
+        try {
+            $customer = \App\Models\User::role('customer')->first() ?? \App\Models\User::first();
+            if ($customer) {
+                $fcmService->sendToUser($customer, $title, $body, ['type' => 'order_shipped', 'url' => $url]);
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('FCM sendToUser notice: ' . $e->getMessage());
+        }
+
+        // Trigger live browser Service Worker notification
+        $this->dispatch('trigger-browser-notification', [
+            'title' => $title,
+            'body' => $body,
+            'url' => $url,
+            'tag' => 'prokar-customer-test-' . time(),
+        ]);
+
+        $this->success('Notifikasi Pelanggan berhasil dikirim & ditampilkan!');
     }
 
     public function deleteLogo(SettingService $settingService): void

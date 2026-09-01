@@ -121,6 +121,17 @@ class SellSubmissionDetail extends Component
             'status' => 'paid'
         ]);
         $this->mount($this->submission);
+
+        // Kirim email bukti transaksi jual barang selesai ke pelanggan
+        if (!empty($this->submission->customer_email)) {
+            try {
+                \Illuminate\Support\Facades\Mail::to($this->submission->customer_email)
+                    ->send(new \App\Mail\SellSubmissionCompletedMail($this->submission));
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error("Failed sending sell submission completed email {$this->submission->submission_code}: " . $e->getMessage());
+            }
+        }
+
         $methodLabel = $method === 'transfer' ? 'Transfer Bank' : 'Tunai di Tempat (Cash)';
         $this->toast(type: 'success', title: "Pembayaran ke pelanggan selesai ({$methodLabel}).");
     }
