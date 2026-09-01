@@ -31,13 +31,90 @@
     <priority>0.4</priority>
             </url>
     <url>
-    <loc>https://prokarelektronik.com/produk?kategori=kulkas-showcase</loc>
+    <loc>https://prokarelektronik.com/produk?kategori=kulkas</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
             </url>
     <url>
-    <loc>https://prokarelektronik.com/produk/kulkas-polytron-belleza-khusus</loc>
-    <lastmod>2026-09-01T20:01:11+07:00</lastmod>
+    <loc>https://prokarelektronik.com/produk?kategori=televisi</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>https://prokarelektronik.com/produk?kategori=mesin-cuci</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>https://prokarelektronik.com/produk?kategori=kipas-angin</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>https://prokarelektronik.com/produk?kategori=blender</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>https://prokarelektronik.com/produk?kategori=microwave</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>https://prokarelektronik.com/produk?kategori=ac</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>https://prokarelektronik.com/produk?kategori=vacuum-cleaner</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>https://prokarelektronik.com/produk/smart-tv-4k-uhd-55-inch</loc>
+    <lastmod>2026-08-25T01:08:38+07:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>https://prokarelektronik.com/produk/kulkas-2-pintu-inverter</loc>
+    <lastmod>2026-08-25T01:08:38+07:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>https://prokarelektronik.com/produk/mesin-cuci-tabung-1-8kg</loc>
+    <lastmod>2026-08-25T01:08:38+07:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>https://prokarelektronik.com/produk/kipas-angin-berdiri</loc>
+    <lastmod>2026-08-25T01:08:38+07:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>https://prokarelektronik.com/produk/blender-multifungsi</loc>
+    <lastmod>2026-08-25T01:08:38+07:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>https://prokarelektronik.com/produk/microwave-digital-20l</loc>
+    <lastmod>2026-08-25T01:08:38+07:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>https://prokarelektronik.com/produk/ac-split-1-pk-low-watt</loc>
+    <lastmod>2026-08-25T01:08:38+07:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>https://prokarelektronik.com/produk/vacuum-cleaner-cordless</loc>
+    <lastmod>2026-08-25T01:08:38+07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
             </url>

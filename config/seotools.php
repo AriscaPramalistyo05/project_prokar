@@ -10,11 +10,27 @@ return [
          * The default configurations to be used by the meta generator.
          */
         'defaults'       => [
-            'title'        => 'Prokar Elektronik',
-            'titleBefore'  => false, // Put defaults.title before page title, like 'It's Over 9000! - Dashboard'
-            'description'  => 'Jual, beli, dan servis elektronik bekas bergaransi terpercaya. Kulkas, TV, Mesin Cuci, AC, Dispenser, dan Microwave berkualitas dengan teknisi berpengalaman.',
+            'title'        => 'Prokar Elektronik – Jual, Beli & Servis Elektronik Bekas Jepara, Kudus, Pati, Rembang',
+            'titleBefore'  => false,
+            'description'  => 'Pusat jual beli & servis elektronik bekas/second bergaransi terpercaya di Jepara, Kudus, Pati, Rembang. Kulkas, TV, Mesin Cuci, AC, Dispenser berkualitas dengan teknisi berpengalaman & antar jemput.',
             'separator'    => ' | ',
-            'keywords'     => ['elektronik bekas', 'servis elektronik', 'jual beli elektronik', 'kulkas bekas', 'tv bekas', 'mesin cuci bekas', 'servis kulkas', 'servis mesin cuci', 'servis tv', 'prokar'],
+            'keywords'     => [
+                'jual elektronik bekas',
+                'beli elektronik bekas',
+                'beli elektronik second',
+                'servis elektronik jepara',
+                'servis elektronik kudus',
+                'servis elektronik pati',
+                'servis elektronik rembang',
+                'servis kulkas jepara',
+                'servis mesin cuci kudus',
+                'servis tv pati',
+                'jual kulkas second rembang',
+                'toko elektronik bekas jawa tengah',
+                'jual beli elektronik second terdekat',
+                'service ac jepara',
+                'prokar elektronik'
+            ],
             'canonical'    => 'current', // Set to null or 'full' to use Url::full(), set to 'current' to use Url::current(), set false to total remove
             'robots'       => 'all', // Set to 'all', 'none' or any combination of index/noindex and follow/nofollow
         ],

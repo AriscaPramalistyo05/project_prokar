@@ -20,14 +20,14 @@
     $shopFavicon = $savedFavicon ? (str_starts_with($savedFavicon, 'images/') ? asset($savedFavicon) : asset('storage/' . $savedFavicon)) : asset('images/logo prokar.png');
   @endphp
 
-  <title>@yield('title', $shopName . ' – ' . $shopTagline)</title>
-  <meta name="description" content="@yield('description', $shopName . ': jual beli dan servis elektronik bekas berkualitas di Jepara. Kulkas, TV, mesin cuci, AC, dispenser bergaransi dengan harga terjangkau. Teknisi berpengalaman.')" />
-  <meta name="keywords" content="@yield('keywords', 'elektronik bekas Jepara, jual kulkas second, servis TV, servis mesin cuci, servis kulkas, AC second, toko elektronik Mlonggo, jual beli elektronik, ' . $shopName)" />
+  <title>@yield('title', $shopName . ' – Jual, Beli & Servis Elektronik Bekas di Jepara, Kudus, Pati, Rembang')</title>
+  <meta name="description" content="@yield('description', $shopName . ': Pusat jual beli dan jasa servis elektronik bekas/second bergaransi di Jepara, Kudus, Pati, dan Rembang. Kulkas, TV, Mesin Cuci, AC, Dispenser terpercaya dengan teknisi profesional & antar jemput gratis.')" />
+  <meta name="keywords" content="@yield('keywords', 'jual elektronik bekas, beli elektronik second, servis elektronik jepara, servis kulkas jepara, servis mesin cuci kudus, servis tv pati, jual kulkas second rembang, toko elektronik bekas terpercaya, terima elektronik bekas dijemput, service ac jepara, ' . $shopName)" />
   <meta name="author" content="{{ $shopName }}" />
   <meta name="robots" content="@yield('robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1')" />
   <meta name="googlebot" content="index, follow" />
   <meta name="geo.region" content="ID-JT" />
-  <meta name="geo.placename" content="Mlonggo, Jepara" />
+  <meta name="geo.placename" content="Jepara, Kudus, Pati, Rembang, Jawa Tengah" />
   <meta name="geo.position" content="-6.514774;110.712282" />
   <meta name="ICBM" content="-6.514774, 110.712282" />
   <link rel="canonical" href="@yield('canonical', url()->current())" />
@@ -108,6 +108,22 @@
           '@type' => 'GeoCoordinates',
           'latitude' => -6.514774,
           'longitude' => 110.712282
+        ],
+        'areaServed' => [
+          ['@type' => 'City', 'name' => 'Jepara'],
+          ['@type' => 'City', 'name' => 'Kudus'],
+          ['@type' => 'City', 'name' => 'Pati'],
+          ['@type' => 'City', 'name' => 'Rembang'],
+          ['@type' => 'AdministrativeArea', 'name' => 'Jawa Tengah']
+        ],
+        'knowsAbout' => [
+          'Jual Beli Elektronik Bekas',
+          'Jual Kulkas Second',
+          'Servis Mesin Cuci',
+          'Servis Kulkas Panggilan',
+          'Servis TV LED LCD',
+          'Servis AC',
+          'Beli Elektronik Bekas Dijemput'
         ],
         'openingHoursSpecification' => [
           [
