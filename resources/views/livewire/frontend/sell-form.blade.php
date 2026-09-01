@@ -54,6 +54,17 @@
                     </div>
 
                     <div>
+                        <label for="email"
+                            class="block text-sm font-bold uppercase tracking-widest mb-2 text-gray-700 font-public">Alamat
+                            Email</label>
+                        <input wire:model="email" id="email" type="email" placeholder="email@contoh.com"
+                            class="w-full bg-gray-50 border @error('email') border-red-500 bg-red-50/20 @else border-gray-200 @enderror rounded-2xl p-4 text-base focus:bg-white focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all" />
+                        @error('email')
+                            <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
                         <label
                             class="block text-sm font-bold uppercase tracking-widest mb-2 text-gray-700 font-public">Alamat
                             Lengkap</label>

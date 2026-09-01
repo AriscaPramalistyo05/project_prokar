@@ -138,6 +138,11 @@ class OrderIndex extends Component
 
     public function settleRemainingPayment(Order $order, string $method = 'cash')
     {
+        if ($order->status !== 'shipped' && $order->status !== 'completed') {
+            $this->dispatch('mary-toast', type: 'warning', title: 'Pesanan harus dalam status Dikirim (Shipped) sebelum mencatat pelunasan.');
+            return;
+        }
+
         $order->update([
             'payment_status' => 'paid',
             'payment_method' => $method,

@@ -42,9 +42,20 @@ class TrackService extends Component
         if ($this->serviceOrder->status === 'waiting_approval') {
             $this->serviceOrder->update([
                 'status' => 'in_progress',
+                'customer_approval' => 'approved',
+                'approved_at' => now(),
             ]);
             
             event(new \App\Events\CustomerApprovalUpdated($this->serviceOrder, 'approved'));
+
+            if (!empty($this->serviceOrder->customer_email)) {
+                try {
+                    \Illuminate\Support\Facades\Mail::to($this->serviceOrder->customer_email)
+                        ->send(new \App\Mail\ServiceApprovalConfirmationMail($this->serviceOrder, 'approved'));
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::error("Failed sending service approval email: " . $e->getMessage());
+                }
+            }
 
             // Refresh model to get updated logs
             $this->serviceOrder->refresh();
@@ -56,9 +67,19 @@ class TrackService extends Component
         if ($this->serviceOrder->status === 'waiting_approval') {
             $this->serviceOrder->update([
                 'status' => 'cancelled',
+                'customer_approval' => 'rejected',
             ]);
             
             event(new \App\Events\CustomerApprovalUpdated($this->serviceOrder, 'rejected'));
+
+            if (!empty($this->serviceOrder->customer_email)) {
+                try {
+                    \Illuminate\Support\Facades\Mail::to($this->serviceOrder->customer_email)
+                        ->send(new \App\Mail\ServiceApprovalConfirmationMail($this->serviceOrder, 'rejected'));
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::error("Failed sending service rejection email: " . $e->getMessage());
+                }
+            }
 
             // Refresh model
             $this->serviceOrder->refresh();

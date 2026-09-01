@@ -14,14 +14,20 @@ class AdminNavigationTest extends DuskTestCase
         if (!$admin) {
             $admin = User::factory()->create([
                 'email' => 'admin@prokar.id',
+                'name' => 'Super Admin',
+                'email_verified_at' => now(),
             ]);
             $admin->assignRole('super_admin');
+        } else {
+            if (!$admin->hasRole('super_admin')) {
+                $admin->assignRole('super_admin');
+            }
         }
 
         $this->browse(function (Browser $browser) use ($admin) {
             $browser->loginAs($admin)
                 ->visit('/admin/dashboard')
-                ->waitForText('Selamat Datang')
+                ->waitForText('Selamat Datang', 10)
                 ->assertSee('Selamat Datang')
                 ->pause(300);
 

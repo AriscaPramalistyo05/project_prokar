@@ -15,37 +15,52 @@
 <section class="section-overlap bg-brand-soft pt-16 pb-32 md:pt-24 md:pb-40 z-20 flex-grow flex flex-col items-center">
   <div class="max-w-3xl w-full mx-auto px-6 lg:px-12 text-center">
     
-    <!-- Form Pencarian (Unified Design) -->
-    <div class="bg-white rounded-2xl sm:rounded-full p-2 sm:p-2.5 flex flex-col sm:flex-row items-stretch sm:items-center shadow-lg shadow-black/5 border-2 border-black/10 max-w-2xl mx-auto w-full relative z-30 transition-all focus-within:border-black focus-within:shadow-xl">
-      <div class="pl-4 hidden sm:flex items-center text-gray-400">
-        <i class="fa-solid fa-magnifying-glass text-lg"></i>
+    <!-- Form Pencarian (Unified Mobile & Desktop Design) -->
+    <div class="max-w-2xl md:max-w-3xl mx-auto w-full relative z-30">
+      <div class="bg-white rounded-2xl sm:rounded-full p-2 sm:p-2.5 flex flex-col sm:flex-row items-stretch sm:items-center shadow-xl shadow-black/5 border-2 border-black/10 transition-all focus-within:border-black focus-within:shadow-2xl focus-within:ring-2 focus-within:ring-black/10">
+        
+        <!-- Input Area -->
+        <div class="relative flex-1 min-w-0 flex items-center bg-gray-50 sm:bg-transparent rounded-xl sm:rounded-none px-3.5 sm:px-4 py-1 sm:py-0">
+          <div class="text-gray-400 pr-3 flex items-center shrink-0">
+            <i class="fa-solid fa-magnifying-glass text-base sm:text-lg"></i>
+          </div>
+          
+          <input type="text" 
+            placeholder="Masukkan nomor tiket servis..."
+            wire:model="ticketNumber"
+            wire:keydown.enter="search"
+            class="w-full bg-transparent py-2.5 sm:py-3 text-black font-public font-bold text-sm sm:text-base md:text-lg focus:outline-none uppercase placeholder:normal-case placeholder:text-gray-400 placeholder:font-medium tracking-wider" 
+            aria-label="Nomor Tiket Servis" />
+            
+          @if(!empty($ticketNumber))
+            <button type="button" wire:click="$set('ticketNumber', '')" class="text-gray-400 hover:text-black transition-colors pl-2 shrink-0" title="Hapus">
+              <i class="fa-solid fa-circle-xmark text-lg"></i>
+            </button>
+          @endif
+        </div>
+
+        <!-- Submit Button -->
+        <button 
+          type="button"
+          wire:click="search"
+          wire:loading.attr="disabled"
+          class="shrink-0 bg-black hover:bg-neutral-900 text-[#FFCC00] font-public font-black text-xs sm:text-sm uppercase tracking-widest px-6 sm:px-8 py-3.5 sm:py-3.5 rounded-xl sm:rounded-full transition-all active:scale-95 shadow-md flex items-center justify-center gap-2 cursor-pointer mt-2 sm:mt-0">
+          <span wire:loading.remove wire:target="search" class="flex items-center gap-2">
+            <span>Lacak Status</span>
+            <i class="fa-solid fa-arrow-right text-xs"></i>
+          </span>
+          <span wire:loading.inline-flex wire:target="search" class="items-center gap-2">
+            <i class="fa-solid fa-circle-notch fa-spin text-xs"></i>
+            <span>Mencari...</span>
+          </span>
+        </button>
       </div>
-      <div class="relative flex-1 min-w-0 flex items-center">
-        <input type="text" 
-          placeholder="MASUKKAN NOMOR TIKET (CONTOH: SRV-2026...)"
-          wire:model="ticketNumber"
-          wire:keydown.enter="search"
-          class="w-full bg-gray-50 sm:bg-transparent rounded-xl sm:rounded-none px-4 py-3 sm:py-2 text-black font-public font-bold text-sm sm:text-base md:text-lg focus:outline-none uppercase placeholder:normal-case placeholder:text-gray-400 placeholder:font-medium tracking-wide" />
-        @if(!empty($ticketNumber))
-          <button type="button" wire:click="$set('ticketNumber', '')" class="absolute right-3 text-gray-400 hover:text-black transition-colors" title="Hapus">
-            <i class="fa-solid fa-circle-xmark text-base"></i>
-          </button>
-        @endif
+
+      <!-- Helper info for finding ticket -->
+      <div class="mt-3 flex items-center justify-center gap-1.5 text-xs text-gray-500 font-inter font-medium">
+        <i class="fa-solid fa-circle-info text-gray-400 text-xs"></i>
+        <span>Nomor tiket dapat dilihat pada email konfirmasi pengajuan servis Anda</span>
       </div>
-      <button 
-        wire:click="search"
-        wire:loading.attr="disabled"
-        class="shrink-0 bg-black text-[#FFCC00] font-public font-black text-xs sm:text-sm uppercase tracking-widest px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl sm:rounded-full hover:bg-neutral-900 transition-all active:scale-95 shadow-md flex items-center justify-center gap-2 cursor-pointer mt-1 sm:mt-0">
-        <span wire:loading.remove wire:target="search" class="flex items-center gap-2">
-          <i class="fa-solid fa-magnifying-glass text-xs sm:hidden"></i>
-          <span>Lacak Status</span>
-          <i class="fa-solid fa-arrow-right text-xs hidden sm:inline-block"></i>
-        </span>
-        <span wire:loading.inline-flex wire:target="search" class="items-center gap-2">
-          <i class="fa-solid fa-circle-notch fa-spin text-xs"></i>
-          <span>Mencari...</span>
-        </span>
-      </button>
     </div>
 
     @if ($errorMessage)
@@ -62,7 +77,7 @@
       </div>
       <h3 class="text-gray-800 font-public font-black text-xl md:text-2xl uppercase tracking-tighter mb-2">Belum Ada Pencarian</h3>
       <p class="text-gray-500 font-inter text-sm md:text-base leading-relaxed max-w-sm">
-        Silakan masukkan nomor tiket (Contoh: SRV-xxxx) yang Anda dapatkan saat melakukan pengajuan servis.
+        Silakan masukkan nomor tiket servis yang Anda terima melalui email konfirmasi atau bukti pengajuan.
       </p>
     </div>
 

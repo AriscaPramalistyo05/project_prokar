@@ -109,6 +109,16 @@ class ServiceDetail extends Component
             'approved_at' => now(),
         ]);
         $this->serviceOrder->refresh();
+
+        if (!empty($this->serviceOrder->customer_email)) {
+            try {
+                \Illuminate\Support\Facades\Mail::to($this->serviceOrder->customer_email)
+                    ->send(new \App\Mail\ServiceApprovalConfirmationMail($this->serviceOrder, 'approved'));
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error("Failed sending service approval email from admin: " . $e->getMessage());
+            }
+        }
+
         $this->logStatusChange('Pelanggan menyetujui estimasi harga. Lanjut perbaikan.');
         $this->success('Status diubah: Lanjut Perbaikan.');
     }
@@ -120,6 +130,16 @@ class ServiceDetail extends Component
             'customer_approval' => 'rejected',
         ]);
         $this->serviceOrder->refresh();
+
+        if (!empty($this->serviceOrder->customer_email)) {
+            try {
+                \Illuminate\Support\Facades\Mail::to($this->serviceOrder->customer_email)
+                    ->send(new \App\Mail\ServiceApprovalConfirmationMail($this->serviceOrder, 'rejected'));
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error("Failed sending service rejection email from admin: " . $e->getMessage());
+            }
+        }
+
         $this->logStatusChange('Pelanggan menolak estimasi harga. Servis dibatalkan.');
         $this->success('Servis dibatalkan.');
     }

@@ -13,6 +13,7 @@ class SellForm extends Component
     use WithFileUploads;
 
     public $nama = '';
+    public $email = '';
     public $whatsapp = '';
     
     // Address Fields
@@ -35,6 +36,7 @@ class SellForm extends Component
     {
         return [
             'nama' => 'required|string|min:2|max:100',
+            'email' => 'required|email|max:150',
             'whatsapp' => ['required', 'string', new \App\Rules\IndonesianPhone()],
             'province_id' => 'required',
             'regency_id' => 'required',
@@ -59,6 +61,8 @@ class SellForm extends Component
     {
         return [
             'nama.required' => 'Nama lengkap wajib diisi.',
+            'email.required' => 'Alamat email wajib diisi.',
+            'email.email' => 'Format alamat email tidak valid.',
             'whatsapp.required' => 'Nomor WhatsApp wajib diisi.',
             'province_id.required' => 'Provinsi wajib dipilih.',
             'regency_id.required' => 'Kabupaten/Kota wajib dipilih.',
@@ -80,6 +84,7 @@ class SellForm extends Component
         if (\Illuminate\Support\Facades\Auth::check()) {
             $user = \Illuminate\Support\Facades\Auth::user();
             $this->nama = $user->name;
+            $this->email = $user->email ?? '';
             $this->whatsapp = $user->phone ?? '';
         }
     }
@@ -122,7 +127,9 @@ class SellForm extends Component
         }
 
         $submission = SellSubmission::create([
+            'user_id' => \Illuminate\Support\Facades\Auth::id(),
             'customer_name' => $this->nama,
+            'customer_email' => $this->email,
             'customer_phone' => $this->whatsapp,
             'customer_whatsapp' => $this->whatsapp,
             'province_id' => $this->province_id,
@@ -152,10 +159,20 @@ class SellForm extends Component
             }
         }
 
+        // Kirim email konfirmasi pengajuan jual ke pelanggan
+        if (!empty($submission->customer_email)) {
+            try {
+                \Illuminate\Support\Facades\Mail::to($submission->customer_email)
+                    ->send(new \App\Mail\SellSubmissionConfirmationMail($submission));
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error("Failed sending sell submission confirmation email {$submission->submission_code}: " . $e->getMessage());
+            }
+        }
+
         $this->submitted = true;
         $this->newServiceCode = $submission->submission_code;
         $this->submittedWhatsapp = $this->whatsapp;
-        $this->reset(['nama', 'whatsapp', 'province_id', 'regency_id', 'district_id', 'village_id', 'address_detail', 'kategori', 'merek', 'kondisi', 'deskripsi', 'media']);
+        $this->reset(['nama', 'email', 'whatsapp', 'province_id', 'regency_id', 'district_id', 'village_id', 'address_detail', 'kategori', 'merek', 'kondisi', 'deskripsi', 'media']);
         
         \Illuminate\Support\Facades\RateLimiter::hit($rateLimitKey, 3600); // 1 jam cooldown
     }

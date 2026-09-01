@@ -1,10 +1,20 @@
 <div x-data="{
     isProcessing: false,
+    processTitle: 'Memproses Transaksi...',
+    processDesc: 'Mengamankan ketersediaan barang dan menyiapkan rincian pesanan Anda.',
+    processIcon: 'spinner',
     resetOverlay() {
         this.isProcessing = false;
+    },
+    setSuccessRedirect() {
+        this.isProcessing = true;
+        this.processTitle = 'Pembayaran Terverifikasi!';
+        this.processDesc = 'Sedang mengalihkan ke nota transaksi dan bukti pesanan Anda...';
+        this.processIcon = 'check';
     }
 }" 
 x-on:checkout-error.window="resetOverlay()"
+x-on:checkout-redirecting.window="setSuccessRedirect()"
 class="w-full min-h-full px-4 pt-5 pb-8 sm:px-6 lg:px-10 lg:pt-8 flex flex-col justify-between relative">
 
   <!-- ===================== FULL SCREEN PROCESSING OVERLAY ===================== -->
@@ -15,22 +25,29 @@ class="w-full min-h-full px-4 pt-5 pb-8 sm:px-6 lg:px-10 lg:pt-8 flex flex-col j
        x-transition:leave="transition ease-in duration-150"
        x-transition:leave-start="opacity-100 scale-100"
        x-transition:leave-end="opacity-0 scale-95"
-       class="fixed inset-0 z-[999999] bg-[#0A0A0A]/80 backdrop-blur-sm flex items-center justify-center p-4"
+       class="fixed inset-0 z-[999999] bg-[#0A0A0A]/85 backdrop-blur-md flex items-center justify-center p-4"
        style="display: none;">
        
-    <div class="bg-[#FCFCFA] border-2 border-[#0A0A0A] shadow-[8px_8px_0_0_#0A0A0A] rounded-3xl p-6 sm:p-8 max-w-sm w-full text-center flex flex-col items-center gap-4">
+    <div class="bg-[#FCFCFA] border-2 border-[#0A0A0A] shadow-[8px_8px_0_0_#0A0A0A] rounded-3xl p-6 sm:p-8 max-w-sm w-full text-center flex flex-col items-center gap-4 animate-in fade-in zoom-in duration-200">
       
-      <!-- Animated Spinner -->
-      <div class="w-16 h-16 rounded-2xl bg-[#FFCC00] border-2 border-[#0A0A0A] shadow-[4px_4px_0_0_#0A0A0A] flex items-center justify-center relative">
-        <i class="fa-solid fa-spinner fa-spin text-2xl text-[#0A0A0A]"></i>
-      </div>
+      <!-- Animated Spinner / Check Icon -->
+      <template x-if="processIcon === 'check'">
+        <div class="w-16 h-16 rounded-2xl bg-emerald-500 border-2 border-[#0A0A0A] shadow-[4px_4px_0_0_#0A0A0A] flex items-center justify-center text-white text-2xl animate-bounce">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+      </template>
+      <template x-if="processIcon !== 'check'">
+        <div class="w-16 h-16 rounded-2xl bg-[#FFCC00] border-2 border-[#0A0A0A] shadow-[4px_4px_0_0_#0A0A0A] flex items-center justify-center relative">
+          <i class="fa-solid fa-spinner fa-spin text-2xl text-[#0A0A0A]"></i>
+        </div>
+      </template>
 
       <!-- Copywriting -->
       <div class="flex flex-col gap-1.5">
-        <h3 class="font-public font-bold text-xl sm:text-2xl uppercase tracking-tight text-[#0A0A0A]">
+        <h3 class="font-public font-bold text-xl sm:text-2xl uppercase tracking-tight text-[#0A0A0A]" x-text="processTitle">
           Memproses Transaksi...
         </h3>
-        <p class="font-inter text-xs sm:text-sm text-[#0A0A0A]/70 leading-relaxed max-w-xs mx-auto">
+        <p class="font-inter text-xs sm:text-sm text-[#0A0A0A]/70 leading-relaxed max-w-xs mx-auto" x-text="processDesc">
           Mengamankan ketersediaan barang dan menyiapkan rincian pesanan Anda.
         </p>
       </div>
@@ -322,11 +339,17 @@ class="w-full min-h-full px-4 pt-5 pb-8 sm:px-6 lg:px-10 lg:pt-8 flex flex-col j
                 window.snap.pay(data.snap_token, {
                     onSuccess: function(result) {
                         currentActiveSnapToken = null;
-                        window.location.href = successUrl;
+                        window.dispatchEvent(new CustomEvent('checkout-redirecting'));
+                        setTimeout(() => {
+                            window.location.href = successUrl;
+                        }, 250);
                     },
                     onPending: function(result) {
                         currentActiveSnapToken = null;
-                        window.location.href = successUrl;
+                        window.dispatchEvent(new CustomEvent('checkout-redirecting'));
+                        setTimeout(() => {
+                            window.location.href = successUrl;
+                        }, 250);
                     },
                     onError: function(result) {
                         currentActiveSnapToken = null;

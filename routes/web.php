@@ -328,10 +328,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
             }
 
             try {
-                \Illuminate\Support\Facades\Artisan::call('event:cache');
-                $log[] = "✅ Event cache berhasil dibuat (event:cache).";
+                \Illuminate\Support\Facades\Artisan::call('event:clear');
+                $log[] = "✅ Event cache berhasil dibersihkan (event:clear).";
             } catch (\Throwable $e) {
-                $log[] = "ℹ️ Event cache info: " . $e->getMessage();
+                $log[] = "ℹ️ Event clear info: " . $e->getMessage();
             }
 
             $logHtml = implode("<br><br>", array_map(fn($l) => "• " . $l, $log));

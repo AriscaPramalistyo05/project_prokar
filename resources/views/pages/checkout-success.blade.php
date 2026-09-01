@@ -43,14 +43,9 @@
   <!-- ═════════════════════ SECTION 1: HERO HEADER (BLACK) ═════════════════════ -->
   <section class="section-overlap section-overlap-first bg-brand-black pt-16 pb-24 md:pt-24 md:pb-32 z-10 relative text-center">
     <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
-      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-4 text-xs font-public font-bold uppercase tracking-widest {{ $isPaid ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-amber-400/20 text-amber-300 border border-amber-400/40' }} reveal-fade">
-        <i class="fa-solid {{ $isPaid ? 'fa-circle-check' : 'fa-clock' }}"></i>
-        <span>{{ $isPaid ? ($order->payment_status === 'dp_paid' ? 'DP 50% Diterima' : 'Pembayaran Lunas') : ($isCashStore ? 'Bayar Tunai di Kasir' : ($isCod ? 'Bayar di Tempat (COD)' : 'Menunggu Pembayaran')) }}</span>
-      </div>
-
       <h1 class="text-white text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tighter font-public mb-4 reveal-wrapper">
         <span class="reveal-line">
-          {{ $isPaid ? ($order->payment_status === 'dp_paid' ? 'Uang Muka Diterima' : 'Pembayaran Berhasil') : ($isCashStore ? 'Siap Diambil di Toko' : ($isCod ? 'Pesanan COD Dikonfirmasi' : 'Menunggu Pembayaran')) }}
+          {{ $isPaid ? (($order->payment_status === 'dp_paid' || $order->payment_type === 'down_payment') ? 'Uang Muka Diterima' : 'Pembayaran Berhasil') : ($isCashStore ? 'Siap Diambil di Toko' : ($isCod ? 'Pesanan COD Dikonfirmasi' : 'Menunggu Pembayaran')) }}
         </span>
       </h1>
 
@@ -74,11 +69,11 @@
                 </div>
 
                 <h2 class="font-public font-black text-2xl sm:text-3xl uppercase tracking-tight text-[#0A0A0A] mb-2">
-                    {{ $order->payment_status === 'dp_paid' ? 'Uang Muka (DP 50%) Diterima!' : 'Pembayaran Berhasil!' }}
+                    {{ ($order->payment_status === 'dp_paid' || $order->payment_type === 'down_payment') ? 'Uang Muka (DP 50%) Diterima!' : 'Pembayaran Berhasil!' }}
                 </h2>
 
                 <p class="text-sm sm:text-base text-gray-600 font-inter max-w-md mx-auto mb-6">
-                    {{ $order->payment_status === 'dp_paid'
+                    {{ ($order->payment_status === 'dp_paid' || $order->payment_type === 'down_payment')
                         ? 'DP 50% telah kami terima. Sisa pelunasan sebesar Rp ' . number_format($order->remaining_payment, 0, ',', '.') . ' dapat dibayar saat barang tiba di alamat Anda.'
                         : 'Terima kasih telah berbelanja di Prokar Elektronik. Pesanan Anda telah lunas dan segera diproses oleh tim kami.' }}
                 </p>
@@ -92,7 +87,7 @@
                             <span class="text-white/60 text-[10px] font-public font-bold uppercase tracking-widest block">Elektronik Jepara</span>
                         </div>
                         <span class="bg-emerald-500/20 border border-emerald-500 text-emerald-400 text-[11px] font-bold font-public uppercase tracking-widest px-3.5 py-1.5 rounded-full">
-                            {{ $order->payment_status === 'dp_paid' ? 'DP 50% LUNAS' : 'LUNAS (PAID)' }}
+                            {{ ($order->payment_status === 'dp_paid' || $order->payment_type === 'down_payment') ? 'DP 50% LUNAS' : 'LUNAS (PAID)' }}
                         </span>
                     </div>
 

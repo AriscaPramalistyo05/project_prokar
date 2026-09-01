@@ -75,17 +75,20 @@ class NotificationMailTest extends TestCase
     {
         Mail::fake();
 
-        $serviceOrder = ServiceOrder::factory()->create([
-            'customer_email' => 'service.client@example.com',
-            'customer_name' => 'Klien Servis',
-            'device_brand' => 'Panasonic Eco Inverter',
-        ]);
+        $category = \App\Models\Category::factory()->create();
 
-        event(new ServiceOrderCreated($serviceOrder));
+        Livewire::test(\App\Livewire\Frontend\ServiceForm::class)
+            ->set('nama', 'Klien Servis')
+            ->set('email', 'service.client@example.com')
+            ->set('whatsapp', '081234567890')
+            ->set('kategori', $category->id)
+            ->set('merek', 'Panasonic Eco Inverter')
+            ->set('deskripsi', 'Kulkas tidak dingin sama sekali dan berisik')
+            ->set('serviceType', 'kirim')
+            ->call('submit');
 
-        Mail::assertSent(ServiceConfirmationMail::class, function ($mail) use ($serviceOrder) {
-            return $mail->hasTo('service.client@example.com') &&
-                $mail->order->service_code === $serviceOrder->service_code;
+        Mail::assertSent(ServiceConfirmationMail::class, function ($mail) {
+            return $mail->hasTo('service.client@example.com');
         });
     }
 

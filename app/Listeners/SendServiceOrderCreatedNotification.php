@@ -35,14 +35,5 @@ class SendServiceOrderCreatedNotification
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::error("Failed sending admin service FCM: " . $e->getMessage());
         }
-
-        if (!empty($serviceOrder->customer_email)) {
-            try {
-                \Illuminate\Support\Facades\Mail::to($serviceOrder->customer_email)
-                    ->send(new \App\Mail\ServiceConfirmationMail($serviceOrder));
-            } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::error("Failed sending service confirmation email: " . $e->getMessage());
-            }
-        }
     }
 }
