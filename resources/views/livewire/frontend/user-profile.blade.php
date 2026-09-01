@@ -8,7 +8,7 @@
                 {{-- User Avatar & Identity --}}
                 <div class="flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left">
                     <div class="relative">
-                        <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}" class="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border-4 border-white shadow-md ring-2 ring-gray-100" />
+                        <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}" referrerpolicy="no-referrer" class="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border-4 border-white shadow-md ring-2 ring-gray-100" />
                         <span class="absolute bottom-1 right-1 w-5 h-5 bg-emerald-500 border-2 border-white rounded-full"></span>
                     </div>
 
@@ -404,7 +404,7 @@
                                 @if ($avatar_file)
                                     <img src="{{ $avatar_file->temporaryUrl() }}" alt="Preview" class="w-full h-full object-cover" />
                                 @else
-                                    <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}" class="w-full h-full object-cover" />
+                                    <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}" referrerpolicy="no-referrer" class="w-full h-full object-cover" />
                                 @endif
                             </div>
                             <div class="flex-1">

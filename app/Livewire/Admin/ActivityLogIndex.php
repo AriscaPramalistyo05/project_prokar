@@ -133,6 +133,11 @@ class ActivityLogIndex extends Component
         ];
 
         $activities = Activity::with('causer')
+            ->whereHas('causer', function ($u) {
+                $u->whereHas('roles', function ($r) {
+                    $r->whereIn('name', ['super_admin', 'admin', 'teknisi']);
+                });
+            })
             ->when($this->search, function ($q) {
                 $q->where(function ($sub) {
                     $sub->where('description', 'like', '%' . $this->search . '%')

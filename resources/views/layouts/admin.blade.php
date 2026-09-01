@@ -68,6 +68,9 @@
                     <x-menu-item title="Payment (Midtrans)" icon="o-credit-card" link="{{ route('admin.settings', ['tab' => 'payment-tab']) }}" :active="request()->routeIs('admin.settings*') && request('tab') === 'payment-tab'" wire:navigate.hover />
                     <x-menu-item title="Notifikasi (FCM)" icon="o-bell" link="{{ route('admin.settings', ['tab' => 'fcm-tab']) }}" :active="request()->routeIs('admin.settings*') && request('tab') === 'fcm-tab'" wire:navigate.hover />
                 </x-menu-sub>
+
+                <hr class="my-2 border-base-200" />
+                <x-menu-item title="Lihat Toko / Web" icon="o-arrow-top-right-on-square" link="{{ route('home', ['view_as_guest' => 1]) }}" target="_blank" />
                 @endrole
             </x-menu>
         </x-slot:sidebar>

@@ -50,7 +50,7 @@
                 <div class="flex items-center gap-3 py-1">
                     <div class="w-9 h-9 rounded-full bg-gray-900 text-white text-xs font-bold flex items-center justify-center shrink-0 overflow-hidden border border-gray-200">
                         @if($user->avatar)
-                            <img src="{{ asset('storage/' . $user->avatar) }}" alt="{{ $user->name }}" class="w-full h-full object-cover" />
+                            <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}" referrerpolicy="no-referrer" class="w-full h-full object-cover" />
                         @else
                             {{ strtoupper(substr($user->name, 0, 2)) }}
                         @endif
