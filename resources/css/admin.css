@@ -85,16 +85,20 @@ select, .select, select.select {
 .drawer-side > div:not(.drawer-overlay) {
     min-height: 100vh !important;
     min-height: 100dvh !important;
-    height: 100% !important;
+    height: 100vh !important;
+    height: 100dvh !important;
     display: flex !important;
     flex-direction: column !important;
+    overflow: hidden !important;
 }
 
 .drawer-side > div:not(.drawer-overlay) > .flex-1 {
     display: flex !important;
     flex-direction: column !important;
-    min-height: 100% !important;
-    height: 100% !important;
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
 }
 
 .drawer-content {
@@ -105,13 +109,24 @@ select, .select, select.select {
 /**
  * Sidebar Scrollbar & Minimize / Collapsed Alignment
  */
-.drawer-side > div:not(.drawer-overlay) {
+.drawer-side > div:not(.drawer-overlay) > .flex-1 {
     scrollbar-width: none;
     -ms-overflow-style: none;
 }
 
-.drawer-side > div:not(.drawer-overlay)::-webkit-scrollbar {
+.drawer-side > div:not(.drawer-overlay) > .flex-1::-webkit-scrollbar {
     display: none;
+}
+
+/* Tombol Kecilkan Menu selalu menempel rapi di bagian bawah sidebar tanpa tertimpa konten */
+.drawer-side > div:not(.drawer-overlay) > .menu:last-child {
+    flex-shrink: 0 !important;
+    margin-top: auto !important;
+    border-top: 1px solid rgba(228, 228, 231, 0.8) !important;
+    background-color: var(--fallback-b1, oklch(var(--b1) / 1)) !important;
+    padding: 0.375rem 0.5rem !important;
+    z-index: 20 !important;
+    position: relative !important;
 }
 
 /* Penataan ikon menu saat sidebar dalam kondisi minimize (Desktop) */
@@ -166,11 +181,64 @@ select, .select, select.select {
     white-space: nowrap !important;
 }
 
-/* Submenu container indentation */
+/* Submenu container normal saat expanded */
 .menu li > details > ul {
     padding-left: 0.75rem !important;
     margin-top: 0.25rem !important;
     margin-bottom: 0.25rem !important;
+}
+
+/**
+ * Submenu Setting saat Sidebar Collapsed / Kecilkan Menu:
+ * Submenu tetap terlihat rapi, terpusat, dan tidak bentrok/tertumpuk dengan tombol Kecilkan Menu
+ */
+.drawer-side [class*="w-[62px]"] details ul,
+.drawer-side [class*="!w-[62px]"] details ul {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    padding: 0.25rem 0 !important;
+    margin: 0.25rem 0 0.5rem 0 !important;
+    gap: 0.25rem !important;
+    background-color: rgba(244, 244, 245, 0.75) !important;
+    border-radius: 0.5rem !important;
+}
+
+.drawer-side [class*="w-[62px]"] details ul li,
+.drawer-side [class*="!w-[62px]"] details ul li {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+}
+
+.drawer-side [class*="w-[62px]"] details ul li a,
+.drawer-side [class*="!w-[62px]"] details ul li a {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+    padding: 0 !important;
+    margin: 0 auto !important;
+    border-radius: 0.375rem !important;
+}
+
+/* Sembunyikan label teks submenu saat collapsed agar pas dalam 62px */
+.drawer-side [class*="w-[62px]"] details ul li a .mary-hideable,
+.drawer-side [class*="!w-[62px]"] details ul li a .mary-hideable,
+.drawer-side [class*="w-[62px]"] details ul li a span,
+.drawer-side [class*="!w-[62px]"] details ul li a span {
+    display: none !important;
+}
+
+/* Ikon submenu tampil presisi dan terpusat */
+.drawer-side [class*="w-[62px]"] details ul li a svg,
+.drawer-side [class*="!w-[62px]"] details ul li a svg {
+    display: block !important;
+    width: 1.15rem !important;
+    height: 1.15rem !important;
+    margin: 0 !important;
+    flex-shrink: 0 !important;
 }
 
 

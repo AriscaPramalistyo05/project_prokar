@@ -305,6 +305,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'staff'])->group(fun
         });
         Route::middleware(['permission:manage_roles'])->group(function () {
             Route::get('/roles', \App\Livewire\Admin\RolePermissionIndex::class)->name('roles.index');
+            Route::get('/permissions', \App\Livewire\Admin\RolePermissionIndex::class)->name('permissions.index');
         });
 
         // 7. Modul Laporan Transaksi, Servis & Barang Masuk (Permission: view_reports)

@@ -32,11 +32,16 @@ class RolePermissionIndex extends Component
             return;
         }
 
-        if ($role->hasPermissionTo($permissionName)) {
-            $role->revokePermissionTo($permissionName);
+        $permission = Permission::firstOrCreate([
+            'name' => $permissionName,
+            'guard_name' => 'web',
+        ]);
+
+        if ($role->hasPermissionTo($permission)) {
+            $role->revokePermissionTo($permission);
             $actionText = 'dicabut dari';
         } else {
-            $role->givePermissionTo($permissionName);
+            $role->givePermissionTo($permission);
             $actionText = 'diberikan kepada';
         }
 
@@ -187,6 +192,18 @@ class RolePermissionIndex extends Component
                 'permissions' => ['manage_settings'],
             ],
         ];
+
+        // Pastikan semua permission terdaftar di database agar tidak ada exception saat render
+        $allPermNames = collect($permissionGroups)->pluck('permissions')->flatten()->unique();
+        $existingPerms = Permission::whereIn('name', $allPermNames)->pluck('name')->toArray();
+        $missingPerms = $allPermNames->diff($existingPerms);
+        if ($missingPerms->isNotEmpty()) {
+            foreach ($missingPerms as $missingName) {
+                Permission::firstOrCreate(['name' => $missingName, 'guard_name' => 'web']);
+            }
+            app()[PermissionRegistrar::class]->forgetCachedPermissions();
+            $roles = Role::with('permissions')->orderBy('name')->get();
+        }
 
         return view('livewire.admin.role-permission-index', [
             'roles' => $roles,

@@ -30,9 +30,9 @@
 <body class="bg-base-200 min-h-screen text-base-content">
     <x-main full-width>
         {{-- Sidebar Mary UI --}}
-        <x-slot:sidebar drawer="main-drawer" collapsible collapse-text="Kecilkan Menu" class="bg-base-100 border-r border-base-200 min-h-screen min-h-dvh h-full flex flex-col justify-between">
+        <x-slot:sidebar drawer="main-drawer" collapsible collapse-text="Kecilkan Menu" class="bg-base-100 border-r border-base-200 h-full flex flex-col">
             {{-- Logo Header --}}
-            <div class="p-3.5 flex items-center justify-between border-b border-base-200/80 min-h-[64px]">
+            <div class="p-3.5 flex items-center justify-between border-b border-base-200/80 min-h-[64px] shrink-0">
                 {{-- Logo saat Expanded (Desktop Normal & Mobile) --}}
                 <a href="{{ route('admin.dashboard') }}" wire:navigate.hover class="hidden-when-collapsed flex items-center gap-2 hover:opacity-80 transition-opacity">
                     @if(setting('shop_logo'))
@@ -54,7 +54,7 @@
             </div>
 
             {{-- Menu Navigasi --}}
-            <x-menu activate-by-route class="flex-1">
+            <x-menu activate-by-route class="flex-1 overflow-y-auto overflow-x-hidden">
                 <x-admin.sidebar-item route="admin.dashboard" icon="o-squares-2x2" label="Dashboard" />
                 
                 @can('view_products')
@@ -100,14 +100,16 @@
                 @endcan
 
                 @can('manage_settings')
-                {{-- Dropdown Submenu Setting (Natif Mary UI untuk support Collapse & Expand) --}}
-                <x-menu-sub title="Setting" icon="o-cog-6-tooth" :open="request()->routeIs('admin.settings*')">
-                    <x-menu-item title="Umum & Identitas" icon="o-building-storefront" link="{{ route('admin.settings', ['tab' => 'general-tab']) }}" :active="request()->routeIs('admin.settings*') && request('tab', 'general-tab') === 'general-tab'" />
-                    <x-menu-item title="Tampilan & Beranda" icon="o-computer-desktop" link="{{ route('admin.settings', ['tab' => 'home-tab']) }}" :active="request()->routeIs('admin.settings*') && request('tab') === 'home-tab'" />
-                    <x-menu-item title="Email & Autentikasi" icon="o-envelope" link="{{ route('admin.settings', ['tab' => 'mail-tab']) }}" :active="request()->routeIs('admin.settings*') && request('tab') === 'mail-tab'" />
-                    <x-menu-item title="Payment (Midtrans)" icon="o-credit-card" link="{{ route('admin.settings', ['tab' => 'payment-tab']) }}" :active="request()->routeIs('admin.settings*') && request('tab') === 'payment-tab'" />
-                    <x-menu-item title="Notifikasi (FCM)" icon="o-bell" link="{{ route('admin.settings', ['tab' => 'fcm-tab']) }}" :active="request()->routeIs('admin.settings*') && request('tab') === 'fcm-tab'" />
-                </x-menu-sub>
+                {{-- Dropdown Submenu Setting (Support Collapse & Expand) --}}
+                <div @menu-sub-clicked.stop="">
+                    <x-menu-sub title="Setting" icon="o-cog-6-tooth" :open="request()->routeIs('admin.settings*')">
+                        <x-menu-item title="Umum & Identitas" icon="o-building-storefront" link="{{ route('admin.settings', ['tab' => 'general-tab']) }}" :active="request()->routeIs('admin.settings*') && request('tab', 'general-tab') === 'general-tab'" tooltip="Umum & Identitas" />
+                        <x-menu-item title="Tampilan & Beranda" icon="o-computer-desktop" link="{{ route('admin.settings', ['tab' => 'home-tab']) }}" :active="request()->routeIs('admin.settings*') && request('tab') === 'home-tab'" tooltip="Tampilan & Beranda" />
+                        <x-menu-item title="Email & Autentikasi" icon="o-envelope" link="{{ route('admin.settings', ['tab' => 'mail-tab']) }}" :active="request()->routeIs('admin.settings*') && request('tab') === 'mail-tab'" tooltip="Email & Autentikasi" />
+                        <x-menu-item title="Payment (Midtrans)" icon="o-credit-card" link="{{ route('admin.settings', ['tab' => 'payment-tab']) }}" :active="request()->routeIs('admin.settings*') && request('tab') === 'payment-tab'" tooltip="Payment (Midtrans)" />
+                        <x-menu-item title="Notifikasi (FCM)" icon="o-bell" link="{{ route('admin.settings', ['tab' => 'fcm-tab']) }}" :active="request()->routeIs('admin.settings*') && request('tab') === 'fcm-tab'" tooltip="Notifikasi (FCM)" />
+                    </x-menu-sub>
+                </div>
                 @endcan
             </x-menu>
         </x-slot:sidebar>

@@ -66,7 +66,7 @@
                                             </span>
                                         @else
                                             @php
-                                                $hasPerm = $role->hasPermissionTo($perm);
+                                                $hasPerm = $role->permissions->contains('name', $perm);
                                             @endphp
                                             <input 
                                                 type="checkbox" 
