@@ -13,6 +13,7 @@ use App\Listeners\SendServiceOrderCreatedNotification;
 use App\Models\Product;
 use App\Observers\ProductObserver;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -37,6 +38,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Implicitly grant 'super_admin' role all permissions
+        Gate::before(function ($user, $ability) {
+            return $user->hasRole('super_admin') ? true : null;
+        });
+
         // Force HTTPS URL generation in production or when accessed via HTTPS proxy / SSL
         if ($this->app->environment('production') || request()->header('X-Forwarded-Proto') === 'https' || str_starts_with(config('app.url'), 'https://')) {
             \Illuminate\Support\Facades\URL::forceScheme('https');

@@ -23,20 +23,24 @@
                 <span wire:loading.remove class="truncate">Refresh</span>
                 <span wire:loading class="truncate">Memperbarui...</span>
             </button>
-            @role('super_admin')
+            @can('create_product')
             <a href="{{ route('admin.products.create') }}" class="h-9 px-2.5 sm:px-3 text-xs font-medium rounded-lg border border-zinc-900 bg-zinc-900 text-white hover:bg-zinc-800 transition-colors inline-flex items-center justify-center gap-1.5 shadow-xs min-w-0">
                 <x-icon name="o-plus" class="w-3.5 h-3.5 shrink-0" />
                 <span class="truncate">Tambah Produk</span>
             </a>
-            @endrole
+            @endcan
+            @can('view_services')
             <a href="{{ route('admin.services.index') }}" class="h-9 px-2.5 sm:px-3 text-xs font-medium rounded-lg border border-zinc-200 bg-white text-zinc-800 hover:bg-zinc-50 transition-colors inline-flex items-center justify-center gap-1.5 shadow-xs min-w-0">
                 <x-icon name="o-wrench-screwdriver" class="w-3.5 h-3.5 text-zinc-600 shrink-0" />
                 <span class="truncate">Kelola Servis</span>
             </a>
+            @endcan
+            @can('view_orders')
             <a href="{{ route('admin.orders.index') }}" class="h-9 px-2.5 sm:px-3 text-xs font-medium rounded-lg border border-zinc-200 bg-white text-zinc-800 hover:bg-zinc-50 transition-colors inline-flex items-center justify-center gap-1.5 shadow-xs min-w-0">
                 <x-icon name="o-shopping-bag" class="w-3.5 h-3.5 text-zinc-600 shrink-0" />
                 <span class="truncate">Kelola Pesanan</span>
             </a>
+            @endcan
         </div>
     </div>
 
@@ -504,11 +508,11 @@
                     <h3 class="font-semibold text-zinc-900 text-sm sm:text-base">Unit Siap Jual Baru Masuk</h3>
                     <p class="text-xs text-zinc-500">Katalog elektronik bekas yang baru ditambahkan</p>
                 </div>
-                @role('super_admin')
+                @can('view_products')
                 <a href="{{ route('admin.products.index') }}" class="text-xs font-medium text-zinc-600 hover:text-zinc-900 flex items-center gap-1">
                     Semua Unit <x-icon name="o-arrow-right" class="w-3.5 h-3.5" />
                 </a>
-                @endrole
+                @endcan
             </div>
 
             <div class="divide-y divide-zinc-100 text-sm">
@@ -532,11 +536,11 @@
                             <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-medium border bg-emerald-50 text-emerald-700 border-emerald-200">
                                 Ready Unit
                             </span>
-                            @role('super_admin')
+                            @can('edit_product')
                             <a href="{{ route('admin.products.edit', $prod->id) }}" class="p-1 rounded-md text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 transition-colors" title="Edit Produk">
                                 <x-icon name="o-pencil-square" class="w-3.5 h-3.5" />
                             </a>
-                            @endrole
+                            @endcan
                         </div>
                     </div>
                 @empty
@@ -555,11 +559,11 @@
                     <h3 class="font-semibold text-zinc-900 text-sm sm:text-base">Pengajuan Jual / Tukar Tambah</h3>
                     <p class="text-xs text-zinc-500">Pengajuan barang elektronik bekas dari customer</p>
                 </div>
-                @role('super_admin')
+                @can('view_sell_submissions')
                 <a href="{{ route('admin.sell-submissions.index') }}" class="text-xs font-medium text-zinc-600 hover:text-zinc-900 flex items-center gap-1">
                     Lihat Semua <x-icon name="o-arrow-right" class="w-3.5 h-3.5" />
                 </a>
-                @endrole
+                @endcan
             </div>
 
             <div class="divide-y divide-zinc-100 text-sm">

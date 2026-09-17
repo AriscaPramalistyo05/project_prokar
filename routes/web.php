@@ -215,89 +215,116 @@ Route::middleware('auth')->group(function () {
 });
 
 // ─── ADMIN ──────────────────────────────────────────────────────
-Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
-    // Bisa diakses oleh super_admin dan teknisi
-    Route::middleware(['role:super_admin|teknisi'])->group(function () {
-        Route::get('/dashboard', \App\Livewire\Admin\Dashboard::class)->name('dashboard');
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'staff'])->group(function () {
 
-        Route::get('/servis', \App\Livewire\Admin\ServiceIndex::class)->name('services.index');
-        Route::get('/service-orders', \App\Livewire\Admin\ServiceIndex::class)->name('service-orders.index');
-        Route::get('/servis/{serviceOrder}', \App\Livewire\Admin\ServiceDetail::class)->name('services.show');
-    });
+    // 1. Dashboard Utama: Bisa diakses oleh semua staf yang memiliki hak akses admin
+    Route::get('/dashboard', \App\Livewire\Admin\Dashboard::class)->name('dashboard');
 
-    // Hanya bisa diakses oleh super_admin
-    Route::middleware(['role:super_admin'])->group(function () {
-        Route::get('/produk', \App\Livewire\Admin\ProductIndex::class)->name('products.index');
-        Route::get('/produk/tambah', \App\Livewire\Admin\ProductForm::class)->name('products.create');
-        Route::get('/produk/{product}/edit', \App\Livewire\Admin\ProductForm::class)->name('products.edit');
-        Route::get('/produk/{product}/download-media', function (\App\Models\Product $product) {
-            $images = $product->productImages()->orderBy('order')->get();
-            $zipFileName = 'media-' . ($product->slug ?: 'produk-' . $product->id) . '.zip';
-            $zipPath = storage_path('app/temp/' . $zipFileName);
+        // 2. Modul Produk & Kategori (Permission: view_products)
+        Route::middleware(['permission:view_products'])->group(function () {
+            Route::get('/produk', \App\Livewire\Admin\ProductIndex::class)->name('products.index');
+            Route::get('/produk/{product}/download-media', function (\App\Models\Product $product) {
+                $images = $product->productImages()->orderBy('order')->get();
+                $zipFileName = 'media-' . ($product->slug ?: 'produk-' . $product->id) . '.zip';
+                $zipPath = storage_path('app/temp/' . $zipFileName);
 
-            if (!file_exists(dirname($zipPath))) {
-                mkdir(dirname($zipPath), 0755, true);
-            }
-
-            $zip = new \ZipArchive();
-            if ($zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === true) {
-                $idx = 1;
-                foreach ($images as $img) {
-                    $cleanPath = ltrim($img->path, '/');
-                    if (str_starts_with($cleanPath, 'storage/')) {
-                        $cleanPath = substr($cleanPath, 8);
-                    }
-                    $fullPath = storage_path('app/public/' . $cleanPath);
-                    if (file_exists($fullPath)) {
-                        $ext = pathinfo($fullPath, PATHINFO_EXTENSION) ?: ($img->type === 'video' ? 'mp4' : 'jpg');
-                        $prefix = $img->type === 'video' ? 'video' : 'foto';
-                        $zip->addFile($fullPath, "{$prefix}-{$idx}-{$product->slug}.{$ext}");
-                        $idx++;
-                    }
+                if (!file_exists(dirname($zipPath))) {
+                    mkdir(dirname($zipPath), 0755, true);
                 }
-                
-                if ($zip->numFiles === 0 && file_exists(public_path('images/logo prokar.png'))) {
-                    $zip->addFile(public_path('images/logo prokar.png'), "foto-1-{$product->slug}.png");
+
+                $zip = new \ZipArchive();
+                if ($zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === true) {
+                    $idx = 1;
+                    foreach ($images as $img) {
+                        $cleanPath = ltrim($img->path, '/');
+                        if (str_starts_with($cleanPath, 'storage/')) {
+                            $cleanPath = substr($cleanPath, 8);
+                        }
+                        $fullPath = storage_path('app/public/' . $cleanPath);
+                        if (file_exists($fullPath)) {
+                            $ext = pathinfo($fullPath, PATHINFO_EXTENSION) ?: ($img->type === 'video' ? 'mp4' : 'jpg');
+                            $prefix = $img->type === 'video' ? 'video' : 'foto';
+                            $zip->addFile($fullPath, "{$prefix}-{$idx}-{$product->slug}.{$ext}");
+                            $idx++;
+                        }
+                    }
+                    
+                    if ($zip->numFiles === 0 && file_exists(public_path('images/logo prokar.png'))) {
+                        $zip->addFile(public_path('images/logo prokar.png'), "foto-1-{$product->slug}.png");
+                    }
+                    
+                    $zip->close();
                 }
-                
-                $zip->close();
-            }
 
-            if (file_exists($zipPath) && filesize($zipPath) > 0) {
-                return response()->download($zipPath, $zipFileName)->deleteFileAfterSend(true);
-            }
+                if (file_exists($zipPath) && filesize($zipPath) > 0) {
+                    return response()->download($zipPath, $zipFileName)->deleteFileAfterSend(true);
+                }
 
-            return back()->with('error', 'Tidak ada media yang dapat diunduh untuk produk ini.');
-        })->name('products.download-media');
+                return back()->with('error', 'Tidak ada media yang dapat diunduh untuk produk ini.');
+            })->name('products.download-media');
 
-        Route::get('/kategori', \App\Livewire\Admin\CategoryIndex::class)->name('categories.index');
+            Route::get('/kategori', \App\Livewire\Admin\CategoryIndex::class)->name('categories.index');
+        });
 
-        Route::get('/order', \App\Livewire\Admin\OrderIndex::class)->name('orders.index');
+        Route::middleware(['permission:create_product'])->group(function () {
+            Route::get('/produk/tambah', \App\Livewire\Admin\ProductForm::class)->name('products.create');
+        });
 
-        // Biaya Tambahan (Service)
-        Route::get('/biaya-tambahan', \App\Livewire\Admin\AdditionalFeeIndex::class)->name('additional-fees.index');
+        Route::middleware(['permission:edit_product'])->group(function () {
+            Route::get('/produk/{product}/edit', \App\Livewire\Admin\ProductForm::class)->name('products.edit');
+        });
 
-        // Pengajuan Jual Barang (Masuk)
-        Route::get('/jual-masuk', \App\Livewire\Admin\SellSubmissionIndex::class)->name('sell-submissions.index');
-        Route::get('/jual-masuk/{sellSubmission}', \App\Livewire\Admin\SellSubmissionDetail::class)->name('sell-submissions.show');
+        // 3. Modul Servis Elektronik (Permission: view_services)
+        Route::middleware(['permission:view_services'])->group(function () {
+            Route::get('/servis', \App\Livewire\Admin\ServiceIndex::class)->name('services.index');
+            Route::get('/service-orders', \App\Livewire\Admin\ServiceIndex::class)->name('service-orders.index');
+            Route::get('/servis/{serviceOrder}', \App\Livewire\Admin\ServiceDetail::class)->name('services.show');
+            Route::get('/biaya-tambahan', \App\Livewire\Admin\AdditionalFeeIndex::class)->name('additional-fees.index');
+        });
 
-        // Pengguna & Role (FASE 7)
-        Route::get('/users', \App\Livewire\Admin\UserIndex::class)->name('users.index');
-        Route::get('/users/tambah', \App\Livewire\Admin\UserForm::class)->name('users.create');
-        Route::get('/users/{user}/edit', \App\Livewire\Admin\UserForm::class)->name('users.edit');
-        Route::get('/roles', \App\Livewire\Admin\RolePermissionIndex::class)->name('roles.index');
+        // 4. Modul Order / Pesanan (Permission: view_orders)
+        Route::middleware(['permission:view_orders'])->group(function () {
+            Route::get('/order', \App\Livewire\Admin\OrderIndex::class)->name('orders.index');
+        });
 
-        // Laporan Transaksi, Servis & Barang Masuk
-        Route::get('/laporan', \App\Livewire\Admin\ReportIndex::class)->name('reports.index');
+        // 5. Modul Pengajuan Jual Barang (Masuk) (Permission: view_sell_submissions)
+        Route::middleware(['permission:view_sell_submissions'])->group(function () {
+            Route::get('/jual-masuk', \App\Livewire\Admin\SellSubmissionIndex::class)->name('sell-submissions.index');
+            Route::get('/jual-masuk/{sellSubmission}', \App\Livewire\Admin\SellSubmissionDetail::class)->name('sell-submissions.show');
+        });
 
-        // Activity Log Admin
-        Route::get('/activity-log', \App\Livewire\Admin\ActivityLogIndex::class)->name('activity-log');
+        // 6. Modul Pengguna & Role
+        Route::middleware(['permission:view_users'])->group(function () {
+            Route::get('/users', \App\Livewire\Admin\UserIndex::class)->name('users.index');
+        });
+        Route::middleware(['permission:create_user'])->group(function () {
+            Route::get('/users/tambah', \App\Livewire\Admin\UserForm::class)->name('users.create');
+        });
+        Route::middleware(['permission:edit_user'])->group(function () {
+            Route::get('/users/{user}/edit', \App\Livewire\Admin\UserForm::class)->name('users.edit');
+        });
+        Route::middleware(['permission:manage_roles'])->group(function () {
+            Route::get('/roles', \App\Livewire\Admin\RolePermissionIndex::class)->name('roles.index');
+        });
 
-        // Pengaturan Toko & Sistem (FASE 8)
-        Route::get('/settings', \App\Livewire\Admin\SettingIndex::class)->name('settings');
+        // 7. Modul Laporan Transaksi, Servis & Barang Masuk (Permission: view_reports)
+        Route::middleware(['permission:view_reports'])->group(function () {
+            Route::get('/laporan', \App\Livewire\Admin\ReportIndex::class)->name('reports.index');
+        });
 
-        // Helper Pemeliharaan Database & Storage (Khusus Super Admin)
-        Route::get('/maintenance/migrate', function () {
+        // 8. Modul Activity Log Admin (Permission: manage_roles|manage_settings)
+        Route::middleware(['permission:manage_roles|manage_settings'])->group(function () {
+            Route::get('/activity-log', \App\Livewire\Admin\ActivityLogIndex::class)->name('activity-log');
+        });
+
+        // 9. Pengaturan Toko & Sistem (Permission: manage_settings)
+        Route::middleware(['permission:manage_settings'])->group(function () {
+            Route::get('/settings', \App\Livewire\Admin\SettingIndex::class)->name('settings');
+        });
+
+        // 10. Helper Pemeliharaan Database & Storage (Khusus Super Admin)
+        Route::middleware(['role:super_admin'])->group(function () {
+            Route::get('/maintenance/migrate', function () {
             $log = [];
 
             // 1. Cek Ekstensi PHP

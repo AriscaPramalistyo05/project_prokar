@@ -28,8 +28,9 @@ class AuthenticatedSessionController extends Controller
 
         // Jika user belum verifikasi email (OTP), redirect ke halaman verifikasi OTP
         if ($user && is_null($user->email_verified_at) && \Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
-            // Otomatis verifikasi jika user memiliki role admin/teknisi agar tidak terkunci
-            if ($user->hasAnyRole(['super_admin', 'teknisi', 'admin'])) {
+            // Otomatis verifikasi jika user memiliki role staf/admin agar tidak terkunci
+            $isStaff = $user->hasRole('super_admin') || (!$user->hasRole('customer') && $user->roles()->exists()) || $user->permissions()->exists();
+            if ($isStaff) {
                 $user->forceFill(['email_verified_at' => now()])->save();
             } else {
                 session(['otp_user_id' => $user->id]);
@@ -68,7 +69,8 @@ class AuthenticatedSessionController extends Controller
 
         $user = auth()->user();
 
-        if ($user->hasAnyRole(['super_admin', 'teknisi', 'admin'])) {
+        $isStaff = $user->hasRole('super_admin') || (!$user->hasRole('customer') && $user->roles()->exists()) || $user->permissions()->exists();
+        if ($isStaff) {
             $intended = session()->get('url.intended');
             if ($intended && str_contains($intended, '/admin')) {
                 return redirect()->intended(route('admin.dashboard', absolute: false));

@@ -57,23 +57,43 @@
             <x-menu activate-by-route class="flex-1">
                 <x-admin.sidebar-item route="admin.dashboard" icon="o-squares-2x2" label="Dashboard" />
                 
-                @role('super_admin')
+                @can('view_products')
                 <x-admin.sidebar-item route="admin.products.index" icon="o-cube" label="Produk" />
                 <x-admin.sidebar-item route="admin.categories.index" icon="o-tag" label="Kategori" />
-                @endrole
+                @endcan
                 
+                @can('view_services')
                 <x-admin.sidebar-item route="admin.services.index" icon="o-wrench-screwdriver" label="Servis" />
+                <x-admin.sidebar-item route="admin.additional-fees.index" icon="o-currency-dollar" label="Biaya Tambahan" />
+                @endcan
                 
-                @role('super_admin')
+                @can('view_sell_submissions')
                 <x-admin.sidebar-item route="admin.sell-submissions.index" icon="o-arrow-down-tray" label="Jual (Masuk)" />
+                @endcan
+
+                @can('view_orders')
                 <x-admin.sidebar-item route="admin.orders.index" icon="o-shopping-bag" label="Order" />
+                @endcan
+
+                @canany(['view_users', 'manage_roles', 'view_reports', 'manage_settings'])
                 <hr class="my-2 border-base-200" />
+                @endcanany
+
+                @can('view_users')
                 <x-admin.sidebar-item route="admin.users.index" icon="o-users" label="Pengguna" />
+                @endcan
+
+                @can('manage_roles')
                 <x-admin.sidebar-item route="admin.roles.index" icon="o-shield-check" label="Role & Hak Akses" />
+                @endcan
+
+                @can('view_reports')
                 <x-admin.sidebar-item route="admin.reports.index" icon="o-chart-bar" label="Laporan" />
+                @endcan
+
+                @can('manage_settings')
                 <x-admin.sidebar-item route="admin.activity-log" icon="o-clipboard-document-list" label="Activity Log" />
                 <x-menu-item title="System Logs" icon="o-document-text" link="{{ url('admin/logs') }}" :active="request()->is('admin/logs*')" />
-                <x-admin.sidebar-item route="admin.additional-fees.index" icon="o-currency-dollar" label="Biaya Tambahan" />
                 
                 {{-- Dropdown Submenu Setting (Natif Mary UI untuk support Collapse & Expand) --}}
                 <x-menu-sub title="Setting" icon="o-cog-6-tooth" :open="request()->routeIs('admin.settings*')">
@@ -83,7 +103,7 @@
                     <x-menu-item title="Payment (Midtrans)" icon="o-credit-card" link="{{ route('admin.settings', ['tab' => 'payment-tab']) }}" :active="request()->routeIs('admin.settings*') && request('tab') === 'payment-tab'" />
                     <x-menu-item title="Notifikasi (FCM)" icon="o-bell" link="{{ route('admin.settings', ['tab' => 'fcm-tab']) }}" :active="request()->routeIs('admin.settings*') && request('tab') === 'fcm-tab'" />
                 </x-menu-sub>
-                @endrole
+                @endcan
             </x-menu>
         </x-slot:sidebar>
 

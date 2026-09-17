@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
             'verified' => \App\Http\Middleware\EnsureEmailVerified::class,
+            'staff' => \App\Http\Middleware\EnsureUserIsStaff::class,
         ]);
 
         $middleware->append(
@@ -37,7 +38,8 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->redirectUsersTo(function (Request $request) {
-            if ($request->user() && $request->user()->hasAnyRole(['super_admin', 'teknisi', 'admin'])) {
+            $user = $request->user();
+            if ($user && ($user->hasRole('super_admin') || (!$user->hasRole('customer') && $user->roles()->exists()) || $user->permissions()->exists())) {
                 return route('admin.dashboard');
             }
             return route('home');
