@@ -127,15 +127,32 @@ select, .select, select.select {
 }
 
 /**
- * Sidebar Scrollbar & Minimize / Collapsed Alignment
+ * Sidebar Scrollbar: Sembunyikan seluruh scrollbar tebal bawaan desktop/Windows 
+ * agar sidebar tetap rapi, bersih, dan tidak memakan ruang (mouse wheel tetap berfungsi normal)
  */
-.drawer-side > div:not(.drawer-overlay) > .flex-1 {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+.drawer-side,
+.drawer-side *,
+.drawer-side > div,
+.drawer-side > div:not(.drawer-overlay),
+.drawer-side .flex-1,
+.drawer-side .menu,
+.drawer-side ul {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+    overscroll-behavior: contain;
 }
 
-.drawer-side > div:not(.drawer-overlay) > .flex-1::-webkit-scrollbar {
-    display: none;
+.drawer-side::-webkit-scrollbar,
+.drawer-side *::-webkit-scrollbar,
+.drawer-side > div::-webkit-scrollbar,
+.drawer-side > div:not(.drawer-overlay)::-webkit-scrollbar,
+.drawer-side .flex-1::-webkit-scrollbar,
+.drawer-side .menu::-webkit-scrollbar,
+.drawer-side ul::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent !important;
 }
 
 /* Tombol Kecilkan Menu selalu menempel rapi di bagian bawah sidebar tanpa tertimpa konten */
@@ -166,25 +183,31 @@ select, .select, select.select {
 
 /**
  * Fix Mary UI MenuSub / DaisyUI Details & Summary in Sidebar
- * Menghilangkan segitiga panah disclosure bawaan browser (▶)
- * Merapikan ikon, label teks, dan chevron agar sejajar dalam 1 baris
+ * 1. Sembunyikan ::after bawaan daisyUI/maryUI pada summary menu agar tidak terjadi double chevron
+ * 2. Hilangkan segitiga panah disclosure bawaan browser (▶)
+ * 3. Merapikan ikon, label teks, dan chevron custom agar sejajar rapi dalam 1 baris
  */
-.menu li > details > summary {
-    display: flex !important;
-    align-items: center !important;
-    gap: 0.75rem !important;
-    list-style: none !important;
-    list-style-type: none !important;
-    cursor: pointer !important;
-    user-select: none !important;
-    border-radius: var(--radius-field, 0.25rem);
-    position: relative !important;
+.drawer-side summary::after,
+.menu li > details > summary::after {
+    display: none !important;
+    content: none !important;
 }
 
 .menu li > details > summary::-webkit-details-marker,
 .menu li > details > summary::marker {
     display: none !important;
     content: "" !important;
+}
+
+.menu li > details > summary {
+    display: flex !important;
+    align-items: center !important;
+    list-style: none !important;
+    list-style-type: none !important;
+    cursor: pointer !important;
+    user-select: none !important;
+    border-radius: var(--radius-field, 0.25rem);
+    position: relative !important;
 }
 
 .menu li > details > summary > svg,
@@ -195,12 +218,6 @@ select, .select, select.select {
     margin: 0 !important;
 }
 
-.menu li > details > summary > span {
-    flex: 1 1 auto !important;
-    display: inline-block !important;
-    white-space: nowrap !important;
-}
-
 /* Submenu container normal saat expanded */
 .menu li > details > ul {
     padding-left: 0.75rem !important;
@@ -208,57 +225,5 @@ select, .select, select.select {
     margin-bottom: 0.25rem !important;
 }
 
-/**
- * Submenu Setting saat Sidebar Collapsed / Kecilkan Menu:
- * Submenu tetap terlihat rapi, terpusat, dan tidak bentrok/tertumpuk dengan tombol Kecilkan Menu
- */
-.drawer-side [class*="w-[62px]"] details ul,
-.drawer-side [class*="!w-[62px]"] details ul {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    padding: 0.25rem 0 !important;
-    margin: 0.25rem 0 0.5rem 0 !important;
-    gap: 0.25rem !important;
-    background-color: rgba(244, 244, 245, 0.75) !important;
-    border-radius: 0.5rem !important;
-}
-
-.drawer-side [class*="w-[62px]"] details ul li,
-.drawer-side [class*="!w-[62px]"] details ul li {
-    width: 100% !important;
-    display: flex !important;
-    justify-content: center !important;
-}
-
-.drawer-side [class*="w-[62px]"] details ul li a,
-.drawer-side [class*="!w-[62px]"] details ul li a {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 2.5rem !important;
-    height: 2.5rem !important;
-    padding: 0 !important;
-    margin: 0 auto !important;
-    border-radius: 0.375rem !important;
-}
-
-/* Sembunyikan label teks submenu saat collapsed agar pas dalam 62px */
-.drawer-side [class*="w-[62px]"] details ul li a .mary-hideable,
-.drawer-side [class*="!w-[62px]"] details ul li a .mary-hideable,
-.drawer-side [class*="w-[62px]"] details ul li a span,
-.drawer-side [class*="!w-[62px]"] details ul li a span {
-    display: none !important;
-}
-
-/* Ikon submenu tampil presisi dan terpusat */
-.drawer-side [class*="w-[62px]"] details ul li a svg,
-.drawer-side [class*="!w-[62px]"] details ul li a svg {
-    display: block !important;
-    width: 1.15rem !important;
-    height: 1.15rem !important;
-    margin: 0 !important;
-    flex-shrink: 0 !important;
-}
 
 

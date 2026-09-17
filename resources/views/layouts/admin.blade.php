@@ -76,7 +76,7 @@
                 @endcan
 
                 @canany(['view_users', 'manage_roles', 'view_reports', 'view_activity_logs', 'view_system_logs', 'manage_settings'])
-                <hr class="my-2 border-base-200" />
+                <li class="w-full my-1 px-2"><hr class="border-base-200" /></li>
                 @endcanany
 
                 @can('view_users')
@@ -103,7 +103,7 @@
                 {{-- 1. Submenu Accordion untuk Sidebar Normal/Expanded (Desktop Normal & Mobile) --}}
                 <li class="hidden-when-collapsed w-full">
                     <details {{ request()->routeIs('admin.settings*') ? 'open' : '' }} class="w-full group">
-                        <summary class="flex items-center justify-between gap-3 px-3 py-2 rounded-lg text-zinc-700 hover:bg-base-200 transition-colors cursor-pointer w-full {{ request()->routeIs('admin.settings*') ? 'bg-base-200 font-semibold text-zinc-900' : '' }}">
+                        <summary class="flex items-center justify-between gap-3 px-4 py-2 my-0.5 rounded-lg text-zinc-700 hover:bg-base-200 transition-colors cursor-pointer w-full {{ request()->routeIs('admin.settings*') ? 'bg-base-300 font-semibold text-zinc-900' : '' }}">
                             <div class="flex items-center gap-3">
                                 <x-icon name="o-cog-6-tooth" class="w-5 h-5 text-zinc-700 shrink-0" />
                                 <span class="text-sm font-medium">Setting</span>
@@ -146,54 +146,64 @@
                 </li>
 
                 {{-- 2. Floating Popover Dropdown untuk Sidebar Collapsed / Dikecilkan (Desktop 62px) --}}
-                <li class="display-when-collapsed relative w-full" x-data="{ openFlyout: false }" @click.outside="openFlyout = false">
+                <li class="display-when-collapsed relative w-full" 
+                    x-data="{ openFlyout: false }" 
+                    @sidebar-toggled.window="openFlyout = false">
                     <button type="button" 
-                            @click="openFlyout = !openFlyout" 
-                            class="flex items-center justify-center w-full p-2.5 rounded-lg hover:bg-base-200 transition-colors cursor-pointer {{ request()->routeIs('admin.settings*') ? 'bg-base-300 font-semibold' : '' }}" 
+                            @click.stop="openFlyout = !openFlyout" 
+                            class="flex items-center justify-center w-full py-2 px-2 my-0.5 rounded-lg hover:bg-base-200 transition-colors cursor-pointer {{ request()->routeIs('admin.settings*') ? 'bg-base-300 font-semibold' : '' }}" 
                             title="Pengaturan Sistem">
                         <x-icon name="o-cog-6-tooth" class="w-5 h-5 text-zinc-700" />
                     </button>
 
-                    {{-- Popover Card ke Kanan --}}
-                    <div x-show="openFlyout" 
-                         x-transition:enter="transition ease-out duration-150"
-                         x-transition:enter-start="opacity-0 translate-x-1"
-                         x-transition:enter-end="opacity-100 translate-x-0"
-                         x-transition:leave="transition ease-in duration-100"
-                         x-transition:leave-start="opacity-100 translate-x-0"
-                         x-transition:leave-end="opacity-0 translate-x-1"
-                         class="fixed left-[66px] bottom-12 z-50 w-56 bg-white border border-zinc-200 rounded-xl shadow-2xl p-2 space-y-1 font-inter text-left"
-                         style="display: none;">
-                        <div class="px-2.5 py-1.5 border-b border-zinc-100 text-[11px] font-bold text-zinc-400 uppercase tracking-wider flex items-center justify-between">
-                            <span>Pengaturan</span>
-                            <x-icon name="o-cog-6-tooth" class="w-3.5 h-3.5 text-zinc-400" />
+                    {{-- Popover Card yang di-teleport ke body agar tidak terpotong overflow-x sidebar --}}
+                    <template x-teleport="body">
+                        <div x-show="openFlyout" 
+                             @click.outside="openFlyout = false"
+                             x-transition:enter="transition ease-out duration-150"
+                             x-transition:enter-start="opacity-0 translate-x-2"
+                             x-transition:enter-end="opacity-100 translate-x-0"
+                             x-transition:leave="transition ease-in duration-100"
+                             x-transition:leave-start="opacity-100 translate-x-0"
+                             x-transition:leave-end="opacity-0 translate-x-2"
+                             class="fixed left-[70px] bottom-14 z-[9999] w-60 bg-white border border-zinc-200 rounded-xl shadow-2xl p-2 space-y-1 font-inter text-left ring-1 ring-black/5"
+                             style="display: none;">
+                            <div class="px-2.5 py-1.5 border-b border-zinc-100 text-[11px] font-bold text-zinc-400 uppercase tracking-wider flex items-center justify-between">
+                                <span>Pengaturan Sistem</span>
+                                <x-icon name="o-cog-6-tooth" class="w-3.5 h-3.5 text-zinc-400" />
+                            </div>
+                            <a href="{{ route('admin.settings', ['tab' => 'general-tab']) }}" 
+                               @click="openFlyout = false"
+                               class="flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs hover:bg-zinc-100 text-zinc-700 hover:text-zinc-900 transition-colors {{ request()->routeIs('admin.settings*') && request('tab', 'general-tab') === 'general-tab' ? 'bg-zinc-100 font-semibold text-zinc-900' : '' }}">
+                                <x-icon name="o-building-storefront" class="w-4 h-4 text-zinc-500 shrink-0" />
+                                <span>Umum & Identitas</span>
+                            </a>
+                            <a href="{{ route('admin.settings', ['tab' => 'home-tab']) }}" 
+                               @click="openFlyout = false"
+                               class="flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs hover:bg-zinc-100 text-zinc-700 hover:text-zinc-900 transition-colors {{ request()->routeIs('admin.settings*') && request('tab') === 'home-tab' ? 'bg-zinc-100 font-semibold text-zinc-900' : '' }}">
+                                <x-icon name="o-computer-desktop" class="w-4 h-4 text-zinc-500 shrink-0" />
+                                <span>Tampilan & Beranda</span>
+                            </a>
+                            <a href="{{ route('admin.settings', ['tab' => 'mail-tab']) }}" 
+                               @click="openFlyout = false"
+                               class="flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs hover:bg-zinc-100 text-zinc-700 hover:text-zinc-900 transition-colors {{ request()->routeIs('admin.settings*') && request('tab') === 'mail-tab' ? 'bg-zinc-100 font-semibold text-zinc-900' : '' }}">
+                                <x-icon name="o-envelope" class="w-4 h-4 text-zinc-500 shrink-0" />
+                                <span>Email & Autentikasi</span>
+                            </a>
+                            <a href="{{ route('admin.settings', ['tab' => 'payment-tab']) }}" 
+                               @click="openFlyout = false"
+                               class="flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs hover:bg-zinc-100 text-zinc-700 hover:text-zinc-900 transition-colors {{ request()->routeIs('admin.settings*') && request('tab') === 'payment-tab' ? 'bg-zinc-100 font-semibold text-zinc-900' : '' }}">
+                                <x-icon name="o-credit-card" class="w-4 h-4 text-zinc-500 shrink-0" />
+                                <span>Payment (Midtrans)</span>
+                            </a>
+                            <a href="{{ route('admin.settings', ['tab' => 'fcm-tab']) }}" 
+                               @click="openFlyout = false"
+                               class="flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs hover:bg-zinc-100 text-zinc-700 hover:text-zinc-900 transition-colors {{ request()->routeIs('admin.settings*') && request('tab') === 'fcm-tab' ? 'bg-zinc-100 font-semibold text-zinc-900' : '' }}">
+                                <x-icon name="o-bell" class="w-4 h-4 text-zinc-500 shrink-0" />
+                                <span>Notifikasi (FCM)</span>
+                            </a>
                         </div>
-                        <a href="{{ route('admin.settings', ['tab' => 'general-tab']) }}" 
-                           class="flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs hover:bg-zinc-100 text-zinc-700 hover:text-zinc-900 transition-colors {{ request()->routeIs('admin.settings*') && request('tab', 'general-tab') === 'general-tab' ? 'bg-zinc-100 font-semibold text-zinc-900' : '' }}">
-                            <x-icon name="o-building-storefront" class="w-4 h-4 text-zinc-500 shrink-0" />
-                            <span>Umum & Identitas</span>
-                        </a>
-                        <a href="{{ route('admin.settings', ['tab' => 'home-tab']) }}" 
-                           class="flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs hover:bg-zinc-100 text-zinc-700 hover:text-zinc-900 transition-colors {{ request()->routeIs('admin.settings*') && request('tab') === 'home-tab' ? 'bg-zinc-100 font-semibold text-zinc-900' : '' }}">
-                            <x-icon name="o-computer-desktop" class="w-4 h-4 text-zinc-500 shrink-0" />
-                            <span>Tampilan & Beranda</span>
-                        </a>
-                        <a href="{{ route('admin.settings', ['tab' => 'mail-tab']) }}" 
-                           class="flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs hover:bg-zinc-100 text-zinc-700 hover:text-zinc-900 transition-colors {{ request()->routeIs('admin.settings*') && request('tab') === 'mail-tab' ? 'bg-zinc-100 font-semibold text-zinc-900' : '' }}">
-                            <x-icon name="o-envelope" class="w-4 h-4 text-zinc-500 shrink-0" />
-                            <span>Email & Autentikasi</span>
-                        </a>
-                        <a href="{{ route('admin.settings', ['tab' => 'payment-tab']) }}" 
-                           class="flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs hover:bg-zinc-100 text-zinc-700 hover:text-zinc-900 transition-colors {{ request()->routeIs('admin.settings*') && request('tab') === 'payment-tab' ? 'bg-zinc-100 font-semibold text-zinc-900' : '' }}">
-                            <x-icon name="o-credit-card" class="w-4 h-4 text-zinc-500 shrink-0" />
-                            <span>Payment (Midtrans)</span>
-                        </a>
-                        <a href="{{ route('admin.settings', ['tab' => 'fcm-tab']) }}" 
-                           class="flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs hover:bg-zinc-100 text-zinc-700 hover:text-zinc-900 transition-colors {{ request()->routeIs('admin.settings*') && request('tab') === 'fcm-tab' ? 'bg-zinc-100 font-semibold text-zinc-900' : '' }}">
-                            <x-icon name="o-bell" class="w-4 h-4 text-zinc-500 shrink-0" />
-                            <span>Notifikasi (FCM)</span>
-                        </a>
-                    </div>
+                    </template>
                 </li>
                 @endcan
             </x-menu>
