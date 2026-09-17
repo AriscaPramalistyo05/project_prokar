@@ -127,15 +127,47 @@ class UmamiService
                 $pvData = [];
                 $sessionData = [];
 
-                if (!empty($chartData['pageviews'])) {
-                    foreach ($chartData['pageviews'] as $item) {
-                        $labels[] = date($days <= 1 ? 'H:i' : 'd M', strtotime($item['x']));
-                        $pvData[] = (int) $item['y'];
+                if ($days <= 1) {
+                    $pvMap = [];
+                    if (!empty($chartData['pageviews'])) {
+                        foreach ($chartData['pageviews'] as $item) {
+                            $hourKey = date('Y-m-d H', strtotime($item['x']));
+                            $pvMap[$hourKey] = (int) $item['y'];
+                        }
                     }
-                }
-                if (!empty($chartData['sessions'])) {
-                    foreach ($chartData['sessions'] as $item) {
-                        $sessionData[] = (int) $item['y'];
+                    $sessMap = [];
+                    if (!empty($chartData['sessions'])) {
+                        foreach ($chartData['sessions'] as $item) {
+                            $hourKey = date('Y-m-d H', strtotime($item['x']));
+                            $sessMap[$hourKey] = (int) $item['y'];
+                        }
+                    }
+                    for ($h = 23; $h >= 0; $h -= 2) {
+                        $hKey = date('Y-m-d H', strtotime("-{$h} hours"));
+                        $labels[] = date('H:00', strtotime("-{$h} hours"));
+                        $pvData[] = $pvMap[$hKey] ?? 0;
+                        $sessionData[] = $sessMap[$hKey] ?? 0;
+                    }
+                } else {
+                    $pvMap = [];
+                    if (!empty($chartData['pageviews'])) {
+                        foreach ($chartData['pageviews'] as $item) {
+                            $dateKey = date('Y-m-d', strtotime($item['x']));
+                            $pvMap[$dateKey] = (int) $item['y'];
+                        }
+                    }
+                    $sessMap = [];
+                    if (!empty($chartData['sessions'])) {
+                        foreach ($chartData['sessions'] as $item) {
+                            $dateKey = date('Y-m-d', strtotime($item['x']));
+                            $sessMap[$dateKey] = (int) $item['y'];
+                        }
+                    }
+                    for ($i = $days - 1; $i >= 0; $i--) {
+                        $dateKey = date('Y-m-d', strtotime("-{$i} days"));
+                        $labels[] = date('d M', strtotime("-{$i} days"));
+                        $pvData[] = $pvMap[$dateKey] ?? 0;
+                        $sessionData[] = $sessMap[$dateKey] ?? 0;
                     }
                 }
 
@@ -154,10 +186,6 @@ class UmamiService
                     ],
                     'topPages' => [],
                 ];
-
-                if (empty($result['chart']['labels'])) {
-                    $result = $this->fillEmptyChartDates($result, $days);
-                }
 
                 // 4. Halaman Terpopuler (Metrics table: type path)
                 $metricsRes = Http::timeout(3)
