@@ -522,13 +522,83 @@
 
                 {{-- ── DESKRIPSI / CATATAN PRODUK ── --}}
                 @if ($product->description)
-                    <div class="mb-4">
+                    <div class="mb-6">
                         <h2 class="section-head">Deskripsi Produk</h2>
                         <div class="prose-desc">
                             {!! nl2br(e($product->description)) !!}
                         </div>
                     </div>
                 @endif
+
+                {{-- ── 1-CLICK SHARE & MARKETING WIDGET ── --}}
+                @php
+                    $marketingService = app(\App\Services\MarketingKitService::class);
+                    $waShareUrl = $marketingService->getWhatsAppShareUrl($product, 'standard');
+                    $waDirectUrl = $marketingService->getWhatsAppDirectOrderUrl($product);
+                    $fbShareUrl = $marketingService->getFacebookShareUrl($product);
+                    $tgShareUrl = $marketingService->getTelegramShareUrl($product);
+                    $productUrl = $marketingService->getProductUrl($product);
+                    $shareTitle = $product->name . ' - ' . ($product->promo_price ? format_rupiah($product->promo_price) : format_rupiah($product->price));
+                    $shareText = "Cek produk " . $product->name . " di Prokar Elektronik: " . $productUrl;
+                @endphp
+
+                <div class="p-4 sm:p-5 bg-gradient-to-br from-slate-50 to-teal-50/40 rounded-2xl border border-teal-100/80 shadow-2xs mb-6">
+                    <div class="flex items-center justify-between gap-2 mb-3">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-lg bg-[#008276]/10 text-[#008276] flex items-center justify-center text-sm font-bold">
+                                <i class="fa-solid fa-share-nodes"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-inter font-bold text-sm sm:text-base text-gray-900 leading-tight">Bagikan & Rekomendasikan</h3>
+                                <p class="text-[11px] sm:text-xs text-gray-500">Kirim ke teman atau bagikan katalog ini dalam 1-klik</p>
+                            </div>
+                        </div>
+
+                        {{-- Web Share API Native Trigger (Mobile/Supported Browsers) --}}
+                        <button type="button"
+                            onclick="triggerNativeShare('{{ addslashes($shareTitle) }}', '{{ addslashes($shareText) }}', '{{ $productUrl }}')"
+                            id="nativeShareBtn"
+                            class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#008276] hover:bg-[#006e64] text-white rounded-lg text-xs font-semibold shadow-xs transition active:scale-95">
+                            <i class="fa-solid fa-arrow-up-from-bracket text-xs"></i>
+                            <span>Bagikan</span>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+                        <!-- WhatsApp Share -->
+                        <a href="{{ $waShareUrl }}" target="_blank" rel="noopener noreferrer"
+                            class="flex items-center justify-center gap-2 px-3 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-semibold shadow-xs transition hover:-translate-y-0.5"
+                            title="Bagikan ke WhatsApp">
+                            <i class="fa-brands fa-whatsapp text-sm"></i>
+                            <span>WhatsApp</span>
+                        </a>
+
+                        <!-- Facebook Share -->
+                        <a href="{{ $fbShareUrl }}" target="_blank" rel="noopener noreferrer"
+                            class="flex items-center justify-center gap-2 px-3 py-2.5 bg-[#1877F2] hover:bg-[#166fe5] text-white rounded-xl text-xs font-semibold shadow-xs transition hover:-translate-y-0.5"
+                            title="Bagikan ke Facebook">
+                            <i class="fa-brands fa-facebook-f text-sm"></i>
+                            <span>Facebook</span>
+                        </a>
+
+                        <!-- Telegram Share -->
+                        <a href="{{ $tgShareUrl }}" target="_blank" rel="noopener noreferrer"
+                            class="flex items-center justify-center gap-2 px-3 py-2.5 bg-[#229ED9] hover:bg-[#1f93cb] text-white rounded-xl text-xs font-semibold shadow-xs transition hover:-translate-y-0.5"
+                            title="Bagikan ke Telegram">
+                            <i class="fa-brands fa-telegram text-sm"></i>
+                            <span>Telegram</span>
+                        </a>
+
+                        <!-- Salin Link -->
+                        <button type="button"
+                            onclick="copyProductLink('{{ $productUrl }}', this)"
+                            class="flex items-center justify-center gap-2 px-3 py-2.5 bg-white hover:bg-gray-100 text-gray-700 border border-gray-200 rounded-xl text-xs font-semibold shadow-2xs transition hover:-translate-y-0.5 active:scale-95"
+                            title="Salin Tautan">
+                            <i class="fa-solid fa-link text-xs text-gray-500"></i>
+                            <span class="copy-text">Salin Link</span>
+                        </button>
+                    </div>
+                </div>
 
             </div>
         </div>
@@ -988,6 +1058,65 @@
                 nextModalImage();
             }
         });
+
+        // ── 1-Click Share & Web Share API ───────────────────
+        document.addEventListener('DOMContentLoaded', () => {
+            const nativeBtn = document.getElementById('nativeShareBtn');
+            if (nativeBtn && navigator.share) {
+                nativeBtn.classList.remove('hidden');
+                nativeBtn.classList.add('inline-flex');
+            }
+        });
+
+        window.triggerNativeShare = function(title, text, url) {
+            if (navigator.share) {
+                navigator.share({
+                    title: title,
+                    text: text,
+                    url: url
+                }).catch((err) => {
+                    if (err.name !== 'AbortError') {
+                        copyProductLink(url);
+                    }
+                });
+            } else {
+                copyProductLink(url);
+            }
+        };
+
+        window.copyProductLink = function(url, btnElement) {
+            navigator.clipboard.writeText(url).then(() => {
+                if (btnElement) {
+                    const label = btnElement.querySelector('.copy-text');
+                    const icon = btnElement.querySelector('i');
+                    if (label) label.innerText = 'Tersalin! ✅';
+                    if (icon) icon.className = 'fa-solid fa-check text-emerald-600 text-xs';
+                    setTimeout(() => {
+                        if (label) label.innerText = 'Salin Link';
+                        if (icon) icon.className = 'fa-solid fa-link text-xs text-gray-500';
+                    }, 2500);
+                }
+
+                if (typeof Swal !== 'undefined') {
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 2500,
+                        timerProgressBar: true,
+                        customClass: {
+                            popup: 'rounded-xl shadow-lg border border-slate-100 bg-white font-inter text-xs'
+                        }
+                    });
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Tautan produk berhasil disalin!'
+                    });
+                }
+            }).catch(() => {
+                prompt('Salin tautan ini:', url);
+            });
+        };
     </script>
 @endpush
 

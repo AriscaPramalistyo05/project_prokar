@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Frontend;
 
-use App\Models\Category;
 use Livewire\Component;
 
 class ProductFilter extends Component

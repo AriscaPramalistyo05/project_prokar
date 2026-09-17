@@ -24,7 +24,23 @@ class OtpController extends Controller
             return redirect()->route('register');
         }
 
-        $user = User::findOrFail(session('otp_user_id'));
+        $userId = session('otp_user_id');
+        $user = User::findOrFail($userId);
+
+        // Ambil OTP aktif terakhir untuk hitung cooldown & countdown
+        $lastOtp = EmailOtpVerification::where('user_id', $userId)
+            ->where('is_used', false)
+            ->latest()
+            ->first();
+
+        $resendCooldown = 60;
+        $expiresInSeconds = 300;
+
+        if ($lastOtp) {
+            $elapsed = $lastOtp->created_at->diffInSeconds(now());
+            $resendCooldown = max(0, 60 - $elapsed);
+            $expiresInSeconds = max(0, $lastOtp->expires_at->diffInSeconds(now()));
+        }
 
         // Samarkan email: p***@gmail.com
         $email  = $user->email;
@@ -33,7 +49,11 @@ class OtpController extends Controller
             . str_repeat('*', max(1, strlen($parts[0]) - 1))
             . '@' . $parts[1];
 
-        return view('auth.otp', ['maskedEmail' => $masked]);
+        return view('auth.otp', [
+            'maskedEmail' => $masked,
+            'resendCooldown' => $resendCooldown,
+            'expiresInSeconds' => $expiresInSeconds,
+        ]);
     }
 
     /**
@@ -138,7 +158,7 @@ class OtpController extends Controller
         EmailOtpVerification::create([
             'user_id'    => $userId,
             'otp'        => $otp,
-            'expires_at' => now()->addMinutes(10),
+            'expires_at' => now()->addMinutes(5),
         ]);
 
         Mail::to($user->email)->send(new OtpMail($user, $otp));

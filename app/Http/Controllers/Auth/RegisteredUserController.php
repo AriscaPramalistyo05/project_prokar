@@ -50,7 +50,7 @@ class RegisteredUserController extends Controller
         EmailOtpVerification::create([
             'user_id'    => $user->id,
             'otp'        => $otp,
-            'expires_at' => now()->addMinutes(10),
+            'expires_at' => now()->addMinutes(5),
         ]);
 
         // Kirim email OTP

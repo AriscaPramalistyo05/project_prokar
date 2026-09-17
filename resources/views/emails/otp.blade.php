@@ -70,7 +70,7 @@
                                             {{ $otp }}
                                         </p>
                                         <p style="margin:14px 0 0 0; color:#999999; font-size:12px;">
-                                            Berlaku selama <strong style="color:#555555;">10 menit</strong>
+                                            Berlaku selama <strong style="color:#555555;">5 menit</strong>
                                         </p>
                                     </td>
                                 </tr>

@@ -74,3 +74,58 @@ select, .select, select.select {
     text-overflow: ellipsis;
 }
 
+/**
+ * Mobile Drawer & Sidebar Full-Height Fixes
+ * Memastikan sidebar di mobile menutupi layar penuh dari atas hingga paling bawah (100dvh)
+ */
+.drawer-side {
+    z-index: 50 !important;
+}
+
+.drawer-side > div:not(.drawer-overlay) {
+    min-height: 100vh !important;
+    min-height: 100dvh !important;
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.drawer-side > div:not(.drawer-overlay) > .flex-1 {
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 100% !important;
+    height: 100% !important;
+}
+
+.drawer-content {
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+/**
+ * Sidebar Scrollbar & Minimize / Collapsed Alignment
+ */
+.drawer-side > div:not(.drawer-overlay) {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.drawer-side > div:not(.drawer-overlay)::-webkit-scrollbar {
+    display: none;
+}
+
+/* Penataan ikon menu saat sidebar dalam kondisi minimize (Desktop) */
+.drawer-side [class*="w-[62px]"] .menu li a,
+.drawer-side [class*="!w-[62px]"] .menu li a {
+    justify-content: center !important;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+}
+
+.drawer-side [class*="w-[62px]"] .menu li summary,
+.drawer-side [class*="!w-[62px]"] .menu li summary {
+    justify-content: center !important;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+}
+

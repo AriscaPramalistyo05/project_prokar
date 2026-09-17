@@ -42,15 +42,27 @@
                     {{-- Body --}}
                     <tr>
                         <td style="padding: 36px 32px 20px 32px;">
+                            @php
+                                $paid = $isPaid ?? in_array($order->payment_status, ['paid', 'dp_paid', 'settlement', 'capture', 'success']);
+                            @endphp
+
                             <p style="margin:0 0 10px 0; color:#111111;
                                        font-size:22px; font-weight:bold;">
-                                Konfirmasi Pembayaran Pesanan
+                                {{ $paid ? 'Konfirmasi Pembayaran Pesanan' : 'Konfirmasi Pesanan' }}
                             </p>
                             <p style="margin:0 0 20px 0; color:#444444; font-size:15px; line-height:1.6;">
                                 Halo <strong>{{ $order->customer_name }}</strong>,
                             </p>
                             <p style="margin:0 0 24px 0; color:#555555; font-size:14px; line-height:1.6;">
-                                Terima kasih telah berbelanja di Prokar Elektronik! Pembayaran Anda telah kami terima dan pesanan Anda sedang dalam proses penyiapan/pengiriman.
+                                @if ($paid)
+                                    Terima kasih telah berbelanja di Prokar Elektronik! Pembayaran Anda telah kami terima dan pesanan Anda sedang dalam proses penyiapan/pengiriman.
+                                @elseif ($order->payment_method === 'cash_store' || $order->delivery_type === 'pickup')
+                                    Terima kasih telah memesan di Prokar Elektronik! Pesanan Anda telah kami catat. Silakan tunjukkan nomor pesanan di bawah ini ke kasir toko saat mengambil barang dan melakukan pembayaran tunai/cash.
+                                @elseif ($order->payment_method === 'cod')
+                                    Terima kasih telah memesan di Prokar Elektronik! Pesanan Anda telah kami catat. Silakan siapkan pembayaran tunai saat kurir mengantarkan pesanan ke alamat Anda.
+                                @else
+                                    Terima kasih telah memesan di Prokar Elektronik! Pesanan Anda tersimpan. Silakan selesaikan pembayaran Anda sebelum batas waktu berakhir.
+                                @endif
                             </p>
 
                             {{-- Nomor Pesanan Box --}}
@@ -100,32 +112,63 @@
                                     <td>Ongkos Kirim:</td>
                                     <td align="right"><strong>Rp {{ number_format($order->shipping_cost, 0, ',', '.') }}</strong></td>
                                 </tr>
+                                <tr>
+                                    <td>Status Pembayaran:</td>
+                                    <td align="right">
+                                        @if ($paid)
+                                            <strong style="color:#16a34a;">LUNAS (SUDAH DIBAYAR)</strong>
+                                        @elseif ($order->payment_method === 'cash_store' || $order->delivery_type === 'pickup')
+                                            <strong style="color:#d97706;">BAYAR DI KASIR TOKO</strong>
+                                        @elseif ($order->payment_method === 'cod')
+                                            <strong style="color:#d97706;">BAYAR DI TEMPAT (COD)</strong>
+                                        @else
+                                            <strong style="color:#d97706;">MENUNGGU PEMBAYARAN</strong>
+                                        @endif
+                                    </td>
+                                </tr>
                                 <tr style="border-top: 1px solid #e0e0e0;">
-                                    <td style="font-size:15px; font-weight:bold; padding-top:10px;">TOTAL BAYAR:</td>
+                                    <td style="font-size:15px; font-weight:bold; padding-top:10px;">TOTAL:</td>
                                     <td align="right" style="font-size:16px; font-weight:bold; color:#000000; padding-top:10px;">Rp {{ number_format($order->total, 0, ',', '.') }}</td>
                                 </tr>
                             </table>
 
-                            {{-- Alamat Pengiriman --}}
+                            {{-- Alamat / Info Pengiriman --}}
                             <div style="background-color: #f9f9f9; padding: 14px 16px; border-left: 3px solid #000000; margin-bottom: 24px;">
-                                <strong style="display: block; margin-bottom: 4px; font-size: 12px; text-transform:uppercase; color:#000;">Alamat Pengiriman:</strong>
+                                <strong style="display: block; margin-bottom: 4px; font-size: 12px; text-transform:uppercase; color:#000;">
+                                    {{ $order->delivery_type === 'pickup' ? 'Pengambilan Pesanan:' : 'Alamat Pengiriman:' }}
+                                </strong>
                                 <p style="margin: 0; font-size: 13px; color: #444444; line-height: 1.5;">
-                                    {{ $order->address_detail }}<br>
-                                    Telepon: {{ $order->customer_phone }}
+                                    @if ($order->delivery_type === 'pickup')
+                                        Ambil Sendiri di Toko Prokar Elektronik (Karanggondang, Rt4 Rw2, Mlonggo, Jepara)<br>
+                                        Telepon Pemesan: {{ $order->customer_phone }}
+                                    @else
+                                        {{ $order->address_detail }}<br>
+                                        Telepon: {{ $order->customer_phone }}
+                                    @endif
                                 </p>
                             </div>
                             
-                            {{-- Tombol Download Invoice --}}
+                            {{-- Action Button: Unduh Invoice jika Lunas, atau Lihat Detail Pesanan jika Belum Bayar --}}
                             <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 20px;">
                                 <tr>
                                     <td align="center">
-                                        <a href="{{ route('order.invoice.download', $order->order_code) }}" 
-                                           style="display:inline-block; background:#FECB00; color:#000000;
-                                                  font-size:13px; font-weight:bold; text-decoration:none;
-                                                  letter-spacing:1px; padding:14px 30px;
-                                                  border:2px solid #000000; text-transform:uppercase;">
-                                            UNDUH INVOICE DIGITAL &rarr;
-                                        </a>
+                                        @if ($paid)
+                                            <a href="{{ route('order.invoice.download', $order->order_code) }}" 
+                                               style="display:inline-block; background:#FECB00; color:#000000;
+                                                      font-size:13px; font-weight:bold; text-decoration:none;
+                                                      letter-spacing:1px; padding:14px 30px;
+                                                      border:2px solid #000000; text-transform:uppercase;">
+                                                UNDUH INVOICE DIGITAL &rarr;
+                                            </a>
+                                        @else
+                                            <a href="{{ route('pesanan.show', $order->order_code) }}" 
+                                               style="display:inline-block; background:#000000; color:#FECB00;
+                                                      font-size:13px; font-weight:bold; text-decoration:none;
+                                                      letter-spacing:1px; padding:14px 30px;
+                                                      border:2px solid #000000; text-transform:uppercase;">
+                                                LIHAT DETAIL PESANAN &rarr;
+                                            </a>
+                                        @endif
                                     </td>
                                 </tr>
                             </table>

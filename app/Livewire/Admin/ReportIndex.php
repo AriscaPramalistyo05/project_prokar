@@ -2,11 +2,9 @@
 
 namespace App\Livewire\Admin;
 
-use App\Models\Category;
 use App\Models\Order;
 use App\Models\SellSubmission;
 use App\Models\ServiceOrder;
-use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Livewire\Attributes\Layout;

@@ -8,13 +8,20 @@
     },
     setSuccessRedirect() {
         this.isProcessing = true;
-        this.processTitle = 'Pembayaran Terverifikasi!';
-        this.processDesc = 'Sedang mengalihkan ke nota transaksi dan bukti pesanan Anda...';
+        this.processTitle = 'Pembayaran Berhasil!';
+        this.processDesc = 'Sedang mengalihkan ke nota transaksi dan bukti pembayaran Anda...';
         this.processIcon = 'check';
+    },
+    setPendingRedirect() {
+        this.isProcessing = true;
+        this.processTitle = 'Pesanan Berhasil Dibuat!';
+        this.processDesc = 'Menyiapkan instruksi & rincian pembayaran Anda...';
+        this.processIcon = 'clock';
     }
 }" 
 x-on:checkout-error.window="resetOverlay()"
-x-on:checkout-redirecting.window="setSuccessRedirect()"
+x-on:checkout-success-redirect.window="setSuccessRedirect()"
+x-on:checkout-pending-redirect.window="setPendingRedirect()"
 class="w-full min-h-full px-4 pt-5 pb-8 sm:px-6 lg:px-10 lg:pt-8 flex flex-col justify-between relative">
 
   <!-- ===================== FULL SCREEN PROCESSING OVERLAY ===================== -->
@@ -30,13 +37,18 @@ class="w-full min-h-full px-4 pt-5 pb-8 sm:px-6 lg:px-10 lg:pt-8 flex flex-col j
        
     <div class="bg-[#FCFCFA] border-2 border-[#0A0A0A] shadow-[8px_8px_0_0_#0A0A0A] rounded-3xl p-6 sm:p-8 max-w-sm w-full text-center flex flex-col items-center gap-4 animate-in fade-in zoom-in duration-200">
       
-      <!-- Animated Spinner / Check Icon -->
+      <!-- Animated Spinner / Check / Clock Icon -->
       <template x-if="processIcon === 'check'">
         <div class="w-16 h-16 rounded-2xl bg-emerald-500 border-2 border-[#0A0A0A] shadow-[4px_4px_0_0_#0A0A0A] flex items-center justify-center text-white text-2xl animate-bounce">
           <i class="fa-solid fa-circle-check"></i>
         </div>
       </template>
-      <template x-if="processIcon !== 'check'">
+      <template x-if="processIcon === 'clock'">
+        <div class="w-16 h-16 rounded-2xl bg-[#FFCC00] border-2 border-[#0A0A0A] shadow-[4px_4px_0_0_#0A0A0A] flex items-center justify-center text-[#0A0A0A] text-2xl animate-pulse">
+          <i class="fa-solid fa-hourglass-half"></i>
+        </div>
+      </template>
+      <template x-if="processIcon !== 'check' && processIcon !== 'clock'">
         <div class="w-16 h-16 rounded-2xl bg-[#FFCC00] border-2 border-[#0A0A0A] shadow-[4px_4px_0_0_#0A0A0A] flex items-center justify-center relative">
           <i class="fa-solid fa-spinner fa-spin text-2xl text-[#0A0A0A]"></i>
         </div>
@@ -339,17 +351,39 @@ class="w-full min-h-full px-4 pt-5 pb-8 sm:px-6 lg:px-10 lg:pt-8 flex flex-col j
                 window.snap.pay(data.snap_token, {
                     onSuccess: function(result) {
                         currentActiveSnapToken = null;
-                        window.dispatchEvent(new CustomEvent('checkout-redirecting'));
-                        setTimeout(() => {
-                            window.location.href = successUrl;
-                        }, 250);
+                        window.dispatchEvent(new CustomEvent('checkout-success-redirect'));
+                        if (result && typeof result === 'object') {
+                            fetch("{{ url('checkout') }}/" + data.order_code + "/save-snap-result", {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify(result)
+                            }).finally(() => {
+                                window.location.href = successUrl;
+                            });
+                        } else {
+                            setTimeout(() => { window.location.href = successUrl; }, 300);
+                        }
                     },
                     onPending: function(result) {
                         currentActiveSnapToken = null;
-                        window.dispatchEvent(new CustomEvent('checkout-redirecting'));
-                        setTimeout(() => {
-                            window.location.href = successUrl;
-                        }, 250);
+                        window.dispatchEvent(new CustomEvent('checkout-pending-redirect'));
+                        if (result && typeof result === 'object') {
+                            fetch("{{ url('checkout') }}/" + data.order_code + "/save-snap-result", {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify(result)
+                            }).finally(() => {
+                                window.location.href = successUrl;
+                            });
+                        } else {
+                            setTimeout(() => { window.location.href = successUrl; }, 300);
+                        }
                     },
                     onError: function(result) {
                         currentActiveSnapToken = null;
@@ -358,8 +392,11 @@ class="w-full min-h-full px-4 pt-5 pb-8 sm:px-6 lg:px-10 lg:pt-8 flex flex-col j
                     },
                     onClose: function() {
                         currentActiveSnapToken = null;
-                        window.dispatchEvent(new CustomEvent('checkout-error'));
-                        console.log('User menutup popup pembayaran sebelum transaksi selesai.');
+                        // Pengguna menutup snap, arahkan ke halaman menunggu pembayaran agar bisa melanjutkan nanti
+                        window.dispatchEvent(new CustomEvent('checkout-pending-redirect'));
+                        setTimeout(() => {
+                            window.location.href = successUrl;
+                        }, 300);
                     }
                 });
             } else {

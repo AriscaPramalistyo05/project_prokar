@@ -23,23 +23,38 @@
     {{-- FontAwesome 6 --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
+    <!-- Umami Web Analytics -->
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="6150499f-eb3e-406f-b3d1-d9834bb6bfc9"></script>
     @vite(['resources/css/admin.css', 'resources/js/admin.js'])
 </head>
 <body class="bg-base-200 min-h-screen text-base-content">
     <x-main full-width>
         {{-- Sidebar Mary UI --}}
-        <x-slot:sidebar drawer="main-drawer" collapsible class="bg-base-100 border-r border-base-200">
-            {{-- Logo --}}
-            <a href="{{ route('admin.dashboard') }}" wire:navigate.hover class="p-4 flex items-center gap-2 hover:opacity-80 transition-opacity">
-                @if(setting('shop_logo'))
-                    <img src="{{ $adminLogoUrl }}" onerror="this.onerror=null; this.src='{{ asset('images/logo prokar simpel.png') }}'" alt="{{ setting('shop_name', 'Prokar Elektronik') }}" class="h-8 max-w-[160px] object-contain" />
-                @else
-                    <img src="{{ asset('images/logo prokar simpel.png') }}" alt="Prokar Elektronik" class="h-8 max-w-[160px] object-contain" />
-                @endif
-            </a>
+        <x-slot:sidebar drawer="main-drawer" collapsible collapse-text="Kecilkan Menu" class="bg-base-100 border-r border-base-200 min-h-screen min-h-dvh h-full flex flex-col justify-between">
+            {{-- Logo Header --}}
+            <div class="p-3.5 flex items-center justify-between border-b border-base-200/80 min-h-[64px]">
+                {{-- Logo saat Expanded (Desktop Normal & Mobile) --}}
+                <a href="{{ route('admin.dashboard') }}" wire:navigate.hover class="hidden-when-collapsed flex items-center gap-2 hover:opacity-80 transition-opacity">
+                    @if(setting('shop_logo'))
+                        <img src="{{ $adminLogoUrl }}" onerror="this.onerror=null; this.src='{{ asset('images/logo prokar simpel.png') }}'" alt="{{ setting('shop_name', 'Prokar Elektronik') }}" class="h-8 max-w-[150px] object-contain" />
+                    @else
+                        <img src="{{ asset('images/logo prokar simpel.png') }}" alt="Prokar Elektronik" class="h-8 max-w-[150px] object-contain" />
+                    @endif
+                </a>
+
+                {{-- Mini Logo Favicon saat Collapsed / Minimized (Desktop Only) --}}
+                <a href="{{ route('admin.dashboard') }}" wire:navigate.hover class="display-when-collapsed mx-auto hover:opacity-80 transition-opacity" title="{{ setting('shop_name', 'Prokar Elektronik') }}">
+                    <img src="{{ $adminFaviconUrl }}" onerror="this.onerror=null; this.src='{{ asset('images/logo prokar simpel.png') }}'" alt="{{ setting('shop_name', 'Prokar Elektronik') }}" class="h-7 w-7 object-contain rounded-md" />
+                </a>
+
+                {{-- Tombol Close Sidebar (Khusus Mobile Drawer Popover) --}}
+                <label for="main-drawer" class="btn btn-ghost btn-sm btn-circle lg:hidden text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 transition-colors cursor-pointer" aria-label="Tutup Menu">
+                    <x-icon name="o-x-mark" class="w-5 h-5" />
+                </label>
+            </div>
 
             {{-- Menu Navigasi --}}
-            <x-menu activate-by-route>
+            <x-menu activate-by-route class="flex-1">
                 <x-admin.sidebar-item route="admin.dashboard" icon="o-squares-2x2" label="Dashboard" />
                 
                 @role('super_admin')
@@ -60,75 +75,30 @@
                 <x-menu-item title="System Logs" icon="o-document-text" link="{{ url('admin/logs') }}" :active="request()->is('admin/logs*')" />
                 <x-admin.sidebar-item route="admin.additional-fees.index" icon="o-currency-dollar" label="Biaya Tambahan" />
                 
-                {{-- Dropdown Submenu Setting --}}
-                <li x-data="{ open: {{ request()->routeIs('admin.settings*') ? 'true' : 'false' }} }" class="w-full">
-                    <button type="button" @click="open = !open"
-                            class="flex items-center justify-between w-full px-3 py-2 rounded-lg text-sm font-semibold transition-colors cursor-pointer {{ request()->routeIs('admin.settings*') ? 'bg-base-200 text-black font-bold' : 'text-gray-700 hover:bg-base-200/70 hover:text-black' }}">
-                        <div class="flex items-center gap-3">
-                            <x-icon name="o-cog-6-tooth" class="w-5 h-5 shrink-0" />
-                            <span>Setting</span>
-                        </div>
-                        <x-icon name="o-chevron-down" class="w-4 h-4 shrink-0 transition-transform duration-200" ::class="open ? 'rotate-180' : ''" />
-                    </button>
-                    <ul x-show="open" x-collapse x-cloak class="pl-4 pr-1 py-1 space-y-1">
-                        <li>
-                            <a href="{{ route('admin.settings', ['tab' => 'general-tab']) }}"
-                               wire:navigate.hover
-                               class="flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-semibold transition-colors {{ (request()->routeIs('admin.settings*') && request('tab', 'general-tab') === 'general-tab') ? 'bg-amber-100 text-amber-950 font-bold shadow-2xs' : 'text-gray-600 hover:bg-base-200 hover:text-black' }}">
-                                <x-icon name="o-building-storefront" class="w-4 h-4 shrink-0" />
-                                <span>Umum & Identitas</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('admin.settings', ['tab' => 'home-tab']) }}"
-                               wire:navigate.hover
-                               class="flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-semibold transition-colors {{ (request()->routeIs('admin.settings*') && request('tab') === 'home-tab') ? 'bg-amber-100 text-amber-950 font-bold shadow-2xs' : 'text-gray-600 hover:bg-base-200 hover:text-black' }}">
-                                <x-icon name="o-computer-desktop" class="w-4 h-4 shrink-0" />
-                                <span>Tampilan & Beranda</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('admin.settings', ['tab' => 'mail-tab']) }}"
-                               wire:navigate.hover
-                               class="flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-semibold transition-colors {{ (request()->routeIs('admin.settings*') && request('tab') === 'mail-tab') ? 'bg-amber-100 text-amber-950 font-bold shadow-2xs' : 'text-gray-600 hover:bg-base-200 hover:text-black' }}">
-                                <x-icon name="o-envelope" class="w-4 h-4 shrink-0" />
-                                <span>Email & Autentikasi</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('admin.settings', ['tab' => 'payment-tab']) }}"
-                               wire:navigate.hover
-                               class="flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-semibold transition-colors {{ (request()->routeIs('admin.settings*') && request('tab') === 'payment-tab') ? 'bg-amber-100 text-amber-950 font-bold shadow-2xs' : 'text-gray-600 hover:bg-base-200 hover:text-black' }}">
-                                <x-icon name="o-credit-card" class="w-4 h-4 shrink-0" />
-                                <span>Payment (Midtrans)</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('admin.settings', ['tab' => 'fcm-tab']) }}"
-                               wire:navigate.hover
-                               class="flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-semibold transition-colors {{ (request()->routeIs('admin.settings*') && request('tab') === 'fcm-tab') ? 'bg-amber-100 text-amber-950 font-bold shadow-2xs' : 'text-gray-600 hover:bg-base-200 hover:text-black' }}">
-                                <x-icon name="o-bell" class="w-4 h-4 shrink-0" />
-                                <span>Notifikasi (FCM)</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
+                {{-- Dropdown Submenu Setting (Natif Mary UI untuk support Collapse & Expand) --}}
+                <x-menu-sub title="Setting" icon="o-cog-6-tooth" :open="request()->routeIs('admin.settings*')">
+                    <x-menu-item title="Umum & Identitas" icon="o-building-storefront" link="{{ route('admin.settings', ['tab' => 'general-tab']) }}" :active="request()->routeIs('admin.settings*') && request('tab', 'general-tab') === 'general-tab'" />
+                    <x-menu-item title="Tampilan & Beranda" icon="o-computer-desktop" link="{{ route('admin.settings', ['tab' => 'home-tab']) }}" :active="request()->routeIs('admin.settings*') && request('tab') === 'home-tab'" />
+                    <x-menu-item title="Email & Autentikasi" icon="o-envelope" link="{{ route('admin.settings', ['tab' => 'mail-tab']) }}" :active="request()->routeIs('admin.settings*') && request('tab') === 'mail-tab'" />
+                    <x-menu-item title="Payment (Midtrans)" icon="o-credit-card" link="{{ route('admin.settings', ['tab' => 'payment-tab']) }}" :active="request()->routeIs('admin.settings*') && request('tab') === 'payment-tab'" />
+                    <x-menu-item title="Notifikasi (FCM)" icon="o-bell" link="{{ route('admin.settings', ['tab' => 'fcm-tab']) }}" :active="request()->routeIs('admin.settings*') && request('tab') === 'fcm-tab'" />
+                </x-menu-sub>
                 @endrole
             </x-menu>
         </x-slot:sidebar>
 
         {{-- Konten Utama --}}
-        <x-slot:content>
+        <x-slot:content class="!p-0 min-h-screen">
             {{-- Topbar --}}
-            <x-nav sticky full-width class="bg-base-100 border-b border-base-200 z-10">
-                <x-slot:brand>
-                    <label for="main-drawer" class="btn btn-ghost lg:hidden">
+            <x-nav sticky full-width class="bg-base-100 border-b border-base-200 z-30 !px-3 sm:!px-6 !py-2 sm:!py-3">
+                <x-slot:brand class="flex items-center gap-1.5 sm:gap-2">
+                    <label for="main-drawer" class="btn btn-ghost btn-sm btn-square lg:hidden cursor-pointer" aria-label="Buka Menu">
                         <x-icon name="o-bars-3" class="w-5 h-5" />
                     </label>
-                    <div class="font-bold text-lg lg:hidden ml-2">PROKAR ADMIN</div>
+                    <div class="font-bold text-sm sm:text-base lg:hidden tracking-tight text-zinc-900 whitespace-nowrap">PROKAR ADMIN</div>
                 </x-slot:brand>
-                <x-slot:actions>
-                    {{-- Small Push Notification Toggle (beside Bell Icon) --}}
+                <x-slot:actions class="flex items-center gap-1.5 sm:gap-3">
+                    {{-- Compact Push Notification Toggle Switch --}}
                     <div x-data="{
                         permission: (typeof Notification !== 'undefined') ? Notification.permission : 'unsupported',
                         loading: false,
@@ -175,45 +145,47 @@
                         }
                     }"
                     @fcm-permission-updated.window="permission = (typeof Notification !== 'undefined') ? Notification.permission : 'unsupported'"
-                    class="flex items-center mr-1">
+                    class="flex items-center">
                         <button type="button"
                                 @click="toggle()"
                                 :disabled="loading"
-                                :title="permission === 'granted' ? 'Push notifikasi browser aktif' : (permission === 'denied' ? 'Notifikasi diblokir di browser' : 'Klik untuk aktifkan push notifikasi browser')"
-                                class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border text-xs font-semibold transition-all cursor-pointer select-none"
-                                :class="{
-                                    'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 shadow-2xs': permission === 'granted',
-                                    'bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100 shadow-2xs': permission === 'default' || permission === 'unsupported',
-                                    'bg-rose-50 text-rose-700 border-rose-200': permission === 'denied',
-                                    'opacity-60': loading
-                                }">
-                            {{-- Mini Toggle Switch --}}
-                            <span class="relative inline-flex items-center w-5 h-3 rounded-full transition-colors"
-                                  :class="permission === 'granted' ? 'bg-emerald-500' : (permission === 'denied' ? 'bg-rose-400' : 'bg-gray-300')">
-                                <span class="absolute w-2 h-2 bg-white rounded-full shadow-xs transition-transform"
-                                      :class="permission === 'granted' ? 'translate-x-2.5' : 'translate-x-0.5'"></span>
+                                :title="permission === 'granted' ? 'Push notifikasi browser aktif' : (permission === 'denied' ? 'Notifikasi diblokir di browser' : 'Aktifkan push notifikasi browser')"
+                                class="inline-flex items-center p-1 rounded-full hover:bg-base-200 transition-colors cursor-pointer select-none"
+                                aria-label="Toggle Push Notifikasi">
+                            {{-- Simple Modern Switch --}}
+                            <span class="relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out"
+                                  :class="{
+                                      'bg-emerald-500': permission === 'granted',
+                                      'bg-zinc-300 hover:bg-zinc-400': permission === 'default' || permission === 'unsupported',
+                                      'bg-rose-400': permission === 'denied',
+                                      'opacity-50': loading
+                                  }">
+                                <span class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out"
+                                      :class="permission === 'granted' ? 'translate-x-4' : 'translate-x-0'"></span>
                             </span>
-                            <span class="text-[11px] font-bold" x-text="loading ? '...' : (permission === 'granted' ? 'Notif ON' : (permission === 'denied' ? 'Blokir' : 'Aktifkan Notif'))"></span>
                         </button>
                     </div>
 
                     {{-- Livewire Notification Dropdown --}}
                     <livewire:admin.notification-dropdown />
 
-                    <div class="hidden sm:flex flex-col text-right">
+                    <div class="hidden md:flex flex-col text-right">
                         <span class="text-xs font-bold leading-tight">{{ auth()->user()->name }}</span>
                         <span class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Super Admin</span>
                     </div>
 
-                    <form method="POST" action="{{ route('logout') }}">
+                    <form method="POST" action="{{ route('logout') }}" class="inline-flex">
                         @csrf
-                        <x-button label="Keluar" icon="o-arrow-right-on-rectangle" class="btn-ghost btn-sm text-slate-500 hover:text-rose-600" type="submit" />
+                        <button type="submit" class="btn btn-ghost btn-sm text-slate-500 hover:text-rose-600 px-2 sm:px-3 flex items-center gap-1.5 cursor-pointer" title="Keluar">
+                            <x-icon name="o-arrow-right-on-rectangle" class="w-4 h-4" />
+                            <span class="hidden sm:inline text-xs font-medium">Keluar</span>
+                        </button>
                     </form>
                 </x-slot:actions>
             </x-nav>
 
             {{-- Area Konten Halaman --}}
-            <div class="p-6">
+            <div class="p-3.5 sm:p-6 lg:p-8">
                 {{ $slot }}
             </div>
         </x-slot:content>

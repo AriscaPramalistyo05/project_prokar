@@ -1,8 +1,4 @@
 /**
  * Admin panel JS entry — Prokar Elektronik
- * Alpine.js untuk interaktivitas (drawer, dropdown, dll).
- * Livewire bundle otomatis di-inject via @livewireScripts di layout.
+ * Livewire 3 bundle otomatis memuat Alpine.js via @livewireScripts di layout.
  */
-// import Alpine from 'alpinejs';
-// window.Alpine = Alpine;
-// Alpine.start();

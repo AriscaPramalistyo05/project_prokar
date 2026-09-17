@@ -10,27 +10,24 @@
      class="fixed bottom-3 inset-x-3 sm:bottom-6 sm:left-6 sm:right-auto sm:max-w-md z-[99998] transition-all duration-500 ease-out transform translate-y-32 opacity-0 pointer-events-none"
      style="display: none;">
     
-    <div class="relative overflow-hidden bg-[#0F172A]/95 backdrop-blur-xl text-white rounded-2xl p-4 sm:p-4.5 shadow-2xl border border-gray-700/80 ring-1 ring-white/10">
-        {{-- Subtle decorative glowing background --}}
-        <div class="absolute -right-8 -top-8 w-28 h-28 bg-amber-500/15 rounded-full blur-2xl pointer-events-none"></div>
-
+    <div class="relative overflow-hidden bg-white text-zinc-900 rounded-2xl p-4 sm:p-4.5 shadow-2xl border border-zinc-200/90 ring-1 ring-black/5">
         <div class="flex items-center gap-3.5 relative z-10">
             {{-- App Icon --}}
-            <div class="w-12 h-12 rounded-xl bg-white p-1 shrink-0 shadow-md border border-white/20 flex items-center justify-center overflow-hidden">
-                <img src="{{ $iconPath }}" alt="{{ $shopName }}" class="w-full h-full object-contain" />
+            <div class="w-12 h-12 rounded-xl bg-[#FFCC00] shrink-0 shadow-xs border border-amber-300 flex items-center justify-center overflow-hidden">
+                <img src="{{ $iconPath }}" alt="{{ $shopName }}" class="w-full h-full object-cover rounded-xl" />
             </div>
 
             {{-- Text Info --}}
             <div class="flex-1 min-w-0 pr-1">
                 <div class="flex items-center gap-1.5">
-                    <h4 class="text-sm font-bold text-white truncate font-public tracking-tight">
+                    <h4 class="text-sm font-bold text-zinc-900 truncate tracking-tight">
                         Pasang {{ $shopName }}
                     </h4>
-                    <span class="inline-flex items-center px-1.5 py-0.2 text-[9px] font-extrabold uppercase bg-amber-400 text-slate-950 rounded-full tracking-wider">
+                    <span class="inline-flex items-center px-1.5 py-0.5 text-[9px] font-bold uppercase bg-amber-100 text-amber-900 border border-amber-200 rounded-md tracking-wider">
                         App
                     </span>
                 </div>
-                <p class="text-xs text-gray-300 line-clamp-1 mt-0.5 font-inter">
+                <p class="text-xs text-zinc-500 line-clamp-1 mt-0.5">
                     Akses cepat & notifikasi pesanan di HP
                 </p>
             </div>
@@ -38,31 +35,31 @@
             {{-- Close Button --}}
             <button type="button" 
                     id="pwa-dismiss-btn"
-                    class="w-7 h-7 rounded-full bg-gray-800/80 hover:bg-gray-700 text-gray-400 hover:text-white flex items-center justify-center transition-colors shrink-0 cursor-pointer"
+                    class="w-7 h-7 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-400 hover:text-zinc-700 flex items-center justify-center transition-colors shrink-0 cursor-pointer"
                     aria-label="Tutup Banner">
                 <i class="fa-solid fa-xmark text-xs"></i>
             </button>
         </div>
 
         {{-- Actions / Prompt Trigger --}}
-        <div class="mt-3 pt-2.5 border-t border-gray-700/60 flex items-center justify-end gap-2 relative z-10">
+        <div class="mt-3 pt-2.5 border-t border-zinc-100 flex items-center justify-end gap-2 relative z-10">
             <button type="button" 
                     id="pwa-later-btn"
-                    class="px-3 py-2 text-xs font-semibold text-gray-400 hover:text-gray-200 transition-colors cursor-pointer">
+                    class="px-3 py-2 text-xs font-semibold text-zinc-500 hover:text-zinc-800 transition-colors cursor-pointer">
                 Nanti Saja
             </button>
             
             <button type="button" 
                     id="pwa-install-btn"
-                    class="px-4 py-2 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 text-xs font-extrabold rounded-xl shadow-lg shadow-amber-500/20 active:scale-95 transition-all flex items-center gap-2 cursor-pointer">
-                <i class="fa-solid fa-download text-[11px]"></i>
-                <span>Install Aplikasi</span>
+                    class="px-4 py-2 bg-zinc-900 hover:bg-black text-white text-xs font-bold rounded-xl shadow-sm active:scale-95 transition-all flex items-center gap-2 cursor-pointer">
+                <i class="fa-solid fa-download text-[11px] text-amber-400"></i>
+                <span class="font-bold">Install Aplikasi</span>
             </button>
         </div>
 
         {{-- iOS Safari Guidance Tooltip (Shown on iPhone/iPad only) --}}
-        <div id="pwa-ios-instructions" class="hidden mt-2.5 pt-2 border-t border-gray-700/60 text-[11px] text-amber-200/90 leading-relaxed font-inter">
-            <i class="fa-solid fa-arrow-up-from-bracket mr-1"></i> Tap ikon <strong>Bagikan (Share)</strong> lalu pilih <strong>"Tambahkan ke Layar Utama" ➕</strong>
+        <div id="pwa-ios-instructions" class="hidden mt-2.5 pt-2 border-t border-zinc-100 text-[11px] text-zinc-600 leading-relaxed">
+            <i class="fa-solid fa-arrow-up-from-bracket mr-1 text-zinc-800"></i> Tap ikon <strong>Bagikan (Share)</strong> lalu pilih <strong>"Tambahkan ke Layar Utama" ➕</strong>
         </div>
     </div>
 </div>

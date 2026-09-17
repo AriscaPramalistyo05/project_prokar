@@ -87,14 +87,56 @@
 
         {{-- TAB 1: RIWAYAT PESANAN PRODUK --}}
         @if ($selectedTab === 'orders')
+            {{-- Sub-Filter Pills for Order Status --}}
+            <div class="flex items-center gap-2 overflow-x-auto pb-2 mb-4 scrollbar-none">
+                <button type="button" wire:click="setOrderFilter('all')" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer {{ $orderFilter === 'all' ? 'bg-black text-white shadow-xs' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200' }}">
+                    <span>Semua</span>
+                    <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $orderFilter === 'all' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600' }}">{{ $orderCounts['all'] ?? 0 }}</span>
+                </button>
+
+                <button type="button" wire:click="setOrderFilter('unpaid')" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer {{ $orderFilter === 'unpaid' ? 'bg-amber-400 text-black shadow-xs font-black' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200' }}">
+                    <i class="fa-solid fa-hourglass-half text-[11px] {{ $orderFilter === 'unpaid' ? 'text-black' : 'text-amber-500' }}"></i>
+                    <span>Menunggu Pembayaran</span>
+                    @if(($orderCounts['unpaid'] ?? 0) > 0)
+                        <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-red-600 text-white font-black animate-pulse">{{ $orderCounts['unpaid'] }}</span>
+                    @else
+                        <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $orderFilter === 'unpaid' ? 'bg-black/10 text-black' : 'bg-gray-100 text-gray-600' }}">0</span>
+                    @endif
+                </button>
+
+                <button type="button" wire:click="setOrderFilter('processing')" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer {{ $orderFilter === 'processing' ? 'bg-blue-600 text-white shadow-xs' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200' }}">
+                    <span>Diproses</span>
+                    <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $orderFilter === 'processing' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600' }}">{{ $orderCounts['processing'] ?? 0 }}</span>
+                </button>
+
+                <button type="button" wire:click="setOrderFilter('shipped')" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer {{ $orderFilter === 'shipped' ? 'bg-purple-600 text-white shadow-xs' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200' }}">
+                    <span>Dikirim</span>
+                    <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $orderFilter === 'shipped' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600' }}">{{ $orderCounts['shipped'] ?? 0 }}</span>
+                </button>
+
+                <button type="button" wire:click="setOrderFilter('completed')" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer {{ $orderFilter === 'completed' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200' }}">
+                    <span>Selesai</span>
+                    <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $orderFilter === 'completed' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600' }}">{{ $orderCounts['completed'] ?? 0 }}</span>
+                </button>
+
+                <button type="button" wire:click="setOrderFilter('cancelled')" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer {{ $orderFilter === 'cancelled' ? 'bg-rose-600 text-white shadow-xs' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200' }}">
+                    <span>Dibatalkan</span>
+                    <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $orderFilter === 'cancelled' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600' }}">{{ $orderCounts['cancelled'] ?? 0 }}</span>
+                </button>
+            </div>
+
             <div class="space-y-4">
                 @forelse ($orders as $order)
-                    <div class="bg-white rounded-3xl border border-gray-200/90 shadow-sm p-6 transition-all hover:border-gray-300">
+                    @php
+                        $isOrderUnpaid = in_array($order->payment_status, ['unpaid', 'pending']) && $order->status !== 'cancelled';
+                        $isOrderDp = ($order->payment_status === 'dp_paid');
+                    @endphp
+                    <div class="bg-white rounded-3xl border {{ $isOrderUnpaid ? 'border-amber-300 ring-1 ring-amber-200 shadow-amber-50/50' : 'border-gray-200/90' }} shadow-sm p-6 transition-all hover:border-gray-300">
                         {{-- Header Order --}}
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-4 border-b border-gray-100 gap-3">
                             <div class="flex items-center gap-3">
-                                <span class="w-10 h-10 rounded-xl bg-gray-100 text-black flex items-center justify-center font-black">
-                                    <i class="fa-solid fa-box text-sm"></i>
+                                <span class="w-10 h-10 rounded-xl {{ $isOrderUnpaid ? 'bg-amber-100 text-amber-900' : 'bg-gray-100 text-black' }} flex items-center justify-center font-black">
+                                    <i class="fa-solid {{ $isOrderUnpaid ? 'fa-hourglass-half' : 'fa-box' }} text-sm"></i>
                                 </span>
                                 <div>
                                     <div class="flex items-center gap-2">
@@ -109,25 +151,36 @@
 
                             {{-- Status Badge --}}
                             <div class="flex items-center gap-2">
-                                @php
-                                    $statusClasses = [
-                                        'pending' => 'bg-amber-100 text-amber-900 border-amber-200',
-                                        'processing' => 'bg-blue-100 text-blue-900 border-blue-200',
-                                        'shipped' => 'bg-purple-100 text-purple-900 border-purple-200',
-                                        'completed' => 'bg-emerald-100 text-emerald-900 border-emerald-200',
-                                        'cancelled' => 'bg-rose-100 text-rose-900 border-rose-200',
-                                    ];
-                                    $statusLabels = [
-                                        'pending' => 'Menunggu Pembayaran',
-                                        'processing' => 'Sedang Diproses',
-                                        'shipped' => 'Sedang Dikirim',
-                                        'completed' => 'Selesai',
-                                        'cancelled' => 'Dibatalkan',
-                                    ];
-                                @endphp
-                                <span class="px-3 py-1 rounded-full text-xs font-bold border {{ $statusClasses[$order->status] ?? 'bg-gray-100 text-gray-800' }}">
-                                    {{ $statusLabels[$order->status] ?? ucfirst($order->status) }}
-                                </span>
+                                @if ($order->status === 'cancelled')
+                                    <span class="px-3 py-1 rounded-full text-xs font-bold border bg-rose-100 text-rose-900 border-rose-200">
+                                        Dibatalkan
+                                    </span>
+                                @elseif ($isOrderUnpaid)
+                                    <span class="px-3 py-1 rounded-full text-xs font-bold border bg-amber-100 text-amber-900 border-amber-300 flex items-center gap-1.5">
+                                        <i class="fa-solid fa-clock text-[10px]"></i>
+                                        <span>Menunggu Pembayaran</span>
+                                    </span>
+                                @elseif ($isOrderDp)
+                                    <span class="px-3 py-1 rounded-full text-xs font-bold border bg-blue-100 text-blue-900 border-blue-200">
+                                        DP 50% Lunas (Sisa COD)
+                                    </span>
+                                @else
+                                    @php
+                                        $statusClasses = [
+                                            'processing' => 'bg-blue-100 text-blue-900 border-blue-200',
+                                            'shipped' => 'bg-purple-100 text-purple-900 border-purple-200',
+                                            'completed' => 'bg-emerald-100 text-emerald-900 border-emerald-200',
+                                        ];
+                                        $statusLabels = [
+                                            'processing' => 'Sedang Diproses',
+                                            'shipped' => 'Sedang Dikirim',
+                                            'completed' => 'Selesai',
+                                        ];
+                                    @endphp
+                                    <span class="px-3 py-1 rounded-full text-xs font-bold border {{ $statusClasses[$order->status] ?? 'bg-gray-100 text-gray-800' }}">
+                                        {{ $statusLabels[$order->status] ?? ucfirst($order->status) }}
+                                    </span>
+                                @endif
                             </div>
                         </div>
 
@@ -139,7 +192,7 @@
                                         <img src="{{ $item->product->image_url ?? 'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=200&h=200&fit=crop' }}" alt="{{ $item->product_name }}" class="w-12 h-12 rounded-xl object-cover border border-gray-200 shrink-0 bg-gray-50" />
                                         <div>
                                             <p class="text-sm font-bold text-gray-900 line-clamp-1">{{ $item->product_name }}</p>
-                                            <p class="text-xs text-gray-500">{{ $item->quantity }}x @ Rp {{ number_format($item->price, 0, ',', '.') }}</p>
+                                            <p class="text-xs text-gray-500">{{ $item->quantity }}x @ Rp {{ number_format($item->product_price, 0, ',', '.') }}</p>
                                         </div>
                                     </div>
                                     <span class="text-sm font-bold text-gray-900 font-mono">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</span>
@@ -155,18 +208,28 @@
                             </div>
 
                             <div class="flex items-center gap-2 flex-wrap">
-                                {{-- Invoice Download Button --}}
-                                <a href="{{ route('order.invoice.download', $order->order_code) }}" target="_blank" class="inline-flex items-center gap-1.5 px-4 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs font-bold rounded-xl border border-gray-200 transition-all">
-                                    <i class="fa-solid fa-file-invoice text-gray-400"></i>
-                                    <span>Unduh Invoice (PDF)</span>
-                                </a>
+                                {{-- Invoice Download Button (Hanya jika sudah dibayar) --}}
+                                @if ($order->status !== 'cancelled' && in_array($order->payment_status, ['paid', 'dp_paid', 'settlement', 'capture', 'success']))
+                                    <a href="{{ route('order.invoice.download', $order->order_code) }}" target="_blank" class="inline-flex items-center gap-1.5 px-4 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs font-bold rounded-xl border border-gray-200 transition-all">
+                                        <i class="fa-solid fa-file-invoice text-gray-400"></i>
+                                        <span>Invoice</span>
+                                    </a>
+                                @endif
 
-                                {{-- Pay Now Button if Unpaid --}}
-                                @if (in_array($order->payment_status, ['unpaid', 'pending']) && $order->status !== 'cancelled')
-                                    <a href="{{ route('checkout.success', $order->order_code) }}" class="inline-flex items-center gap-1.5 px-5 py-2 bg-black hover:bg-gray-900 text-[#FFCC00] text-xs font-bold rounded-xl shadow-sm transition-all">
+                                {{-- If Unpaid: Pay Now, Instructions, and Cancel --}}
+                                @if ($isOrderUnpaid)
+                                    <a href="{{ route('pesanan.show', $order->order_code) }}" class="inline-flex items-center gap-1.5 px-5 py-2.5 bg-black hover:bg-gray-900 text-[#FFCC00] text-xs font-black rounded-xl shadow-sm transition-all">
                                         <i class="fa-solid fa-wallet"></i>
                                         <span>Bayar Sekarang</span>
                                     </a>
+
+                                    <button type="button" 
+                                            wire:click="cancelOrder({{ $order->id }})" 
+                                            wire:confirm="Apakah Anda yakin ingin membatalkan pesanan #{{ $order->order_code }}?" 
+                                            class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl border border-rose-200 transition-all cursor-pointer">
+                                        <i class="fa-solid fa-xmark"></i>
+                                        <span>Batalkan</span>
+                                    </button>
                                 @endif
                             </div>
                         </div>
@@ -176,8 +239,12 @@
                         <div class="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center mx-auto mb-4 text-gray-400">
                             <i class="fa-solid fa-bag-shopping text-2xl"></i>
                         </div>
-                        <h4 class="text-lg font-bold text-gray-900 mb-1">Belum Ada Riwayat Pesanan</h4>
-                        <p class="text-sm text-gray-500 mb-6 max-w-sm mx-auto">Anda belum pernah melakukan pembelian produk elektronik di Prokar.</p>
+                        <h4 class="text-lg font-bold text-gray-900 mb-1">
+                            {{ $orderFilter === 'unpaid' ? 'Tidak Ada Tagihan Menunggu Pembayaran' : 'Belum Ada Pesanan' }}
+                        </h4>
+                        <p class="text-sm text-gray-500 mb-6 max-w-sm mx-auto">
+                            {{ $orderFilter === 'unpaid' ? 'Semua pesanan Anda telah lunas atau selesai.' : 'Anda belum memiliki riwayat pesanan untuk filter status ini.' }}
+                        </p>
                         <a href="{{ route('produk.index') }}" class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-black text-[#FFCC00] font-bold text-sm hover:bg-gray-900 transition-all">
                             <span>Mulai Belanja Elektronik</span>
                             <i class="fa-solid fa-arrow-right text-xs"></i>

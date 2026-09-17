@@ -24,6 +24,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha384-/o6I2CkkWC//PSjvWC/eYN7l3xM3tJm8ZzVkCOfp//W05QcE3mlGskpoHB6XqI+B" crossorigin="anonymous" />
 
+  <!-- Umami Web Analytics -->
+  <script defer src="https://cloud.umami.is/script.js" data-website-id="6150499f-eb3e-406f-b3d1-d9834bb6bfc9"></script>
+
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 
   <style>

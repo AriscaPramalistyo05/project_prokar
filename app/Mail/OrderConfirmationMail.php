@@ -28,8 +28,9 @@ class OrderConfirmationMail extends Mailable
      */
     public function envelope(): Envelope
     {
+        $isPaid = in_array($this->order->payment_status, ['paid', 'dp_paid', 'settlement', 'capture', 'success']);
         return new Envelope(
-            subject: 'Konfirmasi Pesanan - ' . $this->order->order_code,
+            subject: ($isPaid ? 'Konfirmasi Pembayaran Pesanan - ' : 'Konfirmasi Pesanan - ') . $this->order->order_code,
         );
     }
 
@@ -38,8 +39,12 @@ class OrderConfirmationMail extends Mailable
      */
     public function content(): Content
     {
+        $isPaid = in_array($this->order->payment_status, ['paid', 'dp_paid', 'settlement', 'capture', 'success']);
         return new Content(
             view: 'emails.order-confirmation',
+            with: [
+                'isPaid' => $isPaid,
+            ],
         );
     }
 
@@ -50,6 +55,13 @@ class OrderConfirmationMail extends Mailable
      */
     public function attachments(): array
     {
+        $isPaid = in_array($this->order->payment_status, ['paid', 'dp_paid', 'settlement', 'capture', 'success']);
+        
+        // Jangan lampirkan invoice PDF jika pesanan belum dibayar
+        if (!$isPaid) {
+            return [];
+        }
+
         try {
             $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.invoice', ['order' => $this->order]);
             return [

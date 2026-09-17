@@ -1,58 +1,217 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="public/images/logo%20prokar%20simpel.png" alt="Prokar Elektronik Logo" width="280">
 </p>
 
-## About Laravel
+<h1 align="center">Prokar Elektronik</h1>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+<p align="center">
+  <strong>Platform Web All-in-One Jual, Beli & Servis Elektronik Bekas Bergaransi Terpercaya di Jawa Tengah</strong>
+</p>
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+<p align="center">
+  <a href="#"><img src="https://img.shields.io/badge/PHP-8.3-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP Version"></a>
+  <a href="#"><img src="https://img.shields.io/badge/Laravel-12-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel Version"></a>
+  <a href="#"><img src="https://img.shields.io/badge/Livewire-3-FB70A9?style=for-the-badge&logo=livewire&logoColor=white" alt="Livewire 3"></a>
+  <a href="#"><img src="https://img.shields.io/badge/Tailwind_CSS-v4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS"></a>
+  <a href="#"><img src="https://img.shields.io/badge/MySQL-8.0+-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL"></a>
+  <a href="#"><img src="https://img.shields.io/badge/PWA-Ready-5A0FC8?style=for-the-badge&logo=pwa&logoColor=white" alt="PWA Ready"></a>
+</p>
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 📖 Tentang Prokar Elektronik
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+**Prokar Elektronik** adalah sistem informasi dan platform web modern yang mendigitalkan seluruh aktivitas bisnis toko dan bengkel reparasi elektronik. Menghubungkan pembeli, penjual barang bekas, dan pengguna jasa servis dalam satu ekosistem terpadu yang cepat, aman, dan transparan.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Aplikasi ini melayani 3 pilar bisnis utama:
+1. **Beli Elektronik Bekas Berkualitas**: Katalog kulkas, TV, mesin cuci, AC, showcase, dll. yang telah lulus uji teknisi dan bergaransi resmi.
+2. **Servis & Lacak Reparasi Online**: Booking servis (Teknisi Datang atau Antar ke Toko), pelacakan progres pengerjaan real-time tanpa login, dan penerbitan kartu garansi digital berformat PDF.
+3. **Jual / Tukar Tambah**: Pengajuan penjualan barang elektronik bekas dari masyarakat dengan pipeline negosiasi transparan dan konversi otomatis menjadi produk katalog.
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+---
 
-## Agentic Development
+## 🚀 Fitur Unggulan
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+### 🛒 E-Commerce & Detail Produk Interaktif
+* **Focus Image Zoom Lightbox**: Modal zoom interaktif saat foto produk diklik untuk memeriksa detail fisik barang bekas (kondisi bodi, kelengkapan, dll.).
+* **Smart Persistent Cart**: Keranjang belanja tersimpan rapi dan **otomatis dikosongkan seketika setelah checkout berhasil**.
+* **Stock Safety Locking**: Database transaction (`lockForUpdate`) untuk mencegah pembelian ganda pada barang bekas unik.
+* **SEO-Friendly Sold Items**: Produk yang telah terjual tetap memiliki tautan publik aktif untuk mempertahankan ranking Google (SEO).
+* **Download Media Kit**: Batch download seluruh foto/video produk dalam satu file `.zip` siap pakai untuk promosi WhatsApp.
 
-```bash
-composer require laravel/boost --dev
+### 🔧 Layanan Servis & Lacak Real-Time
+* **Tracking Tanpa Login** (`/servis/lacak/{code}`): Pelanggan dapat memantau riwayat & tahapan pengerjaan (Diagnosa, Pengerjaan, Selesai) cukup dengan memasukkan kode servis (`SRV-YYYYMMDD-XXXX`).
+* **Kartu Garansi Digital PDF**: Generator otomatis kartu garansi servis resmi berformat PDF dengan masa berlaku dan barcode validasi.
+* **Estimasi & Transparansi Biaya**: Rincian biaya jasa teknisi dan penggantian sparepart yang jelas.
 
-php artisan boost:install
+### 📦 Pengajuan Jual & Tukar Tambah
+* **Formulir Pengajuan Cepat**: Upload foto kondisi, spesifikasi perangkat, dan ekspektasi harga.
+* **One-Click Convert to Product**: Admin dapat mengubah pengajuan jual yang disetujui langsung menjadi draft produk katalog siap jual dengan 1 klik.
+
+### 💳 Payment Gateway Terintegrasi (Midtrans)
+* Mendukung Midtrans Snap Popup & Redirect (QRIS, GoPay, ShopeePay, Transfer Bank VA BCA/BNI/BRI/Mandiri).
+* Webhook otomatis (`/api/payment/webhook`) dengan verifikasi signature hash SHA-512 anti-fraud.
+
+### 🎨 Marketing Kit Generator (Visual Otomatis)
+* Layanan `MarketingKitService` yang secara dinamis merender banner promosi media sosial beresolusi tinggi menggunakan PHP GD & Intervention Image:
+  * **Format Story (1080x1920)** untuk WhatsApp Status & Instagram Stories.
+  * **Format Feed (1080x1080)** untuk postingan Instagram & Facebook.
+  * Otomatis dilengkapi logo Prokar, badge harga promo, spesifikasi teknis, dan call-to-action kontak.
+
+### 📈 Umami Cloud Web Analytics Terintegrasi
+* Integrasi penjejak web modern tanpa cookie (GDPR compliant).
+* Dashboard Admin menampilkan denyut pengunjung aktif real-time (*Live pulse*), metrik Pageviews, Unique Visitors, Bounce Rate, Durasi Kunjungan, grafik deret waktu (24 Jam / 7 Hari / 30 Hari), serta tabel halaman terpopuler.
+
+### 🔔 Notifikasi Cerdas & FCM Web Push
+* Push notifikasi browser via Firebase Cloud Messaging langsung ke perangkat HP Admin untuk order baru, servis baru, dan pengajuan jual baru.
+* Notification Center dropdown di panel admin dengan tab kategori dan fitur *Tandai Semua Dibaca*.
+* Mini toggle switch yang simpel dan responsif di topbar admin.
+
+### 📱 Progressive Web App (PWA)
+* Dapat diinstal langsung ke layar utama HP/desktop seperti aplikasi native via `manifest.json`.
+* Floating Install Banner berdesain *Clean White Card* dengan tombol unduh ber-kontras tinggi.
+
+### 💻 Antarmuka Admin Responsif & Adaptif
+* **Mobile View**: Sidebar drawer full-height (*100dvh*) dengan tombol tutup (`X` SVG) di samping logo.
+* **Desktop View**: Fitur **Minimize (Collapse)** ke 62px (hanya ikon menu & mini logo) dan **Lebarkan (Expand)** ke 260px (menu lengkap & submenu setting native `<x-menu-sub>`).
+
+### ⚡ Otomatisasi CI/CD Deployment
+* Workflow GitHub Actions (`.github/workflows/deploy.yml`) untuk build otomatis aset frontend Vite dan sinkronisasi file aman via FTPS ke hosting produksi.
+
+---
+
+## 🛠️ Tech Stack
+
+| Komponen | Teknologi |
+|---|---|
+| **Backend** | Laravel 12 (PHP 8.3) |
+| **Frontend Reaktif** | Livewire 3 + Alpine.js |
+| **Admin UI Library** | Mary UI + daisyUI 5 |
+| **Styling** | Tailwind CSS v4 |
+| **Database** | MySQL 8.0+ |
+| **Payment Gateway** | Midtrans Snap & Webhooks |
+| **Web Push** | Firebase Cloud Messaging (FCM) |
+| **Web Analytics** | Umami Cloud API |
+| **Media & Banner Engine** | Intervention Image + Spatie Media Library + PHP GD |
+| **PDF Engine** | barryvdh/laravel-dompdf |
+| **Role & Hak Akses** | Spatie Laravel Permission |
+| **Audit Trail** | Spatie Laravel Activity Log |
+| **CI/CD** | GitHub Actions (FTPS Deploy) |
+
+---
+
+## 📂 Struktur Direktori Utama
+
+```
+project_prokar/
+├── app/
+│   ├── Http/Controllers/     # Controller API Webhook & Fallback
+│   ├── Livewire/             # Komponen Reaktif Frontend & Admin (Livewire 3)
+│   ├── Mail/                 # Mailable Email OTP & Notifikasi
+│   ├── Models/               # Model Eloquent (Product, Order, ServiceOrder, dll.)
+│   └── Services/             # Layanan Bisnis (MarketingKitService, UmamiService, dll.)
+├── config/                   # Konfigurasi Sistem
+├── database/
+│   ├── migrations/           # Skema Database Terstruktur
+│   └── seeders/              # Seeder Awal (RolePermission, Settings, Demo Data)
+├── docs/                     # Dokumentasi Proyek Lengkap (project.md, task.md, database.md)
+├── public/                   # Public Web Root & Asset Build Vite
+├── resources/
+│   ├── css/                  # Stylesheet Tailwind CSS v4 & daisyUI
+│   ├── js/                   # Javascript Frontend & Admin Service Workers
+│   └── views/                # Blade Templates & Livewire Views
+├── routes/                   # Definisi Routing (web.php, api.php, console.php)
+└── tests/                    # Pengujian Unit & Fitur (PHPUnit)
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+---
 
-## Contributing
+## 💻 Panduan Instalasi Lokal
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 1. Prasyarat Sistem
+* PHP >= 8.3 (dengan ekstensi `pdo_mysql`, `gd`, `fileinfo`, `curl`, `mbstring`, `zip`)
+* Composer >= 2.x
+* Node.js >= 20.x & NPM
+* MySQL Database Server
 
-## Code of Conduct
+### 2. Kloning Repositori
+```bash
+git clone https://github.com/AriscaPramalistyo05/project_prokar.git
+cd project_prokar
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 3. Instalasi Dependensi
+```bash
+# Instal dependensi PHP
+composer install
 
-## Security Vulnerabilities
+# Instal dependensi Node.js
+npm install
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 4. Konfigurasi Lingkungan (`.env`)
+Salin file `.env.example` menjadi `.env`:
+```bash
+cp .env.example .env
+```
+Sesuaikan konfigurasi database dan API key di dalam file `.env`:
+```env
+APP_NAME="Prokar Elektronik"
+APP_URL=http://localhost:8000
 
-## License
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=db_prokar
+DB_USERNAME=root
+DB_PASSWORD=
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# Midtrans
+MIDTRANS_SERVER_KEY=your_midtrans_server_key
+MIDTRANS_CLIENT_KEY=your_midtrans_client_key
+MIDTRANS_IS_PRODUCTION=false
+
+# Firebase FCM (Optional untuk Push Notifikasi)
+FIREBASE_API_KEY=your_firebase_api_key
+FIREBASE_PROJECT_ID=your_firebase_project_id
+FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+FIREBASE_APP_ID=your_firebase_app_id
+FIREBASE_VAPID_KEY=your_firebase_vapid_key
+```
+
+### 5. Generate Key & Migrasi Database
+```bash
+php artisan key:generate
+php artisan migrate --seed
+php artisan storage:link
+```
+
+### 6. Menjalankan Server Development
+```bash
+# Jalankan Vite & Laravel Development Server
+npm run dev
+# Pada terminal lain:
+php artisan serve
+```
+Akses aplikasi melalui browser di `http://localhost:8000`.
+
+---
+
+## 🧪 Menjalankan Pengujian (Testing)
+
+Proyek ini dilengkapi pengujian fitur otomatis menggunakan PHPUnit:
+```bash
+# Menjalankan seluruh test suite
+php artisan test
+
+# Menjalankan pengujian spesifik modul
+php artisan test --filter=AdminDashboardAndUmamiTest
+php artisan test --filter=MarketingKitTest
+```
+
+---
+
+## 📄 Lisensi & Hak Cipta
+
+Hak Cipta © 2026 **Prokar Elektronik**. Seluruh hak cipta dilindungi undang-undang.
+Dibuat dengan dedikasi untuk mendukung ekosistem elektronik sirkular dan UMKM Indonesia.

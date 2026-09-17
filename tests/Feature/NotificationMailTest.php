@@ -71,6 +71,72 @@ class NotificationMailTest extends TestCase
         });
     }
 
+    public function test_unpaid_order_mail_does_not_attach_pdf_and_does_not_show_invoice_download_button(): void
+    {
+        $product = Product::factory()->create(['stock' => 5]);
+        $order = Order::factory()->create([
+            'order_code' => 'ORD-20260915-9991',
+            'customer_email' => 'unpaid.buyer@example.com',
+            'customer_name' => 'Pembeli Belum Bayar',
+            'status' => 'pending',
+            'payment_status' => 'unpaid',
+            'payment_method' => 'cash_store',
+            'delivery_type' => 'pickup',
+            'total' => 1500000,
+        ]);
+
+        OrderItem::factory()->create([
+            'order_id' => $order->id,
+            'product_id' => $product->id,
+            'product_price' => 1500000,
+            'quantity' => 1,
+            'subtotal' => 1500000,
+        ]);
+
+        $mail = new OrderConfirmationMail($order);
+
+        // Assert no PDF attachment when unpaid
+        $attachments = $mail->attachments();
+        $this->assertEmpty($attachments, 'Unpaid order should not have PDF invoice attachment.');
+
+        // Assert rendered email content
+        $mail->assertSeeInHtml('Konfirmasi Pesanan');
+        $mail->assertSeeInHtml('LIHAT DETAIL PESANAN');
+        $mail->assertDontSeeInHtml('UNDUH INVOICE DIGITAL');
+    }
+
+    public function test_paid_order_mail_attaches_pdf_and_shows_invoice_download_button(): void
+    {
+        $product = Product::factory()->create(['stock' => 5]);
+        $order = Order::factory()->create([
+            'order_code' => 'ORD-20260915-9992',
+            'customer_email' => 'paid.buyer@example.com',
+            'customer_name' => 'Pembeli Lunas',
+            'status' => 'processing',
+            'payment_status' => 'paid',
+            'payment_method' => 'midtrans',
+            'total' => 2500000,
+        ]);
+
+        OrderItem::factory()->create([
+            'order_id' => $order->id,
+            'product_id' => $product->id,
+            'product_price' => 2500000,
+            'quantity' => 1,
+            'subtotal' => 2500000,
+        ]);
+
+        $mail = new OrderConfirmationMail($order);
+
+        // Assert has PDF attachment when paid
+        $attachments = $mail->attachments();
+        $this->assertNotEmpty($attachments, 'Paid order should include PDF invoice attachment.');
+
+        // Assert rendered email content
+        $mail->assertSeeInHtml('Konfirmasi Pembayaran Pesanan');
+        $mail->assertSeeInHtml('UNDUH INVOICE DIGITAL');
+    }
+
     public function test_service_ticket_email_sent_to_customer_with_tracking_code(): void
     {
         Mail::fake();

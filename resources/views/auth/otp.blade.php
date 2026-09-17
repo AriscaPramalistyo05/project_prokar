@@ -14,7 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700;800&family=Archivo+Narrow:wght@500;700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css'])
 
     <style>
         .material-symbols-outlined {
@@ -47,12 +47,9 @@
             .otp-input { width: 40px; height: 48px; font-size: 19px; }
         }
 
-        /* Kunci agar fit 1 layar tanpa scroll di layar yang cukup tinggi (sama pola dengan login/register) */
         @media (min-height: 700px) {
             html, body { height: 100%; overflow: hidden; }
         }
-
-        [x-cloak] { display: none !important; }
     </style>
 </head>
 
@@ -63,7 +60,7 @@
 
             <div class="bg-white border border-outline-variant shadow-sm overflow-hidden">
 
-                {{-- Aksen warna tipis di atas card — pengganti hazard stripe tebal, lebih halus --}}
+                {{-- Aksen warna tipis di atas card --}}
                 <div class="h-1.5 w-full bg-secondary-container" aria-hidden="true"></div>
 
                 <div class="px-6 sm:px-8 pt-7 pb-6">
@@ -77,8 +74,6 @@
                             @endphp
                             <img src="{{ $otpLogoUrl }}" onerror="this.onerror=null; this.src='{{ asset('images/logo prokar simpel.png') }}'" alt="{{ setting('shop_name', 'Prokar Elektronik') }}" class="h-9 sm:h-10 w-auto object-contain mx-auto" />
                         </a>
-
-                      
 
                         <h1 class="font-bold text-xl text-primary mb-1">Verifikasi Email</h1>
                         <p class="text-on-surface-variant text-[13px] leading-relaxed">
@@ -108,53 +103,33 @@
                         @csrf
                         <input type="hidden" name="otp" id="otp-hidden" />
 
-                        <div class="flex gap-2 justify-center mb-5"
-                             x-data="otpInput()"
-                             x-init="init()">
-
-                            <input class="otp-input" type="text" inputmode="numeric" maxlength="1" data-index="0" autocomplete="off" aria-label="Digit 1" />
-                            <input class="otp-input" type="text" inputmode="numeric" maxlength="1" data-index="1" autocomplete="off" aria-label="Digit 2" />
-                            <input class="otp-input" type="text" inputmode="numeric" maxlength="1" data-index="2" autocomplete="off" aria-label="Digit 3" />
-                            <input class="otp-input" type="text" inputmode="numeric" maxlength="1" data-index="3" autocomplete="off" aria-label="Digit 4" />
-                            <input class="otp-input" type="text" inputmode="numeric" maxlength="1" data-index="4" autocomplete="off" aria-label="Digit 5" />
-                            <input class="otp-input" type="text" inputmode="numeric" maxlength="1" data-index="5" autocomplete="off" aria-label="Digit 6" />
+                        <div class="flex gap-2 justify-center mb-5" id="otp-container">
+                            <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" data-index="0" autocomplete="one-time-code" aria-label="Digit 1" autofocus />
+                            <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" data-index="1" autocomplete="off" aria-label="Digit 2" />
+                            <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" data-index="2" autocomplete="off" aria-label="Digit 3" />
+                            <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" data-index="3" autocomplete="off" aria-label="Digit 4" />
+                            <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" data-index="4" autocomplete="off" aria-label="Digit 5" />
+                            <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" data-index="5" autocomplete="off" aria-label="Digit 6" />
                         </div>
 
-                        <!-- Tombol tetap brutal/shadow, sesuai permintaan -->
-                        <button type="submit"
-                            class="w-full bg-primary hover:bg-gray-900 text-white py-3 font-bold uppercase tracking-widest text-sm border-2 border-primary shadow-[4px_4px_0px_#f1c100] transition-all active:translate-y-1 active:translate-x-1 active:shadow-none">
+                        <!-- Tombol brutal/shadow sesuai style sebelumnya -->
+                        <button type="submit" id="btn-submit-otp"
+                            class="w-full bg-primary hover:bg-gray-900 text-white py-3 font-bold uppercase tracking-widest text-sm border-2 border-primary shadow-[4px_4px_0px_#f1c100] transition-all active:translate-y-1 active:translate-x-1 active:shadow-none cursor-pointer">
                             Verifikasi
                         </button>
                     </form>
 
-                    {{-- Resend dengan Alpine countdown --}}
-                    <div class="mt-5 text-center"
-                         x-data="{
-                             seconds: 60,
-                             started: false,
-                             startTimer() {
-                                 if (this.started) return;
-                                 this.started = true;
-                                 const interval = setInterval(() => {
-                                     if (this.seconds > 0) {
-                                         this.seconds--;
-                                     } else {
-                                         clearInterval(interval);
-                                     }
-                                 }, 1000);
-                             }
-                         }"
-                         x-init="startTimer()">
-
+                    {{-- Resend text dengan countdown murni tanpa border --}}
+                    <div class="mt-5 text-center">
                         <p class="text-on-surface-variant text-[13px] mb-1.5">Tidak menerima kode?</p>
 
-                        <span x-show="seconds > 0" class="text-on-surface-variant text-[13px]">
-                            Kirim ulang dalam <span x-text="seconds" class="font-bold text-primary tabular-nums"></span> detik
+                        <span id="countdown-wrapper" class="text-on-surface-variant text-[13px]">
+                            Kirim ulang dalam <span id="countdown-text" class="font-bold text-primary tabular-nums">04:59</span>
                         </span>
 
-                        <a x-cloak x-show="seconds === 0"
+                        <a id="resend-link"
                            href="{{ route('auth.otp.resend') }}"
-                           class="text-[13px] font-bold underline text-primary hover:no-underline">
+                           class="text-[13px] font-bold underline text-primary hover:no-underline hidden">
                             Kirim Ulang Kode
                         </a>
                     </div>
@@ -171,73 +146,142 @@
     </main>
 
     <script>
-        function otpInput() {
-            return {
-                init() {
-                    const inputs = document.querySelectorAll('.otp-input');
-                    const hiddenInput = document.getElementById('otp-hidden');
-                    const form = document.getElementById('otp-form');
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputs = document.querySelectorAll('.otp-input');
+            const hiddenInput = document.getElementById('otp-hidden');
+            const form = document.getElementById('otp-form');
 
-                    if (inputs[0]) inputs[0].focus();
+            if (inputs[0]) {
+                setTimeout(() => inputs[0].focus(), 150);
+            }
 
-                    inputs.forEach((input, index) => {
-                        input.addEventListener('input', (e) => {
-                            const val = e.target.value.replace(/[^0-9]/g, '');
-                            e.target.value = val.slice(-1);
+            function syncAndCheck() {
+                const code = Array.from(inputs).map(i => i.value).join('');
+                hiddenInput.value = code;
+                return code;
+            }
 
-                            if (val) {
-                                e.target.classList.add('filled');
-                                if (index < inputs.length - 1) {
-                                    inputs[index + 1].focus();
-                                }
-                            } else {
-                                e.target.classList.remove('filled');
-                            }
+            inputs.forEach((input, index) => {
+                // Auto-advance saat mengetik angka di Desktop & Mobile
+                input.addEventListener('input', (e) => {
+                    const raw = e.target.value;
+                    const digits = raw.replace(/\D/g, '');
 
-                            const code = Array.from(inputs).map(i => i.value).join('');
-                            hiddenInput.value = code;
+                    if (digits.length > 1) {
+                        // Jika multi digit (autofill browser)
+                        let targetIdx = index;
+                        for (let i = 0; i < digits.length && targetIdx + i < inputs.length; i++) {
+                            inputs[targetIdx + i].value = digits[i];
+                            inputs[targetIdx + i].classList.add('filled');
+                        }
+                        const nextEmpty = Array.from(inputs).findIndex(i => !i.value);
+                        if (nextEmpty !== -1) {
+                            inputs[nextEmpty].focus();
+                        } else {
+                            inputs[inputs.length - 1].focus();
+                        }
+                    } else if (digits.length === 1) {
+                        input.value = digits;
+                        input.classList.add('filled');
+                        if (index < inputs.length - 1) {
+                            inputs[index + 1].focus();
+                            inputs[index + 1].select();
+                        }
+                    } else {
+                        input.value = '';
+                        input.classList.remove('filled');
+                    }
 
-                            if (code.length === 6) {
-                                form.submit();
-                            }
-                        });
+                    const fullCode = syncAndCheck();
+                    if (fullCode.length === 6) {
+                        form.submit();
+                    }
+                });
 
-                        input.addEventListener('keydown', (e) => {
-                            if (e.key === 'Backspace' && !e.target.value && index > 0) {
-                                inputs[index - 1].focus();
-                                inputs[index - 1].value = '';
-                                inputs[index - 1].classList.remove('filled');
-                            }
-                        });
+                // Tombol Backspace & Navigasi Panah
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace') {
+                        if (input.value) {
+                            input.value = '';
+                            input.classList.remove('filled');
+                            syncAndCheck();
+                        } else if (index > 0) {
+                            inputs[index - 1].focus();
+                            inputs[index - 1].value = '';
+                            inputs[index - 1].classList.remove('filled');
+                            syncAndCheck();
+                        }
+                    } else if (e.key === 'ArrowLeft' && index > 0) {
+                        inputs[index - 1].focus();
+                        inputs[index - 1].select();
+                    } else if (e.key === 'ArrowRight' && index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                        inputs[index + 1].select();
+                    }
+                });
 
-                        input.addEventListener('paste', (e) => {
-                            e.preventDefault();
-                            const pasted = (e.clipboardData || window.clipboardData)
-                                .getData('text')
-                                .replace(/[^0-9]/g, '')
-                                .slice(0, 6);
+                input.addEventListener('focus', () => {
+                    input.select();
+                });
 
-                            pasted.split('').forEach((char, i) => {
-                                if (inputs[i]) {
-                                    inputs[i].value = char;
-                                    inputs[i].classList.add('filled');
-                                }
-                            });
+                // Dukungan Paste (Ctrl+V 6 digit)
+                input.addEventListener('paste', (e) => {
+                    e.preventDefault();
+                    const pasted = (e.clipboardData || window.clipboardData)
+                        .getData('text')
+                        .replace(/\D/g, '')
+                        .slice(0, 6);
 
-                            hiddenInput.value = pasted;
+                    if (!pasted) return;
 
-                            const nextEmpty = Array.from(inputs).findIndex(i => !i.value);
-                            if (nextEmpty !== -1) {
-                                inputs[nextEmpty].focus();
-                            } else {
-                                inputs[5].focus();
-                                if (pasted.length === 6) form.submit();
-                            }
-                        });
+                    pasted.split('').forEach((char, i) => {
+                        if (inputs[i]) {
+                            inputs[i].value = char;
+                            inputs[i].classList.add('filled');
+                        }
                     });
+
+                    const fullCode = syncAndCheck();
+                    if (fullCode.length === 6) {
+                        inputs[5].focus();
+                        form.submit();
+                    } else {
+                        const nextEmpty = Array.from(inputs).findIndex(i => !i.value);
+                        if (nextEmpty !== -1) {
+                            inputs[nextEmpty].focus();
+                        }
+                    }
+                });
+            });
+
+            // Countdown Timer (5 menit / sisa waktu expiry tanpa border)
+            let cooldown = {{ (int) ($expiresInSeconds ?? 300) }};
+            const countdownWrapper = document.getElementById('countdown-wrapper');
+            const countdownEl = document.getElementById('countdown-text');
+            const resendLink = document.getElementById('resend-link');
+
+            function formatMMSS(sec) {
+                const m = Math.floor(sec / 60);
+                const s = sec % 60;
+                return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+            }
+
+            function tickTimer() {
+                if (cooldown > 0) {
+                    countdownEl.textContent = formatMMSS(cooldown);
+                    countdownWrapper.classList.remove('hidden');
+                    resendLink.classList.add('hidden');
+                    cooldown--;
+                } else {
+                    countdownWrapper.classList.add('hidden');
+                    resendLink.classList.remove('hidden');
+                    if (window.otpTimerInterval) clearInterval(window.otpTimerInterval);
                 }
-            };
-        }
+            }
+
+            tickTimer();
+            window.otpTimerInterval = setInterval(tickTimer, 1000);
+        });
     </script>
 </body>
 </html>

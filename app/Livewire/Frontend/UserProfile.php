@@ -17,6 +17,7 @@ class UserProfile extends Component
     use WithFileUploads;
 
     public string $selectedTab = 'orders';
+    public string $orderFilter = 'all'; // 'all' | 'unpaid' | 'processing' | 'shipped' | 'completed' | 'cancelled'
 
     // Biodata Form Fields
     public string $name = '';
@@ -51,6 +52,13 @@ class UserProfile extends Component
                 $this->selectedTab = $tab;
             }
         }
+
+        if (request()->has('filter')) {
+            $filter = request()->query('filter');
+            if (in_array($filter, ['all', 'unpaid', 'processing', 'shipped', 'completed', 'cancelled'])) {
+                $this->orderFilter = $filter;
+            }
+        }
     }
 
     public function setTab(string $tab): void
@@ -59,6 +67,30 @@ class UserProfile extends Component
             $this->selectedTab = $tab;
             $this->successMessage = null;
             $this->errorMessage = null;
+        }
+    }
+
+    public function setOrderFilter(string $filter): void
+    {
+        if (in_array($filter, ['all', 'unpaid', 'processing', 'shipped', 'completed', 'cancelled'])) {
+            $this->orderFilter = $filter;
+        }
+    }
+
+    public function cancelOrder(int $orderId): void
+    {
+        $user = Auth::user();
+        $order = Order::where('id', $orderId)
+            ->where(function ($q) use ($user) {
+                $q->where('user_id', $user->id)
+                  ->orWhere('customer_email', $user->email);
+            })->first();
+
+        if ($order && in_array($order->payment_status, ['unpaid', 'pending']) && $order->status !== 'cancelled') {
+            $order->update([
+                'status' => 'cancelled',
+            ]);
+            $this->successMessage = "Pesanan #{$order->order_code} berhasil dibatalkan.";
         }
     }
 
@@ -148,14 +180,36 @@ class UserProfile extends Component
     {
         $user = Auth::user();
 
-        // 1. Orders
-        $orders = Order::where(function ($q) use ($user) {
+        // 1. Base Orders Query
+        $baseOrdersQuery = Order::where(function ($q) use ($user) {
             $q->where('user_id', $user->id)
               ->orWhere('customer_email', $user->email);
             if (!empty($user->phone)) {
                 $q->orWhere('customer_phone', $user->phone);
             }
-        })->with(['orderItems.product'])->latest()->get();
+        })->with(['orderItems.product'])->latest();
+
+        $allOrders = $baseOrdersQuery->get();
+
+        // Counts by status
+        $orderCounts = [
+            'all' => $allOrders->count(),
+            'unpaid' => $allOrders->filter(fn($o) => in_array($o->payment_status, ['unpaid', 'pending']) && $o->status !== 'cancelled')->count(),
+            'processing' => $allOrders->filter(fn($o) => $o->status === 'processing')->count(),
+            'shipped' => $allOrders->filter(fn($o) => $o->status === 'shipped')->count(),
+            'completed' => $allOrders->filter(fn($o) => $o->status === 'completed')->count(),
+            'cancelled' => $allOrders->filter(fn($o) => $o->status === 'cancelled')->count(),
+        ];
+
+        // Filtered Orders
+        $orders = match ($this->orderFilter) {
+            'unpaid' => $allOrders->filter(fn($o) => in_array($o->payment_status, ['unpaid', 'pending']) && $o->status !== 'cancelled'),
+            'processing' => $allOrders->filter(fn($o) => $o->status === 'processing'),
+            'shipped' => $allOrders->filter(fn($o) => $o->status === 'shipped'),
+            'completed' => $allOrders->filter(fn($o) => $o->status === 'completed'),
+            'cancelled' => $allOrders->filter(fn($o) => $o->status === 'cancelled'),
+            default => $allOrders,
+        };
 
         // 2. Service Orders
         $services = ServiceOrder::where(function ($q) use ($user) {
@@ -179,6 +233,7 @@ class UserProfile extends Component
         return view('livewire.frontend.user-profile', [
             'user' => $user,
             'orders' => $orders,
+            'orderCounts' => $orderCounts,
             'services' => $services,
             'sells' => $sells,
         ]);

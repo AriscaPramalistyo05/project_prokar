@@ -4,6 +4,7 @@ namespace App\Livewire\Admin;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Services\MarketingKitService;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Mary\Traits\Toast;
@@ -20,11 +21,29 @@ class ProductIndex extends Component
     public bool $showDeleteModal = false;
     public $productIdToDelete = null;
 
+    // For Marketing Kit & 1-Click Share Modal
+    public bool $showMarketingModal = false;
+    public ?Product $selectedMarketingProduct = null;
+    public array $marketingData = [];
+    public string $selectedCopyTab = 'standard';
+    public string $posterFormat = 'square'; // 'square' (1:1) or 'story' (9:16)
+
     protected $queryString = [
         'search' => ['except' => ''],
         'filterCategory' => ['except' => ''],
         'filterStatus' => ['except' => ''],
     ];
+
+    public function openMarketingModal($id, MarketingKitService $service)
+    {
+        $product = Product::with(['category', 'primaryImage', 'productImages'])->findOrFail($id);
+        $this->selectedMarketingProduct = $product;
+        $this->marketingData = $service->getMarketingKitData($product);
+        $this->selectedCopyTab = 'standard';
+        $this->showMarketingModal = true;
+        
+        $this->dispatch('marketing-product-loaded', data: $this->marketingData);
+    }
 
     public function updatedSearch()
     {

@@ -4,16 +4,12 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\Order;
-use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\SellSubmission;
-use App\Models\ServiceFee;
 use App\Models\ServiceOrder;
-use App\Models\ServiceStatusLog;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class TransactionDummySeeder extends Seeder

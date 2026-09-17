@@ -182,4 +182,49 @@ class SellSubmissionTest extends TestCase
 
         $this->assertEquals($initialProductCount, Product::count());
     }
+
+    public function test_admin_can_negotiate_and_reject_submission(): void
+    {
+        $admin = $this->actingAsSuperAdmin();
+        $submission = SellSubmission::factory()->create([
+            'status' => 'pending',
+            'offered_price' => 500000,
+        ]);
+
+        Livewire::actingAs($admin)
+            ->test(SellSubmissionDetail::class, ['sellSubmission' => $submission])
+            ->call('updateStatus', 'reviewing')
+            ->set('offered_price', 350000)
+            ->call('saveOfferedPrice');
+
+        $this->assertEquals('negotiating', $submission->fresh()->status);
+        $this->assertEquals(350000, $submission->fresh()->offered_price);
+
+        Livewire::actingAs($admin)
+            ->test(SellSubmissionDetail::class, ['sellSubmission' => $submission])
+            ->call('updateStatus', 'rejected');
+
+        $this->assertEquals('rejected', $submission->fresh()->status);
+    }
+
+    public function test_admin_can_mark_needs_repair_and_repair_done(): void
+    {
+        $admin = $this->actingAsSuperAdmin();
+        $submission = SellSubmission::factory()->create([
+            'status' => 'paid',
+            'agreed_price' => 750000,
+        ]);
+
+        Livewire::actingAs($admin)
+            ->test(SellSubmissionDetail::class, ['sellSubmission' => $submission])
+            ->call('markNeedsRepair');
+
+        $this->assertEquals('in_repair', $submission->fresh()->status);
+
+        Livewire::actingAs($admin)
+            ->test(SellSubmissionDetail::class, ['sellSubmission' => $submission])
+            ->call('markRepairDone');
+
+        $this->assertEquals('ready_for_sale', $submission->fresh()->status);
+    }
 }

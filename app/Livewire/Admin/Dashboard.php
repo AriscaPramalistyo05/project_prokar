@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\SellSubmission;
 use App\Models\ServiceOrder;
 use App\Models\User;
+use App\Services\UmamiService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
@@ -15,23 +16,28 @@ use Livewire\Component;
 class Dashboard extends Component
 {
     public int $chartPeriod = 7; // 7, 14, or 30 days
+    public int $trafficPeriod = 7; // 1, 7, or 30 days
     public array $revenueChartData = [];
     public array $categoryChartData = [];
     public array $serviceStatusData = [];
+    public array $trafficData = [];
 
     public function mount(): void
     {
         $this->loadChartData();
+        $this->loadTrafficData();
     }
 
     public function refreshDashboard(): void
     {
         $this->loadChartData();
+        $this->loadTrafficData();
         $this->dispatch('chart-data-updated', [
             'revenue' => $this->revenueChartData,
             'category' => $this->categoryChartData,
             'service' => $this->serviceStatusData,
         ]);
+        $this->dispatch('umami-chart-updated', $this->trafficData['chart'] ?? []);
     }
 
     public function setPeriod(int $days): void
@@ -43,6 +49,18 @@ class Dashboard extends Component
             'category' => $this->categoryChartData,
             'service' => $this->serviceStatusData,
         ]);
+    }
+
+    public function setTrafficPeriod(int $days): void
+    {
+        $this->trafficPeriod = in_array($days, [1, 7, 30]) ? $days : 7;
+        $this->loadTrafficData();
+        $this->dispatch('umami-chart-updated', $this->trafficData['chart'] ?? []);
+    }
+
+    public function loadTrafficData(): void
+    {
+        $this->trafficData = app(UmamiService::class)->getTrafficData($this->trafficPeriod);
     }
 
     private function loadChartData(): void
@@ -215,6 +233,8 @@ class Dashboard extends Component
             'priorityServices' => $priorityServices,
             'recentlyListedProducts' => $recentlyListedProducts,
             'latestSellSubmissions' => $latestSellSubmissions,
+            'trafficData' => $this->trafficData,
+            'trafficPeriod' => $this->trafficPeriod,
         ])->layout('layouts.admin');
     }
 }

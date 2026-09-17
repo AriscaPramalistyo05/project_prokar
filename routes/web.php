@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -72,18 +71,52 @@ Route::get('/checkout/success/{orderCode}', function ($orderCode) {
     return view('pages.checkout-success', compact('order'));
 })->name('checkout.success');
 
+Route::get('/pesanan/{orderCode}', function ($orderCode) {
+    $order = \App\Models\Order::where('order_code', $orderCode)->with('orderItems.product')->firstOrFail();
+
+    if (!in_array($order->payment_status, ['paid', 'dp_paid']) && in_array($order->payment_method, ['midtrans', 'midtrans_dp', 'qris', 'bank_transfer', 'gopay', 'shopeepay', 'cstore', 'echannel', 'credit_card'])) {
+        $midtransService = app(\App\Services\MidtransService::class);
+        $order = $midtransService->syncOrderStatus($order);
+    }
+
+    session(['last_order_code' => $orderCode]);
+
+    return view('pages.checkout-success', compact('order'));
+})->name('pesanan.show');
+
+Route::post('/checkout/{orderCode}/save-snap-result', function ($orderCode, \Illuminate\Http\Request $request) {
+    $order = \App\Models\Order::where('order_code', $orderCode)->firstOrFail();
+    $result = $request->all();
+    if (!empty($result) && is_array($result)) {
+        $paymentType = $result['payment_type'] ?? $order->payment_method;
+        $order->update([
+            'payment_method' => $paymentType,
+            'midtrans_response' => array_merge((array) ($order->midtrans_response ?? []), $result),
+        ]);
+        if (in_array($result['transaction_status'] ?? '', ['settlement', 'capture'])) {
+            app(\App\Services\MidtransService::class)->syncOrderStatus($order);
+        }
+    }
+    return response()->json(['status' => 'ok']);
+})->name('checkout.save-snap-result');
+
 Route::get('/order/invoice/{code}/download', function ($code) {
     $order = \App\Models\Order::where('order_code', $code)->with('orderItems')->firstOrFail();
 
-    // Allow download if order is paid, or user owns order, or admin, or order exists in session
     $userOwnsOrder = auth()->check() && $order->user_id === auth()->id();
     $isAdmin = auth()->check() && (auth()->user()->hasRole('super_admin') || auth()->user()->hasRole('teknisi'));
-    $isPaid = in_array($order->payment_status, ['paid', 'settlement', 'capture', 'success']);
+    $isPaid = in_array($order->payment_status, ['paid', 'dp_paid', 'settlement', 'capture', 'success']);
     $isRecentSession = session('last_order_code') === $code || session('checkout_order_code') === $code;
 
-    // In sandbox or after payment, allow buyer to download invoice
-    if (!$isPaid && !$userOwnsOrder && !$isAdmin && !$isRecentSession && $order->payment_status !== 'pending') {
+    // Akses harus oleh pemilik pesanan, admin, atau sesi checkout terkait
+    if (!$userOwnsOrder && !$isAdmin && !$isRecentSession) {
         abort(403, 'Anda tidak memiliki akses untuk mengunduh invoice ini.');
+    }
+
+    // Invoice resmi hanya dapat diunduh jika pesanan sudah dibayar (kecuali admin)
+    if (!$isPaid && !$isAdmin) {
+        return redirect()->route('pesanan.show', $code)
+            ->with('error', 'Invoice resmi hanya dapat diunduh setelah pembayaran berhasil diselesaikan.');
     }
 
     $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.invoice', ['order' => $order]);
@@ -155,11 +188,12 @@ Route::post('/payment/webhook', [\App\Http\Controllers\Api\PaymentWebhookControl
 require __DIR__ . '/auth.php';
 
 // ─── OTP EMAIL VERIFICATION ─────────────────────────────────────
+Route::get('/verifikasi-email/auto', [\App\Http\Controllers\Auth\OtpController::class, 'verifyAuto'])
+    ->name('auth.otp.auto');
+
 Route::middleware('guest')->group(function () {
     Route::get('/verifikasi-email', [\App\Http\Controllers\Auth\OtpController::class, 'show'])
         ->name('auth.otp');
-    Route::get('/verifikasi-email/auto', [\App\Http\Controllers\Auth\OtpController::class, 'verifyAuto'])
-        ->name('auth.otp.auto');
     Route::post('/verifikasi-email', [\App\Http\Controllers\Auth\OtpController::class, 'verify'])
         ->name('auth.otp.verify');
     Route::get('/verifikasi-email/kirim-ulang', [\App\Http\Controllers\Auth\OtpController::class, 'resend'])
@@ -196,6 +230,45 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         Route::get('/produk', \App\Livewire\Admin\ProductIndex::class)->name('products.index');
         Route::get('/produk/tambah', \App\Livewire\Admin\ProductForm::class)->name('products.create');
         Route::get('/produk/{product}/edit', \App\Livewire\Admin\ProductForm::class)->name('products.edit');
+        Route::get('/produk/{product}/download-media', function (\App\Models\Product $product) {
+            $images = $product->productImages()->orderBy('order')->get();
+            $zipFileName = 'media-' . ($product->slug ?: 'produk-' . $product->id) . '.zip';
+            $zipPath = storage_path('app/temp/' . $zipFileName);
+
+            if (!file_exists(dirname($zipPath))) {
+                mkdir(dirname($zipPath), 0755, true);
+            }
+
+            $zip = new \ZipArchive();
+            if ($zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === true) {
+                $idx = 1;
+                foreach ($images as $img) {
+                    $cleanPath = ltrim($img->path, '/');
+                    if (str_starts_with($cleanPath, 'storage/')) {
+                        $cleanPath = substr($cleanPath, 8);
+                    }
+                    $fullPath = storage_path('app/public/' . $cleanPath);
+                    if (file_exists($fullPath)) {
+                        $ext = pathinfo($fullPath, PATHINFO_EXTENSION) ?: ($img->type === 'video' ? 'mp4' : 'jpg');
+                        $prefix = $img->type === 'video' ? 'video' : 'foto';
+                        $zip->addFile($fullPath, "{$prefix}-{$idx}-{$product->slug}.{$ext}");
+                        $idx++;
+                    }
+                }
+                
+                if ($zip->numFiles === 0 && file_exists(public_path('images/logo prokar.png'))) {
+                    $zip->addFile(public_path('images/logo prokar.png'), "foto-1-{$product->slug}.png");
+                }
+                
+                $zip->close();
+            }
+
+            if (file_exists($zipPath) && filesize($zipPath) > 0) {
+                return response()->download($zipPath, $zipFileName)->deleteFileAfterSend(true);
+            }
+
+            return back()->with('error', 'Tidak ada media yang dapat diunduh untuk produk ini.');
+        })->name('products.download-media');
 
         Route::get('/kategori', \App\Livewire\Admin\CategoryIndex::class)->name('categories.index');
 

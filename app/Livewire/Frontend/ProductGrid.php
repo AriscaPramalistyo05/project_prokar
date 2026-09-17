@@ -4,7 +4,6 @@ namespace App\Livewire\Frontend;
 
 use App\Models\Category;
 use App\Models\Product;
-use App\Models\ProductImage;
 use Livewire\Component;
 use Livewire\WithPagination;
 
