@@ -203,12 +203,15 @@ body {
   position: relative;
   border-radius: var(--radius-overlap) var(--radius-overlap) 0 0;
   box-shadow: 0 -15px 40px -10px rgba(0,0,0,0.22);
-  will-change: transform;
+}
+.section-overlap:not(.section-overlap-first):not(.no-overlap) {
+  margin-top: calc(var(--radius-overlap) * -1);
 }
 .section-overlap-first,
 .section-overlap.no-overlap {
   border-radius: 0 !important;
   box-shadow: none !important;
+  margin-top: 0 !important;
 }
 
 /* ── Text Animation Classes (Cuberto Style) ── */

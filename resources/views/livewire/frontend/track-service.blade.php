@@ -450,22 +450,6 @@
   gsap.ticker.add((time) => { lenis.raf(time * 1000) });
   gsap.ticker.lagSmoothing(0, 0);
 
-  /* --- CUBERTO OVERLAPPING SCROLL EFFECT --- */
-  const overlapSections = gsap.utils.toArray('.section-overlap');
-  overlapSections.forEach((section, index) => {
-    if (index === overlapSections.length - 1) return;
-    const nextSection = overlapSections[index + 1];
-    ScrollTrigger.create({
-      trigger: section,
-      start: () => section.offsetHeight > window.innerHeight ? "bottom bottom" : "top top",
-      endTrigger: nextSection,
-      end: () => nextSection ? (nextSection.offsetHeight > window.innerHeight ? "bottom bottom" : "top top") : "bottom top",
-      pin: true,
-      pinSpacing: false,
-      invalidateOnRefresh: true,
-    });
-  });
-
   /* --- GSAP ANIMATIONS --- */
   gsap.fromTo("section:first-of-type .reveal-line",
     { y: "110%" },

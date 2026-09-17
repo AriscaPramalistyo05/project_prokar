@@ -704,24 +704,6 @@
             });
             gsap.ticker.lagSmoothing(0, 0);
 
-            /* --- CUBERTO OVERLAPPING SCROLL EFFECT --- */
-            const overlapSections = gsap.utils.toArray('.section-overlap');
-            overlapSections.forEach((section, index) => {
-                if (index === overlapSections.length - 1) return; // Footer does not pin
-                const nextSection = overlapSections[index + 1];
-                ScrollTrigger.create({
-                    trigger: section,
-                    start: () => section.offsetHeight > window.innerHeight ? "bottom bottom" :
-                        "top top",
-                    endTrigger: nextSection,
-                    end: () => nextSection ? (nextSection.offsetHeight > window.innerHeight ?
-                        "bottom bottom" : "top top") : "bottom top",
-                    pin: true,
-                    pinSpacing: false,
-                    invalidateOnRefresh: true,
-                });
-            });
-
             // 0. Parallax hero columns
             document.querySelectorAll('.hero-parallax-col').forEach((col) => {
                 const speed = parseFloat(col.dataset.speed || "0");

@@ -270,22 +270,6 @@
   gsap.ticker.add((time) => { lenis.raf(time * 1000) });
   gsap.ticker.lagSmoothing(0, 0);
 
-  /* --- CUBERTO OVERLAPPING SCROLL EFFECT (Hanya Header -> Konten Produk) --- */
-  const headerSection = document.querySelector('section.section-overlap-first');
-  const productSection = document.querySelector('section.section-overlap:not(.section-overlap-first)');
-
-  if (headerSection && productSection) {
-    ScrollTrigger.create({
-      trigger: headerSection,
-      start: () => headerSection.offsetHeight > window.innerHeight ? "bottom bottom" : "top top",
-      endTrigger: productSection,
-      end: () => productSection.offsetHeight > window.innerHeight ? "bottom bottom" : "top top",
-      pin: true,
-      pinSpacing: false,
-      invalidateOnRefresh: true,
-    });
-  }
-
   // Refresh ScrollTrigger saat Livewire selesai update (filter / load produk)
   document.addEventListener('livewire:init', () => {
     Livewire.hook('commit', ({ succeed }) => {
