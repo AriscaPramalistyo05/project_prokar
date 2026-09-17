@@ -99,6 +99,26 @@ select, .select, select.select {
     min-height: 0 !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
+    width: 100% !important;
+}
+
+/* Sidebar Menu Layout: Strictly 1 single vertical column with NO wrapping */
+.drawer-side .menu,
+.drawer-side ul.menu,
+.drawer-side [class*="drawer"] .menu {
+    display: flex !important;
+    flex-direction: column !important;
+    flex-wrap: nowrap !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.drawer-side .menu > li,
+.drawer-side .menu li {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex-shrink: 0 !important;
 }
 
 .drawer-content {
