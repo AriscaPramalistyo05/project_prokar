@@ -871,7 +871,8 @@
                 document.querySelectorAll(".faq-item").forEach((i) => i.classList.remove("open"));
                 if (!wasOpen) item.classList.add("open");
                 setTimeout(() => {
-                    ScrollTrigger.refresh();
+                    if (window.updateStickyOverlap) window.updateStickyOverlap();
+                    if (window.ScrollTrigger) ScrollTrigger.refresh();
                 }, 450);
             };
 

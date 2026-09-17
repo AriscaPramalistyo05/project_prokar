@@ -219,7 +219,7 @@
     body {
       margin: 0;
       padding: 0;
-      overflow-x: hidden;
+      overflow-x: clip;
       scroll-behavior: initial;
     }
 
@@ -308,17 +308,20 @@
       border-radius: 2px;
     }
 
-    /* ── Overlapping Sections ── */
+    /* ── Overlapping Sections (Cuberto Elevated Card Stacking) ── */
     .section-overlap {
-      position: relative;
+      position: -webkit-sticky;
+      position: sticky;
+      top: 0;
       border-radius: var(--radius-overlap) var(--radius-overlap) 0 0;
       box-shadow: 0 -15px 40px -10px rgba(0,0,0,0.22);
-    }
-    .section-overlap:not(.section-overlap-first):not(.no-overlap) {
-      margin-top: calc(var(--radius-overlap) * -1);
+      will-change: transform;
     }
     .section-overlap-first,
     .section-overlap.no-overlap {
+      position: -webkit-sticky;
+      position: sticky;
+      top: 0;
       border-radius: 0 !important;
       box-shadow: none !important;
       margin-top: 0 !important;
@@ -610,6 +613,32 @@
       <i class="fa-solid fa-xmark"></i>
     </button>
   </div>
+
+  <!-- Sticky Overlapping Sections (Cuberto Elevated Card Stacking) Engine -->
+  <script>
+    function initStickyOverlap() {
+      const sections = document.querySelectorAll('.section-overlap');
+      if (!sections.length) return;
+      const vh = window.innerHeight;
+      sections.forEach(function(el) {
+        if (el.classList.contains('section-overlap-first')) {
+          el.style.top = '0px';
+          return;
+        }
+        const h = el.offsetHeight;
+        if (h > vh) {
+          el.style.top = (vh - h) + 'px';
+        } else {
+          el.style.top = '0px';
+        }
+      });
+    }
+    window.addEventListener('DOMContentLoaded', initStickyOverlap);
+    window.addEventListener('load', initStickyOverlap);
+    window.addEventListener('resize', initStickyOverlap);
+    window.addEventListener('orientationchange', initStickyOverlap);
+    window.updateStickyOverlap = initStickyOverlap;
+  </script>
 
   @stack('scripts')
 

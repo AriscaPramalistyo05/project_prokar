@@ -163,7 +163,7 @@
 
 html, body {
   background: #0A0A0A;
-  overflow-x: hidden;
+  overflow-x: clip;
   scroll-behavior: initial;
 }
 
@@ -198,17 +198,20 @@ body {
   border-radius: 2px;
 }
 
-/* ── Overlapping Sections ── */
+/* ── Overlapping Sections (Cuberto Elevated Card Stacking) ── */
 .section-overlap {
-  position: relative;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
   border-radius: var(--radius-overlap) var(--radius-overlap) 0 0;
   box-shadow: 0 -15px 40px -10px rgba(0,0,0,0.22);
-}
-.section-overlap:not(.section-overlap-first):not(.no-overlap) {
-  margin-top: calc(var(--radius-overlap) * -1);
+  will-change: transform;
 }
 .section-overlap-first,
 .section-overlap.no-overlap {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
   border-radius: 0 !important;
   box-shadow: none !important;
   margin-top: 0 !important;
