@@ -129,3 +129,48 @@ select, .select, select.select {
     padding-right: 0.5rem !important;
 }
 
+/**
+ * Fix Mary UI MenuSub / DaisyUI Details & Summary in Sidebar
+ * Menghilangkan segitiga panah disclosure bawaan browser (▶)
+ * Merapikan ikon, label teks, dan chevron agar sejajar dalam 1 baris
+ */
+.menu li > details > summary {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+    list-style: none !important;
+    list-style-type: none !important;
+    cursor: pointer !important;
+    user-select: none !important;
+    border-radius: var(--radius-field, 0.25rem);
+    position: relative !important;
+}
+
+.menu li > details > summary::-webkit-details-marker,
+.menu li > details > summary::marker {
+    display: none !important;
+    content: "" !important;
+}
+
+.menu li > details > summary > svg,
+.menu li > details > summary > .mary-icon {
+    flex-shrink: 0 !important;
+    width: 1.25rem !important;
+    height: 1.25rem !important;
+    margin: 0 !important;
+}
+
+.menu li > details > summary > span {
+    flex: 1 1 auto !important;
+    display: inline-block !important;
+    white-space: nowrap !important;
+}
+
+/* Submenu container indentation */
+.menu li > details > ul {
+    padding-left: 0.75rem !important;
+    margin-top: 0.25rem !important;
+    margin-bottom: 0.25rem !important;
+}
+
+

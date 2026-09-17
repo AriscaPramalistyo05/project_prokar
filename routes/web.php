@@ -312,8 +312,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'staff'])->group(fun
             Route::get('/laporan', \App\Livewire\Admin\ReportIndex::class)->name('reports.index');
         });
 
-        // 8. Modul Activity Log Admin (Permission: manage_roles|manage_settings)
-        Route::middleware(['permission:manage_roles|manage_settings'])->group(function () {
+        // 8. Modul Activity Log Admin (Permission: view_activity_logs)
+        Route::middleware(['permission:view_activity_logs'])->group(function () {
             Route::get('/activity-log', \App\Livewire\Admin\ActivityLogIndex::class)->name('activity-log');
         });
 

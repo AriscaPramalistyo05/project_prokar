@@ -104,18 +104,18 @@ class AppServiceProvider extends ServiceProvider
                 ]);
         });
 
-        // Log Viewer Security Gates (Super Admin Only)
+        // Log Viewer Security Gates
         \Illuminate\Support\Facades\Gate::define('viewLogViewer', function (?\App\Models\User $user) {
-            return $user && $user->hasRole('super_admin');
+            return $user && ($user->hasRole('super_admin') || $user->can('view_system_logs'));
         });
         \Illuminate\Support\Facades\Gate::define('downloadLogFile', function (?\App\Models\User $user) {
-            return $user && $user->hasRole('super_admin');
+            return $user && ($user->hasRole('super_admin') || $user->can('view_system_logs'));
         });
         \Illuminate\Support\Facades\Gate::define('deleteLogFile', function (?\App\Models\User $user) {
             return $user && $user->hasRole('super_admin');
         });
         \Illuminate\Support\Facades\Gate::define('downloadLogFolder', function (?\App\Models\User $user) {
-            return $user && $user->hasRole('super_admin');
+            return $user && ($user->hasRole('super_admin') || $user->can('view_system_logs'));
         });
         \Illuminate\Support\Facades\Gate::define('deleteLogFolder', function (?\App\Models\User $user) {
             return $user && $user->hasRole('super_admin');

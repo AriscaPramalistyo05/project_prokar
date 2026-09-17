@@ -356,7 +356,7 @@
                             </button>
                         </div>
                         <p class="text-[11px] text-slate-400">
-                            💡 <b>Tips WA Web:</b> Klik <b>Salin Foto Utama</b>, lalu tekan <b>Ctrl+V</b> langsung di chat WhatsApp, disusul salin teks promo.
+                            💡 <b>Tips Facebook & WA:</b> Saat klik <b>Bagikan Lengkap</b> atau <b>Facebook</b>, teks deskripsi otomatis disalin. Jika di aplikasi Facebook/Reels teksnya kosong (kebijakan anti-spam Meta), Anda tinggal <b>tekan tahan & Tempel (Paste)</b>.
                         </p>
                     </div>
 
@@ -379,13 +379,14 @@
 
                         {{-- Facebook --}}
                         <a :href="data.share_urls.facebook" target="_blank"
+                            @click="copyToClipboard(copywritingTexts[copyType] || copywritingTexts['standard'] || '', 'Teks deskripsi otomatis disalin! Tinggal Paste (Tempel) di status Facebook Anda.')"
                             class="flex items-center gap-4 p-3.5 bg-white border border-slate-200 rounded-xl hover:border-blue-300 hover:shadow-xs transition group">
                             <div class="w-9 h-9 rounded-lg bg-[#1877F2] flex items-center justify-center shrink-0">
                                 <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                             </div>
                             <div class="flex-1 min-w-0">
                                 <p class="text-[13px] font-semibold text-slate-800">Facebook</p>
-                                <p class="text-xs text-slate-400 mt-0.5">Share ke beranda, grup, atau marketplace</p>
+                                <p class="text-xs text-slate-400 mt-0.5">Teks disalin otomatis, tinggal Paste di status Facebook</p>
                             </div>
                             <svg class="w-4 h-4 text-slate-300 group-hover:text-slate-500 group-hover:translate-x-0.5 transition-all" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                         </a>
@@ -570,7 +571,29 @@
                             shareData.files = filesToShare;
                         }
 
+                        // Salin teks deskripsi ke clipboard terlebih dahulu sebagai cadangan,
+                        // karena aplikasi Meta (Facebook Grup, Reels, Instagram) secara sistem mengabaikan
+                        // parameter teks caption jika dikirim bersamaan dengan file foto/video.
+                        if (shareData.text && navigator.clipboard && navigator.clipboard.writeText) {
+                            try {
+                                await navigator.clipboard.writeText(shareData.text);
+                            } catch (clipErr) {
+                                console.warn('Could not auto-copy text before native share', clipErr);
+                            }
+                        }
+
                         if (navigator.share) {
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({
+                                    toast: true,
+                                    position: 'top-end',
+                                    icon: 'success',
+                                    title: 'Teks deskripsi disalin! Jika di FB/Reels kosong, tinggal Paste (Tempel).',
+                                    timer: 3500,
+                                    showConfirmButton: false,
+                                    timerProgressBar: true
+                                });
+                            }
                             await navigator.share(shareData);
                         } else {
                             this.copyCurrentText();

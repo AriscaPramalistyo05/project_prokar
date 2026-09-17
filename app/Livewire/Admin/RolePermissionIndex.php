@@ -140,6 +140,9 @@ class RolePermissionIndex extends Component
             'view_reports' => 'Lihat Laporan Transaksi & Statistik',
             'export_reports' => 'Export Laporan Excel & PDF',
 
+            'view_activity_logs' => 'Lihat Log Aktivitas (Activity Log)',
+            'view_system_logs' => 'Lihat Log Sistem & Error (System Logs)',
+
             'manage_settings' => 'Kelola Pengaturan Sistem (Setting)',
         ];
 
@@ -174,6 +177,10 @@ class RolePermissionIndex extends Component
             'Laporan & Analitik' => [
                 'icon' => 'o-chart-bar',
                 'permissions' => ['view_reports', 'export_reports'],
+            ],
+            'Log & Pemantauan Sistem' => [
+                'icon' => 'o-clipboard-document-list',
+                'permissions' => ['view_activity_logs', 'view_system_logs'],
             ],
             'Pengaturan Sistem' => [
                 'icon' => 'o-cog-6-tooth',

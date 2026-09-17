@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
@@ -14,6 +15,7 @@ class LogViewerSecurityTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        Permission::firstOrCreate(['name' => 'view_system_logs', 'guard_name' => 'web']);
         Role::firstOrCreate(['name' => 'super_admin']);
         Role::firstOrCreate(['name' => 'teknisi']);
         Role::firstOrCreate(['name' => 'customer']);
@@ -40,6 +42,18 @@ class LogViewerSecurityTest extends TestCase
         $admin->assignRole('super_admin');
 
         $response = $this->actingAs($admin)->get('/admin/logs');
+        $response->assertStatus(200);
+    }
+
+    public function test_staff_with_view_system_logs_permission_can_access_log_viewer(): void
+    {
+        $role = Role::firstOrCreate(['name' => 'staff_audit', 'guard_name' => 'web']);
+        $role->givePermissionTo('view_system_logs');
+
+        $staff = User::factory()->create();
+        $staff->assignRole('staff_audit');
+
+        $response = $this->actingAs($staff)->get('/admin/logs');
         $response->assertStatus(200);
     }
 }

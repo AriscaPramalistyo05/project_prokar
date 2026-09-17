@@ -32,6 +32,8 @@ class RolePermissionSeeder extends Seeder
             'view_users', 'create_user', 'edit_user', 'delete_user', 'manage_roles',
             // Laporan
             'view_reports', 'export_reports',
+            // Log & Audit Sistem
+            'view_activity_logs', 'view_system_logs',
             // Setting
             'manage_settings',
         ];

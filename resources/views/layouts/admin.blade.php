@@ -75,7 +75,7 @@
                 <x-admin.sidebar-item route="admin.orders.index" icon="o-shopping-bag" label="Order" />
                 @endcan
 
-                @canany(['view_users', 'manage_roles', 'view_reports', 'manage_settings'])
+                @canany(['view_users', 'manage_roles', 'view_reports', 'view_activity_logs', 'view_system_logs', 'manage_settings'])
                 <hr class="my-2 border-base-200" />
                 @endcanany
 
@@ -91,10 +91,15 @@
                 <x-admin.sidebar-item route="admin.reports.index" icon="o-chart-bar" label="Laporan" />
                 @endcan
 
-                @can('manage_settings')
+                @can('view_activity_logs')
                 <x-admin.sidebar-item route="admin.activity-log" icon="o-clipboard-document-list" label="Activity Log" />
+                @endcan
+
+                @can('view_system_logs')
                 <x-menu-item title="System Logs" icon="o-document-text" link="{{ url('admin/logs') }}" :active="request()->is('admin/logs*')" />
-                
+                @endcan
+
+                @can('manage_settings')
                 {{-- Dropdown Submenu Setting (Natif Mary UI untuk support Collapse & Expand) --}}
                 <x-menu-sub title="Setting" icon="o-cog-6-tooth" :open="request()->routeIs('admin.settings*')">
                     <x-menu-item title="Umum & Identitas" icon="o-building-storefront" link="{{ route('admin.settings', ['tab' => 'general-tab']) }}" :active="request()->routeIs('admin.settings*') && request('tab', 'general-tab') === 'general-tab'" />

@@ -53,14 +53,14 @@ return [
     'middleware' => [
         'web',
         'auth',
-        'role:super_admin',
+        'permission:view_system_logs',
         AuthorizeLogViewer::class,
     ],
 
     'api_middleware' => [
         EnsureFrontendRequestsAreStateful::class,
         'auth',
-        'role:super_admin',
+        'permission:view_system_logs',
         AuthorizeLogViewer::class,
     ],
 
