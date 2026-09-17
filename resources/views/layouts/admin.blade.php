@@ -96,7 +96,7 @@
                 @endcan
 
                 @can('view_system_logs')
-                <x-menu-item title="System Logs" icon="o-document-text" link="{{ url('admin/logs') }}" :active="request()->is('admin/logs*')" />
+                <x-admin.sidebar-item url="admin/logs" icon="o-document-text" label="System Logs" />
                 @endcan
 
                 @can('manage_settings')
