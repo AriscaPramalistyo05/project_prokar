@@ -12,7 +12,7 @@
             ? (str_starts_with($footerLogo, 'images/') ? asset($footerLogo) : asset('storage/' . $footerLogo))
             : asset('images/logo prokar simpel.png');
       @endphp
-      <img src="{{ $footerLogoUrl }}" onerror="this.onerror=null; this.src='{{ asset('images/logo prokar simpel.png') }}'" alt="{{ setting('shop_name', 'Prokar Elektronik') }}" class="w-56 sm:w-64 max-h-16 object-contain mb-6">
+      <img src="{{ $footerLogoUrl }}" onerror="this.onerror=null; this.src='{{ asset('images/logo prokar simpel.png') }}'" alt="{{ setting('shop_name', 'Prokar Elektronik') }}" class="w-56 sm:w-64 max-h-16 object-contain mb-6 brightness-0 invert">
       <p class="text-gray-400 text-lg leading-relaxed font-inter">Urus semua kebutuhan elektronik dalam satu platform terpercaya. Dari servis, jual, hingga beli, cukup lewat satu klik.</p>
     </div>
     <nav class="flex flex-col gap-4 font-public">

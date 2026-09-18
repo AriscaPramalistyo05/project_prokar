@@ -229,11 +229,55 @@
             }
         }
 
+        /* ── Mobile Fixed CTA Clearance on Footer ──── */
+        @media (max-width: 1023px) {
+            footer {
+                padding-bottom: calc(6.5rem + env(safe-area-inset-bottom, 0px)) !important;
+            }
+        }
+
     </style>
 @endpush
 
 @section('content')
-<main class="bg-white text-gray-900 min-h-screen">
+@php
+    $marketingService = app(\App\Services\MarketingKitService::class);
+    $waShareUrl = $marketingService->getWhatsAppShareUrl($product, 'standard');
+    $fbShareUrl = $marketingService->getFacebookShareUrl($product);
+    $tgShareUrl = $marketingService->getTelegramShareUrl($product);
+    $productUrl = $marketingService->getProductUrl($product);
+    $shareTitle = $product->name . ' - ' . ($product->promo_price ? format_rupiah($product->promo_price) : format_rupiah($product->price));
+    $shareText = 'Cek ' . $product->name . ' di Prokar Elektronik: ' . $productUrl;
+@endphp
+<main class="bg-white text-gray-900 min-h-screen pb-20 lg:pb-0"
+    x-data="{
+        openShareModal: false,
+        copied: false,
+        shareUrl: '{{ $productUrl }}',
+        shareTitle: '{{ addslashes($shareTitle) }}',
+        shareText: '{{ addslashes($shareText) }}',
+        handleShare() {
+            if (navigator.share) {
+                navigator.share({
+                    title: this.shareTitle,
+                    text: this.shareText,
+                    url: this.shareUrl
+                }).catch((err) => {
+                    if (err.name !== 'AbortError') {
+                        this.openShareModal = true;
+                    }
+                });
+            } else {
+                this.openShareModal = true;
+            }
+        },
+        copyLink() {
+            navigator.clipboard.writeText(this.shareUrl).then(() => {
+                this.copied = true;
+                setTimeout(() => this.copied = false, 2500);
+            });
+        }
+    }">
     {{-- ══════════════════════════════════════════════
      BREADCRUMB
 ══════════════════════════════════════════════ --}}
@@ -382,11 +426,11 @@
                     @endif
                 </div>
 
-                {{-- ─── CTA & Bagikan Produk (Mobile First & Desktop) ─── --}}
-                <div class="mt-5 sm:mt-6 flex flex-col gap-3">
+                {{-- ─── CTA & Bagikan Produk (Desktop Only) ─── --}}
+                <div class="mt-5 sm:mt-6 hidden lg:flex flex-col gap-3">
                     @if ($product->status === 'available')
                         <livewire:frontend.add-to-cart-button :product-id="$product->id"
-                            wire:key="add-to-cart-{{ $product->id }}" />
+                            wire:key="add-to-cart-desktop-{{ $product->id }}" />
                     @elseif ($product->status === 'sold')
                         <div class="w-full bg-gray-100 rounded-xl py-4 text-center border border-gray-200">
                             <span class="text-gray-400 font-inter font-bold text-sm uppercase tracking-wide">Produk Sudah
@@ -399,117 +443,15 @@
                         </div>
                     @endif
 
-                    {{-- ── 1-TOMBOL BAGIKAN PRODUK (Simpel, Mewakilkan Semua Share) ── --}}
-                    @php
-                        $marketingService = app(\App\Services\MarketingKitService::class);
-                        $waShareUrl = $marketingService->getWhatsAppShareUrl($product, 'standard');
-                        $fbShareUrl = $marketingService->getFacebookShareUrl($product);
-                        $tgShareUrl = $marketingService->getTelegramShareUrl($product);
-                        $productUrl = $marketingService->getProductUrl($product);
-                        $shareTitle = $product->name . ' - ' . ($product->promo_price ? format_rupiah($product->promo_price) : format_rupiah($product->price));
-                        $shareText = 'Cek ' . $product->name . ' di Prokar Elektronik: ' . $productUrl;
-                    @endphp
-
-                    <div x-data="{
-                        openShareModal: false,
-                        copied: false,
-                        shareUrl: '{{ $productUrl }}',
-                        shareTitle: '{{ addslashes($shareTitle) }}',
-                        shareText: '{{ addslashes($shareText) }}',
-                        handleShare() {
-                            if (navigator.share) {
-                                navigator.share({
-                                    title: this.shareTitle,
-                                    text: this.shareText,
-                                    url: this.shareUrl
-                                }).catch((err) => {
-                                    if (err.name !== 'AbortError') {
-                                        this.openShareModal = true;
-                                    }
-                                });
-                            } else {
-                                this.openShareModal = true;
-                            }
-                        },
-                        copyLink() {
-                            navigator.clipboard.writeText(this.shareUrl).then(() => {
-                                this.copied = true;
-                                setTimeout(() => this.copied = false, 2500);
-                            });
-                        }
-                    }" class="w-full relative">
-                        <!-- 1 Tombol Representasi Share -->
-                        <button type="button"
-                            @click="handleShare()"
-                            class="w-full py-3.5 px-4 rounded-xl border border-gray-200 bg-gray-50 hover:bg-gray-100 active:scale-[0.99] text-gray-700 hover:text-black font-inter font-semibold text-sm flex items-center justify-center gap-2.5 transition-all shadow-2xs group cursor-pointer"
-                            aria-label="Bagikan produk ini">
-                            <i class="fa-solid fa-share-nodes text-[#008276] text-base group-hover:scale-110 transition-transform"></i>
-                            <span>Bagikan Produk</span>
-                        </button>
-
-                        <!-- Modal Popover Fallback (Desktop / Browser tanpa Web Share API) -->
-                        <div x-show="openShareModal"
-                            x-transition:enter="transition ease-out duration-200"
-                            x-transition:enter-start="opacity-0 scale-95"
-                            x-transition:enter-end="opacity-100 scale-100"
-                            x-transition:leave="transition ease-in duration-150"
-                            x-transition:leave-start="opacity-100 scale-100"
-                            x-transition:leave-end="opacity-0 scale-95"
-                            @click.away="openShareModal = false"
-                            @keydown.escape.window="openShareModal = false"
-                            class="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs"
-                            x-cloak>
-                            <div class="bg-white rounded-2xl max-w-sm w-full p-5 sm:p-6 shadow-2xl border border-gray-100 relative" @click.stop>
-                                <!-- Header Modal -->
-                                <div class="flex items-center justify-between pb-3 mb-4 border-b border-gray-100">
-                                    <div class="flex items-center gap-2.5">
-                                        <div class="w-8 h-8 rounded-lg bg-[#008276]/10 text-[#008276] flex items-center justify-center text-sm">
-                                            <i class="fa-solid fa-share-nodes"></i>
-                                        </div>
-                                        <h3 class="font-inter font-bold text-base text-gray-900">Bagikan & Rekomendasikan</h3>
-                                    </div>
-                                    <button type="button" @click="openShareModal = false" class="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
-                                        <i class="fa-solid fa-xmark text-lg"></i>
-                                    </button>
-                                </div>
-
-                                <!-- Tombol Share Media Sosial -->
-                                <div class="grid grid-cols-3 gap-2.5 mb-4">
-                                    <a href="{{ $waShareUrl }}" target="_blank" rel="noopener noreferrer"
-                                        class="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 transition-all text-xs font-semibold">
-                                        <i class="fa-brands fa-whatsapp text-2xl text-[#25D366]"></i>
-                                        <span>WhatsApp</span>
-                                    </a>
-                                    <a href="{{ $fbShareUrl }}" target="_blank" rel="noopener noreferrer"
-                                        class="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 transition-all text-xs font-semibold">
-                                        <i class="fa-brands fa-facebook-f text-2xl text-[#1877F2]"></i>
-                                        <span>Facebook</span>
-                                    </a>
-                                    <a href="{{ $tgShareUrl }}" target="_blank" rel="noopener noreferrer"
-                                        class="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 transition-all text-xs font-semibold">
-                                        <i class="fa-brands fa-telegram text-2xl text-[#229ED9]"></i>
-                                        <span>Telegram</span>
-                                    </a>
-                                </div>
-
-                                <!-- Input & Tombol Salin Link -->
-                                <div class="flex items-center gap-2 p-1.5 bg-gray-50 border border-gray-200 rounded-xl">
-                                    <input type="text" readonly :value="shareUrl" class="w-full bg-transparent px-2.5 text-xs text-gray-600 font-inter outline-none truncate" />
-                                    <button type="button" @click="copyLink()"
-                                        class="shrink-0 px-3.5 py-2 rounded-lg bg-black text-white hover:bg-gray-800 text-xs font-semibold font-inter transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer">
-                                        <template x-if="!copied">
-                                            <span class="flex items-center gap-1"><i class="fa-regular fa-copy text-xs"></i> Salin Link</span>
-                                        </template>
-                                        <template x-if="copied">
-                                            <span class="flex items-center gap-1 text-emerald-400"><i class="fa-solid fa-check text-xs"></i> Tersalin!</span>
-                                        </template>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Desktop: 1 Tombol Representasi Share -->
+                    <button type="button"
+                        @click="handleShare()"
+                        class="w-full py-3.5 px-4 rounded-xl border border-gray-200 bg-gray-50 hover:bg-gray-100 active:scale-[0.99] text-gray-700 hover:text-black font-inter font-semibold text-sm flex items-center justify-center gap-2.5 transition-all shadow-2xs group cursor-pointer"
+                        aria-label="Bagikan produk ini">
+                        <i class="fa-solid fa-share-nodes text-[#008276] text-base group-hover:scale-110 transition-transform"></i>
+                        <span>Bagikan Produk</span>
+                    </button>
                 </div>
-
             </div>
 
             {{-- ═══ KOLOM KANAN : INFO PRODUK ═══ --}}
@@ -619,6 +561,7 @@
             </div>
         </div>
     </div>
+</div>
 
     {{-- ── SECTION PRODUK SERUPA ── --}}
     <div class="border-t border-gray-100 bg-gray-50 py-10 lg:py-14">
@@ -676,8 +619,106 @@
             </div>
         </div>
     </div>
+    {{-- ══════════════════════════════════════════════
+         FLOATING ISLAND / PILL CTA BAR (MOBILE ONLY - MODERN DOCK)
+    ══════════════════════════════════════════════ --}}
+    <div class="fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] inset-x-3 sm:inset-x-4 z-[80] pointer-events-none lg:hidden flex justify-center">
+        <div class="cta-bar pointer-events-auto w-full max-w-md bg-white/95 backdrop-blur-xl border border-gray-200/90 rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.22)] p-2 transition-transform duration-300"
+             role="region" aria-label="Aksi Pembelian Mobile">
+            <div class="flex items-center gap-2 w-full">
+                <!-- 1. Ikon Bagikan Produk Saja (Tokopedia Style) -->
+                <button type="button"
+                    @click="handleShare()"
+                    class="shrink-0 w-11 h-11 rounded-xl border-2 border-gray-200 bg-white hover:bg-gray-50 active:scale-95 text-gray-700 flex items-center justify-center transition-all cursor-pointer shadow-2xs"
+                    aria-label="Bagikan Produk"
+                    title="Bagikan Produk">
+                    <i class="fa-solid fa-share-nodes text-base text-[#008276]"></i>
+                </button>
 
+                <!-- 2 & 3. Keranjang dan Beli Sekarang -->
+                <div class="flex-1 min-w-0">
+                    @if ($product->status === 'available')
+                        <livewire:frontend.add-to-cart-button :product-id="$product->id" mode="mobile"
+                            wire:key="add-to-cart-mobile-{{ $product->id }}" />
+                    @elseif ($product->status === 'sold')
+                        <div class="w-full h-11 bg-gray-100 rounded-xl flex items-center justify-center border border-gray-200">
+                            <span class="text-gray-400 font-inter font-bold text-xs uppercase tracking-wide">Produk Sudah Terjual</span>
+                        </div>
+                    @else
+                        <div class="w-full h-11 bg-gray-100 rounded-xl flex items-center justify-center border border-gray-200">
+                            <span class="text-gray-400 font-inter font-bold text-xs uppercase tracking-wide">Tidak Tersedia</span>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
 
+    {{-- Spacer Mobile Agar Konten Tidak Tertutup Fixed Bottom Bar --}}
+    <div class="h-20 lg:hidden" aria-hidden="true"></div>
+
+    {{-- ══════════════════════════════════════════════
+         MODAL SHARE POPOVER (DESKTOP & MOBILE FALLBACK)
+    ══════════════════════════════════════════════ --}}
+    <div x-show="openShareModal"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-95"
+        @click.away="openShareModal = false"
+        @keydown.escape.window="openShareModal = false"
+        class="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs"
+        x-cloak>
+        <div class="bg-white rounded-2xl max-w-sm w-full p-5 sm:p-6 shadow-2xl border border-gray-100 relative" @click.stop>
+            <!-- Header Modal -->
+            <div class="flex items-center justify-between pb-3 mb-4 border-b border-gray-100">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-[#008276]/10 text-[#008276] flex items-center justify-center text-sm">
+                        <i class="fa-solid fa-share-nodes"></i>
+                    </div>
+                    <h3 class="font-inter font-bold text-base text-gray-900">Bagikan & Rekomendasikan</h3>
+                </div>
+                <button type="button" @click="openShareModal = false" class="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Tombol Share Media Sosial -->
+            <div class="grid grid-cols-3 gap-2.5 mb-4">
+                <a href="{{ $waShareUrl }}" target="_blank" rel="noopener noreferrer"
+                    class="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 transition-all text-xs font-semibold">
+                    <i class="fa-brands fa-whatsapp text-2xl text-[#25D366]"></i>
+                    <span>WhatsApp</span>
+                </a>
+                <a href="{{ $fbShareUrl }}" target="_blank" rel="noopener noreferrer"
+                    class="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 transition-all text-xs font-semibold">
+                    <i class="fa-brands fa-facebook-f text-2xl text-[#1877F2]"></i>
+                    <span>Facebook</span>
+                </a>
+                <a href="{{ $tgShareUrl }}" target="_blank" rel="noopener noreferrer"
+                    class="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 transition-all text-xs font-semibold">
+                    <i class="fa-brands fa-telegram text-2xl text-[#229ED9]"></i>
+                    <span>Telegram</span>
+                </a>
+            </div>
+
+            <!-- Input & Tombol Salin Link -->
+            <div class="flex items-center gap-2 p-1.5 bg-gray-50 border border-gray-200 rounded-xl">
+                <input type="text" readonly :value="shareUrl" class="w-full bg-transparent px-2.5 text-xs text-gray-600 font-inter outline-none truncate" />
+                <button type="button" @click="copyLink()"
+                    class="shrink-0 px-3.5 py-2 rounded-lg bg-black text-white hover:bg-gray-800 text-xs font-semibold font-inter transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer">
+                    <template x-if="!copied">
+                        <span class="flex items-center gap-1"><i class="fa-regular fa-copy text-xs"></i> Salin Link</span>
+                    </template>
+                    <template x-if="copied">
+                        <span class="flex items-center gap-1 text-emerald-400"><i class="fa-solid fa-check text-xs"></i> Tersalin!</span>
+                    </template>
+                </button>
+            </div>
+        </div>
+    </div>
 
     {{-- ══════════════════════════════════════════════
          FULLSCREEN SHOPEE-STYLE PRODUCT MEDIA VIEWER

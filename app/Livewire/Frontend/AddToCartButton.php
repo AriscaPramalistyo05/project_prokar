@@ -13,9 +13,10 @@ class AddToCartButton extends Component
     public bool $added = false;
     public ?string $errorMessage = null;
 
-    public function mount(int $productId): void
+    public function mount(int $productId, string $mode = 'detail'): void
     {
         $this->productId = $productId;
+        $this->mode = $mode;
         $this->product = \App\Models\Product::with('primaryImage')->find($productId);
     }
 
