@@ -1,5 +1,5 @@
 <section id="form-servis" aria-labelledby="formulir-heading"
-    class="bg-white pt-20 pb-24 md:pt-28 md:pb-36 z-40 relative">
+    class="bg-white pt-20 pb-28 md:pt-28 md:pb-40 z-[35] relative">
     <div class="max-w-4xl mx-auto px-6 lg:px-12">
         <div class="bg-white border border-gray-200 rounded-3xl p-5 sm:p-8 md:p-14 shadow-card relative overflow-hidden">
 

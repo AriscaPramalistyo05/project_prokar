@@ -217,7 +217,7 @@
   <livewire:frontend.service-form />
 
   <!-- KEUNGGULAN LAYANAN (CUBERTO SCATTER EFFECT) -->
-  <section id="keunggulan" aria-label="Keunggulan layanan servis elektronik" class="bg-brand-yellow pt-20 pb-28 md:pt-28 md:pb-40 z-10 relative overflow-hidden">
+  <section id="keunggulan" aria-label="Keunggulan layanan servis elektronik" class="section-overlap bg-brand-yellow pt-20 pb-28 md:pt-28 md:pb-40 z-[45] relative overflow-hidden">
     <div class="max-w-[1440px] mx-auto px-6 lg:px-12 relative">
       <div class="text-center mb-16 lg:hidden reveal-fade">
         <h2 class="text-black text-4xl font-black uppercase font-public">Keunggulan Kami</h2>
