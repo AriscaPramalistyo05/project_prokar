@@ -14,9 +14,7 @@
     $isCheckout = request()->routeIs('checkout.address');
     $cartCount = (int) app(\App\Services\CartService::class)->count();
     $savedLogo = setting('shop_logo', 'images/logo prokar simpel.png');
-    $logoUrl = $savedLogo 
-        ? (str_starts_with($savedLogo, 'images/') ? asset($savedLogo) : asset('storage/' . $savedLogo))
-        : asset('images/logo prokar simpel.png');
+    $logoUrl = optimized_asset($savedLogo, 'images/logo prokar simpel.webp');
 @endphp
 <!-- Navbar Wrapper to hoist Alpine data -->
 <div x-data="{
@@ -88,7 +86,7 @@
                 </button>
                 <a href="{{ route('home') }}" class="flex min-w-0 items-center gap-3">
                     <img src="{{ $logoUrl }}" onerror="this.onerror=null; this.src='{{ asset('images/logo prokar simpel.png') }}'" alt="{{ setting('shop_name', 'Prokar Elektronik') }}"
-                        class="smart-nav-logo h-9 sm:h-10 max-w-[150px] sm:max-w-none w-auto object-contain transition-all duration-300" width="160" height="40" />
+                        class="smart-nav-logo h-9 sm:h-10 max-w-[150px] sm:max-w-none w-auto object-contain transition-all duration-300" width="160" height="40" decoding="async" />
                 </a>
             </div>
 

@@ -131,6 +131,62 @@ class PwaService
     }
 
     /**
+     * Converts a source PNG/JPEG image to an optimized WebP thumbnail (max width 480px, ~10KB).
+     */
+    public static function generateWebpVersion(string $sourcePath, int $maxWidth = 480, int $quality = 85): ?string
+    {
+        if (!file_exists($sourcePath)) {
+            $storagePath = storage_path('app/public/' . ltrim($sourcePath, '/'));
+            if (file_exists($storagePath)) {
+                $sourcePath = $storagePath;
+            } else {
+                return null;
+            }
+        }
+
+        $webpPath = preg_replace('/\.(png|jpe?g)$/i', '.webp', $sourcePath);
+        if ($webpPath === $sourcePath) {
+            return $sourcePath;
+        }
+
+        try {
+            $img = @imagecreatefrompng($sourcePath);
+            if (!$img) {
+                $img = @imagecreatefromstring(file_get_contents($sourcePath));
+            }
+            if (!$img) return null;
+
+            $origWidth = imagesx($img);
+            $origHeight = imagesy($img);
+
+            if ($origWidth > $maxWidth) {
+                $newWidth = $maxWidth;
+                $newHeight = (int) round(($origHeight * $maxWidth) / $origWidth);
+                $resized = imagecreatetruecolor($newWidth, $newHeight);
+                imagealphablending($resized, false);
+                imagesavealpha($resized, true);
+                $transparent = imagecolorallocatealpha($resized, 0, 0, 0, 127);
+                imagefilledrectangle($resized, 0, 0, $newWidth, $newHeight, $transparent);
+                imagecopyresampled($resized, $img, 0, 0, 0, 0, $newWidth, $newHeight, $origWidth, $origHeight);
+                imagedestroy($img);
+                $img = $resized;
+            } else {
+                imagealphablending($img, false);
+                imagesavealpha($img, true);
+            }
+
+            if (function_exists('imagewebp')) {
+                imagewebp($img, $webpPath, $quality);
+            }
+            imagedestroy($img);
+            return $webpPath;
+        } catch (\Throwable $e) {
+            Log::warning("PwaService: Failed to generate webp version: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
      * Generates or updates public/manifest.json based on store settings.
      */
     public static function generateManifest(): void

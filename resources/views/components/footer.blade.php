@@ -8,11 +8,9 @@
     <div class="max-w-md">
       @php
         $footerLogo = setting('shop_logo', 'images/logo prokar simpel.png');
-        $footerLogoUrl = $footerLogo 
-            ? (str_starts_with($footerLogo, 'images/') ? asset($footerLogo) : asset('storage/' . $footerLogo))
-            : asset('images/logo prokar simpel.png');
+        $footerLogoUrl = optimized_asset($footerLogo, 'images/logo prokar simpel.webp');
       @endphp
-      <img src="{{ $footerLogoUrl }}" onerror="this.onerror=null; this.src='{{ asset('images/logo prokar simpel.png') }}'" alt="{{ setting('shop_name', 'Prokar Elektronik') }}" class="w-56 sm:w-64 max-h-16 object-contain mb-6 brightness-0 invert">
+      <img src="{{ $footerLogoUrl }}" onerror="this.onerror=null; this.src='{{ asset('images/logo prokar simpel.png') }}'" alt="{{ setting('shop_name', 'Prokar Elektronik') }}" class="w-56 sm:w-64 max-h-16 object-contain mb-6 brightness-0 invert" width="256" height="64" loading="lazy" decoding="async">
       <p class="text-gray-400 text-lg leading-relaxed font-inter">Urus semua kebutuhan elektronik dalam satu platform terpercaya. Dari servis, jual, hingga beli, cukup lewat satu klik.</p>
     </div>
     <nav class="flex flex-col gap-4 font-public">
