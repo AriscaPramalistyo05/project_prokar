@@ -9,7 +9,7 @@
 @section('og_description', 'Jual elektronik bekas Anda dengan mudah dan cepat. Penilaian transparan, jemput gratis ke lokasi, dan pembayaran langsung di tempat.')
 @section('twitter_title', 'Jual Elektronik Bekas – Penawaran Terbaik | Prokar Elektronik')
 @section('twitter_description', 'Jual elektronik bekas Anda dengan mudah dan cepat. Penilaian transparan, jemput gratis, dan pembayaran langsung.')
-@section('body_class', 'bg-brand-black')
+@section('body_class', 'bg-brand-soft')
 
 @push('schema')
 <script type="application/ld+json">
@@ -150,7 +150,7 @@
 @endpush
 
 @section('content')
-<main class="bg-brand-black">
+<main class="bg-brand-soft">
 
   <!-- Breadcrumb (visually hidden but crawlable) -->
   <nav aria-label="Breadcrumb" class="sr-only">
@@ -160,20 +160,21 @@
     </ol>
   </nav>
 
+  <div class="relative">
   <!-- HEADER JUAL -->
-  <section class="section-overlap section-overlap-first bg-brand-black pt-16 pb-24 md:pt-24 md:pb-32 z-10 relative text-center">
+  <section class="section-overlap section-overlap-first bg-brand-soft pt-16 pb-24 md:pt-24 md:pb-32 z-10 relative text-center">
     <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
-      <h1 class="text-white text-5xl md:text-7xl font-black uppercase tracking-tighter font-public mb-4 reveal-wrapper">
+      <h1 class="text-black text-5xl md:text-7xl font-black uppercase tracking-tighter font-public mb-4 reveal-wrapper">
         <span class="reveal-line">Jual Elektronik</span>
       </h1>
-      <p class="text-gray-400 text-sm md:text-lg font-bold tracking-widest uppercase reveal-fade">
+      <p class="text-gray-600 text-sm md:text-lg font-bold tracking-widest uppercase reveal-fade">
         Elektronik Bekas Anda Masih Bernilai
       </p>
     </div>
   </section>
 
   <!-- CARA KERJA (OVERLAPPING SECTION) -->
-  <section id="cara-kerja" class="section-overlap bg-brand-soft pt-20 pb-20 md:pt-28 md:pb-28 z-20">
+  <section id="cara-kerja" class="section-overlap bg-white pt-20 pb-20 md:pt-28 md:pb-28 z-20">
     <div class="max-w-[1440px] mx-auto px-6 lg:px-12 text-center">
       <h2 class="text-black text-4xl md:text-5xl font-black uppercase tracking-tighter font-public mb-12 md:mb-16 reveal-wrapper">
         <span class="reveal-line">Cara Kerja</span>
@@ -194,7 +195,7 @@
             <div class="w-14 h-14 md:w-20 md:h-20 rounded-full bg-black text-brand-yellow border-4 border-white flex items-center justify-center text-lg md:text-2xl font-black font-public shadow-md shrink-0 relative z-10">
               01
             </div>
-            <div class="bg-white rounded-[2rem] p-6 md:p-8 w-full shadow-card flex-1 flex flex-col items-start md:items-center text-left md:text-center transform hover:-translate-y-2 transition-transform duration-300">
+            <div class="bg-white border border-gray-200 rounded-[2rem] p-6 md:p-8 w-full shadow-card flex-1 flex flex-col items-start md:items-center justify-center text-left md:text-center transform hover:-translate-y-2 transition-transform duration-300">
               <div class="w-12 h-12 md:w-16 md:h-16 bg-gray-50 rounded-2xl flex items-center justify-center mb-4 md:mb-6">
                 <i class="fa-regular fa-file-lines text-2xl md:text-3xl text-brand-blue"></i>
               </div>
@@ -209,7 +210,7 @@
             <div class="w-14 h-14 md:w-20 md:h-20 rounded-full bg-white text-black border-4 border-gray-200 flex items-center justify-center text-lg md:text-2xl font-black font-public shadow-md shrink-0 relative z-10">
               02
             </div>
-            <div class="bg-white rounded-[2rem] p-6 md:p-8 w-full shadow-card flex-1 flex flex-col items-start md:items-center text-left md:text-center transform hover:-translate-y-2 transition-transform duration-300 md:mt-8">
+            <div class="bg-white border border-gray-200 rounded-[2rem] p-6 md:p-8 w-full shadow-card flex-1 flex flex-col items-start md:items-center justify-center text-left md:text-center transform hover:-translate-y-2 transition-transform duration-300 md:mt-8">
               <div class="w-12 h-12 md:w-16 md:h-16 bg-gray-50 rounded-2xl flex items-center justify-center mb-4 md:mb-6">
                 <i class="fa-solid fa-hand-holding-dollar text-2xl md:text-3xl text-emerald-500"></i>
               </div>
@@ -224,7 +225,7 @@
             <div class="w-14 h-14 md:w-20 md:h-20 rounded-full bg-white text-black border-4 border-gray-200 flex items-center justify-center text-lg md:text-2xl font-black font-public shadow-md shrink-0 relative z-10">
               03
             </div>
-            <div class="bg-white rounded-[2rem] p-6 md:p-8 w-full shadow-card flex-1 flex flex-col items-start md:items-center text-left md:text-center transform hover:-translate-y-2 transition-transform duration-300 md:mt-16">
+            <div class="bg-white border border-gray-200 rounded-[2rem] p-6 md:p-8 w-full shadow-card flex-1 flex flex-col items-start md:items-center justify-center text-left md:text-center transform hover:-translate-y-2 transition-transform duration-300 md:mt-16">
               <div class="w-12 h-12 md:w-16 md:h-16 bg-gray-50 rounded-2xl flex items-center justify-center mb-4 md:mb-6">
                 <i class="fa-solid fa-truck-fast text-2xl md:text-3xl text-brand-orange"></i>
               </div>
@@ -239,12 +240,13 @@
 
     </div>
   </section>
+  </div>
 
   <!-- FORM PENJUALAN (LIVEWIRE) -->
   <livewire:frontend.sell-form />
 
   <!-- KEUNGGULAN LAYANAN (CUBERTO SCATTER EFFECT) -->
-  <section id="keunggulan" aria-label="Keunggulan layanan jual elektronik" class="section-overlap bg-brand-yellow pt-20 pb-28 md:pt-28 md:pb-40 z-40 relative overflow-hidden">
+  <section id="keunggulan" aria-label="Keunggulan layanan jual elektronik" class="section-overlap bg-brand-yellow pt-20 pb-36 md:pt-28 md:pb-60 z-40 relative overflow-hidden">
     <div class="max-w-[1440px] mx-auto px-6 lg:px-12 relative">
       <div class="text-center mb-16 lg:hidden reveal-fade">
         <h2 class="text-black text-4xl font-black uppercase font-public">Keunggulan Kami</h2>

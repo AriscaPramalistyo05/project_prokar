@@ -5,7 +5,7 @@
 @section('robots', 'noindex, nofollow')
 @section('theme_color', '#FFCC00')
 @section('og_type', 'website')
-@section('body_class', 'bg-brand-black font-inter')
+@section('body_class', 'bg-brand-soft font-inter')
 @push('styles')
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -66,7 +66,7 @@
 @endpush
 
 @section('content')
-<main class="bg-brand-black flex flex-col min-h-screen">
+<main class="bg-brand-soft flex flex-col min-h-screen">
 
     <!-- ── Hero / Search (Livewire) ── -->
     <livewire:frontend.tracking-search />

@@ -9,7 +9,7 @@
 @section('og_description', 'Servis TV, kulkas, mesin cuci, AC oleh teknisi berpengalaman. Teknisi datang ke lokasi atau kirim barang ke workshop. Bergaransi 30 hari.')
 @section('twitter_title', 'Servis Elektronik – Teknisi Berpengalaman | Prokar Elektronik')
 @section('twitter_description', 'Servis TV, kulkas, mesin cuci, AC oleh teknisi berpengalaman di Jepara. Bergaransi 30 hari.')
-@section('body_class', 'bg-brand-black')
+@section('body_class', 'bg-brand-soft')
 
 @push('schema')
 <script type="application/ld+json">
@@ -103,7 +103,7 @@
 @endpush
 
 @section('content')
-<main class="bg-brand-black">
+<main class="bg-brand-soft">
 
   <!-- Breadcrumb (visually hidden but crawlable) -->
   <nav aria-label="Breadcrumb" class="sr-only">
@@ -113,13 +113,14 @@
     </ol>
   </nav>
 
+  <div class="relative">
   <!-- HEADER SERVIS -->
-  <section class="section-overlap section-overlap-first bg-brand-black pt-16 pb-24 md:pt-24 md:pb-32 z-10 relative text-center">
+  <section class="section-overlap section-overlap-first bg-brand-soft pt-16 pb-24 md:pt-24 md:pb-32 z-10 relative text-center">
     <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
-      <h1 class="text-white text-5xl md:text-7xl font-black uppercase tracking-tighter font-public mb-4 reveal-wrapper">
+      <h1 class="text-black text-5xl md:text-7xl font-black uppercase tracking-tighter font-public mb-4 reveal-wrapper">
         <span class="reveal-line">Servis Elektronik</span>
       </h1>
-      <p class="text-gray-400 text-sm md:text-lg font-bold tracking-widest uppercase reveal-fade">
+      <p class="text-gray-600 text-sm md:text-lg font-bold tracking-widest uppercase reveal-fade">
         Teknisi Berpengalaman, Hasil Terpercaya
       </p>
     </div>
@@ -212,12 +213,13 @@
       </div>
     </div>
   </section>
+  </div>
 
   <!-- FORM PENGAJUAN SERVIS (LIVEWIRE) -->
   <livewire:frontend.service-form />
 
   <!-- KEUNGGULAN LAYANAN (CUBERTO SCATTER EFFECT) -->
-  <section id="keunggulan" aria-label="Keunggulan layanan servis elektronik" class="section-overlap bg-brand-yellow pt-20 pb-28 md:pt-28 md:pb-40 z-[45] relative overflow-hidden">
+  <section id="keunggulan" aria-label="Keunggulan layanan servis elektronik" class="section-overlap bg-brand-yellow pt-20 pb-28 md:pt-28 md:pb-40 z-[45] relative overflow-hidden -mt-10 md:-mt-14">
     <div class="max-w-[1440px] mx-auto px-6 lg:px-12 relative">
       <div class="text-center mb-16 lg:hidden reveal-fade">
         <h2 class="text-black text-4xl font-black uppercase font-public">Keunggulan Kami</h2>

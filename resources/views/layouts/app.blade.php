@@ -235,6 +235,10 @@
       background: #0A0A0A !important;
     }
 
+    body.bg-brand-soft {
+      background: #E8F4F8 !important;
+    }
+
     body.bg-white {
       background: #FFFFFF !important;
     }
@@ -307,6 +311,153 @@
       background: #FFCC00;
       border-radius: 2px;
     }
+
+    /* ── Announcement Bar (Fixed Top like IDLIX) ── */
+    #top-announcement-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      height: 40px;
+      z-index: 10001;
+      background: #000000;
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      will-change: transform;
+    }
+
+    #top-announcement-bar.announcement-hidden {
+      transform: translateY(-100%);
+    }
+
+    /* ── Smart Sticky Navbar (IDLIX-style Seamless Fixed Navbar) ── */
+    #smart-navbar {
+      position: fixed !important;
+      top: 40px !important;
+      left: 0 !important;
+      right: 0 !important;
+      width: 100% !important;
+      z-index: 9999 !important;
+      background: transparent;
+      padding-top: 0px;
+      padding-inline: 0px;
+      transition: top 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                  padding 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                  transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      will-change: top, padding, transform;
+    }
+
+    #smart-nav-inner {
+      background: transparent;
+      border: 1.5px solid transparent;
+      border-radius: 0;
+      transition: background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                  border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                  border-radius 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                  box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                  height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                  padding 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                  backdrop-filter 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    #smart-navbar.nav-hidden {
+      transform: translateY(-120%);
+    }
+
+    /* Scrolled State: Floating Pill with Blue Border & Positioned Lower Down like IDLIX */
+    #smart-navbar.nav-scrolled {
+      top: 0px !important;
+      padding-top: 18px;
+      padding-inline: 18px;
+    }
+
+    @media (min-width: 1024px) {
+      #smart-navbar.nav-scrolled {
+        top: 0px !important;
+        padding-top: 22px;
+        padding-inline: 36px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      #smart-navbar.nav-scrolled {
+        top: 0px !important;
+        padding-top: 14px;
+        padding-inline: 12px;
+      }
+    }
+
+    #smart-navbar.nav-scrolled #smart-nav-inner {
+      background: rgba(10, 10, 10, 0.94) !important;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1.5px solid #3b82f6 !important;
+      border-radius: 9999px !important;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5), 0 0 22px rgba(59, 130, 246, 0.45) !important;
+      height: 72px;
+      padding-inline: 22px;
+    }
+
+    @media (min-width: 1024px) {
+      #smart-navbar.nav-scrolled #smart-nav-inner {
+        height: 76px;
+        max-width: 1280px;
+        padding-inline: 32px;
+      }
+    }
+
+    /* Elements inside Scrolled Pill */
+    #smart-navbar.nav-scrolled .nav-link {
+      color: #e2e8f0;
+    }
+
+    #smart-navbar.nav-scrolled .nav-link:hover {
+      color: #60a5fa;
+    }
+
+    #smart-navbar.nav-scrolled .nav-link.active {
+      color: #FFCC00;
+    }
+
+    #smart-navbar.nav-scrolled .smart-nav-icon {
+      color: #ffffff !important;
+    }
+
+    #smart-navbar.nav-scrolled .smart-nav-logo {
+      filter: brightness(0) invert(1);
+    }
+
+    #smart-navbar.nav-scrolled .smart-nav-login {
+      background: #ffffff !important;
+      border: 1px solid #ffffff !important;
+      color: #000000 !important;
+      box-shadow: 0 2px 10px rgba(255, 255, 255, 0.3) !important;
+    }
+
+    #smart-navbar.nav-scrolled .smart-nav-login svg,
+    #smart-navbar.nav-scrolled .smart-nav-login i {
+      color: #000000 !important;
+      stroke: #000000 !important;
+    }
+
+    #smart-navbar.nav-scrolled .smart-nav-login:hover {
+      background: #f1f5f9 !important;
+      transform: scale(1.1);
+    }
+
+    /* Scrolled state handles dark floating pill; unscrolled uses crisp dark text on white header */
+
+    /* Top clearance for non-home pages so fixed header doesn't cover content */
+    @if(!request()->routeIs('home') && !request()->routeIs('keranjang.index') && !request()->routeIs('checkout.address'))
+      body {
+        padding-top: 120px !important;
+      }
+      @media (max-width: 640px) {
+        body {
+          padding-top: 110px !important;
+        }
+      }
+    @endif
 
     /* ── Overlapping Sections (Cuberto Elevated Card Stacking) ── */
     .section-overlap {
@@ -413,142 +564,348 @@
       100% { transform: translateX(-50%); }
     }
 
-    /* ── Hero diagonal parallax ── */
-    .hero-visual {
-      perspective: 1000px;
-    }
-    .hero-visual-grid {
-      transform: rotate(-7deg) scale(1.08);
-    }
-    .hero-parallax-col {
-      will-change: transform;
-    }
-    .hero-tile {
-      display: block;
-      position: relative;
-      border-radius: 0.75rem;
+    /* ── Modern Staggered 3-Card Collage Hero (from index.html) ── */
+    .hero-redesign {
+      --hero-yellow: #FFCC00;
+      --hero-black: #0A0A0A;
+      --hero-blue: #E8F4F8;
+      border-top: 1px solid #ececec;
       overflow: hidden;
-      background: #f3f4f6;
-      box-shadow: 0 20px 40px -15px rgba(0,0,0,0.25);
-      border: 1px solid rgba(0,0,0,0.06);
     }
-    .hero-tile img {
+
+    .hero-shell {
+      width: min(100%, 1440px);
+      margin-inline: auto;
+      padding: 120px 20px 180px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 34px;
+      align-items: center;
+    }
+
+    .hero-copy {
+      max-width: 720px;
+    }
+
+    .hero-eyebrow {
+      display: inline-block;
+      margin: 0 0 18px;
+      padding: 8px 11px;
+      border: 1px solid #d9dee3;
+      border-radius: 8px;
+      color: #3f454b;
+      background: #fff;
+      font-family: "Public Sans", sans-serif;
+      font-size: 0.78rem;
+      line-height: 1.2;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    .hero-title {
+      margin: 0;
+      max-width: 760px;
+      color: var(--hero-black);
+      font-family: "Public Sans", sans-serif;
+      font-size: clamp(2.75rem, 13vw, 4.9rem);
+      line-height: 0.96;
+      letter-spacing: -0.045em;
+      font-weight: 900;
+      text-wrap: balance;
+    }
+
+    .hero-title span {
+      display: block;
+      width: fit-content;
+      margin-top: 7px;
+      padding-inline: 8px;
+      background: var(--hero-yellow);
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+    }
+
+    .hero-description {
+      max-width: 640px;
+      margin: 22px 0 0;
+      color: #4c5258;
+      font-family: "Public Sans", sans-serif;
+      font-size: 1.05rem;
+      line-height: 1.6;
+      font-weight: 500;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 26px;
+    }
+
+    .hero-button {
+      min-height: 52px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 13px 19px;
+      border-radius: 10px;
+      font-family: "Public Sans", sans-serif;
+      font-size: 1rem;
+      line-height: 1;
+      font-weight: 800;
+      text-decoration: none;
+      transition: transform 160ms ease, background-color 160ms ease, color 160ms ease, border-color 160ms ease;
+    }
+
+    .hero-button-primary {
+      background: var(--hero-black);
+      color: #fff;
+      border: 1px solid var(--hero-black);
+    }
+
+    .hero-button-secondary {
+      background: #fff;
+      color: var(--hero-black);
+      border: 1px solid #cfd4d9;
+    }
+
+    .hero-button:hover {
+      transform: translateY(-2px);
+    }
+
+    .hero-button-primary:hover {
+      background: #242424;
+    }
+
+    .hero-button-secondary:hover {
+      border-color: var(--hero-black);
+      background: #f7f7f7;
+    }
+
+    .hero-visual-redesign {
+      position: relative;
+      max-width: 620px;
+      width: 100%;
+      margin-inline: auto;
+    }
+
+    /* ── Modern Staggered 3-Card Collage (Reference Style) ── */
+    .hero-collage-wrap {
+      position: relative;
+      width: 100%;
+      max-width: 370px;
+      height: 470px;
+      margin-inline: auto;
+    }
+
+    /* Decorative Floating Shapes */
+    .hero-shape-circle {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 66px;
+      height: 66px;
+      border-radius: 9999px;
+      background: #1e3a8a;
+      z-index: 1;
+      transform: translate(-8px, -8px);
+    }
+
+    .hero-shape-square {
+      position: absolute;
+      bottom: 30px;
+      right: 28px;
+      width: 42px;
+      height: 42px;
+      border-radius: 13px;
+      background: #3b0764;
+      z-index: 1;
+    }
+
+    /* Collage Cards */
+    .collage-card {
+      position: absolute;
+      overflow: hidden;
+      border-radius: 22px;
+      background: #111827;
+      border: 3px solid #0f172a;
+      box-shadow: 0 18px 36px -8px rgba(0, 0, 0, 0.28), 0 8px 16px -4px rgba(0, 0, 0, 0.15);
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
+      display: block;
+      text-decoration: none;
+    }
+
+    .collage-card:hover {
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 0 24px 48px -8px rgba(0, 0, 0, 0.38);
+      z-index: 10 !important;
+    }
+
+    .collage-card img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      object-position: center;
       display: block;
-    }
-    .hero-tile .hero-tile-label {
-      position: absolute;
-      left: 0; right: 0; bottom: 0;
-      background: linear-gradient(to top, rgba(0,0,0,0.75), transparent);
-      color: #fff;
-      font-family: "Public Sans", sans-serif;
-      font-weight: 800;
-      font-size: 0.9rem;
-      padding: 0.6rem 0.75rem 0.5rem;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
+      transition: transform 0.5s ease;
     }
 
-    /* ── Mobile hero gallery ── */
-    .hero-tile-mobile {
-      display: block;
-      position: relative;
-      border-radius: 0.75rem;
-      overflow: hidden;
-      background: #f3f4f6;
-      box-shadow: 0 10px 25px -10px rgba(0,0,0,0.2);
-      border: 1px solid rgba(0,0,0,0.06);
-      aspect-ratio: 4 / 5;
-    }
-    .hero-tile-mobile img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .hero-tile-mobile .hero-tile-label {
-      position: absolute;
-      left: 0; right: 0; bottom: 0;
-      background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
-      color: #fff;
-      font-family: "Public Sans", sans-serif;
-      font-weight: 800;
-      font-size: 0.85rem;
-      text-align: left;
-      padding: 1.5rem 0.5rem 0.4rem;
-      text-transform: uppercase;
-      line-height: 1.1;
-    }
-
-    /* ── Hero 3-Card Asymmetric Collage ── */
-    .hero-3card-card {
-      position: relative;
-      border-radius: 1.75rem;
-      overflow: hidden;
-      background: #f8fafc;
-      box-shadow: 0 16px 32px -8px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.03);
-      border: 1px solid rgba(0,0,0,0.06);
-      transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .hero-3card-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 24px 44px -12px rgba(0,0,0,0.16), 0 2px 6px rgba(0,0,0,0.04);
-    }
-    .hero-3card-card img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .hero-3card-card:hover img {
+    .collage-card:hover img {
       transform: scale(1.06);
     }
-    .hero-3card-card .hero-3card-label {
-      position: absolute;
-      bottom: 0.85rem;
-      left: 0.85rem;
-      z-index: 10;
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      color: #0f172a;
-      font-weight: 800;
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      padding: 0.3rem 0.7rem;
-      border-radius: 9999px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      border: 1px solid rgba(255,255,255,0.8);
-      transition: background 0.3s, color 0.3s;
-    }
-    .hero-3card-card:hover .hero-3card-label {
-      background: #0f172a;
-      color: #ffffff;
+
+    /* Mobile Staggered Positions */
+    @media (max-width: 1023px) {
+      .hero-visual-redesign {
+        max-width: 370px;
+      }
+
+      /* Card 1: Top-Left */
+      .collage-card-1 {
+        top: 15px;
+        left: 10px;
+        width: 190px;
+        height: 200px;
+        z-index: 2;
+      }
+
+      /* Card 2: Middle-Right (staggered overlap) */
+      .collage-card-2 {
+        top: 125px;
+        right: 8px;
+        width: 200px;
+        height: 210px;
+        z-index: 3;
+      }
+
+      /* Card 3: Bottom-Left (staggered below Card 1 & 2) */
+      .collage-card-3 {
+        bottom: 12px;
+        left: 8px;
+        width: 170px;
+        height: 180px;
+        z-index: 4;
+      }
     }
 
-    /* Floating animations for 3-card layout */
-    @keyframes heroFloat1 {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-7px); }
-    }
-    @keyframes heroFloat2 {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(6px); }
-    }
-    @keyframes heroFloat3 {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-9px); }
-    }
-    .hero-float-1 { animation: heroFloat1 6s ease-in-out infinite; }
-    .hero-float-2 { animation: heroFloat2 7s ease-in-out infinite 1s; }
-    .hero-float-3 { animation: heroFloat3 8s ease-in-out infinite 0.5s; }
+    @media (min-width: 640px) {
+      .hero-shell {
+        padding-inline: 32px;
+      }
 
-    /* ── Readability ── */
-    #hero p.hero-desc-text {
-      letter-spacing: 0.1px;
-      line-height: 1.5;
+      .hero-actions {
+        flex-direction: row;
+      }
+
+      .hero-button {
+        padding-inline: 22px;
+      }
     }
-    #hero h1 {
-      letter-spacing: -0.01em;
+
+    @media (min-width: 1024px) {
+      .hero-redesign {
+        min-height: calc(100svh + 160px);
+        display: flex;
+        align-items: flex-start;
+      }
+
+      .hero-shell {
+        width: 100%;
+        padding: clamp(155px, 18vh, 185px) clamp(32px, 4vw, 56px) clamp(180px, 22vh, 280px);
+      }
+
+      #servis {
+        margin-top: 0 !important;
+      }
+
+      .hero-grid {
+        grid-template-columns: minmax(0, 1fr) minmax(380px, 480px);
+        gap: clamp(32px, 4vw, 64px);
+      }
+
+      .hero-copy {
+        max-width: 680px;
+      }
+
+      .hero-title {
+        font-size: clamp(3.2rem, 5vw, 5.6rem);
+      }
+
+      .hero-description {
+        font-size: 1.08rem;
+        max-width: 580px;
+      }
+
+      .hero-visual-redesign {
+        justify-self: end;
+        width: min(100%, 480px);
+      }
+
+      .hero-collage-wrap {
+        max-width: 480px;
+        height: 430px;
+      }
+
+      .collage-card {
+        border-radius: 22px;
+      }
+
+      .hero-shape-circle {
+        width: 70px;
+        height: 70px;
+        top: 0px;
+        left: 110px;
+        transform: none;
+      }
+
+      .hero-shape-square {
+        width: 40px;
+        height: 40px;
+        bottom: 15px;
+        right: 40px;
+        border-radius: 12px;
+      }
+
+      /* Card 1: Top Center-Right (Kulkas Polytron) */
+      .collage-card-1 {
+        top: 10px;
+        left: 125px;
+        width: 190px;
+        height: 205px;
+        z-index: 2;
+      }
+
+      /* Card 2: Middle-Right (Smart TV) */
+      .collage-card-2 {
+        top: 90px;
+        right: 6px;
+        width: 205px;
+        height: 215px;
+        z-index: 3;
+      }
+
+      /* Card 3: Bottom-Left (Mesin Cuci) */
+      .collage-card-3 {
+        top: auto;
+        bottom: 10px;
+        left: 10px;
+        width: 180px;
+        height: 190px;
+        z-index: 4;
+      }
+    }
+
+    @media (min-width: 1280px) {
+      .hero-shell {
+        padding-inline: 60px;
+      }
+
+      .hero-grid {
+        gap: 72px;
+      }
     }
 
     .scrollbar-hide::-webkit-scrollbar { display: none; }
@@ -614,15 +971,56 @@
     </button>
   </div>
 
+  <!-- Smart Sticky Navbar (IDLIX-style Seamless Transition & Scroll Threshold) Engine -->
+  <script>
+    (function() {
+      const navbar = document.getElementById('smart-navbar');
+      const announcement = document.getElementById('top-announcement-bar');
+      if (!navbar) return;
+
+      const SCROLL_THRESHOLD = 64;
+
+      window.handleSmartNavbarScroll = function(currentY) {
+        if (currentY < SCROLL_THRESHOLD) {
+          navbar.classList.remove('nav-scrolled');
+          if (announcement) announcement.classList.remove('announcement-hidden');
+        } else {
+          navbar.classList.add('nav-scrolled');
+          if (announcement) announcement.classList.add('announcement-hidden');
+        }
+      };
+
+      const initialY = Math.max(0, window.pageYOffset || document.documentElement.scrollTop || 0);
+      window.handleSmartNavbarScroll(initialY);
+
+      window.addEventListener('scroll', function() {
+        const currentY = Math.max(0, window.pageYOffset || document.documentElement.scrollTop || 0);
+        window.handleSmartNavbarScroll(currentY);
+      }, { passive: true });
+    })();
+  </script>
+
   <!-- Sticky Overlapping Sections (Cuberto Elevated Card Stacking) Engine -->
   <script>
     function initStickyOverlap() {
       const sections = document.querySelectorAll('.section-overlap');
       if (!sections.length) return;
       const vh = window.innerHeight;
+      const isMobile = window.innerWidth < 1024;
       sections.forEach(function(el) {
         if (el.classList.contains('section-overlap-first')) {
-          el.style.top = '0px';
+          el.style.position = '-webkit-sticky';
+          el.style.position = 'sticky';
+          if (isMobile) {
+            const h = el.offsetHeight;
+            if (h > vh) {
+              el.style.top = (vh - h) + 'px';
+            } else {
+              el.style.top = '0px';
+            }
+          } else {
+            el.style.top = '0px';
+          }
           return;
         }
         const h = el.offsetHeight;
@@ -638,6 +1036,56 @@
     window.addEventListener('resize', initStickyOverlap);
     window.addEventListener('orientationchange', initStickyOverlap);
     window.updateStickyOverlap = initStickyOverlap;
+  </script>
+
+  <!-- GSAP, ScrollTrigger & Lenis Smooth Scroll CDNs -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha384-g4NTh/Iv5PPU4xPyhEWqPcwtNXOvdaDI8LLnyYfyNZOjKJeYQyjzQ9X5275eBjpt" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha384-Z3REaz79l2IaAZqJsSABtTbhjgOUYyV3p90XNnAPCSHg3EMTz1fouunq9WZRtj3d" crossorigin="anonymous" defer></script>
+  <script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js" integrity="sha384-0FwbSMlcCBgRZIAIN+i1xVrAbgrwSmKYej7zCCFlPpv50NGur87UfaeG1l13efmX" crossorigin="anonymous" defer></script>
+
+  <script defer>
+    document.addEventListener('DOMContentLoaded', function() {
+      const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (window.innerWidth < 1024);
+      if (!isTouch && typeof Lenis !== 'undefined') {
+        const lenis = new Lenis({
+          duration: 1.2,
+          easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+          direction: 'vertical',
+          smooth: true,
+          mouseMultiplier: 1,
+          touchMultiplier: 0,
+        });
+
+        function raf(time) {
+          lenis.raf(time);
+          requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+
+        if (window.gsap && window.ScrollTrigger) {
+          gsap.registerPlugin(ScrollTrigger);
+          lenis.on('scroll', (e) => {
+            ScrollTrigger.update();
+            if (window.handleSmartNavbarScroll) {
+              window.handleSmartNavbarScroll(e.scroll, e.direction);
+            }
+          });
+          gsap.ticker.add((time) => {
+            lenis.raf(time * 1000);
+          });
+          gsap.ticker.lagSmoothing(0, 0);
+        } else {
+          lenis.on('scroll', (e) => {
+            if (window.handleSmartNavbarScroll) {
+              window.handleSmartNavbarScroll(e.scroll, e.direction);
+            }
+          });
+        }
+        window.lenis = lenis;
+      } else if (window.gsap && window.ScrollTrigger) {
+        gsap.registerPlugin(ScrollTrigger);
+      }
+    });
   </script>
 
   @stack('scripts')

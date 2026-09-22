@@ -50,26 +50,7 @@ class SettingIndex extends Component
     public string $hero_headline_3 = 'TERPERCAYA';
     public string $hero_headline_color_3 = 'biru'; // 'hitam', 'kuning', 'biru'
     public string $hero_subheadline = '';
-    public string $hero_card_mode = '6_card'; // '6_card' or '3_card'
 
-    // 6 Hero Category Gallery Images (Mode 6 Card)
-    public $hero_image_kulkas_file = null;
-    public ?string $existing_hero_image_kulkas = null;
-
-    public $hero_image_tv_file = null;
-    public ?string $existing_hero_image_tv = null;
-
-    public $hero_image_mesin_cuci_file = null;
-    public ?string $existing_hero_image_mesin_cuci = null;
-
-    public $hero_image_dispenser_file = null;
-    public ?string $existing_hero_image_dispenser = null;
-
-    public $hero_image_microwave_file = null;
-    public ?string $existing_hero_image_microwave = null;
-
-    public $hero_image_ac_file = null;
-    public ?string $existing_hero_image_ac = null;
 
     // 3 Hero Collage Cards (Mode 3 Card)
     public $hero_3card_image_1_file = null;
@@ -103,11 +84,25 @@ class SettingIndex extends Component
     public string $service_other_title = '';
     public string $service_other_desc = '';
 
-    // Testimoni Pelanggan
+    // Testimoni Pelanggan & Modals
     public array $testimonials = [];
+    public bool $testimonialModal = false;
+    public bool $deleteTestimonialModal = false;
+    public ?int $editingTestimonialIndex = null;
+    public ?int $deletingTestimonialIndex = null;
+    public string $testimonial_name = '';
+    public string $testimonial_role = '';
+    public string $testimonial_quote = '';
+    public int $testimonial_rating = 5;
 
-    // FAQ (Pertanyaan Umum)
+    // FAQ (Pertanyaan Umum) & Modals
     public array $faqs = [];
+    public bool $faqModal = false;
+    public bool $deleteFaqModal = false;
+    public ?int $editingFaqIndex = null;
+    public ?int $deletingFaqIndex = null;
+    public string $faq_question = '';
+    public string $faq_answer = '';
 
     // ─── TAB 3: EMAIL (SMTP) ─────────────────────────────────────────
     public string $mail_host = '';
@@ -181,23 +176,15 @@ class SettingIndex extends Component
         $this->hero_headline_3 = (string) ($settingService->get('hero_headline_3') ?? 'TERPERCAYA');
         $this->hero_headline_color_3 = (string) ($settingService->get('hero_headline_color_3') ?? 'biru');
         $this->hero_subheadline = (string) ($settingService->get('hero_subheadline') ?? 'Beragam elektronik rumah tangga berkualitas yang siap digunakan dan telah melalui proses pengecekan teknisi profesional.');
-        $this->hero_card_mode = (string) ($settingService->get('hero_card_mode') ?? '6_card');
 
-        // 6 Hero Category Images (Mode 6 Card)
-        $this->existing_hero_image_kulkas = $settingService->get('hero_image_kulkas');
-        $this->existing_hero_image_tv = $settingService->get('hero_image_tv');
-        $this->existing_hero_image_mesin_cuci = $settingService->get('hero_image_mesin_cuci');
-        $this->existing_hero_image_dispenser = $settingService->get('hero_image_dispenser');
-        $this->existing_hero_image_microwave = $settingService->get('hero_image_microwave');
-        $this->existing_hero_image_ac = $settingService->get('hero_image_ac');
 
         // 3 Hero Collage Cards (Mode 3 Card)
         $this->existing_hero_3card_image_1 = $settingService->get('hero_3card_image_1');
         $this->existing_hero_3card_image_2 = $settingService->get('hero_3card_image_2');
         $this->existing_hero_3card_image_3 = $settingService->get('hero_3card_image_3');
-        $this->hero_3card_title_1 = (string) ($settingService->get('hero_3card_title_1') ?? 'Mesin Cuci');
-        $this->hero_3card_title_2 = (string) ($settingService->get('hero_3card_title_2') ?? 'Televisi ');
-        $this->hero_3card_title_3 = (string) ($settingService->get('hero_3card_title_3') ?? 'Kulkas');
+        $this->hero_3card_title_1 = (string) ($settingService->get('hero_3card_title_1') ?? 'Kulkas');
+        $this->hero_3card_title_2 = (string) ($settingService->get('hero_3card_title_2') ?? 'Televisi');
+        $this->hero_3card_title_3 = (string) ($settingService->get('hero_3card_title_3') ?? 'Mesin Cuci');
 
         $this->marquee_text_black = (string) ($settingService->get('marquee_text_black') ?? 'PRODUK BERGARANSI ★ KUALITAS TERUJI ★ TEKNISI BERPENGALAMAN ★ BISA COD ★');
         $this->marquee_text_blue = (string) ($settingService->get('marquee_text_blue') ?? 'tersedia berbagai produk elektronik rumah tangga • harga ramah barang berkualitas');
@@ -214,24 +201,38 @@ class SettingIndex extends Component
 
         // Testimonials
         $rawTestimonials = $settingService->get('testimonials');
-        $this->testimonials = is_array($rawTestimonials) ? $rawTestimonials : (json_decode($rawTestimonials ?? '[]', true) ?: [
+        $loadedTestimonials = is_array($rawTestimonials) ? $rawTestimonials : (json_decode($rawTestimonials ?? '[]', true) ?: [
             [
                 'name' => 'Ahmad Fauzi',
+                'role' => 'Pelanggan Elektronik',
                 'quote' => 'TV yang saya beli kondisinya masih sangat bagus dan sesuai deskripsi. Pengiriman cepat dan pelayanannya ramah',
+                'rating' => 5,
             ],
             [
                 'name' => 'Siti Rahayu',
+                'role' => 'Pembeli Kulkas',
                 'quote' => 'Kulkas yang saya beli masih sangat dingin dan mulus. Harganya jauh lebih murah dibanding toko biasa, recommended banget!',
+                'rating' => 5,
             ],
             [
                 'name' => 'Budi Santoso',
+                'role' => 'Pelanggan Servis Mesin Cuci',
                 'quote' => 'Servis mesin cuci saya selesai dalam sehari dan hasilnya memuaskan. Teknisinya profesional dan jujur soal kerusakan.',
+                'rating' => 5,
             ]
         ]);
+        $this->testimonials = array_values(array_map(function ($item) {
+            return [
+                'name'   => (string) ($item['name'] ?? 'Pelanggan Prokar'),
+                'role'   => (string) ($item['role'] ?? ''),
+                'quote'  => (string) ($item['quote'] ?? $item['text'] ?? ''),
+                'rating' => isset($item['rating']) ? (int) $item['rating'] : 5,
+            ];
+        }, $loadedTestimonials));
 
         // FAQs
         $rawFaqs = $settingService->get('faqs');
-        $this->faqs = is_array($rawFaqs) ? $rawFaqs : (json_decode($rawFaqs ?? '[]', true) ?: [
+        $loadedFaqs = is_array($rawFaqs) ? $rawFaqs : (json_decode($rawFaqs ?? '[]', true) ?: [
             [
                 'question' => 'Bagaimana kondisi elektronik bekas yang dijual?',
                 'answer'   => 'Semua produk telah melalui pengecekan teknisi berpengalaman. Kondisi tertera jelas dengan kategori: Seperti Baru, Kondisi Prima, Kondisi Baik, Lecet Pemakaian, atau Kondisi Minus Body.',
@@ -245,6 +246,12 @@ class SettingIndex extends Component
                 'answer'   => 'Ya, setiap jasa servis dilengkapi garansi pengerjaan. Jika kerusakan yang sama muncul kembali dalam masa garansi, kami perbaiki tanpa biaya tambahan.',
             ],
         ]);
+        $this->faqs = array_values(array_map(function ($item) {
+            return [
+                'question' => (string) ($item['question'] ?? $item['q'] ?? ''),
+                'answer'   => (string) ($item['answer'] ?? $item['a'] ?? ''),
+            ];
+        }, $loadedFaqs));
 
         // 3. Email (SMTP)
         $this->mail_host = (string) ($settingService->get('mail_host') ?? config('mail.mailers.smtp.host', 'smtp.gmail.com'));
@@ -285,32 +292,249 @@ class SettingIndex extends Component
         $this->google_redirect_uri = (string) ($settingService->get('google_redirect_uri') ?? config('services.google.redirect', url('/auth/google/callback')));
     }
 
+    // ─── TESTIMONIAL CRUD ─────────────────────────────────────────────
+
+    public function openCreateTestimonialModal(): void
+    {
+        $this->resetValidation();
+        $this->editingTestimonialIndex = null;
+        $this->testimonial_name = '';
+        $this->testimonial_role = '';
+        $this->testimonial_quote = '';
+        $this->testimonial_rating = 5;
+        $this->testimonialModal = true;
+    }
+
+    public function openEditTestimonialModal(int $index): void
+    {
+        $this->resetValidation();
+        if (!isset($this->testimonials[$index])) {
+            return;
+        }
+
+        $item = $this->testimonials[$index];
+        $this->editingTestimonialIndex = $index;
+        $this->testimonial_name = (string) ($item['name'] ?? '');
+        $this->testimonial_role = (string) ($item['role'] ?? '');
+        $this->testimonial_quote = (string) ($item['quote'] ?? $item['text'] ?? '');
+        $this->testimonial_rating = (int) ($item['rating'] ?? 5);
+        $this->testimonialModal = true;
+    }
+
+    public function saveTestimonial(SettingService $settingService): void
+    {
+        $this->validate([
+            'testimonial_name'   => 'required|string|max:100',
+            'testimonial_quote'  => 'required|string|max:1000',
+            'testimonial_role'   => 'nullable|string|max:100',
+            'testimonial_rating' => 'required|integer|min:1|max:5',
+        ], [
+            'testimonial_name.required'  => 'Nama pelanggan wajib diisi.',
+            'testimonial_quote.required' => 'Isi ulasan / kutipan wajib diisi.',
+        ]);
+
+        $entry = [
+            'name'   => trim($this->testimonial_name),
+            'role'   => trim($this->testimonial_role),
+            'quote'  => trim($this->testimonial_quote),
+            'rating' => $this->testimonial_rating,
+        ];
+
+        if ($this->editingTestimonialIndex !== null && isset($this->testimonials[$this->editingTestimonialIndex])) {
+            $this->testimonials[$this->editingTestimonialIndex] = $entry;
+            $msg = 'Testimoni pelanggan berhasil diperbarui!';
+        } else {
+            $this->testimonials[] = $entry;
+            $msg = 'Testimoni baru berhasil ditambahkan!';
+        }
+
+        $this->testimonials = array_values($this->testimonials);
+        $settingService->set('testimonials', json_encode($this->testimonials), 'homepage', 'json', 'Testimoni Pelanggan');
+
+        $this->testimonialModal = false;
+        $this->editingTestimonialIndex = null;
+        $this->success($msg);
+    }
+
+    public function confirmDeleteTestimonial(int $index): void
+    {
+        if (!isset($this->testimonials[$index])) {
+            return;
+        }
+
+        $this->deletingTestimonialIndex = $index;
+        $this->deleteTestimonialModal = true;
+    }
+
+    public function deleteTestimonial(SettingService $settingService): void
+    {
+        if ($this->deletingTestimonialIndex !== null && isset($this->testimonials[$this->deletingTestimonialIndex])) {
+            unset($this->testimonials[$this->deletingTestimonialIndex]);
+            $this->testimonials = array_values($this->testimonials);
+            $settingService->set('testimonials', json_encode($this->testimonials), 'homepage', 'json', 'Testimoni Pelanggan');
+            $this->success('Testimoni pelanggan berhasil dihapus.');
+        }
+
+        $this->deleteTestimonialModal = false;
+        $this->deletingTestimonialIndex = null;
+    }
+
+    public function moveTestimonialUp(int $index, SettingService $settingService): void
+    {
+        if ($index > 0 && isset($this->testimonials[$index])) {
+            $temp = $this->testimonials[$index - 1];
+            $this->testimonials[$index - 1] = $this->testimonials[$index];
+            $this->testimonials[$index] = $temp;
+            $this->testimonials = array_values($this->testimonials);
+            $settingService->set('testimonials', json_encode($this->testimonials), 'homepage', 'json', 'Testimoni Pelanggan');
+            $this->success('Urutan testimoni diperbarui.');
+        }
+    }
+
+    public function moveTestimonialDown(int $index, SettingService $settingService): void
+    {
+        if ($index < count($this->testimonials) - 1 && isset($this->testimonials[$index])) {
+            $temp = $this->testimonials[$index + 1];
+            $this->testimonials[$index + 1] = $this->testimonials[$index];
+            $this->testimonials[$index] = $temp;
+            $this->testimonials = array_values($this->testimonials);
+            $settingService->set('testimonials', json_encode($this->testimonials), 'homepage', 'json', 'Testimoni Pelanggan');
+            $this->success('Urutan testimoni diperbarui.');
+        }
+    }
+
     public function addTestimonial(): void
     {
-        $this->testimonials[] = [
-            'name'  => '',
-            'quote' => '',
-        ];
+        $this->openCreateTestimonialModal();
     }
 
     public function removeTestimonial(int $index): void
     {
-        unset($this->testimonials[$index]);
-        $this->testimonials = array_values($this->testimonials);
+        $this->confirmDeleteTestimonial($index);
+    }
+
+    // ─── FAQ CRUD ─────────────────────────────────────────────────────
+
+    public function openCreateFaqModal(): void
+    {
+        if (count($this->faqs) >= 5) {
+            $this->error('Batas maksimal 5 pertanyaan FAQ telah tercapai. Harap edit atau hapus FAQ yang ada terlebih dahulu.');
+            return;
+        }
+
+        $this->resetValidation();
+        $this->editingFaqIndex = null;
+        $this->faq_question = '';
+        $this->faq_answer = '';
+        $this->faqModal = true;
+    }
+
+    public function openEditFaqModal(int $index): void
+    {
+        $this->resetValidation();
+        if (!isset($this->faqs[$index])) {
+            return;
+        }
+
+        $item = $this->faqs[$index];
+        $this->editingFaqIndex = $index;
+        $this->faq_question = (string) ($item['question'] ?? $item['q'] ?? '');
+        $this->faq_answer = (string) ($item['answer'] ?? $item['a'] ?? '');
+        $this->faqModal = true;
+    }
+
+    public function saveFaq(SettingService $settingService): void
+    {
+        if ($this->editingFaqIndex === null && count($this->faqs) >= 5) {
+            $this->error('Batas maksimal pertanyaan FAQ adalah 5 pertanyaan.');
+            $this->faqModal = false;
+            return;
+        }
+
+        $this->validate([
+            'faq_question' => 'required|string|max:255',
+            'faq_answer'   => 'required|string|max:2000',
+        ], [
+            'faq_question.required' => 'Pertanyaan FAQ wajib diisi.',
+            'faq_answer.required'   => 'Jawaban FAQ wajib diisi.',
+        ]);
+
+        $entry = [
+            'question' => trim($this->faq_question),
+            'answer'   => trim($this->faq_answer),
+        ];
+
+        if ($this->editingFaqIndex !== null && isset($this->faqs[$this->editingFaqIndex])) {
+            $this->faqs[$this->editingFaqIndex] = $entry;
+            $msg = 'Pertanyaan FAQ berhasil diperbarui!';
+        } else {
+            $this->faqs[] = $entry;
+            $msg = 'Pertanyaan FAQ baru berhasil ditambahkan!';
+        }
+
+        $this->faqs = array_values($this->faqs);
+        $settingService->set('faqs', json_encode($this->faqs), 'homepage', 'json', 'Pertanyaan Umum (FAQ)');
+
+        $this->faqModal = false;
+        $this->editingFaqIndex = null;
+        $this->success($msg);
+    }
+
+    public function confirmDeleteFaq(int $index): void
+    {
+        if (!isset($this->faqs[$index])) {
+            return;
+        }
+
+        $this->deletingFaqIndex = $index;
+        $this->deleteFaqModal = true;
+    }
+
+    public function deleteFaq(SettingService $settingService): void
+    {
+        if ($this->deletingFaqIndex !== null && isset($this->faqs[$this->deletingFaqIndex])) {
+            unset($this->faqs[$this->deletingFaqIndex]);
+            $this->faqs = array_values($this->faqs);
+            $settingService->set('faqs', json_encode($this->faqs), 'homepage', 'json', 'Pertanyaan Umum (FAQ)');
+            $this->success('Pertanyaan FAQ berhasil dihapus.');
+        }
+
+        $this->deleteFaqModal = false;
+        $this->deletingFaqIndex = null;
+    }
+
+    public function moveFaqUp(int $index, SettingService $settingService): void
+    {
+        if ($index > 0 && isset($this->faqs[$index])) {
+            $temp = $this->faqs[$index - 1];
+            $this->faqs[$index - 1] = $this->faqs[$index];
+            $this->faqs[$index] = $temp;
+            $this->faqs = array_values($this->faqs);
+            $settingService->set('faqs', json_encode($this->faqs), 'homepage', 'json', 'Pertanyaan Umum (FAQ)');
+            $this->success('Urutan FAQ diperbarui.');
+        }
+    }
+
+    public function moveFaqDown(int $index, SettingService $settingService): void
+    {
+        if ($index < count($this->faqs) - 1 && isset($this->faqs[$index])) {
+            $temp = $this->faqs[$index + 1];
+            $this->faqs[$index + 1] = $this->faqs[$index];
+            $this->faqs[$index] = $temp;
+            $this->faqs = array_values($this->faqs);
+            $settingService->set('faqs', json_encode($this->faqs), 'homepage', 'json', 'Pertanyaan Umum (FAQ)');
+            $this->success('Urutan FAQ diperbarui.');
+        }
     }
 
     public function addFaq(): void
     {
-        $this->faqs[] = [
-            'question' => '',
-            'answer'   => '',
-        ];
+        $this->openCreateFaqModal();
     }
 
     public function removeFaq(int $index): void
     {
-        unset($this->faqs[$index]);
-        $this->faqs = array_values($this->faqs);
+        $this->confirmDeleteFaq($index);
     }
 
     public function save(SettingService $settingService): void
@@ -321,12 +545,7 @@ class SettingIndex extends Component
             'shop_email'    => 'required|email|max:100',
             'logo_file'     => 'nullable|file|mimes:png,jpg,jpeg,webp,svg|max:10240',
             'favicon_file'  => 'nullable|file|mimes:png,jpg,jpeg,ico,svg,vnd.microsoft.icon,x-icon|max:5120',
-            'hero_image_kulkas_file' => 'nullable|image|max:10240',
-            'hero_image_tv_file' => 'nullable|image|max:10240',
-            'hero_image_mesin_cuci_file' => 'nullable|image|max:10240',
-            'hero_image_dispenser_file' => 'nullable|image|max:10240',
-            'hero_image_microwave_file' => 'nullable|image|max:10240',
-            'hero_image_ac_file' => 'nullable|image|max:10240',
+
             'service_image_tv_file' => 'nullable|image|max:10240',
             'service_image_mesin_cuci_file' => 'nullable|image|max:10240',
             'service_image_kulkas_file' => 'nullable|image|max:10240',
@@ -362,26 +581,7 @@ class SettingIndex extends Component
         // Always sync manifest with latest shop name / tagline
         \App\Services\PwaService::generateManifest();
 
-        // Upload 6 Hero Category Images
-        $heroCategories = [
-            'kulkas' => 'Kulkas',
-            'tv' => 'TV',
-            'mesin_cuci' => 'Mesin Cuci',
-            'dispenser' => 'Dispenser',
-            'microwave' => 'Microwave',
-            'ac' => 'AC',
-        ];
 
-        foreach ($heroCategories as $key => $label) {
-            $fileProp = "hero_image_{$key}_file";
-            $existProp = "existing_hero_image_{$key}";
-            if ($this->$fileProp) {
-                $path = \App\Services\ImageOptimizer::optimizeAndStore($this->$fileProp, 'settings/hero', 800, 80);
-                $settingService->set("hero_image_{$key}", $path, 'homepage', 'image', "Hero Banner {$label}");
-                $this->$existProp = $path;
-                $this->$fileProp = null;
-            }
-        }
 
         // Upload 3 Hero Collage Cards (Mode 3 Card)
         for ($i = 1; $i <= 3; $i++) {
@@ -440,7 +640,7 @@ class SettingIndex extends Component
         $settingService->set('social_youtube', $this->social_youtube, 'general', 'text', 'YouTube');
 
         // 2. Simpan Tab Tampilan & Konten Home
-        $settingService->set('hero_card_mode', $this->hero_card_mode, 'homepage', 'text', 'Mode Card Hero (6_card / 3_card)');
+
         $settingService->set('hero_badge', $this->hero_badge, 'homepage', 'text', 'Hero Badge Text');
         $settingService->set('hero_headline_1', $this->hero_headline_1, 'homepage', 'text', 'Headline Hero Bagian 1');
         $settingService->set('hero_headline_color_1', $this->hero_headline_color_1, 'homepage', 'text', 'Warna Headline Bagian 1');

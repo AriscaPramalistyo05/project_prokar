@@ -9,7 +9,7 @@
 @section('og_description', 'Jelajahi koleksi produk elektronik bekas berkualitas: TV, kulkas, mesin cuci, AC, dan lainnya. Kondisi prima, harga terbaik, bergaransi.')
 @section('twitter_title', 'Produk Elektronik Bekas Berkualitas | Prokar Elektronik')
 @section('twitter_description', 'Jelajahi koleksi produk elektronik bekas berkualitas: TV, kulkas, mesin cuci, AC, dan lainnya. Kondisi prima, harga terbaik, bergaransi.')
-@section('body_class', 'bg-brand-black')
+@section('body_class', 'bg-brand-soft')
 
 @push('schema')
 <script type="application/ld+json">
@@ -212,19 +212,19 @@
 @endpush
 
 @section('content')
-  <main class="bg-brand-black">
+  <main class="bg-brand-soft">
 
     <!-- HEADER PRODUK -->
-    <section class="section-overlap section-overlap-first bg-brand-black py-12 md:py-20 z-10 relative">
+    <section class="section-overlap section-overlap-first bg-brand-soft py-12 md:py-20 z-10 relative">
       <div class="max-w-[1440px] mx-auto px-6 lg:px-12 text-center">
         <nav aria-label="Breadcrumb" class="mb-4">
-          <ol class="flex justify-center text-sm font-public font-bold uppercase tracking-widest text-gray-500">
+          <ol class="flex justify-center text-sm font-public font-bold uppercase tracking-widest text-gray-600">
             <li><a href="{{ route('home') }}" class="hover:text-brand-yellow transition-colors">Home</a></li>
             <li class="mx-2">/</li>
-            <li aria-current="page" class="text-white">Produk</li>
+            <li aria-current="page" class="text-black font-bold">Produk</li>
           </ol>
         </nav>
-        <h1 class="text-white text-5xl md:text-7xl font-black uppercase tracking-tighter font-public mb-8">
+        <h1 class="text-black text-5xl md:text-7xl font-black uppercase tracking-tighter font-public mb-8">
           <span>Koleksi Produk</span>
         </h1>
       </div>

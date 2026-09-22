@@ -32,8 +32,34 @@
 @endphp
 
 {{-- 1. Expanded State: Accordion dropdown standar di bawah item --}}
-<li class="hidden-when-collapsed w-full">
-    <details {{ $isSectionActive ? 'open' : '' }} class="w-full group">
+<li class="hidden-when-collapsed w-full"
+    x-data="{
+        scrollSubmenuIntoView(targetEl = null) {
+            this.$nextTick(() => {
+                setTimeout(() => {
+                    const el = targetEl || this.$el;
+                    const container = el.closest('.overflow-y-auto') || el.closest('ul');
+                    if (!container) return;
+                    const elRect = el.getBoundingClientRect();
+                    const containerRect = container.getBoundingClientRect();
+                    const overflowBelow = elRect.bottom - containerRect.bottom;
+                    if (overflowBelow > 0) {
+                        container.scrollBy({
+                            top: overflowBelow + 32,
+                            behavior: 'smooth'
+                        });
+                    }
+                }, 80);
+            });
+        }
+    }"
+    @if($isSectionActive)
+    x-init="scrollSubmenuIntoView()"
+    @endif
+>
+    <details {{ $isSectionActive ? 'open' : '' }} 
+             class="w-full group"
+             @toggle="if ($el.open) { scrollSubmenuIntoView($el); }">
         <summary class="flex items-center justify-between gap-3 px-4 py-2 my-0.5 rounded-lg text-zinc-700 hover:bg-base-200 transition-colors cursor-pointer w-full {{ $isSectionActive ? 'bg-base-300 font-semibold text-zinc-900' : '' }}">
             <div class="flex items-center gap-3">
                 <x-icon :name="$icon" class="w-5 h-5 text-zinc-700 shrink-0" />

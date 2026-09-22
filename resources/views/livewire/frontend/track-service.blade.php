@@ -1,5 +1,5 @@
 <div>
-@section('body_class', 'bg-brand-black font-inter')
+@section('body_class', 'bg-brand-soft font-inter')
 @php
   $isOngoing = !in_array($serviceOrder->status, ['completed', 'cancelled']);
   $isDone = $serviceOrder->status === 'completed';
@@ -8,27 +8,27 @@
 @endphp
 
 <!-- HEADER TRACK -->
-<section class="section-overlap section-overlap-first no-print bg-brand-black pt-16 pb-24 md:pt-24 md:pb-32 z-10 relative text-center">
+<section class="section-overlap section-overlap-first no-print bg-brand-soft pt-16 pb-24 md:pt-24 md:pb-32 z-10 relative text-center">
   <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
-    <h1 class="text-white text-5xl md:text-7xl font-black uppercase tracking-tighter font-public mb-4 reveal-wrapper">
+    <h1 class="text-black text-5xl md:text-7xl font-black uppercase tracking-tighter font-public mb-4 reveal-wrapper">
       <span class="reveal-line">Lacak Servis</span>
     </h1>
-    <p class="text-gray-400 text-sm md:text-lg font-bold tracking-widest uppercase reveal-fade">
+    <p class="text-gray-600 text-sm md:text-lg font-bold tracking-widest uppercase reveal-fade">
       Pantau progres perbaikan elektronik Anda
     </p>
   </div>
 </section>
 
 <!-- KONTEN HASIL TRACKING -->
-<section class="section-overlap bg-brand-soft pt-16 pb-32 md:pt-24 md:pb-40 z-20 print:pt-0 print:pb-0">
+<section class="section-overlap bg-white pt-16 pb-32 md:pt-24 md:pb-40 z-20 print:pt-0 print:pb-0">
   <div class="max-w-4xl mx-auto px-6 lg:px-12 text-center">
     
     <!-- Form Pencarian (Unified Mobile & Desktop Design) -->
     <div class="no-print max-w-2xl md:max-w-3xl mx-auto w-full relative z-30 mb-8">
-      <div class="bg-white rounded-2xl sm:rounded-full p-2 sm:p-2.5 flex flex-col sm:flex-row items-stretch sm:items-center shadow-xl shadow-black/5 border-2 border-black/10 transition-all focus-within:border-black focus-within:shadow-2xl focus-within:ring-2 focus-within:ring-black/10">
+      <div class="bg-gray-50 rounded-2xl sm:rounded-full p-2 sm:p-2.5 flex flex-col sm:flex-row items-stretch sm:items-center shadow-xl shadow-black/5 border border-gray-200 transition-all focus-within:border-black focus-within:shadow-2xl focus-within:ring-2 focus-within:ring-black/10">
         
         <!-- Input Area -->
-        <div class="relative flex-1 min-w-0 flex items-center bg-gray-50 sm:bg-transparent rounded-xl sm:rounded-none px-3.5 sm:px-4 py-1 sm:py-0">
+        <div class="relative flex-1 min-w-0 flex items-center bg-transparent rounded-xl sm:rounded-none px-3.5 sm:px-4 py-1 sm:py-0">
           <div class="text-gray-400 pr-3 flex items-center shrink-0">
             <i class="fa-solid fa-magnifying-glass text-base sm:text-lg"></i>
           </div>

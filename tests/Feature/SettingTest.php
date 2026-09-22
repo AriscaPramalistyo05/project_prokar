@@ -84,25 +84,21 @@ class SettingTest extends TestCase
         $this->assertEquals('contact@prokar.id', setting('shop_email'));
     }
 
-    public function test_admin_can_switch_hero_card_mode_between_3_card_and_6_card(): void
+    public function test_admin_can_update_hero_3card_titles(): void
     {
         $admin = $this->actingAsSuperAdmin();
 
         Livewire::actingAs($admin)
             ->test(SettingIndex::class)
-            ->set('hero_card_mode', '3_card')
+            ->set('hero_3card_title_1', 'Kulkas 2 Pintu')
+            ->set('hero_3card_title_2', 'Smart TV')
+            ->set('hero_3card_title_3', 'Mesin Cuci Otomatis')
             ->call('save')
             ->assertHasNoErrors();
 
-        $this->assertEquals('3_card', setting('hero_card_mode'));
-
-        Livewire::actingAs($admin)
-            ->test(SettingIndex::class)
-            ->set('hero_card_mode', '6_card')
-            ->call('save')
-            ->assertHasNoErrors();
-
-        $this->assertEquals('6_card', setting('hero_card_mode'));
+        $this->assertEquals('Kulkas 2 Pintu', setting('hero_3card_title_1'));
+        $this->assertEquals('Smart TV', setting('hero_3card_title_2'));
+        $this->assertEquals('Mesin Cuci Otomatis', setting('hero_3card_title_3'));
     }
 
     public function test_admin_can_customize_hero_headline_segments_and_colors(): void
@@ -162,5 +158,183 @@ class SettingTest extends TestCase
 
         \Illuminate\Support\Facades\Storage::disk('public')->assertExists($savedLogo);
         \Illuminate\Support\Facades\Storage::disk('public')->assertExists($savedFavicon);
+    }
+
+    public function test_admin_can_create_testimonial_via_modal(): void
+    {
+        $admin = $this->actingAsSuperAdmin();
+
+        Livewire::actingAs($admin)
+            ->test(SettingIndex::class)
+            ->call('openCreateTestimonialModal')
+            ->assertSet('testimonialModal', true)
+            ->set('testimonial_name', 'Rizky Pratama')
+            ->set('testimonial_role', 'Pembeli LED TV 50 Inch')
+            ->set('testimonial_quote', 'Barangnya original, gambar jernih dan bergaransi resmi.')
+            ->set('testimonial_rating', 5)
+            ->call('saveTestimonial')
+            ->assertHasNoErrors()
+            ->assertSet('testimonialModal', false);
+
+        $testimonials = json_decode(setting('testimonials') ?? '[]', true);
+        $this->assertNotEmpty($testimonials);
+        $last = end($testimonials);
+        $this->assertEquals('Rizky Pratama', $last['name']);
+        $this->assertEquals('Pembeli LED TV 50 Inch', $last['role']);
+        $this->assertEquals('Barangnya original, gambar jernih dan bergaransi resmi.', $last['quote']);
+        $this->assertEquals(5, $last['rating']);
+    }
+
+    public function test_admin_can_update_testimonial_via_modal(): void
+    {
+        $admin = $this->actingAsSuperAdmin();
+
+        $lw = Livewire::actingAs($admin)->test(SettingIndex::class);
+        $lw->call('openEditTestimonialModal', 0)
+            ->assertSet('testimonialModal', true)
+            ->set('testimonial_name', 'Ahmad Fauzi Edited')
+            ->set('testimonial_quote', 'Ulasan diperbarui oleh admin untuk keperluan testimoni.')
+            ->call('saveTestimonial')
+            ->assertHasNoErrors()
+            ->assertSet('testimonialModal', false);
+
+        $testimonials = json_decode(setting('testimonials') ?? '[]', true);
+        $this->assertEquals('Ahmad Fauzi Edited', $testimonials[0]['name']);
+        $this->assertEquals('Ulasan diperbarui oleh admin untuk keperluan testimoni.', $testimonials[0]['quote']);
+    }
+
+    public function test_admin_can_delete_testimonial(): void
+    {
+        $admin = $this->actingAsSuperAdmin();
+
+        $lw = Livewire::actingAs($admin)->test(SettingIndex::class);
+        $initialCount = count($lw->get('testimonials'));
+
+        $lw->call('confirmDeleteTestimonial', 0)
+            ->assertSet('deleteTestimonialModal', true)
+            ->call('deleteTestimonial')
+            ->assertSet('deleteTestimonialModal', false);
+
+        $testimonials = json_decode(setting('testimonials') ?? '[]', true);
+        $this->assertCount($initialCount - 1, $testimonials);
+    }
+
+    public function test_admin_can_reorder_testimonials(): void
+    {
+        $admin = $this->actingAsSuperAdmin();
+
+        $lw = Livewire::actingAs($admin)->test(SettingIndex::class);
+        $firstItemName = $lw->get('testimonials')[0]['name'];
+        $secondItemName = $lw->get('testimonials')[1]['name'];
+
+        $lw->call('moveTestimonialDown', 0);
+
+        $testimonials = json_decode(setting('testimonials') ?? '[]', true);
+        $this->assertEquals($secondItemName, $testimonials[0]['name']);
+        $this->assertEquals($firstItemName, $testimonials[1]['name']);
+    }
+
+    public function test_admin_can_create_faq_via_modal(): void
+    {
+        $admin = $this->actingAsSuperAdmin();
+
+        Livewire::actingAs($admin)
+            ->test(SettingIndex::class)
+            ->call('openCreateFaqModal')
+            ->assertSet('faqModal', true)
+            ->set('faq_question', 'Berapa lama estimasi reparasi TV?')
+            ->set('faq_answer', 'Estimasi pengerjaan reparasi TV adalah 1-3 hari kerja tergantung ketersediaan suku cadang.')
+            ->call('saveFaq')
+            ->assertHasNoErrors()
+            ->assertSet('faqModal', false);
+
+        $faqs = json_decode(setting('faqs') ?? '[]', true);
+        $this->assertNotEmpty($faqs);
+        $last = end($faqs);
+        $this->assertEquals('Berapa lama estimasi reparasi TV?', $last['question']);
+        $this->assertEquals('Estimasi pengerjaan reparasi TV adalah 1-3 hari kerja tergantung ketersediaan suku cadang.', $last['answer']);
+    }
+
+    public function test_admin_can_update_faq_via_modal(): void
+    {
+        $admin = $this->actingAsSuperAdmin();
+
+        $lw = Livewire::actingAs($admin)->test(SettingIndex::class);
+        $lw->call('openEditFaqModal', 0)
+            ->assertSet('faqModal', true)
+            ->set('faq_question', 'Pertanyaan FAQ Diperbarui?')
+            ->set('faq_answer', 'Jawaban FAQ yang telah disesuaikan dengan ketentuan terbaru.')
+            ->call('saveFaq')
+            ->assertHasNoErrors()
+            ->assertSet('faqModal', false);
+
+        $faqs = json_decode(setting('faqs') ?? '[]', true);
+        $this->assertEquals('Pertanyaan FAQ Diperbarui?', $faqs[0]['question']);
+        $this->assertEquals('Jawaban FAQ yang telah disesuaikan dengan ketentuan terbaru.', $faqs[0]['answer']);
+    }
+
+    public function test_admin_can_delete_faq(): void
+    {
+        $admin = $this->actingAsSuperAdmin();
+
+        $lw = Livewire::actingAs($admin)->test(SettingIndex::class);
+        $initialCount = count($lw->get('faqs'));
+
+        $lw->call('confirmDeleteFaq', 0)
+            ->assertSet('deleteFaqModal', true)
+            ->call('deleteFaq')
+            ->assertSet('deleteFaqModal', false);
+
+        $faqs = json_decode(setting('faqs') ?? '[]', true);
+        $this->assertCount($initialCount - 1, $faqs);
+    }
+
+    public function test_admin_can_reorder_faqs(): void
+    {
+        $admin = $this->actingAsSuperAdmin();
+
+        $lw = Livewire::actingAs($admin)->test(SettingIndex::class);
+        $firstItemQ = $lw->get('faqs')[0]['question'];
+        $secondItemQ = $lw->get('faqs')[1]['question'];
+
+        $lw->call('moveFaqDown', 0);
+
+        $faqs = json_decode(setting('faqs') ?? '[]', true);
+        $this->assertEquals($secondItemQ, $faqs[0]['question']);
+        $this->assertEquals($firstItemQ, $faqs[1]['question']);
+    }
+
+    public function test_validation_rules_for_testimonial_and_faq(): void
+    {
+        $admin = $this->actingAsSuperAdmin();
+
+        Livewire::actingAs($admin)
+            ->test(SettingIndex::class)
+            ->set('testimonial_name', '')
+            ->set('testimonial_quote', '')
+            ->call('saveTestimonial')
+            ->assertHasErrors(['testimonial_name', 'testimonial_quote'])
+            ->set('faq_question', '')
+            ->set('faq_answer', '')
+            ->call('saveFaq')
+            ->assertHasErrors(['faq_question', 'faq_answer']);
+    }
+
+    public function test_faq_maximum_limit_enforced_at_five(): void
+    {
+        $admin = $this->actingAsSuperAdmin();
+
+        $lw = Livewire::actingAs($admin)->test(SettingIndex::class);
+        // Initially 3 items, add 4th and 5th
+        $lw->set('faq_question', 'FAQ 4')->set('faq_answer', 'Answer 4')->call('saveFaq')->assertHasNoErrors();
+        $lw->set('faq_question', 'FAQ 5')->set('faq_answer', 'Answer 5')->call('saveFaq')->assertHasNoErrors();
+
+        $this->assertCount(5, $lw->get('faqs'));
+
+        // Attempt to add 6th
+        $lw->call('openCreateFaqModal')->assertSet('faqModal', false);
+        $lw->set('faq_question', 'FAQ 6')->set('faq_answer', 'Answer 6')->call('saveFaq');
+
+        $this->assertCount(5, $lw->get('faqs'));
     }
 }

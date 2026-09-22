@@ -369,204 +369,72 @@
                         <x-textarea label="Sub-Headline (Deskripsi Penjelas)" wire:model="hero_subheadline" rows="2" class="bg-gray-50 border-gray-200 focus:bg-white" />
                     </div>
 
-                    {{-- Pilihan Mode Hero Card (6 Card vs 3 Card) --}}
-                    <div class="pt-4 border-t border-gray-100 mb-6">
-                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-3">Pilihan Mode Tampilan Hero Banner</label>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            {{-- Option 1: 6 Card --}}
-                            <div wire:click="$set('hero_card_mode', '6_card')" class="p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-start gap-3 {{ $hero_card_mode === '6_card' ? 'border-gray-900 bg-gray-50/80 shadow-xs' : 'border-gray-200 bg-white hover:border-gray-300' }}">
-                                <input type="radio" wire:model.live="hero_card_mode" value="6_card" class="mt-1 radio radio-sm radio-primary" />
-                                <div>
-                                    <span class="font-bold text-sm text-gray-900 block">Opsi 1: Mode 6 Card (Parallax Kategori)</span>
-                                    <p class="text-xs text-gray-500 mt-0.5 leading-relaxed">
-                                        Menampilkan 6 kartu kategori melayang diagonal (Kulkas, TV, Mesin Cuci, Dispenser, Microwave, AC).
-                                    </p>
+                    {{-- HERO BANNER (3 CARD ASYMMETRIC GRID) --}}
+                    <div class="pt-4 border-t border-gray-100">
+                        <div class="mb-4">
+                            <h4 class="text-sm font-bold text-gray-900">Upload 3 Foto Hero Banner (Mode 3 Card Asymmetric)</h4>
+                            <p class="text-xs text-gray-500">2 kartu di sebelah kiri (atas &amp; bawah) dan 1 kartu potret tinggi di sebelah kanan.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                            {{-- Card 1 (Kiri Atas) --}}
+                            <div class="p-4 rounded-2xl bg-gray-50 border border-gray-200 space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-bold text-xs text-gray-900 uppercase tracking-wider">Card 1 (Kiri Atas)</span>
+                                    <span class="badge badge-sm badge-neutral">Landscape</span>
+                                </div>
+                                <x-input label="Judul / Label Kartu" wire:model="hero_3card_title_1" placeholder="Mesin Cuci" class="bg-white text-xs" />
+                                <x-file label="Foto Kartu" wire:model="hero_3card_image_1_file" accept="image/*" class="file-input-xs w-full" />
+                                <div class="h-28 w-full rounded-xl overflow-hidden bg-white border border-gray-200 flex items-center justify-center">
+                                    @if ($hero_3card_image_1_file)
+                                        <img src="{{ $hero_3card_image_1_file->temporaryUrl() }}" alt="Card 1" class="h-full w-full object-cover" />
+                                    @elseif ($existing_hero_3card_image_1)
+                                        <img src="{{ asset('storage/' . $existing_hero_3card_image_1) }}" alt="Card 1" class="h-full w-full object-cover" />
+                                    @else
+                                        <img src="https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=600&h=450&fit=crop" alt="Mesin Cuci" class="h-full w-full object-cover" />
+                                    @endif
                                 </div>
                             </div>
 
-                            {{-- Option 2: 3 Card --}}
-                            <div wire:click="$set('hero_card_mode', '3_card')" class="p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-start gap-3 {{ $hero_card_mode === '3_card' ? 'border-gray-900 bg-gray-50/80 shadow-xs' : 'border-gray-200 bg-white hover:border-gray-300' }}">
-                                <input type="radio" wire:model.live="hero_card_mode" value="3_card" class="mt-1 radio radio-sm radio-primary" />
-                                <div>
-                                    <span class="font-bold text-sm text-gray-900 block">Opsi 2: Mode 3 Card (Asymmetric Grid)</span>
-                                    <p class="text-xs text-gray-500 mt-0.5 leading-relaxed">
-                                        Menampilkan kolase 3 kartu modern: 2 kartu di kiri (atas &amp; bawah) dan 1 kartu potret tinggi di kanan.
-                                    </p>
+                            {{-- Card 2 (Kiri Bawah) --}}
+                            <div class="p-4 rounded-2xl bg-gray-50 border border-gray-200 space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-bold text-xs text-gray-900 uppercase tracking-wider">Card 2 (Kiri Bawah)</span>
+                                    <span class="badge badge-sm badge-neutral">Landscape</span>
+                                </div>
+                                <x-input label="Judul / Label Kartu" wire:model="hero_3card_title_2" placeholder="Televisi" class="bg-white text-xs" />
+                                <x-file label="Foto Kartu" wire:model="hero_3card_image_2_file" accept="image/*" class="file-input-xs w-full" />
+                                <div class="h-28 w-full rounded-xl overflow-hidden bg-white border border-gray-200 flex items-center justify-center">
+                                    @if ($hero_3card_image_2_file)
+                                        <img src="{{ $hero_3card_image_2_file->temporaryUrl() }}" alt="Card 2" class="h-full w-full object-cover" />
+                                    @elseif ($existing_hero_3card_image_2)
+                                        <img src="{{ asset('storage/' . $existing_hero_3card_image_2) }}" alt="Card 2" class="h-full w-full object-cover" />
+                                    @else
+                                        <img src="https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=600&h=450&fit=crop" alt="Televisi" class="h-full w-full object-cover" />
+                                    @endif
+                                </div>
+                            </div>
+
+                            {{-- Card 3 (Kanan Tinggi) --}}
+                            <div class="p-4 rounded-2xl bg-gray-50 border border-gray-200 space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-bold text-xs text-gray-900 uppercase tracking-wider">Card 3 (Kanan Tinggi)</span>
+                                    <span class="badge badge-sm badge-primary">Portrait</span>
+                                </div>
+                                <x-input label="Judul / Label Kartu" wire:model="hero_3card_title_3" placeholder="Kulkas" class="bg-white text-xs" />
+                                <x-file label="Foto Kartu" wire:model="hero_3card_image_3_file" accept="image/*" class="file-input-xs w-full" />
+                                <div class="h-28 w-full rounded-xl overflow-hidden bg-white border border-gray-200 flex items-center justify-center">
+                                    @if ($hero_3card_image_3_file)
+                                        <img src="{{ $hero_3card_image_3_file->temporaryUrl() }}" alt="Card 3" class="h-full w-full object-cover" />
+                                    @elseif ($existing_hero_3card_image_3)
+                                        <img src="{{ asset('storage/' . $existing_hero_3card_image_3) }}" alt="Card 3" class="h-full w-full object-cover" />
+                                    @else
+                                        <img src="https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=600&h=800&fit=crop" alt="Kulkas" class="h-full w-full object-cover" />
+                                    @endif
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    {{-- MODE 1: 6 HERO CATEGORY GALLERY IMAGES --}}
-                    @if ($hero_card_mode === '6_card')
-                        <div class="pt-2 animate-in fade-in">
-                            <div class="mb-4">
-                                <h4 class="text-sm font-bold text-gray-900">Upload 6 Foto Galeri Kategori (Mode 6 Card)</h4>
-                                <p class="text-xs text-gray-500">Foto masing-masing kategori produk yang tampil diagonal melayang di hero section beranda.</p>
-                            </div>
-
-                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {{-- 1. Kulkas --}}
-                                <div class="p-4 rounded-xl bg-gray-50 border border-gray-200 space-y-2">
-                                    <span class="font-bold text-xs text-gray-700 uppercase tracking-wider block">1. Kulkas</span>
-                                    <x-file wire:model="hero_image_kulkas_file" accept="image/*" class="file-input-xs w-full" />
-                                    <div class="mt-2 h-20 w-full rounded-lg overflow-hidden bg-white border border-gray-200 flex items-center justify-center">
-                                        @if ($hero_image_kulkas_file)
-                                            <img src="{{ $hero_image_kulkas_file->temporaryUrl() }}" alt="Kulkas" class="h-full w-full object-cover" />
-                                        @elseif ($existing_hero_image_kulkas)
-                                            <img src="{{ asset('storage/' . $existing_hero_image_kulkas) }}" alt="Kulkas" class="h-full w-full object-cover" />
-                                        @else
-                                            <img src="https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&h=400&fit=crop" alt="Kulkas" class="h-full w-full object-cover opacity-60" />
-                                        @endif
-                                    </div>
-                                </div>
-
-                                {{-- 2. TV --}}
-                                <div class="p-4 rounded-xl bg-gray-50 border border-gray-200 space-y-2">
-                                    <span class="font-bold text-xs text-gray-700 uppercase tracking-wider block">2. TV</span>
-                                    <x-file wire:model="hero_image_tv_file" accept="image/*" class="file-input-xs w-full" />
-                                    <div class="mt-2 h-20 w-full rounded-lg overflow-hidden bg-white border border-gray-200 flex items-center justify-center">
-                                        @if ($hero_image_tv_file)
-                                            <img src="{{ $hero_image_tv_file->temporaryUrl() }}" alt="TV" class="h-full w-full object-cover" />
-                                        @elseif ($existing_hero_image_tv)
-                                            <img src="{{ asset('storage/' . $existing_hero_image_tv) }}" alt="TV" class="h-full w-full object-cover" />
-                                        @else
-                                            <img src="https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&h=400&fit=crop" alt="TV" class="h-full w-full object-cover opacity-60" />
-                                        @endif
-                                    </div>
-                                </div>
-
-                                {{-- 3. Mesin Cuci --}}
-                                <div class="p-4 rounded-xl bg-gray-50 border border-gray-200 space-y-2">
-                                    <span class="font-bold text-xs text-gray-700 uppercase tracking-wider block">3. Mesin Cuci</span>
-                                    <x-file wire:model="hero_image_mesin_cuci_file" accept="image/*" class="file-input-xs w-full" />
-                                    <div class="mt-2 h-20 w-full rounded-lg overflow-hidden bg-white border border-gray-200 flex items-center justify-center">
-                                        @if ($hero_image_mesin_cuci_file)
-                                            <img src="{{ $hero_image_mesin_cuci_file->temporaryUrl() }}" alt="Mesin Cuci" class="h-full w-full object-cover" />
-                                        @elseif ($existing_hero_image_mesin_cuci)
-                                            <img src="{{ asset('storage/' . $existing_hero_image_mesin_cuci) }}" alt="Mesin Cuci" class="h-full w-full object-cover" />
-                                        @else
-                                            <img src="https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=400&h=400&fit=crop" alt="Mesin Cuci" class="h-full w-full object-cover opacity-60" />
-                                        @endif
-                                    </div>
-                                </div>
-
-                                {{-- 4. Dispenser --}}
-                                <div class="p-4 rounded-xl bg-gray-50 border border-gray-200 space-y-2">
-                                    <span class="font-bold text-xs text-gray-700 uppercase tracking-wider block">4. Dispenser</span>
-                                    <x-file wire:model="hero_image_dispenser_file" accept="image/*" class="file-input-xs w-full" />
-                                    <div class="mt-2 h-20 w-full rounded-lg overflow-hidden bg-white border border-gray-200 flex items-center justify-center">
-                                        @if ($hero_image_dispenser_file)
-                                            <img src="{{ $hero_image_dispenser_file->temporaryUrl() }}" alt="Dispenser" class="h-full w-full object-cover" />
-                                        @elseif ($existing_hero_image_dispenser)
-                                            <img src="{{ asset('storage/' . $existing_hero_image_dispenser) }}" alt="Dispenser" class="h-full w-full object-cover" />
-                                        @else
-                                            <img src="https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400&h=400&fit=crop" alt="Dispenser" class="h-full w-full object-cover opacity-60" />
-                                        @endif
-                                    </div>
-                                </div>
-
-                                {{-- 5. Microwave --}}
-                                <div class="p-4 rounded-xl bg-gray-50 border border-gray-200 space-y-2">
-                                    <span class="font-bold text-xs text-gray-700 uppercase tracking-wider block">5. Microwave</span>
-                                    <x-file wire:model="hero_image_microwave_file" accept="image/*" class="file-input-xs w-full" />
-                                    <div class="mt-2 h-20 w-full rounded-lg overflow-hidden bg-white border border-gray-200 flex items-center justify-center">
-                                        @if ($hero_image_microwave_file)
-                                            <img src="{{ $hero_image_microwave_file->temporaryUrl() }}" alt="Microwave" class="h-full w-full object-cover" />
-                                        @elseif ($existing_hero_image_microwave)
-                                            <img src="{{ asset('storage/' . $existing_hero_image_microwave) }}" alt="Microwave" class="h-full w-full object-cover" />
-                                        @else
-                                            <img src="https://images.unsplash.com/photo-1585659722983-3a675dabf23d?w=400&h=400&fit=crop" alt="Microwave" class="h-full w-full object-cover opacity-60" />
-                                        @endif
-                                    </div>
-                                </div>
-
-                                {{-- 6. AC --}}
-                                <div class="p-4 rounded-xl bg-gray-50 border border-gray-200 space-y-2">
-                                    <span class="font-bold text-xs text-gray-700 uppercase tracking-wider block">6. AC</span>
-                                    <x-file wire:model="hero_image_ac_file" accept="image/*" class="file-input-xs w-full" />
-                                    <div class="mt-2 h-20 w-full rounded-lg overflow-hidden bg-white border border-gray-200 flex items-center justify-center">
-                                        @if ($hero_image_ac_file)
-                                            <img src="{{ $hero_image_ac_file->temporaryUrl() }}" alt="AC" class="h-full w-full object-cover" />
-                                        @elseif ($existing_hero_image_ac)
-                                            <img src="{{ asset('storage/' . $existing_hero_image_ac) }}" alt="AC" class="h-full w-full object-cover" />
-                                        @else
-                                            <img src="https://images.unsplash.com/photo-1631545806609-947f38b3f6ea?w=400&h=400&fit=crop" alt="AC" class="h-full w-full object-cover opacity-60" />
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-
-                    {{-- MODE 2: 3 HERO COLLAGE CARDS --}}
-                    @if ($hero_card_mode === '3_card')
-                        <div class="pt-2 animate-in fade-in">
-                            <div class="mb-4">
-                                <h4 class="text-sm font-bold text-gray-900">Upload 3 Foto Hero Banner (Mode 3 Card Asymmetric)</h4>
-                                <p class="text-xs text-gray-500">2 kartu di sebelah kiri (atas &amp; bawah) dan 1 kartu potret tinggi di sebelah kanan.</p>
-                            </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-                                {{-- Card 1 (Kiri Atas) --}}
-                                <div class="p-4 rounded-2xl bg-gray-50 border border-gray-200 space-y-3">
-                                    <div class="flex items-center justify-between">
-                                        <span class="font-bold text-xs text-gray-900 uppercase tracking-wider">Card 1 (Kiri Atas)</span>
-                                        <span class="badge badge-sm badge-neutral">Landscape</span>
-                                    </div>
-                                    <x-input label="Judul / Label Kartu" wire:model="hero_3card_title_1" placeholder="Mesin Cuci" class="bg-white text-xs" />
-                                    <x-file label="Foto Kartu" wire:model="hero_3card_image_1_file" accept="image/*" class="file-input-xs w-full" />
-                                    <div class="h-28 w-full rounded-xl overflow-hidden bg-white border border-gray-200 flex items-center justify-center">
-                                        @if ($hero_3card_image_1_file)
-                                            <img src="{{ $hero_3card_image_1_file->temporaryUrl() }}" alt="Card 1" class="h-full w-full object-cover" />
-                                        @elseif ($existing_hero_3card_image_1)
-                                            <img src="{{ asset('storage/' . $existing_hero_3card_image_1) }}" alt="Card 1" class="h-full w-full object-cover" />
-                                        @else
-                                            <img src="https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=600&h=450&fit=crop" alt="Mesin Cuci" class="h-full w-full object-cover" />
-                                        @endif
-                                    </div>
-                                </div>
-
-                                {{-- Card 2 (Kiri Bawah) --}}
-                                <div class="p-4 rounded-2xl bg-gray-50 border border-gray-200 space-y-3">
-                                    <div class="flex items-center justify-between">
-                                        <span class="font-bold text-xs text-gray-900 uppercase tracking-wider">Card 2 (Kiri Bawah)</span>
-                                        <span class="badge badge-sm badge-neutral">Landscape</span>
-                                    </div>
-                                    <x-input label="Judul / Label Kartu" wire:model="hero_3card_title_2" placeholder="Televisi" class="bg-white text-xs" />
-                                    <x-file label="Foto Kartu" wire:model="hero_3card_image_2_file" accept="image/*" class="file-input-xs w-full" />
-                                    <div class="h-28 w-full rounded-xl overflow-hidden bg-white border border-gray-200 flex items-center justify-center">
-                                        @if ($hero_3card_image_2_file)
-                                            <img src="{{ $hero_3card_image_2_file->temporaryUrl() }}" alt="Card 2" class="h-full w-full object-cover" />
-                                        @elseif ($existing_hero_3card_image_2)
-                                            <img src="{{ asset('storage/' . $existing_hero_3card_image_2) }}" alt="Card 2" class="h-full w-full object-cover" />
-                                        @else
-                                            <img src="https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=600&h=450&fit=crop" alt="Televisi" class="h-full w-full object-cover" />
-                                        @endif
-                                    </div>
-                                </div>
-
-                                {{-- Card 3 (Kanan Tinggi) --}}
-                                <div class="p-4 rounded-2xl bg-gray-50 border border-gray-200 space-y-3">
-                                    <div class="flex items-center justify-between">
-                                        <span class="font-bold text-xs text-gray-900 uppercase tracking-wider">Card 3 (Kanan Tinggi)</span>
-                                        <span class="badge badge-sm badge-primary">Portrait</span>
-                                    </div>
-                                    <x-input label="Judul / Label Kartu" wire:model="hero_3card_title_3" placeholder="Kulkas" class="bg-white text-xs" />
-                                    <x-file label="Foto Kartu" wire:model="hero_3card_image_3_file" accept="image/*" class="file-input-xs w-full" />
-                                    <div class="h-28 w-full rounded-xl overflow-hidden bg-white border border-gray-200 flex items-center justify-center">
-                                        @if ($hero_3card_image_3_file)
-                                            <img src="{{ $hero_3card_image_3_file->temporaryUrl() }}" alt="Card 3" class="h-full w-full object-cover" />
-                                        @elseif ($existing_hero_3card_image_3)
-                                            <img src="{{ asset('storage/' . $existing_hero_3card_image_3) }}" alt="Card 3" class="h-full w-full object-cover" />
-                                        @else
-                                            <img src="https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=600&h=800&fit=crop" alt="Kulkas" class="h-full w-full object-cover" />
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    @endif
                 </div>
 
                 {{-- 2. Marquee & Partners --}}
@@ -668,28 +536,51 @@
                                 <p class="text-xs text-gray-500">Kelola ulasan pengalaman nyata pelanggan yang tampil di slider beranda.</p>
                             </div>
                         </div>
-                        <x-button label="Tambah Testimoni" icon="o-plus" wire:click="addTestimonial" class="btn-outline btn-sm font-semibold rounded-xl" />
+                        <x-button label="Tambah Testimoni" icon="o-plus" wire:click="openCreateTestimonialModal" class="btn-primary btn-sm font-semibold rounded-xl text-white" />
                     </div>
 
-                    <div class="space-y-4">
-                        @foreach ($testimonials as $index => $testi)
-                            <div class="p-5 bg-gray-50 border border-gray-200 rounded-2xl space-y-3 relative" wire:key="testimonial-{{ $index }}">
-                                <div class="flex justify-between items-center border-b border-gray-200 pb-2">
-                                    <span class="font-bold text-xs text-gray-600 uppercase tracking-wider">Ulasan #{{ $index + 1 }}</span>
-                                    <button type="button" wire:click="removeTestimonial({{ $index }})" class="text-red-500 hover:text-red-700 text-xs font-bold flex items-center gap-1 cursor-pointer">
-                                        <i class="fa-solid fa-trash-can"></i> Hapus
-                                    </button>
+                    <div class="space-y-3">
+                        @forelse ($testimonials as $index => $testi)
+                            <div class="p-4 sm:p-5 bg-white border border-gray-200/90 hover:border-gray-300 rounded-2xl transition-all shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4" wire:key="testimonial-{{ $index }}">
+                                <div class="flex items-start gap-3.5 flex-1 min-w-0">
+                                    <div class="w-8 h-8 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 flex items-center justify-center text-xs font-bold shrink-0">
+                                        #{{ $index + 1 }}
+                                    </div>
+                                    <div class="space-y-1.5 flex-1 min-w-0">
+                                        <div class="flex items-center gap-2 flex-wrap">
+                                            <span class="font-bold text-sm text-gray-900 font-public truncate">{{ $testi['name'] ?? 'Pelanggan Prokar' }}</span>
+                                            @if(!empty($testi['role']))
+                                                <span class="px-2 py-0.5 rounded-md bg-gray-100 text-gray-600 text-[11px] font-medium border border-gray-200">{{ $testi['role'] }}</span>
+                                            @endif
+                                            <div class="flex items-center text-amber-400 text-xs ml-auto sm:ml-0">
+                                                @for($s = 1; $s <= ($testi['rating'] ?? 5); $s++)
+                                                    <i class="fa-solid fa-star"></i>
+                                                @endfor
+                                            </div>
+                                        </div>
+                                        <p class="text-xs sm:text-sm text-gray-600 italic line-clamp-2">
+                                            &ldquo;{{ $testi['quote'] ?? $testi['text'] ?? '' }}&rdquo;
+                                        </p>
+                                    </div>
                                 </div>
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                    <div class="sm:col-span-1">
-                                        <x-input label="Nama Pelanggan" wire:model="testimonials.{{ $index }}.name" placeholder="Ahmad Fauzi" class="bg-white border-gray-200 text-sm" />
-                                    </div>
-                                    <div class="sm:col-span-2">
-                                        <x-input label="Kutipan Ulasan (Quote)" wire:model="testimonials.{{ $index }}.quote" placeholder="TV yang saya beli kondisinya masih sangat bagus..." class="bg-white border-gray-200 text-sm" />
-                                    </div>
+
+                                <div class="flex items-center gap-1.5 self-end md:self-center shrink-0 border-t md:border-t-0 pt-2 md:pt-0 border-gray-100 w-full md:w-auto justify-end">
+                                    <x-button icon="o-arrow-up" class="btn-sm btn-ghost btn-square text-gray-500 hover:text-gray-900" wire:click="moveTestimonialUp({{ $index }})" :disabled="$index === 0" tooltip="Pindah Ke Atas" />
+                                    <x-button icon="o-arrow-down" class="btn-sm btn-ghost btn-square text-gray-500 hover:text-gray-900" wire:click="moveTestimonialDown({{ $index }})" :disabled="$index === count($testimonials) - 1" tooltip="Pindah Ke Bawah" />
+                                    <x-button icon="o-pencil" class="btn-sm btn-ghost btn-square text-blue-600 hover:bg-blue-50" wire:click="openEditTestimonialModal({{ $index }})" tooltip="Edit Testimoni" />
+                                    <x-button icon="o-trash" class="btn-sm btn-ghost btn-square text-rose-600 hover:bg-rose-50" wire:click="confirmDeleteTestimonial({{ $index }})" tooltip="Hapus Testimoni" />
                                 </div>
                             </div>
-                        @endforeach
+                        @empty
+                            <div class="text-center py-10 px-4 bg-gray-50 border border-dashed border-gray-300 rounded-2xl">
+                                <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto mb-3 text-xl">
+                                    <i class="fa-solid fa-comment-dots"></i>
+                                </div>
+                                <h4 class="text-sm font-bold text-gray-800">Belum Ada Testimoni Pelanggan</h4>
+                                <p class="text-xs text-gray-500 max-w-sm mx-auto mt-1 mb-4">Tambahkan ulasan pengalaman nyata pelanggan untuk meningkatkan kepercayaan calon pembeli di beranda.</p>
+                                <x-button label="Tambah Testimoni Pertama" icon="o-plus" wire:click="openCreateTestimonialModal" class="btn-sm btn-primary rounded-xl text-white font-semibold" />
+                            </div>
+                        @endforelse
                     </div>
                 </div>
 
@@ -699,28 +590,58 @@
                         <div class="flex items-center gap-2">
                             <span class="w-8 h-8 rounded-lg bg-gray-100 text-gray-900 flex items-center justify-center text-sm font-bold">5</span>
                             <div>
-                                <h3 class="text-base font-bold text-gray-900">Pertanyaan Umum (FAQ Section)</h3>
-                                <p class="text-xs text-gray-500">Kelola daftar tanya jawab akordion yang tampil di bagian bawah homepage.</p>
+                                <div class="flex items-center gap-2">
+                                    <h3 class="text-base font-bold text-gray-900">Pertanyaan Umum (FAQ Section)</h3>
+                                    <span class="px-2 py-0.5 rounded-full text-[11px] font-bold {{ count($faqs) >= 5 ? 'bg-amber-100 text-amber-800' : 'bg-gray-100 text-gray-600' }}">
+                                        {{ count($faqs) }}/5 FAQ
+                                    </span>
+                                </div>
+                                <p class="text-xs text-gray-500">Kelola daftar tanya jawab akordion yang tampil di bagian bawah homepage (maksimal 5 item).</p>
                             </div>
                         </div>
-                        <x-button label="Tambah FAQ" icon="o-plus" wire:click="addFaq" class="btn-outline btn-sm font-semibold rounded-xl" />
+                        @if(count($faqs) < 5)
+                            <x-button label="Tambah FAQ" icon="o-plus" wire:click="openCreateFaqModal" class="btn-primary btn-sm font-semibold rounded-xl text-white" />
+                        @else
+                            <div class="tooltip tooltip-left" data-tip="Batas maksimal 5 FAQ telah tercapai">
+                                <x-button label="Maksimal 5 FAQ" icon="o-lock-closed" class="btn-sm rounded-xl text-gray-400 bg-gray-100 border-none cursor-not-allowed" disabled />
+                            </div>
+                        @endif
                     </div>
 
-                    <div class="space-y-4">
-                        @foreach ($faqs as $index => $faq)
-                            <div class="p-5 bg-gray-50 border border-gray-200 rounded-2xl space-y-3 relative" wire:key="faq-{{ $index }}">
-                                <div class="flex justify-between items-center border-b border-gray-200 pb-2">
-                                    <span class="font-bold text-xs text-gray-600 uppercase tracking-wider">FAQ #{{ $index + 1 }}</span>
-                                    <button type="button" wire:click="removeFaq({{ $index }})" class="text-red-500 hover:text-red-700 text-xs font-bold flex items-center gap-1 cursor-pointer">
-                                        <i class="fa-solid fa-trash-can"></i> Hapus
-                                    </button>
+                    <div class="space-y-3">
+                        @forelse ($faqs as $index => $faq)
+                            <div class="p-4 sm:p-5 bg-white border border-gray-200/90 hover:border-gray-300 rounded-2xl transition-all shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4" wire:key="faq-{{ $index }}">
+                                <div class="flex items-start gap-3.5 flex-1 min-w-0">
+                                    <div class="w-8 h-8 rounded-xl bg-blue-50 border border-blue-200 text-blue-700 flex items-center justify-center text-xs font-bold shrink-0">
+                                        #{{ $index + 1 }}
+                                    </div>
+                                    <div class="space-y-1 flex-1 min-w-0">
+                                        <h4 class="font-bold text-sm text-gray-900 font-public leading-snug">
+                                            {{ $faq['question'] ?? $faq['q'] ?? '' }}
+                                        </h4>
+                                        <p class="text-xs sm:text-sm text-gray-600 line-clamp-2">
+                                            {{ $faq['answer'] ?? $faq['a'] ?? '' }}
+                                        </p>
+                                    </div>
                                 </div>
-                                <div class="space-y-3">
-                                    <x-input label="Pertanyaan" wire:model="faqs.{{ $index }}.question" placeholder="Bagaimana kondisi elektronik bekas yang dijual?" class="bg-white border-gray-200 text-sm" />
-                                    <x-textarea label="Jawaban Penjelas" wire:model="faqs.{{ $index }}.answer" rows="2" placeholder="Semua produk telah melalui pengecekan teknisi..." class="bg-white border-gray-200 text-sm" />
+
+                                <div class="flex items-center gap-1.5 self-end md:self-center shrink-0 border-t md:border-t-0 pt-2 md:pt-0 border-gray-100 w-full md:w-auto justify-end">
+                                    <x-button icon="o-arrow-up" class="btn-sm btn-ghost btn-square text-gray-500 hover:text-gray-900" wire:click="moveFaqUp({{ $index }})" :disabled="$index === 0" tooltip="Pindah Ke Atas" />
+                                    <x-button icon="o-arrow-down" class="btn-sm btn-ghost btn-square text-gray-500 hover:text-gray-900" wire:click="moveFaqDown({{ $index }})" :disabled="$index === count($faqs) - 1" tooltip="Pindah Ke Bawah" />
+                                    <x-button icon="o-pencil" class="btn-sm btn-ghost btn-square text-blue-600 hover:bg-blue-50" wire:click="openEditFaqModal({{ $index }})" tooltip="Edit FAQ" />
+                                    <x-button icon="o-trash" class="btn-sm btn-ghost btn-square text-rose-600 hover:bg-rose-50" wire:click="confirmDeleteFaq({{ $index }})" tooltip="Hapus FAQ" />
                                 </div>
                             </div>
-                        @endforeach
+                        @empty
+                            <div class="text-center py-10 px-4 bg-gray-50 border border-dashed border-gray-300 rounded-2xl">
+                                <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto mb-3 text-xl">
+                                    <i class="fa-solid fa-circle-question"></i>
+                                </div>
+                                <h4 class="text-sm font-bold text-gray-800">Belum Ada Pertanyaan FAQ</h4>
+                                <p class="text-xs text-gray-500 max-w-sm mx-auto mt-1 mb-4">Tambahkan pertanyaan umum beserta jawabannya untuk membantu pelanggan mendapatkan informasi secara cepat.</p>
+                                <x-button label="Tambah FAQ Pertama" icon="o-plus" wire:click="openCreateFaqModal" class="btn-sm btn-primary rounded-xl text-white font-semibold" />
+                            </div>
+                        @endforelse
                     </div>
                 </div>
 
@@ -1069,5 +990,94 @@
         @endif
 
     </form>
+
+    {{-- ================================================================= --}}
+    {{-- MODALS: TESTIMONIAL & FAQ CRUD --}}
+    {{-- ================================================================= --}}
+
+    {{-- Modal Testimoni (Tambah / Edit) --}}
+    <x-modal wire:model="testimonialModal" title="{{ $editingTestimonialIndex !== null ? 'Edit Testimoni Pelanggan' : 'Tambah Testimoni Baru' }}" separator>
+        <x-form wire:submit="saveTestimonial">
+            <div class="space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <x-input label="Nama Pelanggan" wire:model="testimonial_name" placeholder="cth: Ahmad Fauzi" required />
+                    <x-input label="Keterangan / Pembelian (Opsional)" wire:model="testimonial_role" placeholder="cth: Pembeli Smart TV Samsung" />
+                </div>
+
+                <div>
+                    <label class="text-sm font-semibold text-gray-700 mb-1.5 block">Penilaian (Rating Bintang)</label>
+                    <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200">
+                        <div class="flex items-center gap-1.5">
+                            @for($star = 1; $star <= 5; $star++)
+                                <button type="button" wire:click="$set('testimonial_rating', {{ $star }})" class="cursor-pointer transition-transform hover:scale-125 focus:outline-hidden p-0.5">
+                                    <i class="fa-solid fa-star text-xl {{ $testimonial_rating >= $star ? 'text-amber-400' : 'text-gray-300' }}"></i>
+                                </button>
+                            @endfor
+                        </div>
+                        <span class="text-xs font-bold text-gray-700 ml-1">({{ $testimonial_rating }} dari 5 Bintang)</span>
+                    </div>
+                </div>
+
+                <x-textarea label="Isi Ulasan / Kutipan (Quote)" wire:model="testimonial_quote" rows="4" placeholder="Tuliskan pengalaman nyata pelanggan mengenai produk atau layanan..." required />
+            </div>
+
+            <x-slot:actions>
+                <x-button label="Batal" wire:click="$set('testimonialModal', false)" class="btn-ghost" />
+                <x-button label="{{ $editingTestimonialIndex !== null ? 'Perbarui Testimoni' : 'Simpan Testimoni' }}" type="submit" class="btn-primary text-white" spinner="saveTestimonial" />
+            </x-slot:actions>
+        </x-form>
+    </x-modal>
+
+    {{-- Modal Hapus Testimoni --}}
+    <x-modal wire:model="deleteTestimonialModal" title="Konfirmasi Hapus Testimoni" separator>
+        <div class="p-2 space-y-3">
+            <p class="text-sm text-gray-600">
+                Apakah Anda yakin ingin menghapus testimoni ulasan ini? Tindakan ini akan langsung menghapusnya dari slider tampilan beranda.
+            </p>
+            @if($deletingTestimonialIndex !== null && isset($testimonials[$deletingTestimonialIndex]))
+                <div class="p-3.5 bg-red-50 rounded-xl border border-red-200 text-xs text-red-800 space-y-1">
+                    <div class="font-bold text-red-900">{{ $testimonials[$deletingTestimonialIndex]['name'] ?? 'Pelanggan' }}</div>
+                    <div class="italic text-gray-700">&ldquo;{{ \Illuminate\Support\Str::limit($testimonials[$deletingTestimonialIndex]['quote'] ?? $testimonials[$deletingTestimonialIndex]['text'] ?? '', 100) }}&rdquo;</div>
+                </div>
+            @endif
+        </div>
+        <x-slot:actions>
+            <x-button label="Batal" wire:click="$set('deleteTestimonialModal', false)" class="btn-ghost" />
+            <x-button label="Hapus Testimoni" wire:click="deleteTestimonial" class="btn-error text-white" spinner="deleteTestimonial" />
+        </x-slot:actions>
+    </x-modal>
+
+    {{-- Modal FAQ (Tambah / Edit) --}}
+    <x-modal wire:model="faqModal" title="{{ $editingFaqIndex !== null ? 'Edit Pertanyaan FAQ' : 'Tambah Pertanyaan FAQ Baru' }}" separator>
+        <x-form wire:submit="saveFaq">
+            <div class="space-y-4">
+                <x-input label="Pertanyaan" wire:model="faq_question" placeholder="cth: Apakah garansi berlaku untuk unit bekas?" required />
+                <x-textarea label="Jawaban Penjelas" wire:model="faq_answer" rows="5" placeholder="Tuliskan jawaban lengkap yang informatif bagi pelanggan..." required />
+            </div>
+
+            <x-slot:actions>
+                <x-button label="Batal" wire:click="$set('faqModal', false)" class="btn-ghost" />
+                <x-button label="{{ $editingFaqIndex !== null ? 'Perbarui FAQ' : 'Simpan FAQ' }}" type="submit" class="btn-primary text-white" spinner="saveFaq" />
+            </x-slot:actions>
+        </x-form>
+    </x-modal>
+
+    {{-- Modal Hapus FAQ --}}
+    <x-modal wire:model="deleteFaqModal" title="Konfirmasi Hapus FAQ" separator>
+        <div class="p-2 space-y-3">
+            <p class="text-sm text-gray-600">
+                Apakah Anda yakin ingin menghapus pertanyaan FAQ ini dari daftar beranda?
+            </p>
+            @if($deletingFaqIndex !== null && isset($faqs[$deletingFaqIndex]))
+                <div class="p-3.5 bg-red-50 rounded-xl border border-red-200 text-xs text-red-900 font-semibold">
+                    {{ $faqs[$deletingFaqIndex]['question'] ?? $faqs[$deletingFaqIndex]['q'] ?? '' }}
+                </div>
+            @endif
+        </div>
+        <x-slot:actions>
+            <x-button label="Batal" wire:click="$set('deleteFaqModal', false)" class="btn-ghost" />
+            <x-button label="Hapus FAQ" wire:click="deleteFaq" class="btn-error text-white" spinner="deleteFaq" />
+        </x-slot:actions>
+    </x-modal>
 
 </div>

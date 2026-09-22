@@ -54,7 +54,7 @@
             </div>
 
             {{-- Menu Navigasi --}}
-            <x-menu activate-by-route class="flex-1 overflow-y-auto overflow-x-hidden">
+            <x-menu activate-by-route class="flex-1 overflow-y-auto overflow-x-hidden scroll-smooth">
                 <x-admin.sidebar-item route="admin.dashboard" icon="o-squares-2x2" label="Dashboard" />
                 
                 @can('view_products')

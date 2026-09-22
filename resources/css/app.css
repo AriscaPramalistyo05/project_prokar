@@ -63,6 +63,25 @@
   --font-brand-display: "Montserrat", sans-serif;
   --font-public: "Public Sans", sans-serif;
   --font-inter: "Inter", sans-serif;
+
+  /* ── Z-Index Design Tokens ──
+     Standarisasi z-index untuk mencegah tabrakan hitbox
+     antar section overlap, navbar, modal, dan floating UI.
+     Nilai diambil dari hardcoded value yang sudah berjalan. */
+  --z-section-hero: 10;
+  --z-section-marquee: 20;
+  --z-section-overlap: 30;
+  --z-section-form: 35;
+  --z-section-testimonials: 40;
+  --z-section-keunggulan: 45;
+  --z-section-faq: 50;
+  --z-section-lokasi: 60;
+  --z-footer: 70;
+  --z-sticky-cta: 80;
+  --z-navbar: 9999;
+  --z-modal-backdrop: 99998;
+  --z-modal: 99999;
+  --z-toast: 10000;
 }
 
 /* ── Opening Animation Styles ──
@@ -302,62 +321,6 @@ body {
   100% { transform: translateX(-50%); }
 }
 
-/* ── Hero diagonal parallax gallery (desktop) ── */
-.hero-visual {
-  perspective: 1000px;
-}
-.hero-visual-grid {
-  transform: rotate(-7deg) scale(1.08);
-}
-.hero-parallax-col {
-  will-change: transform;
-}
-.hero-tile {
-  display: block;
-  position: relative;
-  border-radius: 0.75rem;
-  overflow: hidden;
-  background: #f3f4f6;
-  box-shadow: 0 20px 40px -15px rgba(0,0,0,0.25);
-  border: 1px solid rgba(0,0,0,0.06);
-}
-.hero-tile img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-.hero-tile .hero-tile-label {
-  position: absolute;
-  left: 0; right: 0; bottom: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.75), transparent);
-  color: #fff;
-  font-family: var(--font-public);
-  font-weight: 800;
-  font-size: 0.9rem;
-  padding: 0.6rem 0.75rem 0.5rem;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-
-/* ── Mobile hero gallery ── */
-.hero-tile-mobile {
-  display: block;
-  border-radius: 0.5rem;
-  overflow: hidden;
-  background: #f3f4f6;
-  box-shadow: 0 10px 25px -10px rgba(0,0,0,0.2);
-  border: 1px solid rgba(0,0,0,0.06);
-}
-.hero-tile-mobile img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.hero-tile-mobile .hero-tile-label {
-  font-family: var(--font-public);
-  font-weight: 800;
-  font-size: 0.95rem;
-  text-align: center;
-  padding: 0.6rem 0.25rem;
-  text-transform: uppercase;
-}
 
 /* ── Readability ── */
 #hero p.hero-desc-text {

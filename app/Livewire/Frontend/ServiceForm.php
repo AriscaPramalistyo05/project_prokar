@@ -2,12 +2,13 @@
 
 namespace App\Livewire\Frontend;
 
+use App\Livewire\Traits\HandlesMediaUploads;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
 class ServiceForm extends Component
 {
-    use WithFileUploads;
+    use WithFileUploads, HandlesMediaUploads;
 
     public $nama = '';
     public $email = '';
@@ -29,7 +30,6 @@ class ServiceForm extends Component
     public $district_name = '';
     public $village_name = '';
 
-    public $media = [];
     public $submitted = false;
     public $newServiceCode = '';
     public $submittedWhatsapp = '';
@@ -63,26 +63,25 @@ class ServiceForm extends Component
     public function syncLocalCodes($codes)
     {
         if (\Illuminate\Support\Facades\Auth::check() && is_array($codes) && count($codes) > 0) {
-            $userId = \Illuminate\Support\Facades\Auth::id();
+            $user = \Illuminate\Support\Facades\Auth::user();
             
-            // Sync all codes that belong to this session but don't have a user_id yet
+            // Sync all codes that belong to this session but don't have a user_id yet,
+            // strictly scoped to this authenticated user's phone or email to prevent IDOR attacks.
             \App\Models\ServiceOrder::whereIn('service_code', $codes)
                 ->whereNull('user_id')
-                ->update(['user_id' => $userId]);
-        }
-    }
-
-    public function removeMedia($index)
-    {
-        if (isset($this->media[$index])) {
-            unset($this->media[$index]);
-            $this->media = array_values($this->media);
+                ->where(function ($q) use ($user) {
+                    $q->where('customer_phone', $user->phone);
+                    if (!empty($user->email)) {
+                        $q->orWhere('customer_email', $user->email);
+                    }
+                })
+                ->update(['user_id' => $user->id]);
         }
     }
 
     protected function rules()
     {
-        return [
+        return array_merge([
             'nama' => 'required|string|min:2|max:100',
             'email' => 'required|email|max:150',
             'whatsapp' => ['required', 'string', new \App\Rules\IndonesianPhone()],
@@ -94,27 +93,18 @@ class ServiceForm extends Component
             'district_id' => $this->serviceType === 'datang' ? 'required' : 'nullable',
             'village_id' => $this->serviceType === 'datang' ? 'required' : 'nullable',
             'address_detail' => $this->serviceType === 'datang' ? 'required|string|min:10' : 'nullable|string|min:10',
-            'media' => 'nullable|array|max:5',
-            'media.*' => [
-                'required',
-                'file',
-                'mimes:jpg,jpeg,png,webp,mp4,mov,avi,webm',
-                'max:20480', // 20MB
-            ],
-        ];
+        ], $this->getMediaRules());
     }
 
     protected function messages()
     {
-        return [
+        return array_merge([
             'province_id.required' => 'Provinsi wajib dipilih.',
             'regency_id.required' => 'Kabupaten/Kota wajib dipilih.',
             'district_id.required' => 'Kecamatan wajib dipilih.',
             'village_id.required' => 'Desa/Kelurahan wajib dipilih.',
             'address_detail.required' => 'Detail alamat wajib diisi.',
-            'media.max' => 'Maksimal 5 file yang dapat diupload.',
-            'media.*.max' => 'Ukuran file maksimal 20MB.',
-        ];
+        ], $this->getMediaMessages());
     }
 
     public function submit()
@@ -152,9 +142,7 @@ class ServiceForm extends Component
 
             if (!empty($this->media)) {
                 foreach ($this->media as $file) {
-                    $extension = strtolower($file->getClientOriginalExtension());
-                    $videoExts = ['mp4', 'mov', 'avi', 'webm'];
-                    $mediaType = in_array($extension, $videoExts) ? 'video' : 'image';
+                    $mediaType = $this->isVideoFile($file) ? 'video' : 'image';
 
                     $serviceOrder->serviceImages()->create([
                         'path' => $file->store('service_images', 'public'),

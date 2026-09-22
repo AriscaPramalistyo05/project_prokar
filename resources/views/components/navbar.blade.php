@@ -31,9 +31,9 @@
     }
 }" @cart-count-updated.window="updateCartCount($event.detail)"
     @cart-updated.window="updateCartCount($event.detail)">
-    <!-- Announcement Bar (Marquee Hitam) -->
-    <div role="banner"
-        class="flex justify-between items-center bg-black py-2.5 px-4 sm:px-10 md:px-[60px] z-[150] relative">
+    <!-- Announcement Bar (Marquee Hitam, Fixed Top like IDLIX) -->
+    <div id="top-announcement-bar" role="banner"
+        class="flex justify-between items-center bg-black py-2.5 px-4 sm:px-10 md:px-[60px] overflow-hidden">
         <div class="marquee-container flex-1">
             <div class="marquee-content">
                 @guest
@@ -62,36 +62,33 @@
                     </span>
                     <i class="fa-solid fa-star text-[8px] text-brand-yellow"></i>
                 @else
-                    <span class="text-white font-public font-bold text-sm uppercase tracking-widest">nikmati produk second
-                        berkualitas dengan harga murah</span>
+                    <span class="text-white font-public font-bold text-sm uppercase tracking-widest">{{ setting('marquee_text_black') ?? 'nikmati produk second berkualitas dengan harga murah' }}</span>
                     <i class="fa-solid fa-star text-[8px] text-brand-yellow"></i>
-                    <span class="text-white font-public font-bold text-sm uppercase tracking-widest">jual produk elektronik
-                        bekasmu dengan harga terbaik</span>
+                    <span class="text-white font-public font-bold text-sm uppercase tracking-widest">jual produk elektronik bekasmu dengan harga terbaik</span>
                     <i class="fa-solid fa-star text-[8px] text-brand-yellow"></i>
-                    <span class="text-white font-public font-bold text-sm uppercase tracking-widest">produk di servis oleh
-                        teknisi berpengalaman</span>
+                    <span class="text-white font-public font-bold text-sm uppercase tracking-widest">produk di servis oleh teknisi berpengalaman</span>
                     <i class="fa-solid fa-star text-[8px] text-brand-yellow"></i>
-                    <span class="text-white font-public font-bold text-sm uppercase tracking-widest">nikmati produk second
-                        berkualitas dengan harga murah</span>
+                    <span class="text-white font-public font-bold text-sm uppercase tracking-widest">nikmati produk second berkualitas dengan harga murah</span>
                     <i class="fa-solid fa-star text-[8px] text-brand-yellow"></i>
-                    <span class="text-white font-public font-bold text-sm uppercase tracking-widest">jual produk elektronik
-                        bekasmu dengan harga terbaik</span>
+                    <span class="text-white font-public font-bold text-sm uppercase tracking-widest">jual produk elektronik bekasmu dengan harga terbaik</span>
                     <i class="fa-solid fa-star text-[8px] text-brand-yellow"></i>
                 @endguest
             </div>
         </div>
     </div>
 
-    <!-- Navbar -->
-    <header class="sticky top-0 z-[9999] bg-[#E8F4F8]/80 backdrop-blur-xl border-b border-gray-200 shadow-sm">
-        <nav class="max-w-[1440px] mx-auto flex justify-between items-center h-20 px-4 sm:px-6 lg:px-12 gap-3">
+    <!-- Navbar (Smart Sticky Navbar with Transparent Top & Blue-Border Floating Pill on Scroll) -->
+    <header id="smart-navbar"
+        class="sticky top-0 z-[9999] bg-transparent transition-all duration-300 ease-out will-change-transform">
+        <nav id="smart-nav-inner"
+            class="max-w-[1440px] mx-auto flex justify-between items-center h-20 sm:h-[88px] px-4 sm:px-6 lg:px-12 gap-3 transition-all duration-300 ease-out">
             <div class="flex min-w-0 items-center gap-2 sm:gap-3">
-                <button @click="mobileMenuOpen = true" class="md:hidden cursor-pointer" aria-label="Buka Menu">
-                    <i class="fa-solid fa-bars text-xl"></i>
+                <button @click="mobileMenuOpen = true" class="smart-nav-icon md:hidden cursor-pointer p-1 text-black transition-colors" aria-label="Buka Menu">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 6h16M4 12h16M4 18h16"/></svg>
                 </button>
                 <a href="{{ route('home') }}" class="flex min-w-0 items-center gap-3">
                     <img src="{{ $logoUrl }}" onerror="this.onerror=null; this.src='{{ asset('images/logo prokar simpel.png') }}'" alt="{{ setting('shop_name', 'Prokar Elektronik') }}"
-                        class="h-9 sm:h-10 max-w-[150px] sm:max-w-none w-auto object-contain" />
+                        class="smart-nav-logo h-9 sm:h-10 max-w-[150px] sm:max-w-none w-auto object-contain transition-all duration-300" width="160" height="40" />
                 </a>
             </div>
 
@@ -105,14 +102,14 @@
 
             <div class="flex shrink-0 items-center gap-3 sm:gap-5">
                 <button type="button" @click="$dispatch('open-search-modal')" aria-label="Cari Produk"
-                    class="hover:scale-110 transition-transform cursor-pointer text-black">
-                    <i class="fa-solid fa-magnifying-glass text-xl"></i>
+                    class="smart-nav-icon hover:scale-110 transition-transform cursor-pointer text-black p-1">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/></svg>
                 </button>
 
                 @guest
                     <a href="{{ route('login') }}" aria-label="Login"
-                        class="w-10 h-10 rounded-full bg-black flex items-center justify-center hover:scale-110 transition-transform">
-                        <i class="fa-regular fa-user text-white text-sm"></i>
+                        class="smart-nav-login w-10 h-10 rounded-full bg-black flex items-center justify-center hover:scale-110 transition-all duration-300 shadow-sm">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                     </a>
                 @endguest
                 @auth
@@ -130,7 +127,7 @@
                     @endphp
                     <div x-data="{ open: false }" class="relative shrink-0">
                         <button @click="open = !open" aria-label="Account"
-                            class="w-10 h-10 min-w-[40px] min-h-[40px] shrink-0 aspect-square rounded-full bg-black flex items-center justify-center hover:scale-105 transition-transform overflow-hidden cursor-pointer">
+                            class="w-10 h-10 min-w-[40px] min-h-[40px] shrink-0 aspect-square rounded-full bg-black flex items-center justify-center hover:scale-105 transition-transform overflow-hidden cursor-pointer border border-transparent">
                             @if ($hasAvatar)
                                 <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}" referrerpolicy="no-referrer"
                                     class="w-full h-full rounded-full object-cover">
@@ -143,7 +140,7 @@
                             <div class="p-4 flex items-center gap-3 border-b border-gray-100 bg-gray-50/50">
                                 @if ($hasAvatar)
                                     <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}" referrerpolicy="no-referrer"
-                                        class="w-11 h-11 min-w-[44px] min-h-[44px] shrink-0 aspect-square rounded-full object-cover border border-gray-200">
+                                    class="w-11 h-11 min-w-[44px] min-h-[44px] shrink-0 aspect-square rounded-full object-cover border border-gray-200">
                                 @else
                                     <div
                                         class="w-11 h-11 min-w-[44px] min-h-[44px] shrink-0 aspect-square rounded-full bg-black flex items-center justify-center text-white text-xs font-bold tracking-tight shadow-xs">
@@ -181,8 +178,8 @@
 
                 <div class="relative flex items-center">
                     <a href="{{ route('keranjang.index') }}" aria-label="Keranjang"
-                        class="relative hover:scale-110 transition-transform">
-                        <i class="fa-solid fa-cart-shopping text-xl"></i>
+                        class="smart-nav-icon relative hover:scale-110 transition-transform p-1 text-black">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                         <span x-show="cartCount > 0" x-text="cartCount"
                             x-transition:enter="transition ease-out duration-300 transform"
                             x-transition:enter-start="opacity-0 scale-50"

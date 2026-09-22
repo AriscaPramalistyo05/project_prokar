@@ -5,12 +5,13 @@ namespace App\Livewire\Frontend;
 use App\Models\Category;
 use App\Models\SellSubmission;
 use App\Models\SellSubmissionImage;
+use App\Livewire\Traits\HandlesMediaUploads;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
 class SellForm extends Component
 {
-    use WithFileUploads;
+    use WithFileUploads, HandlesMediaUploads;
 
     public $nama = '';
     public $email = '';
@@ -27,14 +28,13 @@ class SellForm extends Component
     public $merek = '';
     public $kondisi = '';
     public $deskripsi = '';
-    public $media = [];
     public $submitted = false;
     public $newServiceCode = '';
     public $submittedWhatsapp = '';
 
     protected function rules()
     {
-        return [
+        return array_merge([
             'nama' => 'required|string|min:2|max:100',
             'email' => 'required|email|max:150',
             'whatsapp' => ['required', 'string', new \App\Rules\IndonesianPhone()],
@@ -47,19 +47,12 @@ class SellForm extends Component
             'merek' => 'required|string|min:2|max:100',
             'kondisi' => 'required|in:baik,cukup,rusak',
             'deskripsi' => 'required|string|min:10|max:1000',
-            'media' => 'nullable|array|max:5',
-            'media.*' => [
-                'required',
-                'file',
-                'mimes:jpg,jpeg,png,webp,mp4,mov,avi,webm',
-                'max:20480', // 20MB
-            ],
-        ];
+        ], $this->getMediaRules());
     }
 
     protected function messages()
     {
-        return [
+        return array_merge([
             'nama.required' => 'Nama lengkap wajib diisi.',
             'email.required' => 'Alamat email wajib diisi.',
             'email.email' => 'Format alamat email tidak valid.',
@@ -74,9 +67,7 @@ class SellForm extends Component
             'kondisi.required' => 'Kondisi barang wajib dipilih.',
             'deskripsi.required' => 'Deskripsi wajib diisi.',
             'deskripsi.min' => 'Deskripsi minimal 10 karakter.',
-            'media.max' => 'Maksimal 5 file yang dapat diupload.',
-            'media.*.max' => 'Ukuran file maksimal 20MB.',
-        ];
+        ], $this->getMediaMessages());
     }
 
     public function mount()
@@ -86,14 +77,6 @@ class SellForm extends Component
             $this->nama = $user->name;
             $this->email = $user->email ?? '';
             $this->whatsapp = $user->phone ?? '';
-        }
-    }
-
-    public function removeMedia($index)
-    {
-        if (isset($this->media[$index])) {
-            unset($this->media[$index]);
-            $this->media = array_values($this->media);
         }
     }
 

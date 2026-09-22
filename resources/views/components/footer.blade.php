@@ -3,7 +3,7 @@
   - Konsisten di semua halaman
   - Route helper untuk semua link
 --}}
-<footer class="section-overlap bg-brand-black pt-20 pb-10 px-6 md:px-12 z-[70]">
+<footer class="relative z-[70] -mt-10 md:-mt-14 rounded-t-[2.5rem] md:rounded-t-[3.5rem] shadow-[0_-15px_40px_-10px_rgba(0,0,0,0.22)] bg-brand-black pt-20 pb-10 px-6 md:px-12">
   <div class="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-start border-b border-gray-800 pb-16 mb-10 gap-12">
     <div class="max-w-md">
       @php
