@@ -74,7 +74,7 @@
                                 alt="Smart TV pilihan teknisi"
                                 width="480"
                                 height="520"
-                                loading="eager"
+                                loading="lazy"
                                 decoding="async"
                                 onerror="this.src='https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=600&h=450&fit=crop&fm=webp&q=80'" />
                         </a>
@@ -86,7 +86,7 @@
                                 alt="Mesin cuci berkualitas siap pakai"
                                 width="440"
                                 height="480"
-                                loading="eager"
+                                loading="lazy"
                                 decoding="async"
                                 onerror="this.src='https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=600&h=450&fit=crop&fm=webp&q=80'" />
                         </a>
