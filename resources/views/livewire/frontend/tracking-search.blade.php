@@ -1,6 +1,6 @@
 <div>
 <!-- HEADER TRACK -->
-<section class="section-overlap section-overlap-first bg-brand-soft pt-16 pb-24 md:pt-24 md:pb-32 z-10 relative text-center">
+<section class="section-overlap section-overlap-first bg-brand-soft pt-16 pb-28 md:pt-24 md:pb-36 z-10 text-center">
   <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
     <h1 class="text-black text-5xl md:text-7xl font-black uppercase tracking-tighter font-public mb-4 reveal-wrapper">
       <span class="reveal-line">Lacak Servis</span>
@@ -12,7 +12,7 @@
 </section>
 
 <!-- KONTEN PENCARIAN (OVERLAPPING SECTION) -->
-<section class="section-overlap bg-white pt-16 pb-32 md:pt-24 md:pb-40 z-20 flex-grow flex flex-col items-center">
+<section class="section-overlap bg-white pt-12 pb-32 md:pt-16 md:pb-40 z-20 flex-grow flex flex-col items-center rounded-t-[2.5rem] md:rounded-t-[3.5rem] -mt-10 md:-mt-14 shadow-[0_-15px_40px_-10px_rgba(0,0,0,0.15)] relative">
   <div class="max-w-3xl w-full mx-auto px-6 lg:px-12 text-center">
     
     <!-- Form Pencarian (Unified Mobile & Desktop Design) -->

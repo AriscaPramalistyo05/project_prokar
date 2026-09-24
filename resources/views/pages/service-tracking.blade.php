@@ -7,14 +7,11 @@
 @section('og_type', 'website')
 @section('body_class', 'bg-brand-soft font-inter')
 @push('styles')
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Public+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+<link rel="stylesheet" href="{{ asset('vendor/fonts/fonts.css') }}" />
+<link rel="stylesheet" href="{{ asset('vendor/fonts/material-symbols.css') }}" />
 <style>
   *, *::before, *::after { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; overflow-x: hidden; }
-  body { background: #fff; -webkit-font-smoothing: antialiased; }
+  html, body { margin: 0; padding: 0; overflow-x: clip; }
 
   .material-symbols-outlined {
     font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24;
@@ -78,40 +75,19 @@
 @endsection
 
 @push('scripts')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha384-g4NTh/Iv5PPU4xPyhEWqPcwtNXOvdaDI8LLnyYfyNZOjKJeYQyjzQ9X5275eBjpt" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha384-Z3REaz79l2IaAZqJsSABtTbhjgOUYyV3p90XNnAPCSHg3EMTz1fouunq9WZRtj3d" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js" integrity="sha384-0FwbSMlcCBgRZIAIN+i1xVrAbgrwSmKYej7zCCFlPpv50NGur87UfaeG1l13efmX" crossorigin="anonymous"></script>
 <script>
-  // Initialize Lenis
-  const lenis = new Lenis({
-    duration: 1.2,
-    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    direction: 'vertical',
-    smooth: true,
+  document.addEventListener('DOMContentLoaded', () => {
+    if (window.gsap) {
+      gsap.fromTo("section:first-of-type .reveal-line",
+        { y: "110%" },
+        { y: "0%", duration: 1.2, ease: "power4.out", delay: 0.2 }
+      );
+      
+      gsap.fromTo(".reveal-fade",
+        { y: 30, autoAlpha: 0 },
+        { y: 0, autoAlpha: 1, duration: 1, stagger: 0.15, ease: "power3.out", delay: 0.4 }
+      );
+    }
   });
-
-  function raf(time) {
-    lenis.raf(time);
-    requestAnimationFrame(raf);
-  }
-  requestAnimationFrame(raf);
-
-  // Sync GSAP with Lenis
-  gsap.registerPlugin(ScrollTrigger);
-  lenis.on('scroll', ScrollTrigger.update);
-  gsap.ticker.add((time) => { lenis.raf(time * 1000) });
-  gsap.ticker.lagSmoothing(0, 0);
-
-
-  /* --- GSAP ANIMATIONS --- */
-  gsap.fromTo("section:first-of-type .reveal-line",
-    { y: "110%" },
-    { y: "0%", duration: 1.2, ease: "power4.out", delay: 0.2 }
-  );
-  
-  gsap.fromTo(".reveal-fade",
-    { y: 30, autoAlpha: 0 },
-    { y: 0, autoAlpha: 1, duration: 1, stagger: 0.15, ease: "power3.out", delay: 0.4 }
-  );
 </script>
 @endpush

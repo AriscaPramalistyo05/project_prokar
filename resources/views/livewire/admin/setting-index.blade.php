@@ -429,7 +429,7 @@
                                     @elseif ($existing_hero_3card_image_3)
                                         <img src="{{ asset('storage/' . $existing_hero_3card_image_3) }}" alt="Card 3" class="h-full w-full object-cover" />
                                     @else
-                                        <img src="https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=600&h=800&fit=crop" alt="Kulkas" class="h-full w-full object-cover" />
+                                        <img src="{{ asset('storage/settings/hero3card/kO4u7Yrw9y4qsRPqpt0PZKA70LCPAldNxb2ZHgto.webp') }}" onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=600&h=800&fit=crop'" alt="Kulkas" class="h-full w-full object-cover" />
                                     @endif
                                 </div>
                             </div>

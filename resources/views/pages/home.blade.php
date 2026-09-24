@@ -54,11 +54,11 @@
                         <div class="hero-shape-circle" aria-hidden="true"></div>
                         <div class="hero-shape-square" aria-hidden="true"></div>
 
-                        <!-- Card 1: Top Center-Left (Kulkas Polytron) -->
+                        <!-- Card 1: Top Center-Left (Kulkas Polytron - Card 3 Setting) -->
                         <a href="{{ route('produk.index') }}?kategori=kulkas"
-                            class="collage-card collage-card-1" title="Lihat Kulkas Bekas">
-                            <img src="{{ $hero3CardImg1 }}"
-                                alt="Kulkas elektronik bekas bergaransi"
+                            class="collage-card collage-card-1" title="{{ setting('hero_3card_title_3') ?? 'Lihat Kulkas Bekas' }}">
+                            <img src="{{ $hero3CardImg3 }}"
+                                alt="{{ setting('hero_3card_title_3') ?? 'Kulkas elektronik bekas bergaransi' }}"
                                 width="480"
                                 height="520"
                                 fetchpriority="high"
@@ -67,11 +67,11 @@
                                 onerror="this.src='https://prokarelektronik.com/storage/settings/hero3card/kO4u7Yrw9y4qsRPqpt0PZKA70LCPAldNxb2ZHgto.webp'" />
                         </a>
 
-                        <!-- Card 2: Middle-Right (Smart TV) -->
+                        <!-- Card 2: Middle-Right (Smart TV - Card 2 Setting) -->
                         <a href="{{ route('produk.index') }}?kategori=tv"
-                            class="collage-card collage-card-2" title="Lihat Smart TV Bekas">
+                            class="collage-card collage-card-2" title="{{ setting('hero_3card_title_2') ?? 'Lihat Smart TV Bekas' }}">
                             <img src="{{ $hero3CardImg2 }}"
-                                alt="Smart TV pilihan teknisi"
+                                alt="{{ setting('hero_3card_title_2') ?? 'Smart TV pilihan teknisi' }}"
                                 width="480"
                                 height="520"
                                 loading="lazy"
@@ -79,11 +79,11 @@
                                 onerror="this.src='https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=600&h=450&fit=crop&fm=webp&q=80'" />
                         </a>
 
-                        <!-- Card 3: Bottom-Left (Mesin Cuci) -->
+                        <!-- Card 3: Bottom-Left (Mesin Cuci - Card 1 Setting) -->
                         <a href="{{ route('produk.index') }}?kategori=mesin-cuci"
-                            class="collage-card collage-card-3" title="Lihat Mesin Cuci Bekas">
-                            <img src="{{ $hero3CardImg3 }}"
-                                alt="Mesin cuci berkualitas siap pakai"
+                            class="collage-card collage-card-3" title="{{ setting('hero_3card_title_1') ?? 'Lihat Mesin Cuci Bekas' }}">
+                            <img src="{{ $hero3CardImg1 }}"
+                                alt="{{ setting('hero_3card_title_1') ?? 'Mesin cuci berkualitas siap pakai' }}"
                                 width="440"
                                 height="480"
                                 loading="lazy"
@@ -249,40 +249,40 @@
     @endif
 
     <!-- 4. TESTIMONI SECTION (Cuberto Card Overlap Dark) -->
-    <section id="testimonials" class="section-overlap bg-black pt-20 pb-36 lg:pt-28 lg:pb-44 z-40 text-white">
-        <div class="max-w-[1000px] mx-auto px-6 text-center">
-            <h2 class="text-white text-4xl md:text-6xl font-black uppercase tracking-tighter font-public mb-6">
+    <section id="testimonials" class="section-overlap bg-black pt-16 pb-16 lg:pt-24 lg:pb-24 z-40 text-white">
+        <div class="max-w-[860px] mx-auto px-6 text-center">
+            <h2 class="text-white text-3xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight font-public mt-2 md:mt-4 mb-2 md:mb-3">
                 <span class="reveal-wrapper"><span class="reveal-line">Kata Pelanggan</span></span>
             </h2>
-            <p class="reveal-fade text-gray-400 text-lg md:text-xl font-medium mb-16">Lihat pengalaman nyata dari pelanggan setia kami.</p>
+            <p class="reveal-fade text-gray-400 text-sm md:text-base font-medium mb-6 md:mb-8">Lihat pengalaman nyata dari pelanggan setia kami.</p>
 
-            <div class="reveal-fade bg-gray-900/50 rounded-[3rem] p-8 md:p-16 border border-gray-800 backdrop-blur-sm relative">
-                <div class="flex justify-center gap-2 mb-8">
-                    <i class="fa-solid fa-star text-brand-yellow text-2xl"></i>
-                    <i class="fa-solid fa-star text-brand-yellow text-2xl"></i>
-                    <i class="fa-solid fa-star text-brand-yellow text-2xl"></i>
-                    <i class="fa-solid fa-star text-brand-yellow text-2xl"></i>
-                    <i class="fa-solid fa-star text-brand-yellow text-2xl"></i>
+            <div class="reveal-fade bg-gray-900/60 rounded-3xl md:rounded-[2.5rem] p-6 sm:p-8 md:p-10 border border-gray-800/90 backdrop-blur-sm relative shadow-2xl">
+                <div class="flex justify-center gap-1.5 mb-5 md:mb-6">
+                    <i class="fa-solid fa-star text-brand-yellow text-lg sm:text-xl"></i>
+                    <i class="fa-solid fa-star text-brand-yellow text-lg sm:text-xl"></i>
+                    <i class="fa-solid fa-star text-brand-yellow text-lg sm:text-xl"></i>
+                    <i class="fa-solid fa-star text-brand-yellow text-lg sm:text-xl"></i>
+                    <i class="fa-solid fa-star text-brand-yellow text-lg sm:text-xl"></i>
                 </div>
 
-                <div class="min-h-[160px] flex flex-col justify-center">
-                    <p id="testimoni-text" class="text-white text-2xl md:text-4xl font-bold font-public leading-relaxed">
+                <div class="min-h-[100px] sm:min-h-[120px] flex flex-col justify-center">
+                    <p id="testimoni-text" class="text-white text-lg sm:text-xl md:text-2xl lg:text-[1.65rem] font-bold font-public leading-snug sm:leading-relaxed">
                         "{{ $testiList[0]['text'] ?? '' }}"
                     </p>
-                    <span id="testimoni-name" class="text-brand-yellow text-lg md:text-xl font-bold mt-6 block">
+                    <span id="testimoni-name" class="text-brand-yellow text-sm sm:text-base md:text-lg font-bold mt-4 sm:mt-5 block">
                         — {{ $testiList[0]['name'] ?? '' }}
                     </span>
                 </div>
 
-                <div class="flex justify-center items-center gap-6 mt-12">
+                <div class="flex justify-center items-center gap-4 sm:gap-6 mt-6 sm:mt-8">
                     <button id="btn-prev" onclick="changeTestimoni(-1)" aria-label="Testimoni Sebelumnya"
-                        class="w-12 h-12 rounded-full border border-gray-600 flex items-center justify-center text-gray-600 transition-transform duration-200 active:scale-95 hover:opacity-80 cursor-pointer">
-                        <i class="fa-solid fa-arrow-left"></i>
+                        class="w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-gray-600 flex items-center justify-center text-gray-600 transition-transform duration-200 active:scale-95 hover:opacity-80 cursor-pointer">
+                        <i class="fa-solid fa-arrow-left text-sm"></i>
                     </button>
                     <div id="testimoni-dots" class="flex gap-2"></div>
                     <button id="btn-next" onclick="changeTestimoni(1)" aria-label="Testimoni Selanjutnya"
-                        class="w-12 h-12 rounded-full bg-white text-black flex items-center justify-center hover:bg-brand-yellow transition-transform duration-200 active:scale-95 hover:opacity-90 cursor-pointer">
-                        <i class="fa-solid fa-arrow-right"></i>
+                        class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white text-black flex items-center justify-center hover:bg-brand-yellow transition-transform duration-200 active:scale-95 hover:opacity-90 cursor-pointer">
+                        <i class="fa-solid fa-arrow-right text-sm"></i>
                     </button>
                 </div>
             </div>
@@ -614,20 +614,20 @@
 
             if (btnPrev) {
                 if (currentTestiIndex === 0) {
-                    btnPrev.className = "w-12 h-12 rounded-full border border-gray-700 flex items-center justify-center text-gray-600 opacity-40 cursor-not-allowed transition-all";
+                    btnPrev.className = "w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-gray-700 flex items-center justify-center text-gray-600 opacity-40 cursor-not-allowed transition-all";
                     btnPrev.setAttribute('disabled', 'true');
                 } else {
-                    btnPrev.className = "w-12 h-12 rounded-full bg-white text-black flex items-center justify-center hover:bg-brand-yellow transition-all cursor-pointer shadow-sm";
+                    btnPrev.className = "w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white text-black flex items-center justify-center hover:bg-brand-yellow transition-all cursor-pointer shadow-sm";
                     btnPrev.removeAttribute('disabled');
                 }
             }
 
             if (btnNext) {
                 if (currentTestiIndex === testimonials.length - 1) {
-                    btnNext.className = "w-12 h-12 rounded-full border border-gray-700 flex items-center justify-center text-gray-600 opacity-40 cursor-not-allowed transition-all";
+                    btnNext.className = "w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-gray-700 flex items-center justify-center text-gray-600 opacity-40 cursor-not-allowed transition-all";
                     btnNext.setAttribute('disabled', 'true');
                 } else {
-                    btnNext.className = "w-12 h-12 rounded-full bg-white text-black flex items-center justify-center hover:bg-brand-yellow transition-all cursor-pointer shadow-sm";
+                    btnNext.className = "w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white text-black flex items-center justify-center hover:bg-brand-yellow transition-all cursor-pointer shadow-sm";
                     btnNext.removeAttribute('disabled');
                 }
             }
@@ -643,7 +643,7 @@
             updateDots();
             const btnPrev = document.getElementById('btn-prev');
             if (btnPrev && currentTestiIndex === 0) {
-                btnPrev.className = "w-12 h-12 rounded-full border border-gray-700 flex items-center justify-center text-gray-600 opacity-40 cursor-not-allowed transition-all";
+                btnPrev.className = "w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-gray-700 flex items-center justify-center text-gray-600 opacity-40 cursor-not-allowed transition-all";
                 btnPrev.setAttribute('disabled', 'true');
             }
         }

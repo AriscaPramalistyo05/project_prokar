@@ -38,7 +38,7 @@ class HomeController extends Controller
 
         $hero3CardImg1 = setting('hero_3card_image_1')
             ? optimized_asset(setting('hero_3card_image_1'))
-            : asset('storage/settings/hero3card/kO4u7Yrw9y4qsRPqpt0PZKA70LCPAldNxb2ZHgto.webp');
+            : 'https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=600&h=450&fit=crop&fm=webp&q=80';
 
         $hero3CardImg2 = setting('hero_3card_image_2')
             ? optimized_asset(setting('hero_3card_image_2'))
@@ -46,7 +46,7 @@ class HomeController extends Controller
 
         $hero3CardImg3 = setting('hero_3card_image_3')
             ? optimized_asset(setting('hero_3card_image_3'))
-            : 'https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=600&q=80&fm=webp';
+            : asset('storage/settings/hero3card/kO4u7Yrw9y4qsRPqpt0PZKA70LCPAldNxb2ZHgto.webp');
 
         // ── WhatsApp Number Normalization ──
         $waNumber = preg_replace('/[^0-9]/', '', setting('shop_whatsapp') ?? '089504841279');

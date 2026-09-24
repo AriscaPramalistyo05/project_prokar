@@ -5,6 +5,8 @@ use App\Http\Controllers\Admin\ProductMediaController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\Frontend\CheckoutController;
 use App\Http\Controllers\Frontend\ProductController;
+use App\Http\Controllers\Admin\DocImageController;
+use App\Http\Controllers\Frontend\DocController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderInvoiceController;
 use App\Http\Controllers\VideoStreamController;
@@ -84,6 +86,23 @@ Route::post('/cart/add', function (Illuminate\Http\Request $request) {
 Route::view('/checkout', 'pages.checkout-address')->name('checkout.address');
 Route::get('/api/search', [\App\Http\Controllers\Api\SearchController::class, 'search'])->name('api.search');
 Route::post('/payment/webhook', [\App\Http\Controllers\Api\PaymentWebhookController::class, 'handle'])->name('payment.webhook');
+
+// ─── DOKUMENTASI (Frontend & Subdomain) ───────────────────────────
+$docsSubdomain = env('DOCS_DOMAIN', 'docs.prokarelektronik.com');
+Route::domain($docsSubdomain)->name('subdomain.docs.')->group(function () {
+    Route::get('/', [DocController::class, 'index'])->name('index');
+    Route::get('/search', [DocController::class, 'search'])->name('search');
+    Route::get('/{categorySlug}', [DocController::class, 'category'])->name('category');
+    Route::get('/{categorySlug}/{articleSlug}', [DocController::class, 'show'])->name('show');
+});
+
+Route::prefix('docs')->name('docs.')->group(function () {
+    Route::get('/', [DocController::class, 'index'])->name('index');
+    Route::get('/search', [DocController::class, 'search'])->name('search');
+    Route::get('/{categorySlug}', [DocController::class, 'category'])->name('category');
+   
+    Route::get('/{categorySlug}/{articleSlug}', [DocController::class, 'show'])->name('show');
+});
 
 // ─── AUTH (Breeze) ──────────────────────────────────────────────
 require __DIR__ . '/auth.php';
@@ -186,7 +205,16 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'staff'])->group(fun
             Route::get('/settings', \App\Livewire\Admin\SettingIndex::class)->name('settings');
         });
 
-        // 10. Helper Pemeliharaan Database & Storage (Khusus Super Admin)
+        // 10. Modul Dokumentasi (Permission: manage_docs)
+        Route::middleware(['permission:manage_docs'])->group(function () {
+            Route::get('/docs', \App\Livewire\Admin\DocArticleIndex::class)->name('docs.index');
+            Route::get('/docs/create', \App\Livewire\Admin\DocArticleForm::class)->name('docs.create');
+            Route::get('/docs/{docArticle}/edit', \App\Livewire\Admin\DocArticleForm::class)->name('docs.edit');
+            Route::get('/docs/categories', \App\Livewire\Admin\DocCategoryIndex::class)->name('docs.categories');
+            Route::post('/docs/upload-image', [DocImageController::class, 'upload'])->name('docs.upload-image');
+        });
+
+        // 11. Helper Pemeliharaan Database & Storage (Khusus Super Admin)
         Route::middleware(['role:super_admin'])->group(function () {
             Route::get('/maintenance/migrate', [MaintenanceController::class, 'migrate'])->name('maintenance.migrate');
             Route::get('/maintenance/optimize', [MaintenanceController::class, 'optimize'])->name('maintenance.optimize');

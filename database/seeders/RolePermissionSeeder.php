@@ -36,6 +36,8 @@ class RolePermissionSeeder extends Seeder
             'view_activity_logs', 'view_system_logs',
             // Setting
             'manage_settings',
+            // Dokumentasi
+            'manage_docs',
         ];
 
         foreach ($permissions as $permission) {

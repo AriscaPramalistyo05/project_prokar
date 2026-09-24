@@ -169,31 +169,26 @@
   ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
   </script>
 
-  <!-- DNS Prefetch & Preconnect untuk domain eksternal -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <!-- DNS Prefetch & Preconnect untuk resource eksternal -->
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
   <link rel="dns-prefetch" href="https://images.unsplash.com" />
-  <link rel="dns-prefetch" href="https://www.gstatic.com" />
-  <link rel="dns-prefetch" href="https://fcm.googleapis.com" />
   <link rel="dns-prefetch" href="https://storage.googleapis.com" />
 
   <!-- Dynamic Page Preload (if specified) -->
   @stack('preload')
 
-  <!-- Fonts: Non-render-blocking via media="print" trick with display=swap and full weights -->
-  <link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Public+Sans:wght@400;600;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" media="print" onload="this.media='all'" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha384-/o6I2CkkWC//PSjvWC/eYN7l3xM3tJm8ZzVkCOfp//W05QcE3mlGskpoHB6XqI+B" crossorigin="anonymous" media="print" onload="this.media='all'" />
+  <!-- Fonts & Icons: Self-hosted via /vendor/ untuk keamanan SRI & eliminasi cross-domain CORS -->
+  <link rel="stylesheet" href="{{ asset('vendor/fonts/fonts.css') }}" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="{{ asset('vendor/fonts/material-symbols.css') }}" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="{{ asset('vendor/fontawesome/css/all.min.css') }}" media="print" onload="this.media='all'" />
   <noscript>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Public+Sans:wght@400;600;700;900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha384-/o6I2CkkWC//PSjvWC/eYN7l3xM3tJm8ZzVkCOfp//W05QcE3mlGskpoHB6XqI+B" crossorigin="anonymous" />
+    <link rel="stylesheet" href="{{ asset('vendor/fonts/fonts.css') }}" />
+    <link rel="stylesheet" href="{{ asset('vendor/fonts/material-symbols.css') }}" />
+    <link rel="stylesheet" href="{{ asset('vendor/fontawesome/css/all.min.css') }}" />
   </noscript>
 
-
-  <!-- Umami Web Analytics -->
-  <script defer src="https://cloud.umami.is/script.js" data-website-id="6150499f-eb3e-406f-b3d1-d9834bb6bfc9"></script>
+  <!-- Umami Web Analytics (Self-hosted proxy script untuk mencegah SRI & Cross-Domain alert) -->
+  <script defer src="{{ asset('vendor/umami/script.js') }}" data-website-id="6150499f-eb3e-406f-b3d1-d9834bb6bfc9" data-host-url="https://cloud.umami.is"></script>
 
   <!-- Vite Production CSS & JS -->
   @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -1051,9 +1046,9 @@
     window.updateStickyOverlap = initStickyOverlap;
   </script>
 
-  <!-- GSAP & ScrollTrigger CDNs -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha384-g4NTh/Iv5PPU4xPyhEWqPcwtNXOvdaDI8LLnyYfyNZOjKJeYQyjzQ9X5275eBjpt" crossorigin="anonymous" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha384-Z3REaz79l2IaAZqJsSABtTbhjgOUYyV3p90XNnAPCSHg3EMTz1fouunq9WZRtj3d" crossorigin="anonymous" defer></script>
+  <!-- GSAP & ScrollTrigger Local Vendor Assets -->
+  <script src="{{ asset('vendor/gsap/gsap.min.js') }}" defer></script>
+  <script src="{{ asset('vendor/gsap/ScrollTrigger.min.js') }}" defer></script>
 
   <script defer>
     document.addEventListener('DOMContentLoaded', function() {
@@ -1061,7 +1056,7 @@
       if (!isTouch) {
         // Dynamically load Lenis smooth scroll only on non-touch desktop devices
         const lenisScript = document.createElement('script');
-        lenisScript.src = 'https://unpkg.com/lenis@1.1.9/dist/lenis.min.js';
+        lenisScript.src = '{{ asset('vendor/lenis/lenis.min.js') }}';
         lenisScript.crossOrigin = 'anonymous';
         lenisScript.onload = function() {
           if (typeof Lenis === 'undefined') return;
@@ -1257,10 +1252,10 @@
       if (!firebaseConfig) return;
       function loadFirebase() {
         var s1 = document.createElement('script');
-        s1.src = 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js';
+        s1.src = '{{ asset('vendor/firebase/firebase-app-compat.js') }}';
         s1.onload = function() {
           var s2 = document.createElement('script');
-          s2.src = 'https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js';
+          s2.src = '{{ asset('vendor/firebase/firebase-messaging-compat.js') }}';
           s2.onload = async function() {
             if ('serviceWorker' in navigator && 'Notification' in window && Notification.permission === 'granted') {
               try {

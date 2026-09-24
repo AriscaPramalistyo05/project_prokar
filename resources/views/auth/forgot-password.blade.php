@@ -14,10 +14,8 @@
   <link rel="apple-touch-icon" href="{{ asset('images/logo prokar.png') }}" />
   <!-- ================================================= -->
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous" />
+  <link rel="stylesheet" href="{{ asset('vendor/fonts/fonts.css') }}" />
+  <link rel="stylesheet" href="{{ asset('vendor/fontawesome/css/all.min.css') }}" />
 
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 
