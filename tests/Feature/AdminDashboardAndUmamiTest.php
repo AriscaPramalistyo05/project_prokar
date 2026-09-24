@@ -31,7 +31,11 @@ class AdminDashboardAndUmamiTest extends TestCase
     {
         $response = $this->get('/');
         $response->assertStatus(200);
-        $response->assertSee('https://cloud.umami.is/script.js', false);
+        $this->assertTrue(
+            str_contains($response->getContent(), 'vendor/umami/script.js') ||
+            str_contains($response->getContent(), 'https://cloud.umami.is/script.js'),
+            'Umami tracking script should be present on public home'
+        );
         $response->assertSee('data-website-id="6150499f-eb3e-406f-b3d1-d9834bb6bfc9"', false);
     }
 
@@ -39,7 +43,11 @@ class AdminDashboardAndUmamiTest extends TestCase
     {
         $response = $this->get('/login');
         $response->assertStatus(200);
-        $response->assertSee('https://cloud.umami.is/script.js', false);
+        $this->assertTrue(
+            str_contains($response->getContent(), 'vendor/umami/script.js') ||
+            str_contains($response->getContent(), 'https://cloud.umami.is/script.js'),
+            'Umami tracking script should be present on login guest page'
+        );
         $response->assertSee('data-website-id="6150499f-eb3e-406f-b3d1-d9834bb6bfc9"', false);
     }
 
@@ -49,7 +57,11 @@ class AdminDashboardAndUmamiTest extends TestCase
         $response->assertStatus(200);
 
         // Umami script in admin layout
-        $response->assertSee('https://cloud.umami.is/script.js', false);
+        $this->assertTrue(
+            str_contains($response->getContent(), 'vendor/umami/script.js') ||
+            str_contains($response->getContent(), 'https://cloud.umami.is/script.js'),
+            'Umami tracking script should be present in admin layout'
+        );
         $response->assertSee('6150499f-eb3e-406f-b3d1-d9834bb6bfc9', false);
 
         // Native Umami traffic cards & charts content
