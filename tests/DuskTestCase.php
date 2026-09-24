@@ -36,6 +36,7 @@ abstract class DuskTestCase extends BaseTestCase
             '--disable-gpu',
             '--headless=new',
             '--ignore-certificate-errors',
+            '--disable-web-security',
             '--disable-background-networking',
             '--disable-background-timer-throttling',
             '--disable-client-side-phishing-detection',

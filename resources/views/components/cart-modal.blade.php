@@ -6,6 +6,9 @@
 
     {{-- Backdrop --}}
     <div x-show="isOpen"
+         x-cloak
+         :class="isOpen ? 'pointer-events-auto' : 'pointer-events-none hidden'"
+         style="display: none;"
          x-transition:enter="transition-opacity ease-out duration-300"
          x-transition:enter-start="opacity-0"
          x-transition:enter-end="opacity-100"
@@ -13,10 +16,13 @@
          x-transition:leave-start="opacity-100"
          x-transition:leave-end="opacity-0"
          @click="close()"
-         class="fixed inset-0 bg-black/60 backdrop-blur-xs z-[99998]"></div>
+         class="fixed inset-0 bg-black/60 backdrop-blur-xs z-[99998] pointer-events-none hidden"></div>
 
     {{-- Bottom Sheet (Mobile) / Centered Modal (Desktop) --}}
-    <div class="fixed inset-0 z-[99999] pointer-events-none flex items-end sm:items-center sm:justify-center p-0 sm:p-4">
+    <div x-show="isOpen"
+         x-cloak
+         style="display: none;"
+         class="fixed inset-0 z-[99999] pointer-events-none flex items-end sm:items-center sm:justify-center p-0 sm:p-4">
         <div x-show="isOpen"
              x-transition:enter="transition ease-out duration-300 transform"
              x-transition:enter-start="translate-y-full opacity-0 sm:translate-y-4 sm:scale-95"
