@@ -2,6 +2,10 @@
 @source "../../resources/views/**/*.blade.php";
 @source "../../app/Livewire/**/*.php";
 @source "../../app/View/**/*.php";
+ 
+[x-cloak] {
+  display: none !important;
+}
 
 @theme {
   --color-background: #fbf9f8;

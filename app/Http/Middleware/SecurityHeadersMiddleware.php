@@ -40,8 +40,8 @@ class SecurityHeadersMiddleware
 
         $csp = implode('; ', [
             "default-src 'self'",
-            "script-src 'self' 'unsafe-inline' https://app.midtrans.com https://app.sandbox.midtrans.com https://www.gstatic.com https://firebaseinstallations.googleapis.com https://fcmregistrations.googleapis.com https://*.firebaseio.com https://*.googleapis.com https://cloud.umami.is https://*.umami.is" . $viteDev,
-            "script-src-elem 'self' 'unsafe-inline' https://app.midtrans.com https://app.sandbox.midtrans.com https://www.gstatic.com https://firebaseinstallations.googleapis.com https://fcmregistrations.googleapis.com https://*.firebaseio.com https://*.googleapis.com https://cloud.umami.is https://*.umami.is" . $viteDev,
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://app.midtrans.com https://app.sandbox.midtrans.com https://www.gstatic.com https://firebaseinstallations.googleapis.com https://fcmregistrations.googleapis.com https://*.firebaseio.com https://*.googleapis.com https://cloud.umami.is https://*.umami.is" . $viteDev,
+            "script-src-elem 'self' 'unsafe-inline' 'unsafe-eval' https://app.midtrans.com https://app.sandbox.midtrans.com https://www.gstatic.com https://firebaseinstallations.googleapis.com https://fcmregistrations.googleapis.com https://*.firebaseio.com https://*.googleapis.com https://cloud.umami.is https://*.umami.is" . $viteDev,
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.bunny.net" . $viteDev,
             "style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.bunny.net" . $viteDev,
             "font-src 'self' https://fonts.gstatic.com https://fonts.bunny.net data:" . $viteDev,
