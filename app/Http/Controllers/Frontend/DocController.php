@@ -14,6 +14,14 @@ class DocController extends Controller
      */
     public function index(Request $request)
     {
+        $docsSubdomain = env('DOCS_DOMAIN', 'docs.prokarelektronik.com');
+        if ($request->getHost() === $docsSubdomain) {
+            $catPublik = DocCategory::where('slug', 'publik')->first();
+            if ($catPublik) {
+                return redirect()->route('subdomain.docs.category', 'publik');
+            }
+        }
+
         $user = $request->user();
 
         $categories = DocCategory::orderBy('order')

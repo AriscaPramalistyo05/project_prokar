@@ -205,8 +205,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'staff'])->group(fun
             Route::get('/settings', \App\Livewire\Admin\SettingIndex::class)->name('settings');
         });
 
-        // 10. Modul Dokumentasi (Permission: manage_docs)
-        Route::middleware(['permission:manage_docs'])->group(function () {
+        // 10. Modul Dokumentasi (Permission: manage_docs atau Role: super_admin)
+        Route::middleware(['role_or_permission:super_admin|manage_docs'])->group(function () {
             Route::get('/docs', \App\Livewire\Admin\DocArticleIndex::class)->name('docs.index');
             Route::get('/docs/create', \App\Livewire\Admin\DocArticleForm::class)->name('docs.create');
             Route::get('/docs/{docArticle}/edit', \App\Livewire\Admin\DocArticleForm::class)->name('docs.edit');
