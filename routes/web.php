@@ -89,18 +89,28 @@ Route::post('/payment/webhook', [\App\Http\Controllers\Api\PaymentWebhookControl
 
 // ─── DOKUMENTASI (Frontend & Subdomain) ───────────────────────────
 $docsSubdomain = env('DOCS_DOMAIN', 'docs.prokarelektronik.com');
-Route::domain($docsSubdomain)->name('subdomain.docs.')->group(function () {
-    Route::get('/', [DocController::class, 'index'])->name('index');
-    Route::get('/search', [DocController::class, 'search'])->name('search');
-    Route::get('/{categorySlug}', [DocController::class, 'category'])->name('category');
-    Route::get('/{categorySlug}/{articleSlug}', [DocController::class, 'show'])->name('show');
+Route::domain($docsSubdomain)->group(function () {
+    // Auth routes on subdomain so /login does not 404
+    Route::get('/login', [\App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'create'])->name('subdomain.login');
+    Route::post('/login', [\App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'store']);
+    Route::post('/logout', [\App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'destroy'])->name('subdomain.logout');
+
+    Route::name('subdomain.docs.')->group(function () {
+        Route::get('/', [DocController::class, 'index'])->name('index');
+        Route::get('/search', [DocController::class, 'search'])->name('search');
+        Route::get('/{categorySlug}', [DocController::class, 'category'])
+            ->where('categorySlug', '^(?!login|logout|register|search|api).*$')
+            ->name('category');
+        Route::get('/{categorySlug}/{articleSlug}', [DocController::class, 'show'])->name('show');
+    });
 });
 
 Route::prefix('docs')->name('docs.')->group(function () {
     Route::get('/', [DocController::class, 'index'])->name('index');
     Route::get('/search', [DocController::class, 'search'])->name('search');
-    Route::get('/{categorySlug}', [DocController::class, 'category'])->name('category');
-   
+    Route::get('/{categorySlug}', [DocController::class, 'category'])
+        ->where('categorySlug', '^(?!login|logout|register|search|api).*$')
+        ->name('category');
     Route::get('/{categorySlug}/{articleSlug}', [DocController::class, 'show'])->name('show');
 });
 

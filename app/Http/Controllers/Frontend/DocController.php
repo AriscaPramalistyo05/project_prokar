@@ -14,14 +14,6 @@ class DocController extends Controller
      */
     public function index(Request $request)
     {
-        $docsSubdomain = env('DOCS_DOMAIN', 'docs.prokarelektronik.com');
-        if ($request->getHost() === $docsSubdomain) {
-            $catPublik = DocCategory::where('slug', 'publik')->first();
-            if ($catPublik) {
-                return redirect()->route('subdomain.docs.category', 'publik');
-            }
-        }
-
         $user = $request->user();
 
         $categories = DocCategory::orderBy('order')
@@ -39,12 +31,24 @@ class DocController extends Controller
      */
     public function category(Request $request, string $categorySlug)
     {
-        $category = DocCategory::where('slug', $categorySlug)->firstOrFail();
+        $category = DocCategory::where('slug', $categorySlug)->first();
+
+        // Dukung Clean URL langsung ke artikel (misal: /cara-download-kartu-garansi-digital)
+        if (!$category) {
+            $article = DocArticle::where('slug', $categorySlug)->published()->first();
+            if ($article) {
+                return $this->show($request, $article->category->slug, $article->slug);
+            }
+            abort(404);
+        }
 
         // Check access
         if (!$category->isAccessibleBy($request->user())) {
             if (!$request->user()) {
-                return redirect()->guest(route('login'));
+                $loginUrl = $request->getHost() === env('DOCS_DOMAIN', 'docs.prokarelektronik.com')
+                    ? route('subdomain.login')
+                    : route('login');
+                return redirect()->guest($loginUrl);
             }
             abort(403, 'Anda tidak memiliki akses ke dokumentasi ini.');
         }
@@ -69,7 +73,10 @@ class DocController extends Controller
         // Check access
         if (!$category->isAccessibleBy($request->user())) {
             if (!$request->user()) {
-                return redirect()->guest(route('login'));
+                $loginUrl = $request->getHost() === env('DOCS_DOMAIN', 'docs.prokarelektronik.com')
+                    ? route('subdomain.login')
+                    : route('login');
+                return redirect()->guest($loginUrl);
             }
             abort(403, 'Anda tidak memiliki akses ke dokumentasi ini.');
         }

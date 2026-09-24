@@ -141,8 +141,23 @@ class DocArticle extends Model
      */
     public function getUrlAttribute(): string
     {
+        $docsSubdomain = env('DOCS_DOMAIN', 'docs.prokarelektronik.com');
+        $isSubdomain = request()->getHost() === $docsSubdomain;
+        $catSlug = $this->category->slug ?? 'publik';
+
+        if ($isSubdomain) {
+            if ($catSlug === 'publik') {
+                return url('/' . $this->slug);
+            }
+            return url('/' . $catSlug . '/' . $this->slug);
+        }
+
+        if ($catSlug === 'publik') {
+            return url('/docs/' . $this->slug);
+        }
+
         return route('docs.show', [
-            'categorySlug' => $this->category->slug ?? 'uncategorized',
+            'categorySlug' => $catSlug,
             'articleSlug' => $this->slug,
         ]);
     }

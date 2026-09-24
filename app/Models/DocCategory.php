@@ -81,4 +81,16 @@ class DocCategory extends Model
 
         return false;
     }
+
+    /**
+     * Get the URL for this category.
+     */
+    public function getUrlAttribute(): string
+    {
+        $docsSubdomain = env('DOCS_DOMAIN', 'docs.prokarelektronik.com');
+        if (request()->getHost() === $docsSubdomain) {
+            return url('/' . $this->slug);
+        }
+        return route('docs.category', $this->slug);
+    }
 }
