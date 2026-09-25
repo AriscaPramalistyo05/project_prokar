@@ -21,5 +21,8 @@
     },
     "optionalDependencies": {
         "@tailwindcss/oxide-win32-x64-msvc": "^4.3.2"
+    },
+    "overrides": {
+        "picomatch": "^4.0.7"
     }
 }
