@@ -91,6 +91,6 @@ class DocCategory extends Model
         if (request()->getHost() === $docsSubdomain) {
             return url('/' . $this->slug);
         }
-        return route('docs.category', $this->slug);
+        return url('/docs/' . $this->slug);
     }
 }

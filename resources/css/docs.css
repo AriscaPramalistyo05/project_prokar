@@ -35,19 +35,21 @@
 .dark .docs-sidebar-category { color: #94a3b8; }
 
 .docs-sidebar-link {
-  display: block;
-  padding: 0.375rem 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4375rem 0.75rem;
   font-size: 0.8125rem;
   font-weight: 500;
   color: #475569;
-  border-radius: 0.375rem;
+  border-radius: 0.5rem;
   line-height: 1.4;
   transition: all 0.15s ease;
   text-decoration: none;
 }
 .docs-sidebar-link:hover {
   color: #0f172a;
-  background-color: #f1f5f9;
+  background-color: #f8fafc;
 }
 .dark .docs-sidebar-link { color: #94a3b8; }
 .dark .docs-sidebar-link:hover {
@@ -56,12 +58,12 @@
 }
 .docs-sidebar-link.active {
   color: #0284c7;
-  background-color: #f0f9ff;
+  background-color: #e0f2fe;
   font-weight: 600;
 }
 .dark .docs-sidebar-link.active {
   color: #38bdf8;
-  background-color: rgba(56, 189, 248, 0.1);
+  background-color: rgba(56, 189, 248, 0.14);
 }
 
 /* ── Table of Contents (Right Sidebar) ── */

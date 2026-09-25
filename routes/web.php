@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\Admin\MaintenanceController;
 use App\Http\Controllers\Admin\ProductMediaController;
+use App\Http\Controllers\Admin\DocImageController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\Frontend\CheckoutController;
+use App\Http\Controllers\Frontend\DocController;
 use App\Http\Controllers\Frontend\ProductController;
 use App\Http\Controllers\Admin\DocImageController;
 use App\Http\Controllers\Frontend\DocController;
@@ -98,20 +100,20 @@ Route::domain($docsSubdomain)->group(function () {
     Route::name('subdomain.docs.')->group(function () {
         Route::get('/', [DocController::class, 'index'])->name('index');
         Route::get('/search', [DocController::class, 'search'])->name('search');
-        Route::get('/{categorySlug}', [DocController::class, 'category'])
-            ->where('categorySlug', '^(?!login|logout|register|search|api).*$')
-            ->name('category');
-        Route::get('/{categorySlug}/{articleSlug}', [DocController::class, 'show'])->name('show');
+        Route::get('/{categorySlug}/{articleSlug}', [DocController::class, 'legacyShow'])->name('legacy.show');
+        Route::get('/{slug}', [DocController::class, 'resolve'])
+            ->where('slug', '^(?!login|logout|register|search|api).*$')
+            ->name('show');
     });
 });
 
 Route::prefix('docs')->name('docs.')->group(function () {
     Route::get('/', [DocController::class, 'index'])->name('index');
     Route::get('/search', [DocController::class, 'search'])->name('search');
-    Route::get('/{categorySlug}', [DocController::class, 'category'])
-        ->where('categorySlug', '^(?!login|logout|register|search|api).*$')
-        ->name('category');
-    Route::get('/{categorySlug}/{articleSlug}', [DocController::class, 'show'])->name('show');
+    Route::get('/{categorySlug}/{articleSlug}', [DocController::class, 'legacyShow'])->name('legacy.show');
+    Route::get('/{slug}', [DocController::class, 'resolve'])
+        ->where('slug', '^(?!login|logout|register|search|api).*$')
+        ->name('show');
 });
 
 // ─── AUTH (Breeze) ──────────────────────────────────────────────

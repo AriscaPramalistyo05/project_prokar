@@ -101,33 +101,35 @@
 
                             {{-- Name & Slug --}}
                             <td>
-                                <div class="font-bold text-base-content flex items-center gap-2">
+                                <div class="flex items-center gap-2.5">
                                     @if($category->icon)
-                                        <i class="{{ $category->icon }} text-primary"></i>
+                                        <div class="w-7 h-7 rounded-lg bg-base-200/70 flex items-center justify-center text-neutral-600 shrink-0 text-xs">
+                                            <i class="{{ $category->icon }}"></i>
+                                        </div>
                                     @endif
-                                    <span>{{ $category->name }}</span>
-                                </div>
-                                <div class="text-xs text-neutral-400 font-mono mt-0.5">
-                                    /docs/{{ $category->slug }}
+                                    <div>
+                                        <div class="font-semibold text-base-content leading-tight">{{ $category->name }}</div>
+                                        <div class="text-[11px] text-neutral-400 font-mono mt-0.5">/docs/{{ $category->slug }}</div>
+                                    </div>
                                 </div>
                                 @if($category->description)
-                                    <p class="text-xs text-neutral-500 mt-1">{{ $category->description }}</p>
+                                    <p class="text-xs text-neutral-500 mt-1 line-clamp-1 max-w-sm">{{ $category->description }}</p>
                                 @endif
                             </td>
 
                             {{-- Role Access --}}
                             <td>
                                 @if($category->role_access === 'super_admin')
-                                    <span class="badge badge-sm badge-warning font-semibold">
-                                        <i class="fa-solid fa-lock text-[10px] mr-1"></i> Super Admin Only
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-mono font-medium bg-amber-50 text-amber-800 border border-amber-200/80 whitespace-nowrap">
+                                        super_admin
                                     </span>
                                 @elseif($category->role_access === 'teknisi')
-                                    <span class="badge badge-sm badge-info font-semibold">
-                                        <i class="fa-solid fa-wrench text-[10px] mr-1"></i> Teknisi & Admin
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-mono font-medium bg-sky-50 text-sky-800 border border-sky-200/80 whitespace-nowrap">
+                                        teknisi
                                     </span>
                                 @else
-                                    <span class="badge badge-sm badge-success font-semibold text-white">
-                                        <i class="fa-solid fa-globe text-[10px] mr-1"></i> Publik (Semua)
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-mono font-medium bg-slate-100 text-slate-700 border border-slate-200/80 whitespace-nowrap">
+                                        publik
                                     </span>
                                 @endif
                             </td>

@@ -159,8 +159,8 @@
           <article class="stagger-item flex flex-row md:flex-col items-start md:items-center gap-5 md:gap-4 relative z-10">
             <div class="w-14 h-14 md:w-20 md:h-20 rounded-full bg-black text-brand-yellow border-4 border-white flex items-center justify-center text-lg md:text-2xl font-black font-public shadow-md shrink-0 relative z-10">1</div>
             <div class="bg-white rounded-3xl p-5 md:p-4 w-full shadow-card flex-1 flex flex-col items-start md:items-center text-left md:text-center transform hover:-translate-y-2 transition-transform duration-300">
-              <h3 class="text-base md:text-sm font-bold font-public text-black uppercase mb-1">Masuk</h3>
-              <p class="text-gray-500 font-inter text-xs leading-relaxed">Pengajuan Anda diterima di sistem.</p>
+              <h3 id="title-step1" class="text-base md:text-sm font-bold font-public text-black uppercase mb-1">Masuk</h3>
+              <p id="desc-step1" class="text-gray-500 font-inter text-xs leading-relaxed">Pengajuan Anda diterima di sistem.</p>
             </div>
           </article>
 
@@ -168,7 +168,7 @@
           <article class="stagger-item flex flex-row md:flex-col items-start md:items-center gap-5 md:gap-4 relative z-10">
             <div class="w-14 h-14 md:w-20 md:h-20 rounded-full bg-white text-black border-4 border-gray-200 flex items-center justify-center text-lg md:text-2xl font-black font-public shadow-md shrink-0 relative z-10">2</div>
             <div class="bg-white rounded-3xl p-5 md:p-4 w-full shadow-card flex-1 flex flex-col items-start md:items-center text-left md:text-center transform hover:-translate-y-2 transition-transform duration-300 md:mt-6">
-              <h3 class="text-base md:text-sm font-bold font-public text-black uppercase mb-1">Dikonfirmasi</h3>
+              <h3 id="title-step2" class="text-base md:text-sm font-bold font-public text-black uppercase mb-1">Dikonfirmasi</h3>
               <p id="desc-step2" class="text-gray-500 font-inter text-xs leading-relaxed">Teknisi dijadwalkan.</p>
             </div>
           </article>
@@ -177,7 +177,7 @@
           <article class="stagger-item flex flex-row md:flex-col items-start md:items-center gap-5 md:gap-4 relative z-10">
             <div class="w-14 h-14 md:w-20 md:h-20 rounded-full bg-white text-black border-4 border-gray-200 flex items-center justify-center text-lg md:text-2xl font-black font-public shadow-md shrink-0 relative z-10">3</div>
             <div class="bg-white rounded-3xl p-5 md:p-4 w-full shadow-card flex-1 flex flex-col items-start md:items-center text-left md:text-center transform hover:-translate-y-2 transition-transform duration-300 md:mt-12">
-              <h3 class="text-base md:text-sm font-bold font-public text-black uppercase mb-1">Diagnosa</h3>
+              <h3 id="title-step3" class="text-base md:text-sm font-bold font-public text-black uppercase mb-1">Diagnosa</h3>
               <p id="desc-step3" class="text-gray-500 font-inter text-xs leading-relaxed">Teknisi mengecek kerusakan perangkat.</p>
             </div>
           </article>
@@ -186,8 +186,8 @@
           <article class="stagger-item flex flex-row md:flex-col items-start md:items-center gap-5 md:gap-4 relative z-10">
             <div class="w-14 h-14 md:w-20 md:h-20 rounded-full bg-white text-black border-4 border-gray-200 flex items-center justify-center text-lg md:text-2xl font-black font-public shadow-md shrink-0 relative z-10">4</div>
             <div class="bg-white rounded-3xl p-5 md:p-4 w-full shadow-card flex-1 flex flex-col items-start md:items-center text-left md:text-center transform hover:-translate-y-2 transition-transform duration-300 md:mt-16">
-              <h3 class="text-base md:text-sm font-bold font-public text-black uppercase mb-1">Persetujuan</h3>
-              <p class="text-gray-500 font-inter text-xs leading-relaxed">Menyetujui biaya via halaman Track.</p>
+              <h3 id="title-step4" class="text-base md:text-sm font-bold font-public text-black uppercase mb-1">Persetujuan</h3>
+              <p id="desc-step4" class="text-gray-500 font-inter text-xs leading-relaxed">Menyetujui biaya via halaman Track.</p>
             </div>
           </article>
 
@@ -195,7 +195,7 @@
           <article class="stagger-item flex flex-row md:flex-col items-start md:items-center gap-5 md:gap-4 relative z-10">
             <div class="w-14 h-14 md:w-20 md:h-20 rounded-full bg-white text-black border-4 border-gray-200 flex items-center justify-center text-lg md:text-2xl font-black font-public shadow-md shrink-0 relative z-10">5</div>
             <div class="bg-white rounded-3xl p-5 md:p-4 w-full shadow-card flex-1 flex flex-col items-start md:items-center text-left md:text-center transform hover:-translate-y-2 transition-transform duration-300 md:mt-12">
-              <h3 class="text-base md:text-sm font-bold font-public text-black uppercase mb-1">Pengerjaan</h3>
+              <h3 id="title-step5" class="text-base md:text-sm font-bold font-public text-black uppercase mb-1">Pengerjaan</h3>
               <p id="desc-step5" class="text-gray-500 font-inter text-xs leading-relaxed">Perbaikan dilakukan teknisi.</p>
             </div>
           </article>
@@ -204,7 +204,7 @@
           <article class="stagger-item flex flex-row md:flex-col items-start md:items-center gap-5 md:gap-4 relative z-10">
             <div class="w-14 h-14 md:w-20 md:h-20 rounded-full bg-white text-black border-4 border-gray-200 flex items-center justify-center text-lg md:text-2xl font-black font-public shadow-md shrink-0 relative z-10"><i class="fa-solid fa-flag-checkered text-xl"></i></div>
             <div class="bg-white rounded-3xl p-5 md:p-4 w-full shadow-card flex-1 flex flex-col items-start md:items-center text-left md:text-center transform hover:-translate-y-2 transition-transform duration-300 md:mt-6">
-              <h3 class="text-base md:text-sm font-bold font-public text-black uppercase mb-1">Selesai</h3>
+              <h3 id="title-step6" class="text-base md:text-sm font-bold font-public text-black uppercase mb-1">Selesai</h3>
               <p id="desc-step6" class="text-gray-500 font-inter text-xs leading-relaxed">Pelunasan & garansi terbit.</p>
             </div>
           </article>
@@ -373,27 +373,66 @@
     });
   });
 
-  // Listener event Livewire saat jenis layanan berubah
+  // Listener event Livewire & Alpine saat jenis layanan berubah
+  function updateServiceSteps(type) {
+    const isKirim = type === 'kirim';
+    const t1 = document.getElementById('title-step1');
+    const d1 = document.getElementById('desc-step1');
+    const t2 = document.getElementById('title-step2');
+    const d2 = document.getElementById('desc-step2');
+    const t3 = document.getElementById('title-step3');
+    const d3 = document.getElementById('desc-step3');
+    const t4 = document.getElementById('title-step4');
+    const d4 = document.getElementById('desc-step4');
+    const t5 = document.getElementById('title-step5');
+    const d5 = document.getElementById('desc-step5');
+    const t6 = document.getElementById('title-step6');
+    const d6 = document.getElementById('desc-step6');
+
+    const els = [t1, d1, t2, d2, t3, d3, t4, d4, t5, d5, t6, d6].filter(Boolean);
+
+    const applyContent = () => {
+      if (t1) t1.textContent = "Masuk";
+      if (d1) d1.textContent = isKirim ? "Pengajuan servis online dikirim ke sistem." : "Pengajuan Anda diterima di sistem.";
+
+      if (t2) t2.textContent = isKirim ? "Kirim Barang" : "Dikonfirmasi";
+      if (d2) d2.textContent = isKirim ? "Kirim atau antarkan unit ke workshop kami." : "Teknisi dijadwalkan ke lokasi Anda.";
+
+      if (t3) t3.textContent = "Diagnosa";
+      if (d3) d3.textContent = isKirim ? "Teknisi bengkel mendiagnosa kerusakan unit." : "Teknisi mengecek kerusakan perangkat di lokasi.";
+
+      if (t4) t4.textContent = "Persetujuan";
+      if (d4) d4.textContent = "Menyetujui estimasi biaya via halaman Track.";
+
+      if (t5) t5.textContent = "Pengerjaan";
+      if (d5) d5.textContent = isKirim ? "Perbaikan & penggantian komponen di bengkel." : "Perbaikan dilakukan langsung oleh teknisi.";
+
+      if (t6) t6.textContent = isKirim ? "Siap Ambil" : "Selesai";
+      if (d6) d6.textContent = isKirim ? "Unit selesai dan siap diambil di toko." : "Pelunasan & garansi 30 hari terbit.";
+    };
+
+    if (window.gsap && els.length) {
+      gsap.to(els, {
+        opacity: 0,
+        y: -5,
+        duration: 0.15,
+        onComplete: () => {
+          applyContent();
+          gsap.to(els, { opacity: 1, y: 0, duration: 0.25 });
+        }
+      });
+    } else {
+      applyContent();
+    }
+  }
+
+  window.addEventListener('serviceTypeChanged', function (e) {
+    const type = e.detail ? (e.detail.type || e.detail[0]?.type) : null;
+    if (type) updateServiceSteps(type);
+  });
   document.addEventListener('serviceTypeChanged', function (e) {
     const type = e.detail ? (e.detail.type || e.detail[0]?.type) : null;
-    const descStep2 = document.getElementById('desc-step2');
-    const descStep3 = document.getElementById('desc-step3');
-    const descStep5 = document.getElementById('desc-step5');
-    const descStep6 = document.getElementById('desc-step6');
-
-    if (descStep2 && descStep3 && descStep5 && descStep6) {
-      if (type === 'kirim') {
-        descStep2.textContent = "Perangkat diterima bengkel.";
-        descStep3.textContent = "Teknisi bengkel mendiagnosa kerusakan.";
-        descStep5.textContent = "Perbaikan & penggantian komponen.";
-        descStep6.textContent = "Siap diambil di toko.";
-      } else {
-        descStep2.textContent = "Teknisi dijadwalkan.";
-        descStep3.textContent = "Teknisi mengecek kerusakan perangkat.";
-        descStep5.textContent = "Perbaikan dilakukan teknisi.";
-        descStep6.textContent = "Pelunasan & garansi terbit.";
-      }
-    }
+    if (type) updateServiceSteps(type);
   });
 </script>
 @endpush

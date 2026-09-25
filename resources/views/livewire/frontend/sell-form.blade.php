@@ -34,7 +34,8 @@
                             <label for="nama"
                                 class="block text-sm font-bold uppercase tracking-widest mb-2 text-gray-700 font-public">Nama
                                 Lengkap</label>
-                            <input wire:model="nama" id="nama" type="text" placeholder="Masukkan nama Anda"
+                            <input wire:model.blur="nama" id="nama" type="text" placeholder="Masukkan nama Anda (huruf saja)"
+                                x-on:input="$event.target.value = $event.target.value.replace(/[^a-zA-Z\s\.\'\-]/g, '')"
                                 class="w-full bg-gray-50 border @error('nama') border-red-500 bg-red-50/20 @else border-gray-200 @enderror rounded-2xl p-4 text-base focus:bg-white focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all" />
                             @error('nama')
                                 <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
@@ -45,7 +46,9 @@
                             <label for="whatsapp"
                                 class="block text-sm font-bold uppercase tracking-widest mb-2 text-gray-700 font-public">Nomor
                                 WhatsApp</label>
-                            <input wire:model="whatsapp" id="whatsapp" type="tel" placeholder="Contoh: 08123456789"
+                            <input wire:model.blur="whatsapp" id="whatsapp" type="tel" inputmode="numeric" placeholder="Contoh: 08123456789"
+                                maxlength="15"
+                                x-on:input="$event.target.value = $event.target.value.replace(/[^0-9+]/g, '')"
                                 class="w-full bg-gray-50 border @error('whatsapp') border-red-500 bg-red-50/20 @else border-gray-200 @enderror rounded-2xl p-4 text-base focus:bg-white focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all" />
                             @error('whatsapp')
                                 <p class="text-red-600 text-xs mt-1">{{ $message }}</p>

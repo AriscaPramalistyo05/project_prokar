@@ -72,7 +72,7 @@ class AuthenticatedSessionController extends Controller
         $isStaff = $user->hasRole('super_admin') || (!$user->hasRole('customer') && $user->roles()->exists()) || $user->permissions()->exists();
         if ($isStaff) {
             $intended = session()->get('url.intended');
-            if ($intended) {
+            if ($intended && (str_contains($intended, '/admin') || str_contains($intended, '/docs'))) {
                 return redirect()->intended(route('admin.dashboard', absolute: false));
             }
             return redirect()->route('admin.dashboard');

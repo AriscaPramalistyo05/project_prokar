@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class DocController extends Controller
 {
     /**
-     * Docs landing page — list all accessible categories.
+     * Docs landing page — list all accessible categories and scenario cards.
      */
     public function index(Request $request)
     {
@@ -27,21 +27,101 @@ class DocController extends Controller
     }
 
     /**
+     * Resolve a clean top-level slug (/docs/{slug}).
+     * Resolves either an article or a category smoothly.
+     */
+    public function resolve(Request $request, string $slug)
+    {
+        // 1. Try to find published article
+        $article = DocArticle::where('slug', $slug)
+            ->published()
+            ->with('category')
+            ->first();
+
+        if ($article) {
+            return $this->renderArticle($request, $article);
+        }
+
+        // 2. Try to find category
+        $category = DocCategory::where('slug', $slug)->first();
+        if ($category) {
+            return $this->renderCategory($request, $category);
+        }
+
+        abort(404, 'Halaman dokumentasi tidak ditemukan.');
+    }
+
+    /**
+     * Legacy URL handler (/docs/{categorySlug}/{articleSlug}) with 301 permanent redirect.
+     */
+    public function legacyShow(Request $request, string $categorySlug, string $articleSlug)
+    {
+        return redirect()->to(url('/docs/' . $articleSlug), 301);
+    }
+
+    /**
      * Category page — list articles in a category.
      */
     public function category(Request $request, string $categorySlug)
     {
-        $category = DocCategory::where('slug', $categorySlug)->first();
+        return $this->resolve($request, $categorySlug);
+    }
 
-        // Dukung Clean URL langsung ke artikel (misal: /cara-download-kartu-garansi-digital)
-        if (!$category) {
-            $article = DocArticle::where('slug', $categorySlug)->published()->first();
-            if ($article) {
-                return $this->show($request, $article->category->slug, $article->slug);
+    /**
+     * Render an article view with breadcrumbs, TOC, and prev/next navigation.
+     */
+    protected function renderArticle(Request $request, DocArticle $article)
+    {
+        $category = $article->category;
+
+        // Check category access permissions
+        if ($category && !$category->isAccessibleBy($request->user())) {
+            if (!$request->user()) {
+                $loginUrl = $request->getHost() === env('DOCS_DOMAIN', 'docs.prokarelektronik.com')
+                    ? route('subdomain.login')
+                    : route('login');
+                return redirect()->guest($loginUrl);
             }
-            abort(404);
+            abort(403, 'Anda tidak memiliki hak akses untuk membaca panduan internal ini.');
         }
 
+        // Auto-add IDs to headings for TOC anchor links
+        $article->content = $this->addHeadingIds($article->content);
+
+        // Get Table of Contents
+        $toc = $article->table_of_contents;
+
+        // Prev & Next navigation
+        $previous = $article->previous;
+        $next = $article->next;
+
+        // Clean breadcrumb structure
+        $breadcrumbs = [
+            ['label' => 'Dokumentasi', 'url' => route('docs.index')],
+            ['label' => $category->name, 'url' => $category->url],
+            ['label' => $article->title, 'url' => null],
+        ];
+
+        if ($article->parent) {
+            array_splice($breadcrumbs, 2, 0, [[
+                'label' => $article->parent->title,
+                'url' => $article->parent->url,
+            ]]);
+        }
+
+        // All categories for sidebar navigation
+        $allCategories = $this->getAccessibleCategories($request->user());
+
+        return view('docs.show', compact(
+            'category', 'article', 'toc', 'previous', 'next', 'breadcrumbs', 'allCategories'
+        ));
+    }
+
+    /**
+     * Render category overview page.
+     */
+    protected function renderCategory(Request $request, DocCategory $category)
+    {
         // Check access
         if (!$category->isAccessibleBy($request->user())) {
             if (!$request->user()) {
@@ -57,65 +137,9 @@ class DocController extends Controller
             ->with('publishedChildren')
             ->get();
 
-        // Get all categories for sidebar (filtered by access)
         $allCategories = $this->getAccessibleCategories($request->user());
 
         return view('docs.category', compact('category', 'articles', 'allCategories'));
-    }
-
-    /**
-     * Article detail page — show article with TOC, prev/next.
-     */
-    public function show(Request $request, string $categorySlug, string $articleSlug)
-    {
-        $category = DocCategory::where('slug', $categorySlug)->firstOrFail();
-
-        // Check access
-        if (!$category->isAccessibleBy($request->user())) {
-            if (!$request->user()) {
-                $loginUrl = $request->getHost() === env('DOCS_DOMAIN', 'docs.prokarelektronik.com')
-                    ? route('subdomain.login')
-                    : route('login');
-                return redirect()->guest($loginUrl);
-            }
-            abort(403, 'Anda tidak memiliki akses ke dokumentasi ini.');
-        }
-
-        $article = DocArticle::where('slug', $articleSlug)
-            ->where('doc_category_id', $category->id)
-            ->published()
-            ->firstOrFail();
-
-        // Auto-add IDs to headings for TOC anchor links
-        $article->content = $this->addHeadingIds($article->content);
-
-        // Get TOC
-        $toc = $article->table_of_contents;
-
-        // Prev/Next navigation
-        $previous = $article->previous;
-        $next = $article->next;
-
-        // Breadcrumb
-        $breadcrumbs = [
-            ['label' => 'Docs', 'url' => route('docs.index')],
-            ['label' => $category->name, 'url' => route('docs.category', $category->slug)],
-            ['label' => $article->title, 'url' => null],
-        ];
-
-        if ($article->parent) {
-            array_splice($breadcrumbs, 2, 0, [[
-                'label' => $article->parent->title,
-                'url' => route('docs.show', [$category->slug, $article->parent->slug]),
-            ]]);
-        }
-
-        // All categories for sidebar
-        $allCategories = $this->getAccessibleCategories($request->user());
-
-        return view('docs.show', compact(
-            'category', 'article', 'toc', 'previous', 'next', 'breadcrumbs', 'allCategories'
-        ));
     }
 
     /**
@@ -123,7 +147,7 @@ class DocController extends Controller
      */
     public function search(Request $request)
     {
-        $query = $request->input('q', '');
+        $query = trim($request->input('q', ''));
         $user = $request->user();
 
         if (strlen($query) < 2) {
@@ -148,8 +172,8 @@ class DocController extends Controller
             ->get()
             ->map(fn($article) => [
                 'title' => $article->title,
-                'excerpt' => $article->excerpt ? \Illuminate\Support\Str::limit(strip_tags($article->excerpt), 100) : '',
-                'url' => route('docs.show', [$article->category->slug, $article->slug]),
+                'excerpt' => $article->excerpt ? \Illuminate\Support\Str::limit(strip_tags($article->excerpt), 110) : '',
+                'url' => $article->url, // Returns clean URL /docs/{article-slug}
                 'category' => $article->category->name,
             ]);
 
@@ -185,7 +209,6 @@ class DocController extends Controller
                 $attrs = $matches[2];
                 $text = $matches[3];
 
-                // If already has an id, keep it
                 if (preg_match('/id=["\']/', $attrs)) {
                     return $matches[0];
                 }

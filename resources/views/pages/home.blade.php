@@ -258,11 +258,9 @@
 
             <div class="reveal-fade bg-gray-900/60 rounded-3xl md:rounded-[2.5rem] p-6 sm:p-8 md:p-10 border border-gray-800/90 backdrop-blur-sm relative shadow-2xl">
                 <div class="flex justify-center gap-1.5 mb-5 md:mb-6">
-                    <i class="fa-solid fa-star text-brand-yellow text-lg sm:text-xl"></i>
-                    <i class="fa-solid fa-star text-brand-yellow text-lg sm:text-xl"></i>
-                    <i class="fa-solid fa-star text-brand-yellow text-lg sm:text-xl"></i>
-                    <i class="fa-solid fa-star text-brand-yellow text-lg sm:text-xl"></i>
-                    <i class="fa-solid fa-star text-brand-yellow text-lg sm:text-xl"></i>
+                    @for ($s = 0; $s < 5; $s++)
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-brand-yellow fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    @endfor
                 </div>
 
                 <div class="min-h-[100px] sm:min-h-[120px] flex flex-col justify-center">
@@ -276,13 +274,13 @@
 
                 <div class="flex justify-center items-center gap-4 sm:gap-6 mt-6 sm:mt-8">
                     <button id="btn-prev" onclick="changeTestimoni(-1)" aria-label="Testimoni Sebelumnya"
-                        class="w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-gray-600 flex items-center justify-center text-gray-600 transition-transform duration-200 active:scale-95 hover:opacity-80 cursor-pointer">
-                        <i class="fa-solid fa-arrow-left text-sm"></i>
+                        class="w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-gray-700 flex items-center justify-center text-gray-600 opacity-40 cursor-not-allowed transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/></svg>
                     </button>
                     <div id="testimoni-dots" class="flex gap-2"></div>
                     <button id="btn-next" onclick="changeTestimoni(1)" aria-label="Testimoni Selanjutnya"
-                        class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white text-black flex items-center justify-center hover:bg-brand-yellow transition-transform duration-200 active:scale-95 hover:opacity-90 cursor-pointer">
-                        <i class="fa-solid fa-arrow-right text-sm"></i>
+                        class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white text-black flex items-center justify-center hover:bg-brand-yellow transition-all cursor-pointer shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg>
                     </button>
                 </div>
             </div>
