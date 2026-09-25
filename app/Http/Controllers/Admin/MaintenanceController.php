@@ -148,8 +148,112 @@ class MaintenanceController extends Controller
             <h2 style='color:#facc15;margin-top:0;'>⚡ Laravel Optimize — Selesai dalam {$duration}</h2>
             <div style='background:#020617;padding:20px;border-radius:8px;line-height:1.9;color:#f8fafc;'>{$logHtml}</div>
             <p style='margin-top:20px;color:#94a3b8;font-size:0.85rem;'>Jalankan setiap kali selesai deploy ke production untuk performa optimal.</p>
-            <p style='margin-top:12px;'><a href='" . route('admin.dashboard') . "' style='display:inline-block;padding:10px 18px;background:#facc15;color:#000;text-decoration:none;font-weight:bold;border-radius:8px;margin-right:8px;'>Dashboard Admin</a><a href='" . route('admin.maintenance.migrate') . "' style='display:inline-block;padding:10px 18px;background:#1e293b;color:#fff;text-decoration:none;font-weight:bold;border-radius:8px;'>Full Maintenance</a></p>
+            <p style='margin-top:12px;'>
+                <a href='" . route('admin.dashboard') . "' style='display:inline-block;padding:10px 18px;background:#facc15;color:#000;text-decoration:none;font-weight:bold;border-radius:8px;margin-right:8px;'>Dashboard Admin</a>
+                <a href='" . route('admin.maintenance.seed-docs') . "' style='display:inline-block;padding:10px 18px;background:#38bdf8;color:#000;text-decoration:none;font-weight:bold;border-radius:8px;margin-right:8px;'>Seed Dokumentasi</a>
+                <a href='" . route('admin.maintenance.migrate') . "' style='display:inline-block;padding:10px 18px;background:#1e293b;color:#fff;text-decoration:none;font-weight:bold;border-radius:8px;'>Full Maintenance</a>
+            </p>
         </div>");
+    }
+
+    /**
+     * Safely seed documentation categories and articles (Idempotent for production).
+     * Protected for Super Admin only.
+     */
+    public function seedDocs(): Response
+    {
+        $log = [];
+        $start = microtime(true);
+
+        try {
+            Artisan::call('db:seed', [
+                '--class' => 'Database\\Seeders\\DocSeeder',
+                '--force' => true,
+            ]);
+            $output = Artisan::output();
+            $log[] = "✅ Seeding dokumentasi (DocSeeder) berhasil dijalankan.";
+            if ($output) {
+                $log[] = "Output: " . trim($output);
+            }
+        } catch (\Throwable $e) {
+            $log[] = "⚠️ Error seeding dokumentasi: " . $e->getMessage();
+        }
+
+        try {
+            Artisan::call('optimize:clear');
+            $log[] = "✅ Cache dibersihkan agar konten dokumentasi terbaru segera aktif.";
+        } catch (\Throwable $e) {
+            $log[] = "ℹ️ Cache clear info: " . $e->getMessage();
+        }
+
+        $duration = round((microtime(true) - $start) * 1000) . 'ms';
+        $logHtml = implode("<br><br>", array_map(fn($l) => "• " . htmlspecialchars($l), $log));
+
+        return response("<div style='font-family:monospace;background:#0f172a;color:#10b981;padding:24px;border-radius:12px;max-width:700px;margin:40px auto;border:1px solid #334155;'>
+            <h2 style='color:#facc15;margin-top:0;'>📚 Seeding Dokumentasi Selesai ({$duration})</h2>
+            <div style='background:#020617;padding:20px;border-radius:8px;line-height:1.8;color:#f8fafc;'>{$logHtml}</div>
+            <p style='margin-top:20px;'>
+                <a href='" . route('admin.docs.index') . "' style='display:inline-block;padding:10px 18px;background:#facc15;color:#000;text-decoration:none;font-weight:bold;border-radius:8px;margin-right:8px;'>Kelola Dokumentasi</a>
+                <a href='" . url('/docs') . "' target='_blank' style='display:inline-block;padding:10px 18px;background:#1e293b;color:#fff;text-decoration:none;font-weight:bold;border-radius:8px;'>Lihat Halaman Docs</a>
+            </p>
+        </div>");
+    }
+
+    /**
+     * Webhook endpoint for CI/CD GitHub Actions to clear & rebuild cache after deployment.
+     * Protected by pre-shared deploy token.
+     */
+    public function deployOptimize(\Illuminate\Http\Request $request): JsonResponse
+    {
+        $expectedToken = env('DEPLOY_KEY') ?: 'prokar_deploy_secure_5e5e7eb5b4d6cd717a454049db805ad2';
+        $providedToken = $request->header('X-Deploy-Token') ?: $request->query('token');
+
+        if (!$providedToken || !hash_equals((string) $expectedToken, (string) $providedToken)) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Unauthorized deploy token.',
+            ], 403);
+        }
+
+        $start = microtime(true);
+        $logs = [];
+
+        try {
+            Artisan::call('optimize:clear');
+            $logs[] = 'optimize:clear success';
+        } catch (\Throwable $e) {
+            $logs[] = 'optimize:clear error: ' . $e->getMessage();
+        }
+
+        try {
+            Artisan::call('config:cache');
+            $logs[] = 'config:cache success';
+        } catch (\Throwable $e) {
+            $logs[] = 'config:cache error: ' . $e->getMessage();
+        }
+
+        try {
+            Artisan::call('view:cache');
+            $logs[] = 'view:cache success';
+        } catch (\Throwable $e) {
+            $logs[] = 'view:cache error: ' . $e->getMessage();
+        }
+
+        try {
+            Artisan::call('permission:cache-reset');
+            $logs[] = 'permission:cache-reset success';
+        } catch (\Throwable $e) {
+            $logs[] = 'permission:cache-reset error: ' . $e->getMessage();
+        }
+
+        $durationMs = round((microtime(true) - $start) * 1000);
+
+        return response()->json([
+            'status'      => 'success',
+            'message'     => 'Laravel cache optimized successfully for production.',
+            'duration_ms' => $durationMs,
+            'details'     => $logs,
+        ], 200);
     }
 
     /**

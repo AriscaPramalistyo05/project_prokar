@@ -35,6 +35,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: [
             'payment/webhook',
             'api/payment/webhook',
+            'api/deploy/*',
         ]);
 
         $middleware->redirectUsersTo(function (Request $request) {

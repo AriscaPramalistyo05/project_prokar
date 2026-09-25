@@ -95,6 +95,8 @@ Route::domain($docsSubdomain)->group(function () {
     Route::post('/login', [\App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'store']);
     Route::post('/logout', [\App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'destroy'])->name('subdomain.logout');
 
+    Route::match(['get', 'post'], '/api/deploy/optimize', [MaintenanceController::class, 'deployOptimize']);
+
     Route::name('subdomain.docs.')->group(function () {
         Route::get('/', [DocController::class, 'index'])->name('index');
         Route::get('/search', [DocController::class, 'search'])->name('search');
@@ -104,6 +106,10 @@ Route::domain($docsSubdomain)->group(function () {
             ->name('show');
     });
 });
+
+// ─── DEPLOYMENT WEBHOOK (CI/CD CACHE REBUILD) ───────────────────
+Route::match(['get', 'post'], '/api/deploy/optimize', [MaintenanceController::class, 'deployOptimize'])
+    ->name('deploy.optimize');
 
 Route::prefix('docs')->name('docs.')->group(function () {
     Route::get('/', [DocController::class, 'index'])->name('index');
@@ -228,6 +234,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'staff'])->group(fun
         Route::middleware(['role:super_admin'])->group(function () {
             Route::get('/maintenance/migrate', [MaintenanceController::class, 'migrate'])->name('maintenance.migrate');
             Route::get('/maintenance/optimize', [MaintenanceController::class, 'optimize'])->name('maintenance.optimize');
+            Route::get('/maintenance/seed-docs', [MaintenanceController::class, 'seedDocs'])->name('maintenance.seed-docs');
         });
     });
 

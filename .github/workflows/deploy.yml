@@ -57,14 +57,45 @@ jobs:
         run: |
           echo "Menunggu file FTP tersebar ke server..."
           sleep 10
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-            -H "Cookie: laravel_session=" \
-            "https://prokarelektronik.com/admin/maintenance/optimize" \
-            --max-time 60 --retry 2)
-          echo "HTTP Status dari optimize route: $STATUS"
-          if [ "$STATUS" = "200" ] || [ "$STATUS" = "302" ]; then
-            echo "✅ Laravel cache berhasil di-optimize via HTTP trigger."
-          else
-            echo "⚠️ Optimize route returned $STATUS. Cache mungkin perlu di-refresh manual."
+
+          DEPLOY_TOKEN="${{ secrets.DEPLOY_KEY }}"
+          if [ -z "$DEPLOY_TOKEN" ]; then
+            DEPLOY_TOKEN="prokar_deploy_secure_5e5e7eb5b4d6cd717a454049db805ad2"
           fi
-        continue-on-error: true
+
+          echo "Mengirim webhook deploy optimize ke server hosting..."
+          RESPONSE=$(curl -s -w "\n%{http_code}" \
+            --resolve "prokarelektronik.com:443:203.175.9.180" \
+            --resolve "docs.prokarelektronik.com:443:203.175.9.180" \
+            -H "X-Deploy-Token: $DEPLOY_TOKEN" \
+            "https://prokarelektronik.com/api/deploy/optimize" \
+            --max-time 60 --retry 2)
+
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | sed '$d')
+
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response Body: $BODY"
+
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "✅ Laravel cache berhasil di-optimize via deploy hook."
+          else
+            echo "⚠️ Percobaan pertama mengembalikan $HTTP_CODE. Mencoba via docs subdomain..."
+            RESPONSE_DOCS=$(curl -s -w "\n%{http_code}" \
+              --resolve "docs.prokarelektronik.com:443:203.175.9.180" \
+              -H "X-Deploy-Token: $DEPLOY_TOKEN" \
+              "https://docs.prokarelektronik.com/api/deploy/optimize" \
+              --max-time 60)
+
+            HTTP_CODE_DOCS=$(echo "$RESPONSE_DOCS" | tail -n1)
+            BODY_DOCS=$(echo "$RESPONSE_DOCS" | sed '$d')
+
+            echo "HTTP Status Docs: $HTTP_CODE_DOCS"
+            echo "Response Body Docs: $BODY_DOCS"
+
+            if [ "$HTTP_CODE_DOCS" = "200" ]; then
+              echo "✅ Laravel cache berhasil di-optimize via docs subdomain."
+            else
+              echo "⚠️ Optimize hook merespons HTTP $HTTP_CODE / $HTTP_CODE_DOCS. Cache dapat di-refresh via Super Admin Dashboard."
+            fi
+          fi
