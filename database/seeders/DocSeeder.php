@@ -16,8 +16,27 @@ class DocSeeder extends Seeder
      */
     public function run(): void
     {
-        $author = User::role('super_admin')->first() ?? User::first();
-        $authorId = $author ? $author->id : 1;
+        $author = null;
+        try {
+            $author = User::role('super_admin')->first();
+        } catch (\Throwable $e) {
+        }
+        if (!$author) {
+            $author = User::first();
+        }
+        if (!$author) {
+            $author = User::create([
+                'name' => 'Admin Prokar',
+                'email' => 'admin@prokarelektronik.com',
+                'password' => bcrypt('ProkarAdmin2026!'),
+                'email_verified_at' => now(),
+            ]);
+            try {
+                $author->assignRole('super_admin');
+            } catch (\Throwable $e) {
+            }
+        }
+        $authorId = $author->id;
 
         // Truncate existing docs tables to guarantee clean hierarchy
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');

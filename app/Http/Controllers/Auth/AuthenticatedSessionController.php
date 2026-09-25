@@ -69,6 +69,16 @@ class AuthenticatedSessionController extends Controller
 
         $user = auth()->user();
 
+        // Jika login dilakukan di subdomain dokumentasi (docs.prokarelektronik.com)
+        $docsSubdomain = env('DOCS_DOMAIN', 'docs.prokarelektronik.com');
+        if ($request->getHost() === $docsSubdomain) {
+            $intended = session()->get('url.intended');
+            if ($intended && !str_contains($intended, '/login') && !str_contains($intended, '/logout')) {
+                return redirect()->intended(url('/'));
+            }
+            return redirect()->to(url('/'));
+        }
+
         $isStaff = $user->hasRole('super_admin') || (!$user->hasRole('customer') && $user->roles()->exists()) || $user->permissions()->exists();
         if ($isStaff) {
             $intended = session()->get('url.intended');

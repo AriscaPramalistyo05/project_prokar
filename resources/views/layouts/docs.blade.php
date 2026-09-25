@@ -1,8 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" x-data="{ darkMode: localStorage.getItem('docs-dark') === 'true', sidebarOpen: false }"
-      x-init="$watch('darkMode', v => { localStorage.setItem('docs-dark', v); })"
-      @keydown.escape.window="sidebarOpen = false"
-      :class="{ 'dark': darkMode }">
+<html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,6 +7,17 @@
   <title>@yield('title', 'Dokumentasi') — {{ setting('shop_name', 'Prokar Elektronik') }}</title>
   <meta name="description" content="@yield('description', 'Dokumentasi resmi dan panduan operasional Prokar Elektronik.')" />
   <meta name="robots" content="index, follow" />
+
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('docs-theme');
+      if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    })();
+  </script>
 
   @php
     $shopName = setting('shop_name', 'Prokar Elektronik');
@@ -34,7 +42,7 @@
   <script defer src="{{ asset('vendor/alpine/alpine.min.js') }}"></script>
 </head>
 
-<body class="bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-inter antialiased transition-colors duration-200 overflow-x-hidden">
+<body x-data="{ sidebarOpen: false }" @keydown.escape.window="sidebarOpen = false" class="bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-inter antialiased transition-colors duration-200 overflow-x-hidden">
 
   {{-- Top Navbar (Midtrans Style: Clean, Flat, Solid) --}}
   <header class="fixed top-0 left-0 right-0 z-40 h-14 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
@@ -90,13 +98,19 @@
           </svg>
         </button>
 
-        {{-- Dark mode toggle --}}
-        <button @click="darkMode = !darkMode"
-                type="button"
-                class="p-2 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+        {{-- Dark/Light Mode Toggle Switch (Pill Style) --}}
+        <button type="button"
+                id="docs-theme-toggle"
+                onclick="toggleDocsTheme()"
+                role="switch"
+                aria-label="Toggle tema gelap atau terang"
+                class="relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border border-slate-300 dark:border-slate-700 bg-slate-200 dark:bg-slate-800 p-0.5 transition-colors duration-200 ease-in-out focus:outline-hidden"
                 title="Ganti Tema">
-          <i x-show="!darkMode" class="fa-solid fa-moon text-sm"></i>
-          <i x-show="darkMode" class="fa-solid fa-sun text-sm text-amber-400" style="display:none;"></i>
+          <span id="docs-theme-indicator"
+                class="pointer-events-none inline-flex h-5.5 w-5.5 transform items-center justify-center rounded-full bg-white dark:bg-slate-900 shadow-xs transition duration-200 ease-in-out">
+            <i id="docs-icon-sun" class="fa-solid fa-sun text-[11px] text-amber-500"></i>
+            <i id="docs-icon-moon" class="fa-solid fa-moon text-[11px] text-amber-400" style="display:none;"></i>
+          </span>
         </button>
 
         {{-- Staff Quick Dashboard Switcher (Hidden on phone, accessible via sidebar drawer) --}}
@@ -178,6 +192,51 @@
   @include('docs.partials.search-modal', ['standalone' => true])
 
   <script>
+    function updateThemeUI() {
+      const isDark = document.documentElement.classList.contains('dark');
+      const indicator = document.getElementById('docs-theme-indicator');
+      const sunIcon = document.getElementById('docs-icon-sun');
+      const moonIcon = document.getElementById('docs-icon-moon');
+      const toggle = document.getElementById('docs-theme-toggle');
+
+      if (toggle) {
+        toggle.setAttribute('aria-checked', isDark ? 'true' : 'false');
+      }
+
+      if (indicator) {
+        if (isDark) {
+          indicator.style.transform = 'translateX(20px)';
+        } else {
+          indicator.style.transform = 'translateX(0px)';
+        }
+      }
+
+      if (sunIcon && moonIcon) {
+        sunIcon.style.display = isDark ? 'none' : 'inline-block';
+        moonIcon.style.display = isDark ? 'inline-block' : 'none';
+      }
+
+      const darkHljs = document.getElementById('hljs-theme-dark');
+      const lightHljs = document.getElementById('hljs-theme-light');
+      if (darkHljs && lightHljs) {
+        darkHljs.disabled = !isDark;
+        lightHljs.disabled = isDark;
+      }
+    }
+
+    function toggleDocsTheme() {
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('docs-theme', isDark ? 'dark' : 'light');
+      updateThemeUI();
+    }
+
+    // Jalankan updateThemeUI saat DOM siap
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', updateThemeUI);
+    } else {
+      updateThemeUI();
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
       // Code copy button
       document.querySelectorAll('.docs-content pre').forEach(pre => {

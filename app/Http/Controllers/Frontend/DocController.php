@@ -56,6 +56,17 @@ class DocController extends Controller
      */
     public function legacyShow(Request $request, string $categorySlug, string $articleSlug)
     {
+        $docsSubdomain = env('DOCS_DOMAIN', 'docs.prokarelektronik.com');
+        $isSubdomain = $request->getHost() === $docsSubdomain;
+
+        if ($categorySlug === 'docs' && $articleSlug === 'dashboard') {
+            return redirect()->route('admin.dashboard');
+        }
+
+        if ($isSubdomain) {
+            return redirect()->to(url('/' . $articleSlug), 301);
+        }
+
         return redirect()->to(url('/docs/' . $articleSlug), 301);
     }
 
