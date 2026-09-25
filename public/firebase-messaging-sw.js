@@ -96,8 +96,8 @@ self.addEventListener('fetch', function (event) {
 });
 
 // 4. Firebase Cloud Messaging (FCM) Integration
-importScripts('https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js');
+importScripts('/vendor/firebase/firebase-app-compat.js');
+importScripts('/vendor/firebase/firebase-messaging-compat.js');
 
 try {
     if (!firebase.apps.length) {

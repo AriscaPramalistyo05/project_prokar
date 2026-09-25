@@ -19,6 +19,15 @@ class SecurityHeadersMiddleware
             header_remove('X-Powered-By');
         }
 
+        // Generate cryptographic CSP Nonce before view rendering
+        $nonce = base64_encode(random_bytes(16));
+        if (class_exists(\Illuminate\Support\Facades\Vite::class)) {
+            \Illuminate\Support\Facades\Vite::useCspNonce($nonce);
+        }
+        if (function_exists('view')) {
+            view()->share('cspNonce', $nonce);
+        }
+
         /** @var Response $response */
         $response = $next($request);
 
@@ -31,22 +40,33 @@ class SecurityHeadersMiddleware
             $response->setContent('');
         }
 
+        // Auto-inject nonce into script & style tags for HTML responses
+        $contentType = (string) $response->headers->get('Content-Type', '');
+        if (str_contains($contentType, 'text/html') || empty($contentType)) {
+            $content = $response->getContent();
+            if ($content && is_string($content)) {
+                $content = preg_replace('/<script\b(?![^>]*\bnonce=)([^>]*)>/i', '<script nonce="' . $nonce . '"$1>', $content);
+                $content = preg_replace('/<style\b(?![^>]*\bnonce=)([^>]*)>/i', '<style nonce="' . $nonce . '"$1>', $content);
+                $response->setContent($content);
+            }
+        }
+
         // 1. Content Security Policy (CSP)
-        // Whitelist trusted CDNs (Google Fonts, Cloudflare CDNJS, Unpkg, Midtrans payment, Firebase, Unsplash)
-        // In local/dev mode, also allow Vite dev server (localhost:5173 / 127.0.0.1:5173)
+        // Strict CSP: NO 'unsafe-inline' and NO 'unsafe-eval'
+        // Uses cryptographic Nonce ('nonce-...') for scripts and styles
         $viteDev = (app()->environment('local', 'testing') || config('app.debug'))
             ? ' http://localhost:5173 http://127.0.0.1:5173 ws://localhost:5173 ws://127.0.0.1:5173'
             : '';
 
         $csp = implode('; ', [
             "default-src 'self'",
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://unpkg.com https://cdn.jsdelivr.net https://app.midtrans.com https://app.sandbox.midtrans.com https://www.gstatic.com https://firebaseinstallations.googleapis.com https://fcmregistrations.googleapis.com https://*.firebaseio.com https://*.googleapis.com https://cloud.umami.is https://*.umami.is" . $viteDev,
-            "script-src-elem 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://unpkg.com https://cdn.jsdelivr.net https://app.midtrans.com https://app.sandbox.midtrans.com https://www.gstatic.com https://firebaseinstallations.googleapis.com https://fcmregistrations.googleapis.com https://*.firebaseio.com https://*.googleapis.com https://cloud.umami.is https://*.umami.is" . $viteDev,
-            "style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com https://fonts.bunny.net https://cdnjs.cloudflare.com https://cdn.jsdelivr.net" . $viteDev,
-            "style-src-elem 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com https://fonts.bunny.net https://cdnjs.cloudflare.com https://cdn.jsdelivr.net" . $viteDev,
-            "font-src 'self' https://fonts.gstatic.com https://fonts.bunny.net https://cdnjs.cloudflare.com data:" . $viteDev,
-            "img-src 'self' data: blob: https://images.unsplash.com https://storage.googleapis.com https://*.midtrans.com https://api.qrserver.com https://*.googleusercontent.com https://googleusercontent.com https://*.ggpht.com https://*.google.com https://ui-avatars.com https://cloud.umami.is https://*.umami.is" . $viteDev,
-            "connect-src 'self' https://cdn.jsdelivr.net https://www.gstatic.com https://*.firebaseio.com https://*.googleapis.com https://firebaseinstallations.googleapis.com https://fcmregistrations.googleapis.com https://www.googleapis.com https://fcm.googleapis.com https://app.midtrans.com https://app.sandbox.midtrans.com https://api.midtrans.com https://api.sandbox.midtrans.com https://www.emsifa.com wss://*.firebaseio.com https://unpkg.com https://cloud.umami.is https://gateway.umami.is https://gateway-us.umami.is https://*.umami.is" . $viteDev,
+            "script-src 'self' 'nonce-{$nonce}' https://app.midtrans.com https://app.sandbox.midtrans.com https://www.gstatic.com https://firebaseinstallations.googleapis.com https://fcmregistrations.googleapis.com https://*.firebaseio.com https://*.googleapis.com" . $viteDev,
+            "script-src-elem 'self' 'nonce-{$nonce}' https://app.midtrans.com https://app.sandbox.midtrans.com https://www.gstatic.com https://firebaseinstallations.googleapis.com https://fcmregistrations.googleapis.com https://*.firebaseio.com https://*.googleapis.com" . $viteDev,
+            "style-src 'self' 'nonce-{$nonce}' https://fonts.googleapis.com https://fonts.bunny.net" . $viteDev,
+            "style-src-elem 'self' 'nonce-{$nonce}' https://fonts.googleapis.com https://fonts.bunny.net" . $viteDev,
+            "font-src 'self' https://fonts.gstatic.com https://fonts.bunny.net data:" . $viteDev,
+            "img-src 'self' data: blob: https://images.unsplash.com https://storage.googleapis.com https://*.midtrans.com https://api.qrserver.com https://*.googleusercontent.com https://googleusercontent.com https://*.ggpht.com https://*.google.com https://ui-avatars.com" . $viteDev,
+            "connect-src 'self' https://cdn.jsdelivr.net https://www.gstatic.com https://*.firebaseio.com https://*.googleapis.com https://firebaseinstallations.googleapis.com https://fcmregistrations.googleapis.com https://www.googleapis.com https://fcm.googleapis.com https://app.midtrans.com https://app.sandbox.midtrans.com https://api.midtrans.com https://api.sandbox.midtrans.com https://www.emsifa.com wss://*.firebaseio.com https://cloud.umami.is https://gateway.umami.is https://gateway-us.umami.is https://*.umami.is" . $viteDev,
             "frame-src 'self' https://app.midtrans.com https://app.sandbox.midtrans.com https://www.google.com",
             "frame-ancestors 'self'",
             "worker-src 'self' blob:",

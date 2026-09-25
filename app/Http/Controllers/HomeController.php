@@ -37,16 +37,16 @@ class HomeController extends Controller
         $c3 = setting('hero_headline_color_3') ?? 'kuning';
 
         $hero3CardImg1 = setting('hero_3card_image_1')
-            ? asset('storage/' . setting('hero_3card_image_1'))
-            : asset('storage/settings/hero3card/kO4u7Yrw9y4qsRPqpt0PZKA70LCPAldNxb2ZHgto.webp');
+            ? optimized_asset(setting('hero_3card_image_1'))
+            : 'https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=600&h=450&fit=crop&fm=webp&q=80';
 
         $hero3CardImg2 = setting('hero_3card_image_2')
-            ? asset('storage/' . setting('hero_3card_image_2'))
+            ? optimized_asset(setting('hero_3card_image_2'))
             : 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=600&q=80&fm=webp';
 
         $hero3CardImg3 = setting('hero_3card_image_3')
-            ? asset('storage/' . setting('hero_3card_image_3'))
-            : 'https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=600&q=80';
+            ? optimized_asset(setting('hero_3card_image_3'))
+            : asset('storage/settings/hero3card/kO4u7Yrw9y4qsRPqpt0PZKA70LCPAldNxb2ZHgto.webp');
 
         // ── WhatsApp Number Normalization ──
         $waNumber = preg_replace('/[^0-9]/', '', setting('shop_whatsapp') ?? '089504841279');

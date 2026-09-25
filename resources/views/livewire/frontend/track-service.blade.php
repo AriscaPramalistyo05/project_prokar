@@ -8,7 +8,7 @@
 @endphp
 
 <!-- HEADER TRACK -->
-<section class="section-overlap section-overlap-first no-print bg-brand-soft pt-16 pb-24 md:pt-24 md:pb-32 z-10 relative text-center">
+<section class="section-overlap section-overlap-first no-print bg-brand-soft pt-16 pb-28 md:pt-24 md:pb-36 z-10 text-center">
   <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
     <h1 class="text-black text-5xl md:text-7xl font-black uppercase tracking-tighter font-public mb-4 reveal-wrapper">
       <span class="reveal-line">Lacak Servis</span>
@@ -20,7 +20,7 @@
 </section>
 
 <!-- KONTEN HASIL TRACKING -->
-<section class="section-overlap bg-white pt-16 pb-32 md:pt-24 md:pb-40 z-20 print:pt-0 print:pb-0">
+<section class="section-overlap bg-white pt-12 pb-32 md:pt-16 md:pb-40 z-20 print:pt-0 print:pb-0 rounded-t-[2.5rem] md:rounded-t-[3.5rem] -mt-10 md:-mt-14 shadow-[0_-15px_40px_-10px_rgba(0,0,0,0.15)] relative">
   <div class="max-w-4xl mx-auto px-6 lg:px-12 text-center">
     
     <!-- Form Pencarian (Unified Mobile & Desktop Design) -->
@@ -426,9 +426,9 @@
 </section>
 
 @push('scripts')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha384-g4NTh/Iv5PPU4xPyhEWqPcwtNXOvdaDI8LLnyYfyNZOjKJeYQyjzQ9X5275eBjpt" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha384-Z3REaz79l2IaAZqJsSABtTbhjgOUYyV3p90XNnAPCSHg3EMTz1fouunq9WZRtj3d" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js" integrity="sha384-0FwbSMlcCBgRZIAIN+i1xVrAbgrwSmKYej7zCCFlPpv50NGur87UfaeG1l13efmX" crossorigin="anonymous"></script>
+<script src="{{ asset('vendor/gsap/gsap.min.js') }}"></script>
+<script src="{{ asset('vendor/gsap/ScrollTrigger.min.js') }}"></script>
+<script src="{{ asset('vendor/lenis/lenis.min.js') }}"></script>
 <script>
   // Initialize Lenis
   const lenis = new Lenis({

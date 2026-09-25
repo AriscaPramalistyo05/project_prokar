@@ -311,10 +311,10 @@
         <meta itemprop="brand" content="{{ $product->brand ?? 'Prokar Elektronik' }}" />
         <meta itemprop="category" content="{{ $product->category?->name ?? 'Lainnya' }}" />
 
-        <div class="flex flex-col lg:flex-row gap-8 lg:gap-14">
+        <div class="flex flex-col lg:flex-row lg:items-start gap-8 lg:gap-14">
 
-            {{-- ═══ KOLOM KIRI : GALERI (Reference Match) ═══ --}}
-            <div class="w-full lg:w-[480px] lg:flex-shrink-0 flex flex-col gap-3 sm:gap-4">
+            {{-- ═══ KOLOM KIRI : GALERI (Reference Match - Sticky on Desktop) ═══ --}}
+            <div class="w-full lg:w-[460px] xl:w-[480px] lg:flex-shrink-0 lg:sticky lg:top-[112px] lg:self-start flex flex-col gap-3 sm:gap-4 z-10">
 
                 {{-- Gambar Utama --}}
                 <div

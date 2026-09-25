@@ -21,10 +21,10 @@
     <link rel="icon" type="image/png" sizes="192x192" href="{{ file_exists(public_path('icons/icon-192x192.png')) ? asset('icons/icon-192x192.png') : $adminLogoUrl }}" />
     <link rel="apple-touch-icon" href="{{ file_exists(public_path('icons/apple-touch-icon.png')) ? asset('icons/apple-touch-icon.png') : $adminFaviconUrl }}" />
     {{-- FontAwesome 6 --}}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous" />
+    <link rel="stylesheet" href="{{ asset('vendor/fontawesome/css/all.min.css') }}" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
-    <!-- Umami Web Analytics -->
-    <script defer src="https://cloud.umami.is/script.js" data-website-id="6150499f-eb3e-406f-b3d1-d9834bb6bfc9"></script>
+    <!-- Umami Web Analytics (Self-hosted proxy script) -->
+    <script defer src="{{ asset('vendor/umami/script.js') }}" data-website-id="6150499f-eb3e-406f-b3d1-d9834bb6bfc9" data-host-url="https://cloud.umami.is"></script>
     @vite(['resources/css/admin.css', 'resources/js/admin.js'])
 </head>
 <body class="bg-base-200 min-h-screen text-base-content">
@@ -256,8 +256,8 @@
         'vapidKey'          => setting('firebase_vapid_key'),
     ]) !!}
     </script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js" integrity="sha384-ajMUFBUFMCyjh8uxJg6bkGcKe9RTolyjwbxB3yES0QQMenP3Oztj/W9vA2SJPcIh" crossorigin="anonymous"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js" integrity="sha384-G+YlsltNcQL59QCo5N1zoQkhGqujKRb2RBu6JuFYNU/ZjoPfdw1Ckm7M6wgDW3eR" crossorigin="anonymous"></script>
+    <script src="{{ asset('vendor/firebase/firebase-app-compat.js') }}"></script>
+    <script src="{{ asset('vendor/firebase/firebase-messaging-compat.js') }}"></script>
     <script>
         window.requestAdminFcmPermission = async function() {
             const configEl = document.getElementById('firebase-config');

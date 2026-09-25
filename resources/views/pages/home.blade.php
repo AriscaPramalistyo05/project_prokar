@@ -54,11 +54,11 @@
                         <div class="hero-shape-circle" aria-hidden="true"></div>
                         <div class="hero-shape-square" aria-hidden="true"></div>
 
-                        <!-- Card 1: Top Center-Left (Kulkas Polytron) -->
+                        <!-- Card 1: Top Center-Left (Kulkas Polytron - Card 3 Setting) -->
                         <a href="{{ route('produk.index') }}?kategori=kulkas"
-                            class="collage-card collage-card-1" title="Lihat Kulkas Bekas">
-                            <img src="{{ $hero3CardImg1 }}"
-                                alt="Kulkas elektronik bekas bergaransi"
+                            class="collage-card collage-card-1" title="{{ setting('hero_3card_title_3') ?? 'Lihat Kulkas Bekas' }}">
+                            <img src="{{ $hero3CardImg3 }}"
+                                alt="{{ setting('hero_3card_title_3') ?? 'Kulkas elektronik bekas bergaransi' }}"
                                 width="480"
                                 height="520"
                                 fetchpriority="high"
@@ -67,26 +67,26 @@
                                 onerror="this.src='https://prokarelektronik.com/storage/settings/hero3card/kO4u7Yrw9y4qsRPqpt0PZKA70LCPAldNxb2ZHgto.webp'" />
                         </a>
 
-                        <!-- Card 2: Middle-Right (Smart TV) -->
+                        <!-- Card 2: Middle-Right (Smart TV - Card 2 Setting) -->
                         <a href="{{ route('produk.index') }}?kategori=tv"
-                            class="collage-card collage-card-2" title="Lihat Smart TV Bekas">
+                            class="collage-card collage-card-2" title="{{ setting('hero_3card_title_2') ?? 'Lihat Smart TV Bekas' }}">
                             <img src="{{ $hero3CardImg2 }}"
-                                alt="Smart TV pilihan teknisi"
+                                alt="{{ setting('hero_3card_title_2') ?? 'Smart TV pilihan teknisi' }}"
                                 width="480"
                                 height="520"
-                                loading="eager"
+                                loading="lazy"
                                 decoding="async"
                                 onerror="this.src='https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=600&h=450&fit=crop&fm=webp&q=80'" />
                         </a>
 
-                        <!-- Card 3: Bottom-Left (Mesin Cuci) -->
+                        <!-- Card 3: Bottom-Left (Mesin Cuci - Card 1 Setting) -->
                         <a href="{{ route('produk.index') }}?kategori=mesin-cuci"
-                            class="collage-card collage-card-3" title="Lihat Mesin Cuci Bekas">
-                            <img src="{{ $hero3CardImg3 }}"
-                                alt="Mesin cuci berkualitas siap pakai"
+                            class="collage-card collage-card-3" title="{{ setting('hero_3card_title_1') ?? 'Lihat Mesin Cuci Bekas' }}">
+                            <img src="{{ $hero3CardImg1 }}"
+                                alt="{{ setting('hero_3card_title_1') ?? 'Mesin cuci berkualitas siap pakai' }}"
                                 width="440"
                                 height="480"
-                                loading="eager"
+                                loading="lazy"
                                 decoding="async"
                                 onerror="this.src='https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=600&h=450&fit=crop&fm=webp&q=80'" />
                         </a>
@@ -202,6 +202,8 @@
                                     <a href="{{ route('produk.show', $product->slug) }}" class="flex flex-col h-full w-full outline-none">
                                         <div class="relative h-[250px] md:h-[300px] w-full bg-white rounded-2xl overflow-hidden mb-6 flex items-center justify-center">
                                             <img src="{{ $product->image_url }}"
+                                                width="350"
+                                                height="300"
                                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                                 alt="{{ $product->name }}" loading="lazy" decoding="async"
                                                 onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&h=400&fit=crop'">
@@ -418,363 +420,12 @@
 
 @push('styles')
 <style>
-    /* Lightweight mobile-first hero redesign */
-    .hero-redesign {
-        --hero-yellow: #FFCC00;
-        --hero-black: #0A0A0A;
-        --hero-blue: #E8F4F8;
-        border-top: 1px solid #ececec;
-        overflow: hidden;
-    }
-
-    .hero-shell {
-        width: min(100%, 1440px);
-        margin-inline: auto;
-        padding: 120px 20px 180px;
-    }
-
-    .hero-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 34px;
-        align-items: center;
-    }
-
-    .hero-copy {
-        max-width: 720px;
-    }
-
-    .hero-eyebrow {
-        display: inline-block;
-        margin: 0 0 18px;
-        padding: 8px 14px;
-        border: 1px solid #d9dee3;
-        border-radius: 9999px;
-        color: #3f454b;
-        background: #fff;
-        font-family: "Public Sans", sans-serif;
-        font-size: 0.8rem;
-        line-height: 1.2;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-    }
-
-    .hero-title {
-        margin: 0;
-        max-width: 760px;
-        color: var(--hero-black);
-        font-family: "Public Sans", sans-serif;
-        font-size: clamp(2.75rem, 13vw, 4.9rem);
-        line-height: 0.96;
-        letter-spacing: -0.045em;
-        font-weight: 900;
-        text-wrap: balance;
-    }
-
-    .hero-description {
-        max-width: 640px;
-        margin: 22px 0 0;
-        color: #4c5258;
-        font-family: "Public Sans", sans-serif;
-        font-size: 1.05rem;
-        line-height: 1.6;
-        font-weight: 500;
-    }
-
-    .hero-actions {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        margin-top: 28px;
-    }
-
-    .hero-button {
-        min-height: 52px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        padding: 13px 22px;
-        border-radius: 12px;
-        font-family: "Public Sans", sans-serif;
-        font-size: 1rem;
-        line-height: 1;
-        font-weight: 800;
-        text-decoration: none;
-        transition: transform 160ms ease, background-color 160ms ease, color 160ms ease, border-color 160ms ease;
-    }
-
-    .hero-button-primary {
-        background: var(--hero-black);
-        color: #fff;
-        border: 1px solid var(--hero-black);
-    }
-
-    .hero-button-secondary {
-        background: #fff;
-        color: var(--hero-black);
-        border: 1px solid #cfd4d9;
-    }
-
-    .hero-button:hover {
-        transform: translateY(-2px);
-    }
-
-    .hero-button-primary:hover {
-        background: #242424;
-    }
-
-    .hero-button-secondary:hover {
-        border-color: var(--hero-black);
-        background: #f7f7f7;
-    }
-
-    .hero-visual-redesign {
-        position: relative;
-        max-width: 620px;
-        width: 100%;
-        margin-inline: auto;
-    }
-
-    /* ── Modern Staggered 3-Card Collage (Reference Style) ── */
-    .hero-collage-wrap {
-        position: relative;
-        width: 100%;
-        max-width: 370px;
-        height: 470px;
-        margin-inline: auto;
-    }
-
-    /* Decorative Floating Shapes */
-    .hero-shape-circle {
-        position: absolute;
-        top: 2px;
-        left: 2px;
-        width: 66px;
-        height: 66px;
-        border-radius: 9999px;
-        background: #1e3a8a;
-        z-index: 1;
-        transform: translate(-8px, -8px);
-    }
-
-    .hero-shape-square {
-        position: absolute;
-        bottom: 30px;
-        right: 28px;
-        width: 42px;
-        height: 42px;
-        border-radius: 13px;
-        background: #3b0764;
-        z-index: 1;
-    }
-
-    /* Collage Cards */
-    .collage-card {
-        position: absolute;
-        overflow: hidden;
-        border-radius: 22px;
-        background: #111827;
-        border: 3px solid #0f172a;
-        box-shadow: 0 18px 36px -8px rgba(0, 0, 0, 0.28), 0 8px 16px -4px rgba(0, 0, 0, 0.15);
-        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
-        display: block;
-        text-decoration: none;
-    }
-
-    .collage-card:hover {
-        transform: translateY(-6px) scale(1.02);
-        box-shadow: 0 24px 48px -8px rgba(0, 0, 0, 0.38);
-        z-index: 10 !important;
-    }
-
-    .collage-card img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        object-position: center;
-        display: block;
-        transition: transform 0.5s ease;
-    }
-
-    .collage-card:hover img {
-        transform: scale(1.06);
-    }
-
-    .collage-card-label {
-        position: absolute;
-        bottom: 0.85rem;
-        left: 0.85rem;
-        z-index: 10;
-        background: rgba(0, 0, 0, 0.75);
-        backdrop-filter: blur(8px);
-        color: #ffffff;
-        font-weight: 800;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        padding: 0.35rem 0.85rem;
-        border-radius: 9999px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    /* Mobile Staggered Positions */
-    @media (max-width: 1023px) {
-        .hero-visual-redesign {
-            max-width: 370px;
-        }
-
-        /* Card 1: Top-Left */
-        .collage-card-1 {
-            top: 15px;
-            left: 10px;
-            width: 190px;
-            height: 200px;
-            z-index: 2;
-        }
-
-        /* Card 2: Middle-Right (staggered overlap) */
-        .collage-card-2 {
-            top: 125px;
-            right: 8px;
-            width: 200px;
-            height: 210px;
-            z-index: 3;
-        }
-
-        /* Card 3: Bottom-Left (staggered below Card 1 & 2) */
-        .collage-card-3 {
-            bottom: 12px;
-            left: 8px;
-            width: 170px;
-            height: 180px;
-            z-index: 4;
-        }
-    }
-
-    @media (min-width: 640px) {
-        .hero-shell {
-            padding-inline: 32px;
-        }
-
-        .hero-actions {
-            flex-direction: row;
-        }
-
-        .hero-button {
-            padding-inline: 22px;
-        }
-    }
-
-    @media (min-width: 1024px) {
-        .hero-redesign {
-            min-height: calc(100svh + 160px);
-            display: flex;
-            align-items: flex-start;
-        }
-
-        .hero-shell {
-            width: 100%;
-            padding: clamp(155px, 18vh, 185px) clamp(32px, 4vw, 56px) clamp(180px, 22vh, 280px);
-        }
-
-        #servis {
-            margin-top: 0 !important;
-        }
-
-        .hero-grid {
-            grid-template-columns: minmax(0, 1fr) minmax(380px, 480px);
-            gap: clamp(32px, 4vw, 64px);
-        }
-
-        .hero-copy {
-            max-width: 680px;
-        }
-
-        .hero-title {
-            font-size: clamp(3.2rem, 5vw, 5.6rem);
-        }
-
-        .hero-description {
-            font-size: 1.08rem;
-            max-width: 580px;
-        }
-
-        .hero-visual-redesign {
-            justify-self: end;
-            width: min(100%, 480px);
-        }
-
-        .hero-collage-wrap {
-            max-width: 480px;
-            height: 430px;
-        }
-
-        .collage-card {
-            border-radius: 22px;
-        }
-
-        .hero-shape-circle {
-            width: 70px;
-            height: 70px;
-            top: 0px;
-            left: 110px;
-            transform: none;
-        }
-
-        .hero-shape-square {
-            width: 40px;
-            height: 40px;
-            bottom: 15px;
-            right: 40px;
-            border-radius: 12px;
-        }
-
-        /* Card 1: Top Center-Right (Kulkas Polytron) */
-        .collage-card-1 {
-            top: 10px;
-            left: 125px;
-            width: 190px;
-            height: 205px;
-            z-index: 2;
-        }
-
-        /* Card 2: Middle-Right (Smart TV) */
-        .collage-card-2 {
-            top: 90px;
-            right: 6px;
-            width: 205px;
-            height: 215px;
-            z-index: 3;
-        }
-
-        /* Card 3: Bottom-Left (Mesin Cuci) */
-        .collage-card-3 {
-            top: auto;
-            bottom: 10px;
-            left: 10px;
-            width: 180px;
-            height: 190px;
-            z-index: 4;
-        }
-    }
-
-    @media (min-width: 1280px) {
-        .hero-shell {
-            padding-inline: 60px;
-        }
-
-        .hero-grid {
-            gap: 72px;
-        }
-    }
-
     /* Testimoni switcher dots */
     .testimoni-dot {
         width: 0.75rem;
         height: 0.75rem;
         border-radius: 9999px;
-        transition: all 0.3s ease;
+        transition: width 0.3s ease, background-color 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
     }
 
     .testimoni-dot.active {
@@ -800,23 +451,6 @@
         0% { transform: scale(0.9); }
         50% { transform: scale(1.12); }
         100% { transform: scale(1); }
-    }
-
-    /* FAQ Accordion */
-    .faq-answer {
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
-        opacity: 0;
-    }
-
-    .faq-item.open .faq-answer {
-        max-height: 400px;
-        opacity: 1;
-    }
-
-    .faq-item.open .faq-icon {
-        transform: rotate(45deg);
     }
 </style>
 @endpush
@@ -978,20 +612,20 @@
 
             if (btnPrev) {
                 if (currentTestiIndex === 0) {
-                    btnPrev.className = "w-12 h-12 rounded-full border border-gray-700 flex items-center justify-center text-gray-600 opacity-40 cursor-not-allowed transition-all";
+                    btnPrev.className = "w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-gray-700 flex items-center justify-center text-gray-600 opacity-40 cursor-not-allowed transition-all";
                     btnPrev.setAttribute('disabled', 'true');
                 } else {
-                    btnPrev.className = "w-12 h-12 rounded-full bg-white text-black flex items-center justify-center hover:bg-brand-yellow transition-all cursor-pointer shadow-sm";
+                    btnPrev.className = "w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white text-black flex items-center justify-center hover:bg-brand-yellow transition-all cursor-pointer shadow-sm";
                     btnPrev.removeAttribute('disabled');
                 }
             }
 
             if (btnNext) {
                 if (currentTestiIndex === testimonials.length - 1) {
-                    btnNext.className = "w-12 h-12 rounded-full border border-gray-700 flex items-center justify-center text-gray-600 opacity-40 cursor-not-allowed transition-all";
+                    btnNext.className = "w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-gray-700 flex items-center justify-center text-gray-600 opacity-40 cursor-not-allowed transition-all";
                     btnNext.setAttribute('disabled', 'true');
                 } else {
-                    btnNext.className = "w-12 h-12 rounded-full bg-white text-black flex items-center justify-center hover:bg-brand-yellow transition-all cursor-pointer shadow-sm";
+                    btnNext.className = "w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white text-black flex items-center justify-center hover:bg-brand-yellow transition-all cursor-pointer shadow-sm";
                     btnNext.removeAttribute('disabled');
                 }
             }
@@ -1007,7 +641,7 @@
             updateDots();
             const btnPrev = document.getElementById('btn-prev');
             if (btnPrev && currentTestiIndex === 0) {
-                btnPrev.className = "w-12 h-12 rounded-full border border-gray-700 flex items-center justify-center text-gray-600 opacity-40 cursor-not-allowed transition-all";
+                btnPrev.className = "w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-gray-700 flex items-center justify-center text-gray-600 opacity-40 cursor-not-allowed transition-all";
                 btnPrev.setAttribute('disabled', 'true');
             }
         }

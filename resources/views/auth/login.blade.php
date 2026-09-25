@@ -18,14 +18,12 @@
   <link rel="apple-touch-icon" href="{{ asset('images/logo prokar.png') }}" />
   <!-- ================================================= -->
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;700;800;900&family=Archivo+Narrow:wght@500;700&family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha384-/o6I2CkkWC//PSjvWC/eYN7l3xM3tJm8ZzVkCOfp//W05QcE3mlGskpoHB6XqI+B" crossorigin="anonymous" />
+  <link rel="stylesheet" href="{{ asset('vendor/fonts/fonts.css') }}" />
+  <link rel="stylesheet" href="{{ asset('vendor/fonts/material-symbols.css') }}" />
+  <link rel="stylesheet" href="{{ asset('vendor/fontawesome/css/all.min.css') }}" />
 
-  <!-- Umami Web Analytics -->
-  <script defer src="https://cloud.umami.is/script.js" data-website-id="6150499f-eb3e-406f-b3d1-d9834bb6bfc9"></script>
+  <!-- Umami Web Analytics (Self-hosted proxy script) -->
+  <script defer src="{{ asset('vendor/umami/script.js') }}" data-website-id="6150499f-eb3e-406f-b3d1-d9834bb6bfc9" data-host-url="https://cloud.umami.is"></script>
 
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 

@@ -9,10 +9,8 @@
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/logo prokar.png') }}" />
     <link rel="apple-touch-icon" href="{{ asset('images/logo prokar.png') }}" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700;800&family=Archivo+Narrow:wght@500;700&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ asset('vendor/fonts/fonts.css') }}" />
+    <link rel="stylesheet" href="{{ asset('vendor/fonts/material-symbols.css') }}" />
 
     @vite(['resources/css/app.css'])
 

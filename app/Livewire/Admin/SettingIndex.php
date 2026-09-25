@@ -558,7 +558,8 @@ class SettingIndex extends Component
             $settingService->set('shop_logo', $path, 'general', 'image', 'Logo Utama Toko');
             $this->existing_logo = $path;
             
-            // Auto generate PWA multi-resolution icons & manifest
+            // Auto generate WebP compressed version & PWA multi-resolution icons
+            \App\Services\PwaService::generateWebpVersion(storage_path('app/public/' . $path));
             \App\Services\PwaService::generateIcons(storage_path('app/public/' . $path));
 
             $this->logo_file = null;
@@ -569,6 +570,9 @@ class SettingIndex extends Component
             $path = $this->favicon_file->store('settings', 'public');
             $settingService->set('shop_favicon', $path, 'general', 'image', 'Favicon Toko');
             $this->existing_favicon = $path;
+
+            // Auto generate WebP compressed version
+            \App\Services\PwaService::generateWebpVersion(storage_path('app/public/' . $path));
 
             // If no logo was just uploaded, update PWA icons from favicon
             if (!$this->logo_file) {

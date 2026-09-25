@@ -7,6 +7,8 @@ use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\Frontend\CheckoutController;
 use App\Http\Controllers\Frontend\DocController;
 use App\Http\Controllers\Frontend\ProductController;
+use App\Http\Controllers\Admin\DocImageController;
+use App\Http\Controllers\Frontend\DocController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderInvoiceController;
 use App\Http\Controllers\VideoStreamController;
