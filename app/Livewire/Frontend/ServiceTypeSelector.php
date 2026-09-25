@@ -10,8 +10,8 @@ class ServiceTypeSelector extends Component
 
     public function selectType($type)
     {
-        $this->activeType = $type;
-        $this->dispatch('serviceTypeChanged', type: $type);
+        $this->activeType = in_array($type, ['datang', 'kirim']) ? $type : 'datang';
+        $this->dispatch('serviceTypeChanged', type: $this->activeType);
     }
 
     public function render()

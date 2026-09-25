@@ -3,6 +3,7 @@
 namespace App\Livewire\Frontend;
 
 use App\Livewire\Traits\HandlesMediaUploads;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -35,12 +36,16 @@ class ServiceForm extends Component
     public $submittedWhatsapp = '';
     public $userServices = [];
 
-    #[Livewire\Attributes\On('serviceTypeChanged')]
+    #[On('serviceTypeChanged')]
     public function setServiceType($type)
     {
-        $this->serviceType = $type;
+        $this->serviceType = in_array($type, ['datang', 'kirim']) ? $type : 'datang';
     }
 
+    public function updatedWhatsapp($value)
+    {
+        $this->whatsapp = preg_replace('/[^0-9+]/', '', (string) $value);
+    }
 
     public function mount()
     {
@@ -59,7 +64,7 @@ class ServiceForm extends Component
         }
     }
 
-    #[Livewire\Attributes\On('sync-local-codes')]
+    #[On('sync-local-codes')]
     public function syncLocalCodes($codes)
     {
         if (\Illuminate\Support\Facades\Auth::check() && is_array($codes) && count($codes) > 0) {
@@ -82,11 +87,11 @@ class ServiceForm extends Component
     protected function rules()
     {
         return array_merge([
-            'nama' => 'required|string|min:2|max:100',
-            'email' => 'required|email|max:150',
+            'nama' => ['required', 'string', 'min:2', 'max:100', 'regex:/^[a-zA-Z\s\.\'\-]+$/'],
+            'email' => ['required', 'string', 'email:rfc', 'max:150'],
             'whatsapp' => ['required', 'string', new \App\Rules\IndonesianPhone()],
             'kategori' => 'required|exists:categories,id',
-            'merek' => 'required|string|max:100',
+            'merek' => 'required|string|min:3|max:100',
             'deskripsi' => 'required|string|min:10|max:1000',
             'province_id' => $this->serviceType === 'datang' ? 'required' : 'nullable',
             'regency_id' => $this->serviceType === 'datang' ? 'required' : 'nullable',
@@ -99,11 +104,23 @@ class ServiceForm extends Component
     protected function messages()
     {
         return array_merge([
+            'nama.required' => 'Nama lengkap wajib diisi.',
+            'nama.regex' => 'Nama lengkap hanya boleh berisi huruf dan tanda baca nama.',
+            'nama.min' => 'Nama lengkap minimal 2 karakter.',
+            'email.required' => 'Alamat email wajib diisi.',
+            'email.email' => 'Format alamat email tidak valid.',
+            'whatsapp.required' => 'Nomor WhatsApp wajib diisi.',
+            'kategori.required' => 'Kategori perangkat wajib dipilih.',
+            'merek.required' => 'Merek & tipe perangkat wajib diisi.',
+            'merek.min' => 'Merek & tipe minimal 3 karakter.',
+            'deskripsi.required' => 'Deskripsi keluhan wajib diisi.',
+            'deskripsi.min' => 'Deskripsi keluhan minimal 10 karakter.',
             'province_id.required' => 'Provinsi wajib dipilih.',
             'regency_id.required' => 'Kabupaten/Kota wajib dipilih.',
             'district_id.required' => 'Kecamatan wajib dipilih.',
             'village_id.required' => 'Desa/Kelurahan wajib dipilih.',
-            'address_detail.required' => 'Detail alamat wajib diisi.',
+            'address_detail.required' => 'Detail alamat kunjungan teknisi wajib diisi.',
+            'address_detail.min' => 'Detail alamat minimal 10 karakter.',
         ], $this->getMediaMessages());
     }
 

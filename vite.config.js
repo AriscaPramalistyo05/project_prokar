@@ -30,6 +30,8 @@ export default defineConfig({
                 // Admin panel — Tailwind v4 + daisyUI, terpisah dari frontend (CDN)
                 'resources/css/admin.css',
                 'resources/js/admin.js',
+                // Documentation pages — independent stylesheet
+                'resources/css/docs.css',
             ],
             refresh: true,
         }),

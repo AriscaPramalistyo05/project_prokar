@@ -102,6 +102,12 @@
                 @can('manage_settings')
                 <x-sidebar-setting-item />
                 @endcan
+
+                @can('manage_docs')
+                <li class="w-full my-1 px-2"><hr class="border-base-200" /></li>
+                <x-admin.sidebar-item route="admin.docs.index" icon="o-book-open" label="Dokumentasi" />
+                <x-admin.sidebar-item route="admin.docs.categories" icon="o-folder" label="Kategori Docs" />
+                @endcan
             </x-menu>
         </x-slot:sidebar>
 
@@ -377,5 +383,6 @@
             });
         });
     </script>
+    @stack('scripts')
 </body>
 </html>

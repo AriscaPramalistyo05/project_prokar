@@ -32,11 +32,16 @@ class SellForm extends Component
     public $newServiceCode = '';
     public $submittedWhatsapp = '';
 
+    public function updatedWhatsapp($value)
+    {
+        $this->whatsapp = preg_replace('/[^0-9+]/', '', (string) $value);
+    }
+
     protected function rules()
     {
         return array_merge([
-            'nama' => 'required|string|min:2|max:100',
-            'email' => 'required|email|max:150',
+            'nama' => ['required', 'string', 'min:2', 'max:100', 'regex:/^[a-zA-Z\s\.\'\-]+$/'],
+            'email' => ['required', 'string', 'email:rfc', 'max:150'],
             'whatsapp' => ['required', 'string', new \App\Rules\IndonesianPhone()],
             'province_id' => 'required',
             'regency_id' => 'required',
@@ -44,7 +49,7 @@ class SellForm extends Component
             'village_id' => 'required',
             'address_detail' => 'required|string|min:10',
             'kategori' => 'required|exists:categories,id',
-            'merek' => 'required|string|min:2|max:100',
+            'merek' => 'required|string|min:3|max:100',
             'kondisi' => 'required|in:baik,cukup,rusak',
             'deskripsi' => 'required|string|min:10|max:1000',
         ], $this->getMediaRules());
@@ -54,6 +59,8 @@ class SellForm extends Component
     {
         return array_merge([
             'nama.required' => 'Nama lengkap wajib diisi.',
+            'nama.regex' => 'Nama lengkap hanya boleh berisi huruf dan tanda baca nama.',
+            'nama.min' => 'Nama lengkap minimal 2 karakter.',
             'email.required' => 'Alamat email wajib diisi.',
             'email.email' => 'Format alamat email tidak valid.',
             'whatsapp.required' => 'Nomor WhatsApp wajib diisi.',
@@ -61,11 +68,13 @@ class SellForm extends Component
             'regency_id.required' => 'Kabupaten/Kota wajib dipilih.',
             'district_id.required' => 'Kecamatan wajib dipilih.',
             'village_id.required' => 'Desa/Kelurahan wajib dipilih.',
-            'address_detail.required' => 'Detail alamat wajib diisi.',
+            'address_detail.required' => 'Detail alamat penjemputan wajib diisi.',
+            'address_detail.min' => 'Detail alamat minimal 10 karakter.',
             'kategori.required' => 'Kategori barang wajib dipilih.',
-            'merek.required' => 'Merek dan tipe wajib diisi.',
+            'merek.required' => 'Merek dan tipe barang wajib diisi.',
+            'merek.min' => 'Merek dan tipe barang minimal 3 karakter.',
             'kondisi.required' => 'Kondisi barang wajib dipilih.',
-            'deskripsi.required' => 'Deskripsi wajib diisi.',
+            'deskripsi.required' => 'Deskripsi kondisi barang wajib diisi.',
             'deskripsi.min' => 'Deskripsi minimal 10 karakter.',
         ], $this->getMediaMessages());
     }

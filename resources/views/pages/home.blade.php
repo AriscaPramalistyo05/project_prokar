@@ -247,40 +247,38 @@
     @endif
 
     <!-- 4. TESTIMONI SECTION (Cuberto Card Overlap Dark) -->
-    <section id="testimonials" class="section-overlap bg-black pt-20 pb-36 lg:pt-28 lg:pb-44 z-40 text-white">
-        <div class="max-w-[1000px] mx-auto px-6 text-center">
-            <h2 class="text-white text-4xl md:text-6xl font-black uppercase tracking-tighter font-public mb-6">
+    <section id="testimonials" class="section-overlap bg-black pt-16 pb-16 lg:pt-24 lg:pb-24 z-40 text-white">
+        <div class="max-w-[860px] mx-auto px-6 text-center">
+            <h2 class="text-white text-3xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight font-public mt-2 md:mt-4 mb-2 md:mb-3">
                 <span class="reveal-wrapper"><span class="reveal-line">Kata Pelanggan</span></span>
             </h2>
-            <p class="reveal-fade text-gray-400 text-lg md:text-xl font-medium mb-16">Lihat pengalaman nyata dari pelanggan setia kami.</p>
+            <p class="reveal-fade text-gray-400 text-sm md:text-base font-medium mb-6 md:mb-8">Lihat pengalaman nyata dari pelanggan setia kami.</p>
 
-            <div class="reveal-fade bg-gray-900/50 rounded-[3rem] p-8 md:p-16 border border-gray-800 backdrop-blur-sm relative">
-                <div class="flex justify-center gap-2 mb-8">
-                    <i class="fa-solid fa-star text-brand-yellow text-2xl"></i>
-                    <i class="fa-solid fa-star text-brand-yellow text-2xl"></i>
-                    <i class="fa-solid fa-star text-brand-yellow text-2xl"></i>
-                    <i class="fa-solid fa-star text-brand-yellow text-2xl"></i>
-                    <i class="fa-solid fa-star text-brand-yellow text-2xl"></i>
+            <div class="reveal-fade bg-gray-900/60 rounded-3xl md:rounded-[2.5rem] p-6 sm:p-8 md:p-10 border border-gray-800/90 backdrop-blur-sm relative shadow-2xl">
+                <div class="flex justify-center gap-1.5 mb-5 md:mb-6">
+                    @for ($s = 0; $s < 5; $s++)
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-brand-yellow fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    @endfor
                 </div>
 
-                <div class="min-h-[160px] flex flex-col justify-center">
-                    <p id="testimoni-text" class="text-white text-2xl md:text-4xl font-bold font-public leading-relaxed">
+                <div class="min-h-[100px] sm:min-h-[120px] flex flex-col justify-center">
+                    <p id="testimoni-text" class="text-white text-lg sm:text-xl md:text-2xl lg:text-[1.65rem] font-bold font-public leading-snug sm:leading-relaxed">
                         "{{ $testiList[0]['text'] ?? '' }}"
                     </p>
-                    <span id="testimoni-name" class="text-brand-yellow text-lg md:text-xl font-bold mt-6 block">
+                    <span id="testimoni-name" class="text-brand-yellow text-sm sm:text-base md:text-lg font-bold mt-4 sm:mt-5 block">
                         — {{ $testiList[0]['name'] ?? '' }}
                     </span>
                 </div>
 
-                <div class="flex justify-center items-center gap-6 mt-12">
+                <div class="flex justify-center items-center gap-4 sm:gap-6 mt-6 sm:mt-8">
                     <button id="btn-prev" onclick="changeTestimoni(-1)" aria-label="Testimoni Sebelumnya"
-                        class="w-12 h-12 rounded-full border border-gray-600 flex items-center justify-center text-gray-600 transition-colors cursor-pointer">
-                        <i class="fa-solid fa-arrow-left"></i>
+                        class="w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-gray-700 flex items-center justify-center text-gray-600 opacity-40 cursor-not-allowed transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/></svg>
                     </button>
                     <div id="testimoni-dots" class="flex gap-2"></div>
                     <button id="btn-next" onclick="changeTestimoni(1)" aria-label="Testimoni Selanjutnya"
-                        class="w-12 h-12 rounded-full bg-white text-black flex items-center justify-center hover:bg-brand-yellow transition-colors cursor-pointer">
-                        <i class="fa-solid fa-arrow-right"></i>
+                        class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white text-black flex items-center justify-center hover:bg-brand-yellow transition-all cursor-pointer shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg>
                     </button>
                 </div>
             </div>
