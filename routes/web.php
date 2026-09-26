@@ -98,6 +98,19 @@ Route::domain($docsSubdomain)->group(function () {
     Route::match(['get', 'post'], '/api/deploy/optimize', [MaintenanceController::class, 'deployOptimize']);
     Route::match(['get', 'post'], '/api/deploy/seed-docs', [MaintenanceController::class, 'deploySeedDocs']);
 
+    // Direct storage handler on docs subdomain
+    Route::get('/storage/{path}', function (\Illuminate\Http\Request $request, string $path) {
+        $filePath = storage_path('app/public/' . $path);
+        if (file_exists($filePath)) {
+            return response()->file($filePath, [
+                'Cache-Control' => 'public, max-age=31536000',
+            ]);
+        }
+
+        $mainDomain = env('APP_URL', 'https://prokarelektronik.com');
+        return redirect()->to(rtrim($mainDomain, '/') . '/storage/' . $path, 301);
+    })->where('path', '.*')->name('subdomain.docs.storage');
+
     Route::name('subdomain.docs.')->group(function () {
         Route::get('/', [DocController::class, 'index'])->name('index');
         Route::get('/search', [DocController::class, 'search'])->name('search');
@@ -109,10 +122,11 @@ Route::domain($docsSubdomain)->group(function () {
             return redirect()->to(url('/' . $slug), 301);
         });
         Route::get('/{categorySlug}/{articleSlug}', [DocController::class, 'legacyShow'])
-            ->where('categorySlug', '^(?!login|logout|register|search|api|docs|admin).*$')
+            ->where('categorySlug', '^(?!login|logout|register|search|api|docs|admin|storage).*$')
+            ->where('articleSlug', '^(?!.*\.png|.*\.jpg|.*\.jpeg|.*\.webp|.*\.gif|.*\.svg).*$')
             ->name('legacy.show');
         Route::get('/{slug}', [DocController::class, 'resolve'])
-            ->where('slug', '^(?!login|logout|register|search|api|docs|admin).*$')
+            ->where('slug', '^(?!login|logout|register|search|api|docs|admin|storage).*$')
             ->name('show');
     });
 });
@@ -127,9 +141,12 @@ Route::prefix('docs')->name('docs.')->group(function () {
     Route::get('/', [DocController::class, 'index'])->name('index');
     Route::get('/search', [DocController::class, 'search'])->name('search');
     Route::get('/category/{slug}', [DocController::class, 'category'])->name('category');
-    Route::get('/{categorySlug}/{articleSlug}', [DocController::class, 'legacyShow'])->name('legacy.show');
+    Route::get('/{categorySlug}/{articleSlug}', [DocController::class, 'legacyShow'])
+        ->where('categorySlug', '^(?!login|logout|register|search|api|docs|admin|storage).*$')
+        ->where('articleSlug', '^(?!.*\.png|.*\.jpg|.*\.jpeg|.*\.webp|.*\.gif|.*\.svg).*$')
+        ->name('legacy.show');
     Route::get('/{slug}', [DocController::class, 'resolve'])
-        ->where('slug', '^(?!login|logout|register|search|api).*$')
+        ->where('slug', '^(?!login|logout|register|search|api|storage).*$')
         ->name('show');
 });
 

@@ -133,8 +133,9 @@ class DocController extends Controller
             abort(403, 'Anda tidak memiliki hak akses untuk membaca panduan internal ini.');
         }
 
-        // Auto-add IDs to headings for TOC anchor links
+        // Auto-add IDs to headings for TOC anchor links and normalize image URLs
         $article->content = $this->addHeadingIds($article->content);
+        $article->content = $this->normalizeImageUrls($article->content);
 
         // Get Table of Contents
         $toc = $article->table_of_contents;
@@ -296,5 +297,32 @@ class DocController extends Controller
             },
             $content
         );
+    }
+
+    /**
+     * Normalize image URLs in article content to guarantee they load from storage.
+     */
+    private function normalizeImageUrls(?string $content): string
+    {
+        if (empty($content)) {
+            return '';
+        }
+
+        $mainStorageUrl = rtrim(env('APP_URL', 'https://prokarelektronik.com'), '/') . '/storage/';
+
+        // Replace relative paths like ../../../storage/ or /storage/
+        $content = preg_replace(
+            '/src=["\'](?:\.\.\/)+storage\/([^"\']+)["\']/i',
+            'src="' . $mainStorageUrl . '$1"',
+            $content
+        );
+
+        $content = preg_replace(
+            '/src=["\']\/storage\/([^"\']+)["\']/i',
+            'src="' . $mainStorageUrl . '$1"',
+            $content
+        );
+
+        return $content;
     }
 }
