@@ -177,6 +177,12 @@
   <!-- Dynamic Page Preload (if specified) -->
   @stack('preload')
 
+  <!-- Vite Production CSS & JS (Moved up to prioritize critical path styling) -->
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+  <!-- Preload Core Icon Font (Eliminates icon FOIT & layout shift) -->
+  <link rel="preload" href="{{ asset('vendor/fontawesome/webfonts/fa-solid-900.woff2') }}" as="font" type="font/woff2" crossorigin />
+
   <!-- Fonts & Icons: Self-hosted via /vendor/ untuk keamanan SRI & eliminasi cross-domain CORS -->
   <link rel="stylesheet" href="{{ asset('vendor/fonts/fonts.css') }}" media="print" onload="this.media='all'" />
   <link rel="stylesheet" href="{{ asset('vendor/fonts/material-symbols.css') }}" media="print" onload="this.media='all'" />
@@ -186,12 +192,6 @@
     <link rel="stylesheet" href="{{ asset('vendor/fonts/material-symbols.css') }}" />
     <link rel="stylesheet" href="{{ asset('vendor/fontawesome/css/all.min.css') }}" />
   </noscript>
-
-  <!-- Umami Web Analytics (Self-hosted proxy script untuk mencegah SRI & Cross-Domain alert) -->
-  <script defer src="{{ asset('vendor/umami/script.js') }}" data-website-id="6150499f-eb3e-406f-b3d1-d9834bb6bfc9" data-host-url="https://cloud.umami.is"></script>
-
-  <!-- Vite Production CSS & JS -->
-  @vite(['resources/css/app.css', 'resources/js/app.js'])
 
   <style>
     [x-cloak] {
@@ -1019,33 +1019,39 @@
       if (!sections.length) return;
       const vh = window.innerHeight;
       const isMobile = window.innerWidth < 1024;
-      sections.forEach(function(el) {
-        if (el.classList.contains('section-overlap-first')) {
-          el.style.position = '-webkit-sticky';
-          el.style.position = 'sticky';
-          if (isMobile) {
-            const h = el.offsetHeight;
-            if (h > vh) {
-              el.style.top = (vh - h) + 'px';
-            } else {
-              el.style.top = '0px';
-            }
-          } else {
-            el.style.top = '0px';
+
+      // 1. Batch read DOM metrics without layout mutation to eliminate forced reflow
+      const plan = [];
+      for (let i = 0; i < sections.length; i++) {
+        const el = sections[i];
+        const isFirst = el.classList.contains('section-overlap-first');
+        let topVal = '0px';
+        if (!isFirst || isMobile) {
+          const h = el.offsetHeight;
+          if (h > vh) {
+            topVal = (vh - h) + 'px';
           }
-          return;
         }
-        const h = el.offsetHeight;
-        if (h > vh) {
-          el.style.top = (vh - h) + 'px';
-        } else {
-          el.style.top = '0px';
+        plan.push({ el: el, topVal: topVal });
+      }
+
+      // 2. Batch write styles in a single frame to prevent layout thrashing
+      requestAnimationFrame(function() {
+        for (let i = 0; i < plan.length; i++) {
+          const item = plan[i];
+          item.el.style.position = '-webkit-sticky';
+          item.el.style.position = 'sticky';
+          item.el.style.top = item.topVal;
         }
       });
     }
     window.addEventListener('DOMContentLoaded', initStickyOverlap);
     window.addEventListener('load', initStickyOverlap);
-    window.addEventListener('resize', initStickyOverlap);
+    let resizeStickyTimer;
+    window.addEventListener('resize', function() {
+      clearTimeout(resizeStickyTimer);
+      resizeStickyTimer = setTimeout(initStickyOverlap, 100);
+    }, { passive: true });
     window.addEventListener('orientationchange', initStickyOverlap);
     window.updateStickyOverlap = initStickyOverlap;
   </script>
@@ -1300,6 +1306,29 @@
         requestIdleCallback(loadFirebase, { timeout: 3000 });
       } else {
         setTimeout(loadFirebase, 2500);
+      }
+    })();
+  </script>
+
+  <!-- Umami Web Analytics (Offloaded to idle execution to prevent chaining into critical path) -->
+  <script>
+    (function() {
+      function loadUmami() {
+        if (document.getElementById('umami-analytics-script')) return;
+        var s = document.createElement('script');
+        s.id = 'umami-analytics-script';
+        s.async = true;
+        s.src = "{{ asset('vendor/umami/script.js') }}";
+        s.setAttribute('data-website-id', '6150499f-eb3e-406f-b3d1-d9834bb6bfc9');
+        s.setAttribute('data-host-url', 'https://cloud.umami.is');
+        document.body.appendChild(s);
+      }
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(loadUmami, { timeout: 2500 });
+      } else {
+        window.addEventListener('load', function() {
+          setTimeout(loadUmami, 1200);
+        });
       }
     })();
   </script>

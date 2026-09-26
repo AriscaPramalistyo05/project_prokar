@@ -1,8 +1,8 @@
 @php
     $shopName = setting('shop_name', 'Prokar Elektronik');
-    $iconPath = file_exists(public_path('icons/icon-192x192.png')) 
-        ? asset('icons/icon-192x192.png') 
-        : asset('images/logo prokar simpel.png');
+    $iconPath = file_exists(public_path('icons/icon-96x96.webp')) 
+        ? asset('icons/icon-96x96.webp') 
+        : (file_exists(public_path('icons/icon-192x192.png')) ? asset('icons/icon-192x192.png') : asset('images/logo prokar simpel.png'));
 @endphp
 
 <!-- PWA Floating Bottom Install Banner -->
@@ -14,7 +14,7 @@
         <div class="flex items-center gap-3.5 relative z-10">
             {{-- App Icon --}}
             <div class="w-12 h-12 rounded-xl bg-[#FFCC00] shrink-0 shadow-xs border border-amber-300 flex items-center justify-center overflow-hidden">
-                <img src="{{ $iconPath }}" alt="{{ $shopName }}" class="w-full h-full object-cover rounded-xl" />
+                <img src="{{ $iconPath }}" alt="{{ $shopName }}" width="48" height="48" loading="lazy" decoding="async" class="w-full h-full object-cover rounded-xl" />
             </div>
 
             {{-- Text Info --}}

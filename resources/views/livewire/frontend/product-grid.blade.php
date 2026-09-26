@@ -1,5 +1,5 @@
 <div wire:ignore.self>
-    <div x-data="{ gridLoading: true }" x-init="setTimeout(() => gridLoading = false, 300)" @category-loading.window="gridLoading = true" @category-updated.window="gridLoading = false">
+    <div x-data="{ gridLoading: false }" @category-loading.window="gridLoading = true" @category-updated.window="gridLoading = false">
         <section aria-label="Daftar produk elektronik" class="py-6 md:py-8">
             
             {{-- ─── SKELETON LOADER (Muncul saat ganti kategori atau pertama kali load) ─── --}}

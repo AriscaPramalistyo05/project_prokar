@@ -5,6 +5,12 @@
 @section('keywords', 'elektronik bekas Jepara, jual kulkas second, servis TV, servis mesin cuci, servis kulkas, AC second, toko elektronik Mlonggo, jual beli elektronik, Prokar Elektronik')
 @section('body_class', 'bg-white')
 
+@push('preload')
+    @if (!empty($hero3CardImg3))
+        <link rel="preload" as="image" href="{{ $hero3CardImg3 }}" fetchpriority="high">
+    @endif
+@endpush
+
 @section('content')
 <main class="bg-brand-black">
 
@@ -108,8 +114,8 @@
                 <div class="stagger-item">
                     <a href="{{ route('servis.index') }}"
                         class="group relative block h-[400px] lg:h-[500px] rounded-[2rem] overflow-hidden bg-black shadow-card transform hover:-translate-y-2 transition-all duration-500">
-                        <img src="{{ setting('service_image_tv') ? asset('storage/' . setting('service_image_tv')) : 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=800&q=75&fm=webp' }}"
-                            alt="Service TV" width="800" height="500" loading="lazy" decoding="async"
+                        <img src="{{ setting('service_image_tv') ? asset('storage/' . setting('service_image_tv')) : 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=600&q=75&fm=webp' }}"
+                            alt="Service TV" width="600" height="400" loading="lazy" decoding="async"
                             class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-8">
                             <h3 class="text-white text-3xl lg:text-4xl font-bold font-public uppercase leading-none">
@@ -123,8 +129,8 @@
                 <div class="stagger-item md:mt-12">
                     <a href="{{ route('servis.index') }}"
                         class="group relative block h-[400px] lg:h-[500px] rounded-[2rem] overflow-hidden bg-black shadow-card transform hover:-translate-y-2 transition-all duration-500">
-                        <img src="{{ setting('service_image_mesin_cuci') ? asset('storage/' . setting('service_image_mesin_cuci')) : 'https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=800&q=80' }}"
-                            alt="Service Mesin Cuci" width="800" height="500" loading="lazy" decoding="async"
+                        <img src="{{ setting('service_image_mesin_cuci') ? asset('storage/' . setting('service_image_mesin_cuci')) : 'https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=600&q=75&fm=webp' }}"
+                            alt="Service Mesin Cuci" width="600" height="400" loading="lazy" decoding="async"
                             class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-8">
                             <h3 class="text-white text-3xl lg:text-4xl font-bold font-public uppercase leading-none">
@@ -138,8 +144,8 @@
                 <div class="stagger-item">
                     <a href="{{ route('servis.index') }}"
                         class="group relative block h-[400px] lg:h-[500px] rounded-[2rem] overflow-hidden bg-black shadow-card transform hover:-translate-y-2 transition-all duration-500">
-                        <img src="{{ setting('service_image_kulkas') ? asset('storage/' . setting('service_image_kulkas')) : 'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=800&q=80&fm=webp' }}"
-                            alt="Service Kulkas" width="800" height="500" loading="lazy" decoding="async"
+                        <img src="{{ setting('service_image_kulkas') ? asset('storage/' . setting('service_image_kulkas')) : 'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=600&q=75&fm=webp' }}"
+                            alt="Service Kulkas" width="600" height="400" loading="lazy" decoding="async"
                             class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-8">
                             <h3 class="text-white text-3xl lg:text-4xl font-bold font-public uppercase leading-none">
@@ -206,7 +212,7 @@
                                                 height="300"
                                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                                 alt="{{ $product->name }}" loading="lazy" decoding="async"
-                                                onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&h=400&fit=crop'">
+                                                onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&h=400&fit=crop&fm=webp&q=70'">
                                             <span class="absolute top-4 left-4 z-20 bg-red-600 text-white text-xs font-black px-3 py-1.5 rounded-full uppercase shadow-xs pointer-events-none">Promo</span>
                                             <button type="button"
                                                 onclick="event.preventDefault(); event.stopPropagation(); openCartModal(this.closest('.onsale-card'))"

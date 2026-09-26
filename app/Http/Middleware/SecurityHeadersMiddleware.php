@@ -64,6 +64,7 @@ class SecurityHeadersMiddleware
             "script-src-attr 'unsafe-inline'",
             "style-src 'self' 'unsafe-inline' 'nonce-{$nonce}' https://fonts.googleapis.com https://fonts.bunny.net https://cdnjs.cloudflare.com" . $viteDev,
             "style-src-elem 'self' 'unsafe-inline' 'nonce-{$nonce}' https://fonts.googleapis.com https://fonts.bunny.net https://cdnjs.cloudflare.com" . $viteDev,
+            "style-src-attr 'unsafe-inline'",
             "font-src 'self' https://fonts.gstatic.com https://fonts.bunny.net data:" . $viteDev,
             "img-src 'self' data: blob: https://prokarelektronik.com https://*.prokarelektronik.com https://images.unsplash.com https://storage.googleapis.com https://*.midtrans.com https://api.qrserver.com https://*.googleusercontent.com https://googleusercontent.com https://*.ggpht.com https://*.google.com https://ui-avatars.com" . $viteDev,
             "connect-src 'self' https://prokarelektronik.com https://*.prokarelektronik.com https://cdn.jsdelivr.net https://www.gstatic.com https://*.firebaseio.com https://*.googleapis.com https://firebaseinstallations.googleapis.com https://fcmregistrations.googleapis.com https://www.googleapis.com https://fcm.googleapis.com https://app.midtrans.com https://app.sandbox.midtrans.com https://api.midtrans.com https://api.sandbox.midtrans.com https://www.emsifa.com wss://*.firebaseio.com https://cloud.umami.is https://gateway.umami.is https://gateway-us.umami.is https://*.umami.is" . $viteDev,
