@@ -462,11 +462,11 @@
     /* Top clearance for non-home pages so fixed header doesn't cover content */
     @if(!request()->routeIs('home') && !request()->routeIs('keranjang.index') && !request()->routeIs('checkout.address'))
       body {
-        padding-top: 120px !important;
+        padding-top: 128px !important;
       }
       @media (max-width: 640px) {
         body {
-          padding-top: 110px !important;
+          padding-top: 128px !important;
         }
       }
     @endif

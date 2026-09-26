@@ -52,16 +52,16 @@ class SecurityHeadersMiddleware
         }
 
         // 1. Content Security Policy (CSP)
-        // Strict CSP: NO 'unsafe-inline' and NO 'unsafe-eval'
-        // Uses cryptographic Nonce ('nonce-...') for scripts and styles
+        // Uses cryptographic Nonce ('nonce-...') for scripts and styles, with 'unsafe-eval' for Alpine.js / Livewire 3 expressions
         $viteDev = (app()->environment('local', 'testing') || config('app.debug'))
             ? ' http://localhost:5173 http://127.0.0.1:5173 ws://localhost:5173 ws://127.0.0.1:5173'
             : '';
 
         $csp = implode('; ', [
             "default-src 'self'",
-            "script-src 'self' 'nonce-{$nonce}' https://app.midtrans.com https://app.sandbox.midtrans.com https://www.gstatic.com https://firebaseinstallations.googleapis.com https://fcmregistrations.googleapis.com https://*.firebaseio.com https://*.googleapis.com" . $viteDev,
-            "script-src-elem 'self' 'nonce-{$nonce}' https://app.midtrans.com https://app.sandbox.midtrans.com https://www.gstatic.com https://firebaseinstallations.googleapis.com https://fcmregistrations.googleapis.com https://*.firebaseio.com https://*.googleapis.com" . $viteDev,
+            "script-src 'self' 'unsafe-eval' 'nonce-{$nonce}' https://app.midtrans.com https://app.sandbox.midtrans.com https://www.gstatic.com https://firebaseinstallations.googleapis.com https://fcmregistrations.googleapis.com https://*.firebaseio.com https://*.googleapis.com" . $viteDev,
+            "script-src-elem 'self' 'unsafe-eval' 'nonce-{$nonce}' https://app.midtrans.com https://app.sandbox.midtrans.com https://www.gstatic.com https://firebaseinstallations.googleapis.com https://fcmregistrations.googleapis.com https://*.firebaseio.com https://*.googleapis.com" . $viteDev,
+            "script-src-attr 'unsafe-inline'",
             "style-src 'self' 'nonce-{$nonce}' https://fonts.googleapis.com https://fonts.bunny.net" . $viteDev,
             "style-src-elem 'self' 'nonce-{$nonce}' https://fonts.googleapis.com https://fonts.bunny.net" . $viteDev,
             "font-src 'self' https://fonts.gstatic.com https://fonts.bunny.net data:" . $viteDev,

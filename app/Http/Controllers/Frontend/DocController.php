@@ -16,14 +16,16 @@ class DocController extends Controller
     {
         $user = $request->user();
 
-        $categories = DocCategory::orderBy('order')
+        // Customer landing page strictly shows public categories only
+        $categories = DocCategory::whereNull('role_access')
+            ->orderBy('order')
             ->withCount(['publishedArticles'])
-            ->get()
-            ->filter(fn(DocCategory $cat) => $cat->isAccessibleBy($user));
+            ->get();
 
-        $allCategories = $this->getAccessibleCategories($user);
+        $allCategories = $this->getCategoriesByScope('public', $user);
+        $currentScope = 'public';
 
-        return view('docs.index', compact('categories', 'allCategories'));
+        return view('docs.index', compact('categories', 'allCategories', 'currentScope'));
     }
 
     /**
@@ -84,10 +86,11 @@ class DocController extends Controller
     protected function renderArticle(Request $request, DocArticle $article)
     {
         $category = $article->category;
+        $user = $request->user();
 
         // Check category access permissions
-        if ($category && !$category->isAccessibleBy($request->user())) {
-            if (!$request->user()) {
+        if ($category && !$category->isAccessibleBy($user)) {
+            if (!$user) {
                 $loginUrl = $request->getHost() === env('DOCS_DOMAIN', 'docs.prokarelektronik.com')
                     ? route('subdomain.login')
                     : route('login');
@@ -106,9 +109,16 @@ class DocController extends Controller
         $previous = $article->previous;
         $next = $article->next;
 
+        // Determine active role scope strictly
+        $currentScope = $category ? ($category->role_access ?: 'public') : 'public';
+        $allCategories = $this->getCategoriesByScope($currentScope, $user);
+
         // Clean breadcrumb structure
+        $rootLabel = $currentScope === 'teknisi' ? 'SOP Teknisi' : ($currentScope === 'super_admin' ? 'Panduan Admin' : 'Dokumentasi');
+        $rootUrl = $currentScope === 'teknisi' ? url('/docs/teknisi') : ($currentScope === 'super_admin' ? url('/docs/admin') : route('docs.index'));
+
         $breadcrumbs = [
-            ['label' => 'Dokumentasi', 'url' => route('docs.index')],
+            ['label' => $rootLabel, 'url' => $rootUrl],
             ['label' => $category->name, 'url' => $category->url],
             ['label' => $article->title, 'url' => null],
         ];
@@ -120,11 +130,8 @@ class DocController extends Controller
             ]]);
         }
 
-        // All categories for sidebar navigation
-        $allCategories = $this->getAccessibleCategories($request->user());
-
         return view('docs.show', compact(
-            'category', 'article', 'toc', 'previous', 'next', 'breadcrumbs', 'allCategories'
+            'category', 'article', 'toc', 'previous', 'next', 'breadcrumbs', 'allCategories', 'currentScope'
         ));
     }
 
@@ -133,9 +140,11 @@ class DocController extends Controller
      */
     protected function renderCategory(Request $request, DocCategory $category)
     {
+        $user = $request->user();
+
         // Check access
-        if (!$category->isAccessibleBy($request->user())) {
-            if (!$request->user()) {
+        if (!$category->isAccessibleBy($user)) {
+            if (!$user) {
                 $loginUrl = $request->getHost() === env('DOCS_DOMAIN', 'docs.prokarelektronik.com')
                     ? route('subdomain.login')
                     : route('login');
@@ -148,9 +157,10 @@ class DocController extends Controller
             ->with('publishedChildren')
             ->get();
 
-        $allCategories = $this->getAccessibleCategories($request->user());
+        $currentScope = $category->role_access ?: 'public';
+        $allCategories = $this->getCategoriesByScope($currentScope, $user);
 
-        return view('docs.category', compact('category', 'articles', 'allCategories'));
+        return view('docs.category', compact('category', 'articles', 'allCategories', 'currentScope'));
     }
 
     /**
@@ -160,13 +170,23 @@ class DocController extends Controller
     {
         $query = trim($request->input('q', ''));
         $user = $request->user();
+        $scope = $request->input('scope');
 
         if (strlen($query) < 2) {
             return response()->json([]);
         }
 
-        // Get accessible category IDs
-        $accessibleCategoryIds = DocCategory::orderBy('order')->get()
+        // Get accessible category IDs strictly filtered
+        $accessibleCategoryQuery = DocCategory::orderBy('order');
+        if ($scope === 'teknisi') {
+            $accessibleCategoryQuery->where('role_access', 'teknisi');
+        } elseif ($scope === 'super_admin') {
+            $accessibleCategoryQuery->where('role_access', 'super_admin');
+        } elseif ($scope === 'public') {
+            $accessibleCategoryQuery->whereNull('role_access');
+        }
+
+        $accessibleCategoryIds = $accessibleCategoryQuery->get()
             ->filter(fn(DocCategory $cat) => $cat->isAccessibleBy($user))
             ->pluck('id');
 
@@ -192,16 +212,24 @@ class DocController extends Controller
     }
 
     /**
-     * Get categories accessible by user.
+     * Get categories strictly filtered by active role scope.
      */
-    private function getAccessibleCategories(?object $user): \Illuminate\Support\Collection
+    private function getCategoriesByScope(string $roleScope, ?object $user): \Illuminate\Support\Collection
     {
-        return DocCategory::orderBy('order')
+        $query = DocCategory::orderBy('order')
             ->with(['publishedRootArticles' => function ($q) {
                 $q->with('publishedChildren');
-            }])
-            ->get()
-            ->filter(fn(DocCategory $cat) => $cat->isAccessibleBy($user));
+            }]);
+
+        if ($roleScope === 'teknisi') {
+            $query->where('role_access', 'teknisi');
+        } elseif ($roleScope === 'super_admin') {
+            $query->where('role_access', 'super_admin');
+        } else {
+            $query->whereNull('role_access');
+        }
+
+        return $query->get()->filter(fn(DocCategory $cat) => $cat->isAccessibleBy($user));
     }
 
     /**

@@ -1,13 +1,40 @@
 {{-- Midtrans Style Minimalist Sidebar --}}
+@php
+  // Determine active scope if not passed
+  if (!isset($currentScope)) {
+    if (isset($category) && $category->role_access) {
+      $currentScope = $category->role_access;
+    } elseif (isset($article) && $article->category && $article->category->role_access) {
+      $currentScope = $article->category->role_access;
+    } elseif (request()->is('docs/teknisi*') || request()->is('teknisi*')) {
+      $currentScope = 'teknisi';
+    } elseif (request()->is('docs/admin*') || request()->is('admin*')) {
+      $currentScope = 'super_admin';
+    } else {
+      $currentScope = 'public';
+    }
+  }
+@endphp
+
 <div class="h-full flex flex-col bg-white dark:bg-slate-900">
 
   {{-- Mobile Drawer Header (Visible only on mobile screen) --}}
   <div class="lg:hidden flex items-center justify-between px-4 py-3.5 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/80 shrink-0">
     <div class="flex items-center gap-2">
-      <span class="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">Panduan & SOP</span>
+      <span class="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
+        @if($currentScope === 'teknisi')
+          SOP Teknisi
+        @elseif($currentScope === 'super_admin')
+          Panduan Super Admin
+        @else
+          Panduan Pelanggan
+        @endif
+      </span>
     </div>
-    <button @click="sidebarOpen = false"
+    <button @click="sidebarOpen = false; window.closeDocsSidebar && window.closeDocsSidebar()"
+            onclick="window.closeDocsSidebar && window.closeDocsSidebar()"
             type="button"
+            id="docs-sidebar-close-btn"
             class="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-slate-600 hover:text-rose-600 dark:text-slate-300 dark:hover:text-rose-400 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg transition-colors cursor-pointer shadow-2xs"
             aria-label="Tutup navigasi">
       <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -17,23 +44,31 @@
     </button>
   </div>
 
-  {{-- Scrollable Nav Links --}}
+  {{-- Desktop Sidebar Header (No badges, no icons, clean text only) --}}
+  <div class="hidden lg:flex items-center px-4 py-3.5 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shrink-0">
+    <span class="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
+      @if($currentScope === 'teknisi')
+        SOP Teknisi
+      @elseif($currentScope === 'super_admin')
+        Panduan Super Admin
+      @else
+        Panduan Pelanggan
+      @endif
+    </span>
+  </div>
+
+  {{-- Scrollable Nav Links (Strictly Scoped by Controller, No Role Badges) --}}
   <nav class="flex-1 overflow-y-auto px-3 py-3 space-y-3.5 scrollbar-thin">
     @forelse($allCategories ?? [] as $cat)
       <div class="space-y-0.5">
-        {{-- Midtrans Category Section Header --}}
+        {{-- Category Section Header --}}
         <div class="px-3 pt-1 pb-1 flex items-center justify-between">
-          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
             {{ $cat->name }}
           </span>
-          @if($cat->role_access === 'super_admin')
-            <span class="text-[9px] font-mono font-semibold uppercase px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300 border border-amber-200/70 dark:border-amber-800/60">admin</span>
-          @elseif($cat->role_access === 'teknisi')
-            <span class="text-[9px] font-mono font-semibold uppercase px-1.5 py-0.5 rounded bg-sky-50 text-sky-700 dark:bg-sky-950/50 dark:text-sky-300 border border-sky-200/70 dark:border-sky-800/60">teknisi</span>
-          @endif
         </div>
 
-        {{-- Articles in this Class --}}
+        {{-- Articles in this Category --}}
         <div class="space-y-0.5">
           @foreach($cat->publishedRootArticles as $article)
             @php
@@ -48,6 +83,7 @@
               <div class="flex items-center justify-between group">
                 <a href="{{ $article->url }}"
                    @click="sidebarOpen = false"
+                   onclick="if(window.innerWidth < 1024 && window.closeDocsSidebar) window.closeDocsSidebar();"
                    class="docs-sidebar-link flex-1 {{ $isActive ? 'active' : '' }}"
                    title="{{ $article->title }}">
                   <span class="truncate">{{ $article->title }}</span>
@@ -72,6 +108,7 @@
                     @endphp
                     <a href="{{ $child->url }}"
                        @click="sidebarOpen = false"
+                       onclick="if(window.innerWidth < 1024 && window.closeDocsSidebar) window.closeDocsSidebar();"
                        class="docs-sidebar-link text-xs {{ $isSubActive ? 'active' : '' }}"
                        title="{{ $child->title }}">
                       <span class="truncate">{{ $child->title }}</span>
@@ -87,21 +124,21 @@
       <p class="text-xs text-slate-400 px-3 py-4">Belum ada dokumentasi tersedia.</p>
     @endforelse
 
-    {{-- Bottom Links: Staff Dashboard & Return to Site --}}
-    <div class="pt-4 mt-6 border-t border-slate-200 dark:border-slate-800 space-y-2">
-      @auth
-        @if(auth()->user()->hasRole('super_admin') || auth()->user()->hasRole('teknisi') || auth()->user()->roles()->exists())
-          <a href="{{ route('admin.dashboard') }}" 
-             class="docs-sidebar-link text-xs flex items-center gap-2 text-amber-700 dark:text-amber-400 font-semibold bg-amber-50/60 dark:bg-amber-950/30 rounded-lg border border-amber-200/70 dark:border-amber-900/50">
-            <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z" />
-              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z" />
-            </svg>
-            <span>Panel Dashboard Admin</span>
-          </a>
-        @endif
-      @endauth
+    {{-- Shortcut back to general docs when viewing internal docs --}}
+    @if($currentScope !== 'public')
+      <div class="px-2 pt-2">
+        <a href="{{ route('docs.index') }}" 
+           class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+          </svg>
+          <span>Dokumentasi Pelanggan</span>
+        </a>
+      </div>
+    @endif
 
+    {{-- Bottom Links: Return to Site --}}
+    <div class="pt-4 mt-6 border-t border-slate-200 dark:border-slate-800 space-y-2">
       <a href="{{ route('home') }}" class="docs-sidebar-link text-xs flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
         <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />

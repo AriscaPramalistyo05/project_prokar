@@ -22,13 +22,33 @@
     cartCount: {{ $cartCount }},
     bump: false,
     updateCartCount(val) {
-        const num = (typeof val === 'object' && val !== null) ? (val.count ?? 0) : val;
+        let num = 0;
+        if (typeof val === 'object' && val !== null) {
+            if ('count' in val) num = val.count;
+            else if (Array.isArray(val) && val[0] && typeof val[0] === 'object' && 'count' in val[0]) num = val[0].count;
+            else if (val.cart_count) num = val.cart_count;
+        } else {
+            num = val;
+        }
         this.cartCount = parseInt(num) || 0;
         this.bump = true;
         setTimeout(() => { this.bump = false; }, 600);
     }
-}" @cart-count-updated.window="updateCartCount($event.detail)"
-    @cart-updated.window="updateCartCount($event.detail)">
+}"
+x-init="
+    window.updateCartBadge = (count) => updateCartCount(count);
+    $watch('mobileMenuOpen', val => {
+        if (val) {
+            document.body.style.overflow = 'hidden';
+            if (window.lenis) { try { window.lenis.stop(); } catch(e){} }
+        } else {
+            document.body.style.overflow = '';
+            if (window.lenis) { try { window.lenis.start(); } catch(e){} }
+        }
+    });
+"
+@cart-count-updated.window="updateCartCount($event.detail)"
+@cart-updated.window="updateCartCount($event.detail)">
     <!-- Announcement Bar (Marquee Hitam, Fixed Top like IDLIX) -->
     <div id="top-announcement-bar" role="banner"
         class="flex justify-between items-center bg-black py-2.5 px-4 sm:px-10 md:px-[60px] overflow-hidden">
@@ -81,7 +101,7 @@
         <nav id="smart-nav-inner"
             class="max-w-[1440px] mx-auto flex justify-between items-center h-20 sm:h-[88px] px-4 sm:px-6 lg:px-12 gap-3 transition-all duration-300 ease-out">
             <div class="flex min-w-0 items-center gap-2 sm:gap-3">
-                <button @click="mobileMenuOpen = true" class="smart-nav-icon md:hidden cursor-pointer p-1 text-black transition-colors" aria-label="Buka Menu">
+                <button type="button" @click="mobileMenuOpen = true" class="smart-nav-icon md:hidden cursor-pointer p-1 text-black transition-colors" aria-label="Buka Menu">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 6h16M4 12h16M4 18h16"/></svg>
                 </button>
                 <a href="{{ route('home') }}" class="flex min-w-0 items-center gap-3">
@@ -134,7 +154,8 @@
                             @endif
                         </button>
                         <div x-show="open" @click.away="open = false" x-transition
-                            class="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl z-20 border border-gray-100 overflow-hidden">
+                            class="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl z-20 border border-gray-100 overflow-hidden"
+                            style="display: none;">
                             <div class="p-4 flex items-center gap-3 border-b border-gray-100 bg-gray-50/50">
                                 @if ($hasAvatar)
                                     <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}" referrerpolicy="no-referrer"
@@ -178,15 +199,14 @@
                     <a href="{{ route('keranjang.index') }}" aria-label="Keranjang"
                         class="smart-nav-icon relative hover:scale-110 transition-transform p-1 text-black">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                        <span x-show="cartCount > 0" x-text="cartCount"
-                            x-transition:enter="transition ease-out duration-300 transform"
-                            x-transition:enter-start="opacity-0 scale-50"
-                            x-transition:enter-end="opacity-100 scale-100"
-                            :class="{ 'scale-125 bg-amber-400': bump, 'scale-100 bg-brand-yellow': !bump }"
-                            class="absolute -top-2 -right-2 min-w-[20px] h-5 px-1 rounded-full text-black text-xs font-bold flex items-center justify-center border-2 border-white shadow-xs transition-all duration-300 transform"
-                            style="{{ $cartCount > 0 ? '' : 'display: none;' }}">
-                            {{ $cartCount > 0 ? $cartCount : '' }}
-                        </span>
+                        
+                        {{-- Notification Badge: Only rendered into DOM when cartCount > 0 --}}
+                        <template x-if="cartCount > 0">
+                            <span x-text="cartCount"
+                                :class="{ 'scale-125 bg-amber-400': bump, 'scale-100 bg-brand-yellow': !bump }"
+                                class="absolute -top-2 -right-2 min-w-[20px] h-5 px-1 rounded-full text-black text-xs font-bold flex items-center justify-center border-2 border-white shadow-xs transition-all duration-300 transform pointer-events-none">
+                            </span>
+                        </template>
                     </a>
                 </div>
             </div>
@@ -194,61 +214,118 @@
     </header>
 
     <!-- ════════════════════════════════════════════
-       MOBILE DRAWER MENU
+       MOBILE DRAWER MENU (Teleported to body to eliminate all stacking/z-index overlaps)
        ════════════════════════════════════════════ -->
-    <div x-show="mobileMenuOpen" x-cloak class="relative md:hidden" style="z-index: 99999;"
-        aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
-        <div x-show="mobileMenuOpen" x-transition:enter="ease-in-out duration-300"
-            x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-            x-transition:leave="ease-in-out duration-300" x-transition:leave-start="opacity-100"
-            x-transition:leave-end="opacity-0" class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
-            @click="mobileMenuOpen = false"></div>
+    <template x-teleport="body">
+        <div x-show="mobileMenuOpen"
+             x-cloak
+             style="display: none;"
+             class="fixed inset-0 z-[100000] md:hidden"
+             aria-labelledby="slide-over-title"
+             role="dialog"
+             aria-modal="true"
+             @keydown.escape.window="mobileMenuOpen = false">
 
-        <div class="fixed inset-0 overflow-hidden pointer-events-none">
-            <div class="absolute inset-0 overflow-hidden">
-                <div class="pointer-events-auto fixed inset-y-0 left-0 flex max-w-xs w-[280px]">
-                    <div x-show="mobileMenuOpen" x-transition:enter="transform transition ease-in-out duration-300"
-                        x-transition:enter-start="-translate-x-full" x-transition:enter-end="translate-x-0"
-                        x-transition:leave="transform transition ease-in-out duration-300"
-                        x-transition:leave-start="translate-x-0" x-transition:leave-end="-translate-x-full"
-                        class="w-full bg-white shadow-xl flex flex-col justify-between overflow-y-auto">
+            {{-- Dark Overlay Backdrop --}}
+            <div x-show="mobileMenuOpen"
+                 x-transition:enter="ease-in-out duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="ease-in-out duration-300"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 class="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity cursor-pointer"
+                 @click="mobileMenuOpen = false"></div>
 
-                        <div class="p-6">
-                            <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
-                                <span
-                                    class="text-xl font-black font-public text-black uppercase tracking-tighter">Menu</span>
-                                <button type="button" @click="mobileMenuOpen = false"
-                                    class="text-gray-400 hover:text-black p-2 -mr-2 cursor-pointer"
-                                    aria-label="Tutup Menu">
-                                    <i class="fa-solid fa-xmark text-xl"></i>
-                                </button>
+            {{-- Drawer Content Sliding from Left --}}
+            <div class="fixed inset-0 overflow-hidden pointer-events-none">
+                <div class="absolute inset-0 overflow-hidden">
+                    <div class="pointer-events-auto fixed inset-y-0 left-0 flex max-w-full">
+                        <div x-show="mobileMenuOpen"
+                             x-transition:enter="transform transition ease-in-out duration-300"
+                             x-transition:enter-start="-translate-x-full"
+                             x-transition:enter-end="translate-x-0"
+                             x-transition:leave="transform transition ease-in-out duration-300"
+                             x-transition:leave-start="translate-x-0"
+                             x-transition:leave-end="-translate-x-full"
+                             class="w-[300px] sm:w-[340px] max-w-[85vw] bg-white shadow-2xl flex flex-col justify-between overflow-y-auto h-full z-10">
+
+                            <div class="p-6">
+                                <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
+                                    <div class="flex items-center gap-2.5">
+                                        <img src="{{ $logoUrl }}" onerror="this.onerror=null; this.src='{{ asset('images/logo prokar simpel.png') }}'" alt="{{ setting('shop_name', 'Prokar Elektronik') }}" class="h-8 w-auto object-contain" />
+                                        <span class="text-lg font-black font-public text-black uppercase tracking-tight">Menu</span>
+                                    </div>
+                                    <button type="button" @click="mobileMenuOpen = false"
+                                        class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-black flex items-center justify-center transition-colors cursor-pointer"
+                                        aria-label="Tutup Menu">
+                                        <i class="fa-solid fa-xmark text-base"></i>
+                                    </button>
+                                </div>
+
+                                <nav class="flex flex-col space-y-1.5 font-public">
+                                    <a href="{{ route('home') }}"
+                                        class="px-3.5 py-3 rounded-xl text-sm font-bold transition-all flex items-center gap-3 {{ $isHome ? 'bg-amber-100/70 text-amber-900 font-extrabold' : 'text-gray-700 hover:bg-gray-50 hover:text-black' }}">
+                                        <i class="fa-solid fa-house w-5 text-center text-xs opacity-70"></i>
+                                        <span>Home</span>
+                                    </a>
+                                    <a href="{{ route('produk.index') }}"
+                                        class="px-3.5 py-3 rounded-xl text-sm font-bold transition-all flex items-center gap-3 {{ $isProducts ? 'bg-amber-100/70 text-amber-900 font-extrabold' : 'text-gray-700 hover:bg-gray-50 hover:text-black' }}">
+                                        <i class="fa-solid fa-boxes-stacked w-5 text-center text-xs opacity-70"></i>
+                                        <span>Produk</span>
+                                    </a>
+                                    <a href="{{ route('jual.index') }}"
+                                        class="px-3.5 py-3 rounded-xl text-sm font-bold transition-all flex items-center gap-3 {{ $isSell ? 'bg-amber-100/70 text-amber-900 font-extrabold' : 'text-gray-700 hover:bg-gray-50 hover:text-black' }}">
+                                        <i class="fa-solid fa-hand-holding-dollar w-5 text-center text-xs opacity-70"></i>
+                                        <span>Jual</span>
+                                    </a>
+                                    <a href="{{ route('servis.index') }}"
+                                        class="px-3.5 py-3 rounded-xl text-sm font-bold transition-all flex items-center gap-3 {{ $isService ? 'bg-amber-100/70 text-amber-900 font-extrabold' : 'text-gray-700 hover:bg-gray-50 hover:text-black' }}">
+                                        <i class="fa-solid fa-screwdriver-wrench w-5 text-center text-xs opacity-70"></i>
+                                        <span>Servis</span>
+                                    </a>
+                                    <a href="{{ route('servis.lacak') }}"
+                                        class="px-3.5 py-3 rounded-xl text-sm font-bold transition-all flex items-center gap-3 {{ $isTrack ? 'bg-amber-100/70 text-amber-900 font-extrabold' : 'text-gray-700 hover:bg-gray-50 hover:text-black' }}">
+                                        <i class="fa-solid fa-magnifying-glass-location w-5 text-center text-xs opacity-70"></i>
+                                        <span>Track Servis</span>
+                                    </a>
+                                    @guest
+                                        <div class="pt-3 mt-3 border-t border-gray-100">
+                                            <a href="{{ route('login') }}"
+                                                class="w-full py-2.5 px-4 bg-black text-white text-sm font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-gray-900 transition-colors">
+                                                <i class="fa-regular fa-user text-xs"></i>
+                                                <span>Login / Daftar</span>
+                                            </a>
+                                        </div>
+                                    @else
+                                        <div class="pt-3 mt-3 border-t border-gray-100 space-y-1">
+                                            <a href="{{ route('user.profile') }}"
+                                                class="px-3.5 py-2.5 rounded-xl text-xs font-semibold text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                                                <i class="fa-regular fa-user w-4 text-center text-gray-400"></i>
+                                                <span>Profil Saya</span>
+                                            </a>
+                                            <a href="{{ auth()->user()->hasRole('super_admin') ? route('admin.settings') : route('user.settings') }}"
+                                                class="px-3.5 py-2.5 rounded-xl text-xs font-semibold text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                                                <i class="fa-solid fa-gear w-4 text-center text-gray-400"></i>
+                                                <span>Pengaturan</span>
+                                            </a>
+                                        </div>
+                                    @endguest
+                                </nav>
                             </div>
 
-                            <nav class="flex flex-col space-y-2">
-                                <a href="{{ route('home') }}"
-                                    class="px-3 py-2.5 rounded-xl text-base font-bold transition-all {{ $isHome ? 'bg-amber-50 text-brand-orange font-extrabold' : 'text-gray-800 hover:bg-gray-50' }}">Home</a>
-                                <a href="{{ route('produk.index') }}"
-                                    class="px-3 py-2.5 rounded-xl text-base font-bold transition-all {{ $isProducts ? 'bg-amber-50 text-brand-orange font-extrabold' : 'text-gray-800 hover:bg-gray-50' }}">Produk</a>
-                                <a href="{{ route('jual.index') }}"
-                                    class="px-3 py-2.5 rounded-xl text-base font-bold transition-all {{ $isSell ? 'bg-amber-50 text-brand-orange font-extrabold' : 'text-gray-800 hover:bg-gray-50' }}">Jual</a>
-                                <a href="{{ route('servis.index') }}"
-                                    class="px-3 py-2.5 rounded-xl text-base font-bold transition-all {{ $isService ? 'bg-amber-50 text-brand-orange font-extrabold' : 'text-gray-800 hover:bg-gray-50' }}">Servis</a>
-                                <a href="{{ route('servis.lacak') }}"
-                                    class="px-3 py-2.5 rounded-xl text-base font-bold transition-all {{ $isTrack ? 'bg-amber-50 text-brand-orange font-extrabold' : 'text-gray-800 hover:bg-gray-50' }}">Track</a>
-                            </nav>
-                        </div>
+                            {{-- Footer Drawer --}}
+                            <div class="p-6 border-t border-gray-100 bg-gray-50/70 text-xs text-gray-500">
+                                <p class="font-bold text-gray-800">{{ setting('shop_name', 'Prokar Elektronik') }}</p>
+                                <p class="mt-0.5 text-[11px] text-gray-400">
+                                    {{ setting('shop_tagline', 'Jual, Beli & Servis Elektronik') }}</p>
+                            </div>
 
-                        {{-- Footer Drawer --}}
-                        <div class="p-6 border-t border-gray-100 bg-gray-50/70 text-xs text-gray-400">
-                            <p class="font-bold text-gray-700">{{ setting('shop_name', 'Prokar Elektronik') }}</p>
-                            <p class="mt-0.5 text-[11px] text-gray-400">
-                                {{ setting('shop_tagline', 'Jual, Beli & Servis Elektronik') }}</p>
                         </div>
-
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </template>
 
 </div>

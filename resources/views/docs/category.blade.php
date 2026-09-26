@@ -26,14 +26,6 @@
   {{-- Header --}}
   <div class="border-b border-slate-200 dark:border-slate-800 pb-4 sm:pb-5">
     <div class="flex items-center gap-2 mb-2">
-      @php
-        $isSuperAdmin = $category->role_access === 'super_admin';
-        $isTeknisi = $category->role_access === 'teknisi';
-      @endphp
-      <span class="text-[10px] sm:text-[11px] font-mono font-medium px-2 py-0.5 rounded border
-        {{ $isSuperAdmin ? 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-900/50' : ($isTeknisi ? 'bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950/40 dark:text-sky-400 dark:border-sky-900/50' : 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700') }}">
-        {{ $isSuperAdmin ? 'super_admin' : ($isTeknisi ? 'teknisi' : 'publik') }}
-      </span>
       <span class="text-xs text-slate-400 font-mono">{{ $articles->count() }} artikel</span>
     </div>
 
@@ -54,7 +46,7 @@
       <div class="py-3.5 sm:py-4 first:pt-0 group">
         <div class="flex items-baseline justify-between gap-3">
           <h2 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
-            <a href="{{ route('docs.show', [$category->slug, $article->slug]) }}" class="block">
+            <a href="{{ $article->url }}" class="block">
               {{ $article->title }}
             </a>
           </h2>
@@ -71,7 +63,7 @@
         @if($article->publishedChildren->isNotEmpty())
           <div class="mt-2.5 pl-3 border-l-2 border-slate-200 dark:border-slate-800 space-y-1">
             @foreach($article->publishedChildren as $child)
-              <a href="{{ route('docs.show', [$category->slug, $child->slug]) }}"
+              <a href="{{ $child->url }}"
                  class="block text-xs text-slate-600 dark:text-slate-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors py-0.5">
                 {{ $child->title }}
               </a>

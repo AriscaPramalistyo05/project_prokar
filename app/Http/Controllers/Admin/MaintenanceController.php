@@ -246,6 +246,19 @@ class MaintenanceController extends Controller
             $logs[] = 'permission:cache-reset error: ' . $e->getMessage();
         }
 
+        // Auto-seed documentation if database is empty or explicitly requested
+        if (\App\Models\DocArticle::count() === 0 || $request->boolean('seed_docs')) {
+            try {
+                Artisan::call('db:seed', [
+                    '--class' => 'Database\\Seeders\\DocSeeder',
+                    '--force' => true,
+                ]);
+                $logs[] = 'db:seed DocSeeder success';
+            } catch (\Throwable $e) {
+                $logs[] = 'db:seed DocSeeder error: ' . $e->getMessage();
+            }
+        }
+
         $durationMs = round((microtime(true) - $start) * 1000);
 
         return response()->json([
@@ -254,6 +267,48 @@ class MaintenanceController extends Controller
             'duration_ms' => $durationMs,
             'details'     => $logs,
         ], 200);
+    }
+
+    /**
+     * Webhook endpoint for CI/CD or remote triggers to seed documentation on production.
+     * Protected by pre-shared deploy token.
+     */
+    public function deploySeedDocs(\Illuminate\Http\Request $request): JsonResponse
+    {
+        $expectedToken = env('DEPLOY_KEY') ?: 'prokar_deploy_secure_5e5e7eb5b4d6cd717a454049db805ad2';
+        $providedToken = $request->header('X-Deploy-Token') ?: $request->query('token');
+
+        if (!$providedToken || !hash_equals((string) $expectedToken, (string) $providedToken)) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Unauthorized deploy token.',
+            ], 403);
+        }
+
+        $start = microtime(true);
+        $output = '';
+
+        try {
+            Artisan::call('db:seed', [
+                '--class' => 'Database\\Seeders\\DocSeeder',
+                '--force' => true,
+            ]);
+            $output = trim(Artisan::output());
+            Artisan::call('optimize:clear');
+            $durationMs = round((microtime(true) - $start) * 1000);
+
+            return response()->json([
+                'status'      => 'success',
+                'message'     => 'DocSeeder executed successfully.',
+                'output'      => $output,
+                'duration_ms' => $durationMs,
+            ], 200);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Error seeding docs: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**

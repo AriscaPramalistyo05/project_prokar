@@ -12,15 +12,6 @@
   {{-- Article Header --}}
   <header class="border-b border-slate-200 dark:border-slate-800 pb-4 sm:pb-5">
     <div class="flex flex-wrap items-center gap-2 mb-2.5">
-      @php
-        $isSuperAdmin = $category->role_access === 'super_admin';
-        $isTeknisi = $category->role_access === 'teknisi';
-      @endphp
-      <span class="text-[10px] sm:text-[11px] font-mono font-medium px-2 py-0.5 rounded border
-        {{ $isSuperAdmin ? 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-900/50' : ($isTeknisi ? 'bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950/40 dark:text-sky-400 dark:border-sky-900/50' : 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700') }}">
-        {{ $isSuperAdmin ? 'super_admin' : ($isTeknisi ? 'teknisi' : 'publik') }}
-      </span>
-
       <span class="text-[10px] sm:text-[11px] font-mono text-slate-400">
         v{{ $article->version ?? '1.0' }}
       </span>
@@ -31,7 +22,7 @@
     </div>
 
     {{-- Title --}}
-    <h1 class="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-snug">
+    <h1 class="text-[1.75rem] lg:text-[1.9375rem] font-semibold text-slate-900 dark:text-white tracking-tight leading-snug">
       {{ $article->title }}
     </h1>
 

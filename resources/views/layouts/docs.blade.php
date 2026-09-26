@@ -42,7 +42,21 @@
   <script defer src="{{ asset('vendor/alpine/alpine.min.js') }}"></script>
 </head>
 
-<body x-data="{ sidebarOpen: false }" @keydown.escape.window="sidebarOpen = false" class="bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-inter antialiased transition-colors duration-200 overflow-x-hidden">
+<body x-data="{ sidebarOpen: false }"
+      @keydown.escape.window="sidebarOpen = false; window.closeDocsSidebar && window.closeDocsSidebar()"
+      x-init="$watch('sidebarOpen', val => {
+        const sb = document.getElementById('docs-sidebar');
+        const bd = document.getElementById('docs-sidebar-backdrop');
+        if (sb) {
+          if (val) sb.classList.add('is-open');
+          else sb.classList.remove('is-open');
+        }
+        if (bd) {
+          if (val) { bd.style.display = 'block'; }
+          else { bd.style.display = 'none'; }
+        }
+      })"
+      class="bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-inter antialiased transition-colors duration-200 overflow-x-hidden">
 
   {{-- Top Navbar (Midtrans Style: Clean, Flat, Solid) --}}
   <header class="fixed top-0 left-0 right-0 z-40 h-14 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
@@ -51,7 +65,9 @@
       {{-- Left: Mobile Hamburger & Logo --}}
       <div class="flex items-center gap-3">
         <button @click="sidebarOpen = !sidebarOpen"
+                onclick="window.toggleDocsSidebar && window.toggleDocsSidebar()"
                 type="button"
+                id="docs-mobile-hamburger-btn"
                 class="lg:hidden p-2 rounded-lg text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
                 :aria-expanded="sidebarOpen"
                 aria-label="Toggle navigasi dokumentasi">
@@ -113,21 +129,6 @@
           </span>
         </button>
 
-        {{-- Staff Quick Dashboard Switcher (Hidden on phone, accessible via sidebar drawer) --}}
-        @auth
-          @if(auth()->user()->hasRole('super_admin') || auth()->user()->hasRole('teknisi') || auth()->user()->roles()->exists())
-            <a href="{{ route('admin.dashboard') }}" 
-               class="text-xs font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/50 dark:text-amber-300 dark:hover:bg-amber-900/60 border border-amber-200 dark:border-amber-800/80 px-2.5 py-1.5 rounded-lg transition-colors items-center gap-1.5 shadow-2xs hidden sm:flex"
-               title="Beralih ke Panel Operasional">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z" />
-                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z" />
-              </svg>
-              <span class="hidden md:inline">Panel Admin</span>
-            </a>
-          @endif
-        @endauth
-
         {{-- Return to Main Site (Desktop only, mobile has it in drawer & footer) --}}
         <a href="{{ route('home') }}" class="text-xs font-medium text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 hidden md:flex">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -144,25 +145,28 @@
 
     {{-- Mobile Sidebar Drawer Overlay (Clicking closes drawer) --}}
     <div x-show="sidebarOpen"
+         id="docs-sidebar-backdrop"
          x-transition:enter="transition-opacity ease-out duration-200"
          x-transition:enter-start="opacity-0"
          x-transition:enter-end="opacity-100"
          x-transition:leave="transition-opacity ease-in duration-150"
          x-transition:leave-start="opacity-100"
          x-transition:leave-end="opacity-0"
-         @click="sidebarOpen = false"
-         class="fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-xs lg:hidden"
+         @click="sidebarOpen = false; window.closeDocsSidebar && window.closeDocsSidebar()"
+         onclick="window.closeDocsSidebar && window.closeDocsSidebar()"
+         class="fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-xs lg:hidden cursor-pointer"
          style="display:none;"></div>
 
     {{-- Left Sidebar (Mobile Drawer & Desktop Sticky) --}}
-    <aside x-bind:class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
-           class="fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] h-screen bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transition-transform duration-250 ease-out shadow-2xl lg:static lg:top-14 lg:z-auto lg:w-72 lg:h-[calc(100vh-3.5rem)] lg:shadow-none scrollbar-thin">
+    <aside id="docs-sidebar"
+           :class="{ 'is-open': sidebarOpen }"
+           class="bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 shadow-2xl lg:shadow-none scrollbar-thin">
       @include('docs.partials.sidebar')
     </aside>
 
     {{-- Main Article / Content Column --}}
     <main class="flex-1 min-w-0 w-full px-4 sm:px-8 lg:px-12 py-8 lg:py-10">
-      <div class="max-w-[780px] mx-auto">
+      <div class="max-w-[800px] mx-auto">
         @yield('content')
       </div>
     </main>
@@ -259,6 +263,86 @@
       // Highlight.js
       if (typeof hljs !== 'undefined') {
         document.querySelectorAll('.docs-content pre code').forEach(el => hljs.highlightElement(el));
+      }
+    });
+
+    window.openDocsSidebar = function() {
+      const root = document.querySelector('body[x-data]');
+      if (root && window.Alpine) {
+        try {
+          const data = window.Alpine.$data(root);
+          if (data) data.sidebarOpen = true;
+        } catch(e){}
+      }
+      const sb = document.getElementById('docs-sidebar');
+      const bd = document.getElementById('docs-sidebar-backdrop');
+      if (sb) sb.classList.add('is-open');
+      if (bd) { bd.style.display = 'block'; }
+    };
+
+    window.closeDocsSidebar = function() {
+      const root = document.querySelector('body[x-data]');
+      if (root && window.Alpine) {
+        try {
+          const data = window.Alpine.$data(root);
+          if (data) data.sidebarOpen = false;
+        } catch(e){}
+      }
+      const sb = document.getElementById('docs-sidebar');
+      const bd = document.getElementById('docs-sidebar-backdrop');
+      if (sb) sb.classList.remove('is-open');
+      if (bd) { bd.style.display = 'none'; }
+    };
+
+    window.toggleDocsSidebar = function() {
+      const sb = document.getElementById('docs-sidebar');
+      if (sb && sb.classList.contains('is-open')) {
+        window.closeDocsSidebar();
+      } else {
+        window.openDocsSidebar();
+      }
+    };
+
+    // Native event listeners for infallible cross-browser sidebar behavior
+    document.addEventListener('DOMContentLoaded', function() {
+      const closeBtn = document.getElementById('docs-sidebar-close-btn');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          window.closeDocsSidebar();
+        });
+      }
+
+      const hamburgerBtn = document.getElementById('docs-mobile-hamburger-btn');
+      if (hamburgerBtn) {
+        hamburgerBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          window.toggleDocsSidebar();
+        });
+      }
+
+      const backdrop = document.getElementById('docs-sidebar-backdrop');
+      if (backdrop) {
+        backdrop.addEventListener('click', function(e) {
+          e.preventDefault();
+          window.closeDocsSidebar();
+        });
+      }
+
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' || e.keyCode === 27) {
+          window.closeDocsSidebar();
+        }
+      });
+
+      const sidebar = document.getElementById('docs-sidebar');
+      if (sidebar) {
+        sidebar.addEventListener('click', function(e) {
+          const link = e.target.closest('a');
+          if (link && window.innerWidth < 1024) {
+            window.closeDocsSidebar();
+          }
+        });
       }
     });
   </script>
