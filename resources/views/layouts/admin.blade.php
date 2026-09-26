@@ -26,6 +26,156 @@
     <!-- Umami Web Analytics (Self-hosted proxy script) -->
     <script defer src="{{ asset('vendor/umami/script.js') }}" data-website-id="6150499f-eb3e-406f-b3d1-d9834bb6bfc9" data-host-url="https://cloud.umami.is"></script>
     @vite(['resources/css/admin.css', 'resources/js/admin.js'])
+    <script>
+        function registerAdminAlpineComponents() {
+            if (typeof window.Alpine === 'undefined') {
+                document.addEventListener('alpine:init', registerAdminAlpineComponents, { once: true });
+                return;
+            }
+
+            if (!window.Alpine.data('notificationDropdown')) {
+                window.Alpine.data('notificationDropdown', () => ({
+                    showDropdown: false,
+                    activeTab: 'all',
+                    matchesTab(type) {
+                        if (this.activeTab === 'all') return true;
+                        if (this.activeTab === 'order') return type === 'order';
+                        if (this.activeTab === 'service') return type === 'service' || type === 'approval';
+                        if (this.activeTab === 'sell') return type === 'sell';
+                        return true;
+                    }
+                }));
+            }
+
+            if (!window.Alpine.data('pushNotificationToggle')) {
+                window.Alpine.data('pushNotificationToggle', () => ({
+                    enabled: (typeof Notification !== 'undefined' && Notification.permission === 'granted' && localStorage.getItem('admin_push_notifications_enabled') !== 'false'),
+                    loading: false,
+                    init() {
+                        if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+                            if (localStorage.getItem('admin_push_notifications_enabled') === null) {
+                                this.enabled = true;
+                                localStorage.setItem('admin_push_notifications_enabled', 'true');
+                            }
+                        }
+                    },
+                    async toggle() {
+                        if (this.loading) return;
+
+                        if (typeof Notification === 'undefined') {
+                            const msg = 'Browser Anda tidak mendukung push notifikasi.';
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({ title: 'Tidak Didukung', text: msg, icon: 'warning' });
+                            } else {
+                                alert(msg);
+                            }
+                            return;
+                        }
+
+                        if (this.enabled) {
+                            this.enabled = false;
+                            localStorage.setItem('admin_push_notifications_enabled', 'false');
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({
+                                    title: 'Notifikasi Dinonaktifkan',
+                                    text: 'Pemberitahuan push browser telah dimatikan sementara.',
+                                    icon: 'info',
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+                            }
+                            return;
+                        }
+
+                        if (Notification.permission === 'denied') {
+                            const msg = 'Izin notifikasi diblokir di peramban. Klik ikon gembok / setelan situs di sebelah address bar untuk mengizinkan.';
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({
+                                    title: 'Izin Notifikasi Diblokir',
+                                    text: msg,
+                                    icon: 'warning'
+                                });
+                            } else {
+                                alert(msg);
+                            }
+                            return;
+                        }
+
+                        this.loading = true;
+                        try {
+                            const perm = await Notification.requestPermission();
+                            if (perm === 'granted') {
+                                this.enabled = true;
+                                localStorage.setItem('admin_push_notifications_enabled', 'true');
+                                if (window.requestAdminFcmPermission) {
+                                    window.requestAdminFcmPermission().catch(function() {});
+                                }
+                                if (typeof Swal !== 'undefined') {
+                                    Swal.fire({
+                                        title: 'Notifikasi Aktif!',
+                                        text: 'Pemberitahuan push browser berhasil diaktifkan.',
+                                        icon: 'success',
+                                        timer: 1800,
+                                        showConfirmButton: false
+                                    });
+                                }
+                            } else {
+                                this.enabled = false;
+                                localStorage.setItem('admin_push_notifications_enabled', 'false');
+                            }
+                        } catch (e) {
+                            console.error('Gagal mengaktifkan notifikasi:', e);
+                        } finally {
+                            this.loading = false;
+                        }
+                    }
+                }));
+            }
+
+            if (!window.Alpine.data('fcmSettingToggle')) {
+                window.Alpine.data('fcmSettingToggle', () => ({
+                    permission: (typeof Notification !== 'undefined') ? Notification.permission : 'unsupported',
+                    loading: false,
+                    init() {
+                        this.permission = (typeof Notification !== 'undefined') ? Notification.permission : 'unsupported';
+                    },
+                    async togglePermission() {
+                        if (typeof Notification === 'undefined') {
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({ title: 'Tidak Didukung', text: 'Browser Anda tidak mendukung Web Push Notification.', icon: 'warning' });
+                            }
+                            return;
+                        }
+                        if (this.permission === 'granted') {
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({
+                                    title: 'Notifikasi Sudah Aktif',
+                                    text: 'Perangkat browser ini sudah terdaftar dan siap menerima push notification.',
+                                    icon: 'info',
+                                    confirmButtonColor: '#0f172a'
+                                });
+                            }
+                            return;
+                        }
+                        this.loading = true;
+                        try {
+                            if (window.requestAdminFcmPermission) {
+                                await window.requestAdminFcmPermission();
+                            }
+                            this.permission = (typeof Notification !== 'undefined') ? Notification.permission : 'unsupported';
+                        } catch (e) {
+                            console.error(e);
+                        } finally {
+                            this.loading = false;
+                        }
+                    }
+                }));
+            }
+        }
+        registerAdminAlpineComponents();
+        document.addEventListener('alpine:init', registerAdminAlpineComponents);
+        document.addEventListener('livewire:navigated', registerAdminAlpineComponents);
+    </script>
 </head>
 <body class="bg-base-200 min-h-screen text-base-content">
     <x-main full-width>
@@ -122,109 +272,23 @@
                     <div class="font-bold text-sm sm:text-base lg:hidden tracking-tight text-zinc-900 whitespace-nowrap">PROKAR ADMIN</div>
                 </x-slot:brand>
                 <x-slot:actions class="flex items-center gap-1.5 sm:gap-3">
-                    {{-- Compact Push Notification Toggle Switch (Shadow-based, no border) --}}
-                    <div x-data="{
-                        enabled: (typeof Notification !== 'undefined' && Notification.permission === 'granted' && localStorage.getItem('admin_push_notifications_enabled') !== 'false'),
-                        loading: false,
-                        init() {
-                            if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-                                if (localStorage.getItem('admin_push_notifications_enabled') === null) {
-                                    this.enabled = true;
-                                    localStorage.setItem('admin_push_notifications_enabled', 'true');
-                                }
-                            }
-                        },
-                        async toggle() {
-                            if (this.loading) return;
-
-                            if (typeof Notification === 'undefined') {
-                                const msg = 'Browser Anda tidak mendukung push notifikasi.';
-                                if (typeof Swal !== 'undefined') {
-                                    Swal.fire({ title: 'Tidak Didukung', text: msg, icon: 'warning' });
-                                } else {
-                                    alert(msg);
-                                }
-                                return;
-                            }
-
-                            // Jika sedang ON -> Matikan secara instan
-                            if (this.enabled) {
-                                this.enabled = false;
-                                localStorage.setItem('admin_push_notifications_enabled', 'false');
-                                if (typeof Swal !== 'undefined') {
-                                    Swal.fire({
-                                        title: 'Notifikasi Dinonaktifkan',
-                                        text: 'Pemberitahuan push browser telah dimatikan sementara.',
-                                        icon: 'info',
-                                        timer: 1500,
-                                        showConfirmButton: false
-                                    });
-                                }
-                                return;
-                            }
-
-                            // Jika sedang OFF -> Coba Hidupkan
-                            if (Notification.permission === 'denied') {
-                                const msg = 'Izin notifikasi diblokir di peramban. Klik ikon gembok / setelan situs di sebelah address bar untuk mengizinkan.';
-                                if (typeof Swal !== 'undefined') {
-                                    Swal.fire({
-                                        title: 'Izin Notifikasi Diblokir',
-                                        text: msg,
-                                        icon: 'warning'
-                                    });
-                                } else {
-                                    alert(msg);
-                                }
-                                return;
-                            }
-
-                            this.loading = true;
-                            try {
-                                const perm = await Notification.requestPermission();
-                                if (perm === 'granted') {
-                                    this.enabled = true;
-                                    localStorage.setItem('admin_push_notifications_enabled', 'true');
-                                    if (window.requestAdminFcmPermission) {
-                                        window.requestAdminFcmPermission().catch(function() {});
-                                    }
-                                    if (typeof Swal !== 'undefined') {
-                                        Swal.fire({
-                                            title: 'Notifikasi Aktif!',
-                                            text: 'Pemberitahuan push browser berhasil diaktifkan.',
-                                            icon: 'success',
-                                            timer: 1800,
-                                            showConfirmButton: false
-                                        });
-                                    }
-                                } else {
-                                    this.enabled = false;
-                                    localStorage.setItem('admin_push_notifications_enabled', 'false');
-                                }
-                            } catch (e) {
-                                console.error('Gagal mengaktifkan notifikasi:', e);
-                            } finally {
-                                this.loading = false;
-                            }
-                        }
-                    }"
-                    @fcm-permission-updated.window="enabled = (typeof Notification !== 'undefined' && Notification.permission === 'granted' && localStorage.getItem('admin_push_notifications_enabled') !== 'false')"
-                    class="relative z-20 flex items-center">
+                    {{-- Compact Push Notification Toggle Switch (iOS Style matching Image 2) --}}
+                    <div x-data="pushNotificationToggle"
+                         @fcm-permission-updated.window="enabled = (typeof Notification !== 'undefined' && Notification.permission === 'granted' && localStorage.getItem('admin_push_notifications_enabled') !== 'false')"
+                         class="relative z-20 flex items-center">
                         <button type="button"
                                 @click="toggle()"
                                 :disabled="loading"
                                 :title="enabled ? 'Push notifikasi aktif — klik untuk menonaktifkan' : 'Aktifkan push notifikasi browser'"
-                                class="group/toggle inline-flex items-center p-1 rounded-full hover:bg-slate-100 dark:hover:bg-base-200 transition-colors cursor-pointer select-none border-0 outline-none focus:outline-none"
+                                class="group/toggle inline-flex items-center p-0.5 rounded-full hover:opacity-90 transition-opacity cursor-pointer select-none border-0 outline-none focus:outline-none"
                                 aria-label="Toggle Push Notifikasi">
-                            {{-- Toggle track: Menggunakan shadow-inner / shadow-md murni tanpa border --}}
-                            <span class="relative inline-flex h-6 w-11 shrink-0 rounded-full border-0 outline-none transition-all duration-200 ease-in-out"
-                                  :class="{
-                                      'bg-emerald-500 shadow-md shadow-emerald-500/30': enabled,
-                                      'bg-slate-200 dark:bg-base-300 shadow-inner': !enabled,
-                                      'opacity-50 cursor-not-allowed': loading
-                                  }">
-                                {{-- Bulatan toggle putih dengan bayangan melayang (shadow-md) murni tanpa border --}}
-                                <span class="pointer-events-none inline-block h-5 w-5 my-0.5 transform rounded-full bg-white shadow-md border-0 ring-0 transition duration-200 ease-in-out"
-                                      :class="enabled ? 'translate-x-5' : 'translate-x-0.5'"></span>
+                            {{-- Toggle track: Smooth capsule matching Image 2 (#e2e8f0 off, #22c55e on) --}}
+                            <span class="relative inline-flex h-6 w-11 shrink-0 rounded-full border-0 outline-none transition-colors duration-200 ease-in-out"
+                                  :style="{ backgroundColor: enabled ? '#22c55e' : '#e2e8f0' }"
+                                  :class="{ 'opacity-50 cursor-not-allowed': loading }">
+                                {{-- Bulatan toggle putih dengan bayangan melayang --}}
+                                <span class="pointer-events-none inline-block h-5 w-5 my-0.5 rounded-full bg-white shadow-md border-0 ring-0 transform transition-transform duration-200 ease-in-out"
+                                      :style="{ transform: enabled ? 'translateX(22px)' : 'translateX(2px)' }"></span>
                             </span>
                         </button>
                     </div>

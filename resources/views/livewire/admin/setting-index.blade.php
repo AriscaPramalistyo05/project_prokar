@@ -776,43 +776,9 @@
             <div class="bg-white rounded-2xl border border-gray-200/80 shadow-xs p-6 sm:p-8 space-y-6 animate-in fade-in duration-200">
                 
                 {{-- 1. Browser Push Notification Status & Interactive Toggle --}}
-                <div class="hidden" aria-hidden="true">
-                <div x-data="{
-                    permission: (typeof Notification !== 'undefined') ? Notification.permission : 'unsupported',
-                    loading: false,
-                    async togglePermission() {
-                        if (typeof Notification === 'undefined') {
-                            if (typeof Swal !== 'undefined') {
-                                Swal.fire({ title: 'Tidak Didukung', text: 'Browser Anda tidak mendukung Web Push Notification.', icon: 'warning' });
-                            }
-                            return;
-                        }
-                        if (this.permission === 'granted') {
-                            if (typeof Swal !== 'undefined') {
-                                Swal.fire({
-                                    title: 'Notifikasi Sudah Aktif',
-                                    text: 'Perangkat browser ini sudah terdaftar dan siap menerima push notification.',
-                                    icon: 'info',
-                                    confirmButtonColor: '#0f172a'
-                                });
-                            }
-                            return;
-                        }
-                        this.loading = true;
-                        try {
-                            if (window.requestAdminFcmPermission) {
-                                await window.requestAdminFcmPermission();
-                            }
-                            this.permission = (typeof Notification !== 'undefined') ? Notification.permission : 'unsupported';
-                        } catch (e) {
-                            console.error(e);
-                        } finally {
-                            this.loading = false;
-                        }
-                    }
-                }"
-                @fcm-permission-updated.window="permission = (typeof Notification !== 'undefined') ? Notification.permission : 'unsupported'"
-                class="p-5 sm:p-6 rounded-2xl bg-white border border-gray-200/90 shadow-2xs">
+                <div x-data="fcmSettingToggle"
+                     @fcm-permission-updated.window="permission = (typeof Notification !== 'undefined') ? Notification.permission : 'unsupported'"
+                     class="p-5 sm:p-6 rounded-2xl bg-white border border-gray-200/90 shadow-2xs">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
                         <div class="space-y-1">
                             <div class="flex items-center gap-2.5">
@@ -843,22 +809,23 @@
                             </p>
                         </div>
 
-                        {{-- Toggle Button Switch --}}
+                        {{-- Toggle Button Switch (iOS Capsule style matching Image 2) --}}
                         <div class="shrink-0 flex items-center">
                             <button type="button" 
                                     @click="togglePermission()" 
                                     :disabled="loading"
-                                    class="group relative inline-flex h-8 w-14 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
-                                    :class="permission === 'granted' ? 'bg-emerald-500 hover:bg-emerald-400' : 'bg-gray-300 hover:bg-gray-400'"
-                                    :title="permission === 'granted' ? 'Notifikasi Aktif' : 'Klik untuk Aktifkan Notifikasi'">
-                                <span class="sr-only">Toggle Push Notification</span>
-                                <span aria-hidden="true" 
-                                      class="pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out"
-                                      :class="permission === 'granted' ? 'translate-x-6' : 'translate-x-0'"></span>
+                                    class="group/toggle inline-flex items-center p-0.5 rounded-full hover:opacity-95 transition-opacity cursor-pointer select-none border-0 outline-none focus:outline-none"
+                                    :title="permission === 'granted' ? 'Notifikasi Aktif' : 'Klik untuk Aktifkan Notifikasi'"
+                                    aria-label="Toggle Push Notification">
+                                <span class="relative inline-flex h-7 w-12 shrink-0 rounded-full border-0 outline-none transition-colors duration-200 ease-in-out"
+                                      :style="{ backgroundColor: permission === 'granted' ? '#22c55e' : '#e2e8f0' }"
+                                      :class="{ 'opacity-50 cursor-not-allowed': loading }">
+                                    <span class="pointer-events-none inline-block h-6 w-6 my-0.5 rounded-full bg-white shadow-md border-0 ring-0 transform transition-transform duration-200 ease-in-out"
+                                          :style="{ transform: permission === 'granted' ? 'translateX(22px)' : 'translateX(2px)' }"></span>
+                                </span>
                             </button>
                         </div>
                     </div>
-                </div>
                 </div>
 
                 {{-- 2. Kategori Notifikasi Akun (ProAcc UI Style) --}}

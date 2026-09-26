@@ -1,19 +1,9 @@
 <div class="relative" 
-     x-data="{ 
-         showDropdown: false, 
-         activeTab: 'all',
-         matchesTab(type) {
-             if (this.activeTab === 'all') return true;
-             if (this.activeTab === 'order') return type === 'order';
-             if (this.activeTab === 'service') return type === 'service' || type === 'approval';
-             if (this.activeTab === 'sell') return type === 'sell';
-             return true;
-         }
-     }" 
+     wire:key="notification-dropdown"
+     x-data="notificationDropdown" 
      @click.outside="showDropdown = false"
      @keydown.escape.window="showDropdown = false"
      @close-dropdowns.window="showDropdown = false"
-     wire:key="notification-dropdown"
      wire:poll.15s.visible="$refresh">
 
     {{-- Bell Icon Button with dynamic badge --}}
