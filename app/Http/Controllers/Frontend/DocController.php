@@ -43,17 +43,44 @@ class DocController extends Controller
         }
 
         $user = $request->user();
+        $scope = $request->input('scope', 'public');
+        if ($scope === 'admin') {
+            $scope = 'super_admin';
+        }
+        if (!in_array($scope, ['public', 'teknisi', 'super_admin'])) {
+            $scope = 'public';
+        }
 
-        // Customer landing page strictly shows public categories only
-        $categories = DocCategory::whereNull('role_access')
-            ->orderBy('order')
-            ->withCount(['publishedArticles'])
-            ->get();
+        $canAccessTeknisi = $user && $user->hasAnyRole(['teknisi', 'super_admin']);
+        $canAccessAdmin = $user && $user->hasRole('super_admin');
 
-        $allCategories = $this->getCategoriesByScope('public', $user);
-        $currentScope = 'public';
+        // Check permission if viewing restricted scope
+        if ($scope === 'teknisi' && !$canAccessTeknisi) {
+            $scope = 'public';
+        } elseif ($scope === 'super_admin' && !$canAccessAdmin) {
+            $scope = 'public';
+        }
 
-        return view('docs.index', compact('categories', 'allCategories', 'currentScope'));
+        $query = DocCategory::orderBy('order')
+            ->with(['publishedRootArticles' => function ($q) {
+                $q->with('publishedChildren');
+            }]);
+
+        if ($scope === 'teknisi') {
+            $query->where('role_access', 'teknisi');
+        } elseif ($scope === 'super_admin') {
+            $query->where('role_access', 'super_admin');
+        } else {
+            $query->whereNull('role_access');
+        }
+
+        $categories = $query->get()->filter(fn(DocCategory $cat) => $cat->isAccessibleBy($user));
+        $allCategories = $this->getCategoriesByScope($scope, $user);
+        $currentScope = $scope;
+
+        return view('docs.index', compact(
+            'categories', 'allCategories', 'currentScope', 'canAccessTeknisi', 'canAccessAdmin'
+        ));
     }
 
     /**

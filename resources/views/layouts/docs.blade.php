@@ -172,12 +172,12 @@
 
     {{-- Main Article / Content Column --}}
     <main class="flex-1 min-w-0 w-full px-4 sm:px-8 lg:px-12 py-8 lg:py-10 flex flex-col justify-between">
-      <div class="max-w-[800px] mx-auto w-full flex-1">
+      <div class="{{ View::hasSection('toc') ? 'max-w-[800px]' : 'max-w-[960px]' }} mx-auto w-full flex-1">
         @yield('content')
       </div>
 
       {{-- Minimalist Footer --}}
-      <footer class="border-t border-slate-200 dark:border-slate-800 pt-8 mt-16 max-w-[800px] mx-auto w-full">
+      <footer class="border-t border-slate-200 dark:border-slate-800 pt-8 mt-16 {{ View::hasSection('toc') ? 'max-w-[800px]' : 'max-w-[960px]' }} mx-auto w-full">
         <div class="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
           <p>&copy; {{ date('Y') }} {{ $shopName }}. Seluruh hak cipta dilindungi.</p>
           <div class="flex items-center gap-4">
