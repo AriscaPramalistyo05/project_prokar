@@ -8,40 +8,18 @@ use Livewire\Component;
 
 class NotificationDropdown extends Component
 {
-    public string $tab = 'all'; // all, order, service, sell
-    public bool $isOpen = false;
-
-    public function toggleDropdown(): void
-    {
-        $this->isOpen = !$this->isOpen;
-    }
-
-    public function closeDropdown(): void
-    {
-        $this->isOpen = false;
-    }
-
-    public function setTab(string $tab): void
-    {
-        $this->tab = $tab;
-    }
-
     public function markAsRead(string $notificationId, ?string $redirectUrl = null)
     {
         $user = Auth::user();
         if ($user && $this->notificationsTableExists()) {
             try {
-                $notification = $user->notifications()->where('id', $notificationId)->first();
-                if ($notification) {
-                    $notification->markAsRead();
-                }
+                $user->notifications()->where('id', $notificationId)->update(['read_at' => now()]);
             } catch (\Throwable $e) {
                 \Illuminate\Support\Facades\Log::warning('Unable to mark notification as read: ' . $e->getMessage());
             }
         }
 
-        if ($redirectUrl) {
-            $this->isOpen = false;
+        if ($redirectUrl && $redirectUrl !== '#' && $redirectUrl !== '') {
             return redirect()->to($redirectUrl);
         }
     }
@@ -51,7 +29,7 @@ class NotificationDropdown extends Component
         $user = Auth::user();
         if ($user && $this->notificationsTableExists()) {
             try {
-                $user->unreadNotifications->markAsRead();
+                $user->unreadNotifications()->update(['read_at' => now()]);
             } catch (\Throwable $e) {
                 \Illuminate\Support\Facades\Log::warning('Unable to mark all notifications as read: ' . $e->getMessage());
             }
@@ -72,21 +50,21 @@ class NotificationDropdown extends Component
     {
         $user = Auth::user();
         $unreadCount = 0;
+        $orderCount = 0;
+        $serviceCount = 0;
+        $sellCount = 0;
         $notifications = collect();
 
         try {
             if ($user && $this->notificationsTableExists()) {
                 $unreadCount = $user->unreadNotifications()->count();
+                $notifications = $user->notifications()->latest()->take(25)->get();
 
-                $notificationsQuery = $user->notifications();
-                if ($this->tab === 'order') {
-                    $notificationsQuery = $user->notifications()->where('data->type', 'order');
-                } elseif ($this->tab === 'service') {
-                    $notificationsQuery = $user->notifications()->whereIn('data->type', ['service', 'approval']);
-                } elseif ($this->tab === 'sell') {
-                    $notificationsQuery = $user->notifications()->where('data->type', 'sell');
-                }
-                $notifications = $notificationsQuery->latest()->take(15)->get();
+                // Hitung unread per kategori
+                $unreadList = $user->unreadNotifications()->get();
+                $orderCount = $unreadList->filter(fn($n) => ($n->data['type'] ?? '') === 'order')->count();
+                $serviceCount = $unreadList->filter(fn($n) => in_array($n->data['type'] ?? '', ['service', 'approval']))->count();
+                $sellCount = $unreadList->filter(fn($n) => ($n->data['type'] ?? '') === 'sell')->count();
             }
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::warning('NotificationDropdown render error: ' . $e->getMessage());
@@ -94,6 +72,9 @@ class NotificationDropdown extends Component
 
         return view('livewire.admin.notification-dropdown', [
             'unreadCount'   => $unreadCount,
+            'orderCount'    => $orderCount,
+            'serviceCount'  => $serviceCount,
+            'sellCount'     => $sellCount,
             'notifications' => $notifications,
         ]);
     }

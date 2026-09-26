@@ -171,10 +171,22 @@
     </aside>
 
     {{-- Main Article / Content Column --}}
-    <main class="flex-1 min-w-0 w-full px-4 sm:px-8 lg:px-12 py-8 lg:py-10">
-      <div class="max-w-[800px] mx-auto">
+    <main class="flex-1 min-w-0 w-full px-4 sm:px-8 lg:px-12 py-8 lg:py-10 flex flex-col justify-between">
+      <div class="max-w-[800px] mx-auto w-full flex-1">
         @yield('content')
       </div>
+
+      {{-- Minimalist Footer --}}
+      <footer class="border-t border-slate-200 dark:border-slate-800 pt-8 mt-16 max-w-[800px] mx-auto w-full">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
+          <p>&copy; {{ date('Y') }} {{ $shopName }}. Seluruh hak cipta dilindungi.</p>
+          <div class="flex items-center gap-4">
+            <a href="{{ route('docs.index') }}" class="hover:text-slate-900 dark:hover:text-white transition-colors">Dokumentasi</a>
+            <span>&middot;</span>
+            <a href="{{ route('home') }}" class="hover:text-slate-900 dark:hover:text-white transition-colors">Website Utama</a>
+          </div>
+        </div>
+      </footer>
     </main>
 
     {{-- Right TOC Sidebar (Desktop Only) --}}
@@ -185,18 +197,6 @@
     @endif
 
   </div>
-
-  {{-- Minimalist Footer --}}
-  <footer class="border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 py-6 mt-16">
-    <div class="max-w-[1500px] mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
-      <p>&copy; {{ date('Y') }} {{ $shopName }}. Seluruh hak cipta dilindungi.</p>
-      <div class="flex items-center gap-4">
-        <a href="{{ route('docs.index') }}" class="hover:text-slate-900 dark:hover:text-white transition-colors">Dokumentasi</a>
-        <span>&middot;</span>
-        <a href="{{ route('home') }}" class="hover:text-slate-900 dark:hover:text-white transition-colors">Website Utama</a>
-      </div>
-    </div>
-  </footer>
 
   {{-- Global Standalone Search Modal (Accessible anywhere) --}}
   @include('docs.partials.search-modal', ['standalone' => true])

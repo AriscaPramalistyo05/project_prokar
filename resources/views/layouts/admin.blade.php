@@ -124,8 +124,16 @@
                 <x-slot:actions class="flex items-center gap-1.5 sm:gap-3">
                     {{-- Compact Push Notification Toggle Switch --}}
                     <div x-data="{
-                        permission: (typeof Notification !== 'undefined') ? Notification.permission : 'unsupported',
+                        enabled: (typeof Notification !== 'undefined' && Notification.permission === 'granted' && localStorage.getItem('admin_push_notifications_enabled') !== 'false'),
                         loading: false,
+                        init() {
+                            if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+                                if (localStorage.getItem('admin_push_notifications_enabled') === null) {
+                                    this.enabled = true;
+                                    localStorage.setItem('admin_push_notifications_enabled', 'true');
+                                }
+                            }
+                        },
                         async toggle() {
                             if (typeof Notification === 'undefined') {
                                 if (typeof Swal !== 'undefined') {
@@ -133,59 +141,81 @@
                                 }
                                 return;
                             }
-                            if (this.permission === 'granted') {
+
+                            // Jika sedang ON -> Matikan
+                            if (this.enabled) {
+                                this.enabled = false;
+                                localStorage.setItem('admin_push_notifications_enabled', 'false');
                                 if (typeof Swal !== 'undefined') {
                                     Swal.fire({
-                                        title: 'Notifikasi Aktif',
-                                        text: 'Push notifikasi browser sudah aktif untuk akun Anda.',
-                                        icon: 'success',
-                                        timer: 1800,
+                                        title: 'Notifikasi Dinonaktifkan',
+                                        text: 'Pemberitahuan push browser telah dimatikan sementara.',
+                                        icon: 'info',
+                                        timer: 1500,
                                         showConfirmButton: false
                                     });
                                 }
                                 return;
                             }
-                            if (this.permission === 'denied') {
+
+                            // Jika sedang OFF -> Coba Hidupkan
+                            if (Notification.permission === 'denied') {
                                 if (typeof Swal !== 'undefined') {
                                     Swal.fire({
-                                        title: 'Notifikasi Diblokir',
-                                        text: 'Izin notifikasi diblokir di browser. Klik ikon gembok di address bar untuk mengizinkan.',
+                                        title: 'Izin Notifikasi Diblokir',
+                                        text: 'Notifikasi diblokir di peramban. Klik ikon gembok / setelan situs di sebelah address bar untuk mengizinkan.',
                                         icon: 'warning'
                                     });
                                 }
                                 return;
                             }
+
                             this.loading = true;
                             try {
-                                if (window.requestAdminFcmPermission) {
-                                    await window.requestAdminFcmPermission();
+                                const perm = await Notification.requestPermission();
+                                if (perm === 'granted') {
+                                    this.enabled = true;
+                                    localStorage.setItem('admin_push_notifications_enabled', 'true');
+                                    if (window.requestAdminFcmPermission) {
+                                        window.requestAdminFcmPermission().catch(function() {});
+                                    }
+                                    if (typeof Swal !== 'undefined') {
+                                        Swal.fire({
+                                            title: 'Notifikasi Aktif!',
+                                            text: 'Pemberitahuan push browser berhasil diaktifkan.',
+                                            icon: 'success',
+                                            timer: 1800,
+                                            showConfirmButton: false
+                                        });
+                                    }
+                                } else {
+                                    this.enabled = false;
+                                    localStorage.setItem('admin_push_notifications_enabled', 'false');
                                 }
-                                this.permission = (typeof Notification !== 'undefined') ? Notification.permission : 'unsupported';
                             } catch (e) {
-                                console.error(e);
+                                console.error('Gagal mengaktifkan notifikasi:', e);
                             } finally {
                                 this.loading = false;
                             }
                         }
                     }"
-                    @fcm-permission-updated.window="permission = (typeof Notification !== 'undefined') ? Notification.permission : 'unsupported'"
+                    @fcm-permission-updated.window="enabled = (typeof Notification !== 'undefined' && Notification.permission === 'granted' && localStorage.getItem('admin_push_notifications_enabled') !== 'false')"
                     class="flex items-center">
                         <button type="button"
                                 @click="toggle()"
                                 :disabled="loading"
-                                :title="permission === 'granted' ? 'Push notifikasi browser aktif' : (permission === 'denied' ? 'Notifikasi diblokir di browser' : 'Aktifkan push notifikasi browser')"
-                                class="inline-flex items-center p-1 rounded-full hover:bg-base-200 transition-colors cursor-pointer select-none"
+                                :title="enabled ? 'Push notifikasi aktif — klik untuk menonaktifkan' : 'Aktifkan push notifikasi browser'"
+                                class="group/toggle inline-flex items-center p-1 rounded-full hover:bg-slate-100 dark:hover:bg-base-200 transition-colors cursor-pointer select-none"
                                 aria-label="Toggle Push Notifikasi">
-                            {{-- Simple Modern Switch --}}
-                            <span class="relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out"
+                            {{-- Toggle switch: slate-600 default agar kontras di navbar putih, shadow & warna cerah saat hover --}}
+                            <span class="relative inline-flex h-6 w-11 shrink-0 rounded-full transition-all duration-200 ease-in-out group-hover/toggle:shadow-md"
                                   :class="{
-                                      'bg-emerald-500': permission === 'granted',
-                                      'bg-zinc-300 hover:bg-zinc-400': permission === 'default' || permission === 'unsupported',
-                                      'bg-rose-400': permission === 'denied',
-                                      'opacity-50': loading
+                                      'bg-emerald-500 group-hover/toggle:bg-emerald-400 group-hover/toggle:shadow-emerald-500/40': enabled,
+                                      'bg-slate-600 group-hover/toggle:bg-slate-500 group-hover/toggle:shadow-slate-500/30': !enabled,
+                                      'opacity-50 cursor-not-allowed': loading
                                   }">
-                                <span class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out"
-                                      :class="permission === 'granted' ? 'translate-x-4' : 'translate-x-0'"></span>
+                                <span class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md transition duration-200 ease-in-out"
+                                      :class="enabled ? 'translate-x-5' : 'translate-x-0.5'"></span>
                             </span>
                         </button>
                     </div>
@@ -218,7 +248,6 @@
     @include('components.pwa-install-banner')
     <x-toast />
     
-    @stack('scripts')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.5/dist/sweetalert2.all.min.js" integrity="sha384-F8SYeBSrTVPFojwQeAD1UQo0dI5CKJOzc992kU0M/q72tnFcDlxHwbkiw8GLrXd8" crossorigin="anonymous"></script>
     <script>
         function confirmAction(title, text, icon, confirmText, callback) {
@@ -348,6 +377,9 @@
             }
 
             window.addEventListener('trigger-browser-notification', async function(e) {
+                if (localStorage.getItem('admin_push_notifications_enabled') === 'false') {
+                    return; // Dinonaktifkan sementara oleh user melalui toggle
+                }
                 const data = e.detail?.[0] || e.detail || {};
                 if ('serviceWorker' in navigator) {
                     try {

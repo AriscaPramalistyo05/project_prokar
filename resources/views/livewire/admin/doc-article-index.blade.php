@@ -128,7 +128,7 @@
                             <td class="text-right">
                                 <div class="flex items-center justify-end gap-1">
                                     @if($article->category)
-                                        <a href="{{ route('docs.show', [$article->category->slug, $article->slug]) }}"
+                                        <a href="{{ route('docs.show', $article->slug) }}"
                                            target="_blank"
                                            class="btn btn-ghost btn-xs text-neutral-500 hover:text-primary"
                                            title="Lihat di halaman docs">

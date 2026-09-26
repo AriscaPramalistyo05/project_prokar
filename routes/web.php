@@ -101,6 +101,7 @@ Route::domain($docsSubdomain)->group(function () {
     Route::name('subdomain.docs.')->group(function () {
         Route::get('/', [DocController::class, 'index'])->name('index');
         Route::get('/search', [DocController::class, 'search'])->name('search');
+        Route::get('/category/{slug}', [DocController::class, 'category'])->name('category');
         Route::get('/docs/{slug}', function ($slug) {
             if ($slug === 'dashboard') {
                 return redirect()->route('admin.dashboard');
@@ -125,6 +126,7 @@ Route::match(['get', 'post'], '/api/deploy/seed-docs', [MaintenanceController::c
 Route::prefix('docs')->name('docs.')->group(function () {
     Route::get('/', [DocController::class, 'index'])->name('index');
     Route::get('/search', [DocController::class, 'search'])->name('search');
+    Route::get('/category/{slug}', [DocController::class, 'category'])->name('category');
     Route::get('/{categorySlug}/{articleSlug}', [DocController::class, 'legacyShow'])->name('legacy.show');
     Route::get('/{slug}', [DocController::class, 'resolve'])
         ->where('slug', '^(?!login|logout|register|search|api).*$')

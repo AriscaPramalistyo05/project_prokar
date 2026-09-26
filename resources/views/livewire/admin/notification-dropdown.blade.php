@@ -1,8 +1,25 @@
-<div class="relative" x-data="{ open: @entangle('isOpen') }" @click.outside="open = false" wire:poll.15s>
+<div class="relative" 
+     x-data="{ 
+         showDropdown: false, 
+         activeTab: 'all',
+         matchesTab(type) {
+             if (this.activeTab === 'all') return true;
+             if (this.activeTab === 'order') return type === 'order';
+             if (this.activeTab === 'service') return type === 'service' || type === 'approval';
+             if (this.activeTab === 'sell') return type === 'sell';
+             return true;
+         }
+     }" 
+     @click.outside="showDropdown = false"
+     @keydown.escape.window="showDropdown = false"
+     @close-dropdowns.window="showDropdown = false"
+     wire:key="notification-dropdown"
+     wire:poll.15s.visible="$refresh">
+
     {{-- Bell Icon Button with dynamic badge --}}
     <button type="button" 
-            @click="open = !open" 
-            class="relative flex items-center justify-center w-10 h-10 rounded-full bg-slate-100 dark:bg-base-200 hover:bg-slate-200 dark:hover:bg-base-300 text-slate-700 dark:text-slate-200 transition-all focus:outline-none focus:ring-2 focus:ring-primary/40"
+            @click="showDropdown = !showDropdown" 
+            class="relative flex items-center justify-center w-10 h-10 rounded-full bg-slate-100 dark:bg-base-200 hover:bg-slate-200 dark:hover:bg-base-300 text-slate-700 dark:text-slate-200 transition-all focus:outline-none focus:ring-2 focus:ring-primary/40 cursor-pointer"
             aria-label="Pusat Notifikasi">
         <i class="fa-regular fa-bell text-lg"></i>
 
@@ -13,16 +30,17 @@
         @endif
     </button>
 
-    {{-- Dropdown Pop-up Panel (Desain sesuai Image 3) --}}
-    <div x-show="open" 
+    {{-- Dropdown Pop-up Panel (Terkontrol aman via showDropdown, bebas dari benturan window.open) --}}
+    <div x-show="showDropdown" 
+         x-cloak
          x-transition:enter="transition ease-out duration-200"
          x-transition:enter-start="opacity-0 translate-y-2 scale-95"
          x-transition:enter-end="opacity-100 translate-y-0 scale-100"
          x-transition:leave="transition ease-in duration-150"
          x-transition:leave-start="opacity-100 translate-y-0 scale-100"
          x-transition:leave-end="opacity-0 translate-y-2 scale-95"
-         class="absolute right-0 mt-3 w-80 sm:w-96 max-w-[calc(100vw-2rem)] bg-white dark:bg-base-100 rounded-3xl shadow-2xl border border-slate-100 dark:border-base-300 overflow-hidden z-50"
-         style="display: none;">
+         @click.stop
+         class="absolute right-0 mt-3 w-80 sm:w-96 max-w-[calc(100vw-2rem)] bg-white dark:bg-base-100 rounded-3xl shadow-2xl border border-slate-100 dark:border-base-300 overflow-hidden z-50">
         
         {{-- Header Pop-up --}}
         <div class="px-5 pt-5 pb-3 flex items-center justify-between border-b border-slate-100 dark:border-base-200">
@@ -38,7 +56,7 @@
             @if($unreadCount > 0)
                 <button type="button" 
                         wire:click="markAllAsRead" 
-                        class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 transition-colors">
+                        class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 transition-colors cursor-pointer">
                     Tandai semua dibaca
                 </button>
             @endif
@@ -47,32 +65,55 @@
         {{-- Filter Tabs (Semua, Order, Servis, Jual) --}}
         <div class="px-5 py-2.5 flex items-center gap-1.5 overflow-x-auto no-scrollbar border-b border-slate-100 dark:border-base-200 bg-slate-50/50 dark:bg-base-200/40">
             <button type="button" 
-                    wire:click="setTab('all')" 
-                    class="px-3 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 {{ $tab === 'all' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200/70 dark:hover:bg-base-300' }}">
+                    @click="activeTab = 'all'" 
+                    class="px-3 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+                    :class="activeTab === 'all' ? 'bg-slate-900 text-white shadow-xs dark:bg-white dark:text-slate-900' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200/70 dark:hover:bg-base-300'">
                 <span>Semua</span>
                 @if($unreadCount > 0)
-                    <span class="w-4 h-4 rounded-full text-[10px] flex items-center justify-center {{ $tab === 'all' ? 'bg-white text-slate-900 font-extrabold' : 'bg-slate-200 dark:bg-base-300 text-slate-700' }}">
+                    <span class="w-4 h-4 rounded-full text-[10px] flex items-center justify-center font-extrabold"
+                          :class="activeTab === 'all' ? 'bg-white text-slate-900 dark:bg-slate-900 dark:text-white' : 'bg-slate-200 dark:bg-base-300 text-slate-700 dark:text-slate-300'">
                         {{ $unreadCount }}
                     </span>
                 @endif
             </button>
 
             <button type="button" 
-                    wire:click="setTab('order')" 
-                    class="px-3 py-1 rounded-full text-xs font-bold transition-all {{ $tab === 'order' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200/70 dark:hover:bg-base-300' }}">
-                Order
+                    @click="activeTab = 'order'" 
+                    class="px-3 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+                    :class="activeTab === 'order' ? 'bg-slate-900 text-white shadow-xs dark:bg-white dark:text-slate-900' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200/70 dark:hover:bg-base-300'">
+                <span>Order</span>
+                @if($orderCount > 0)
+                    <span class="w-4 h-4 rounded-full text-[10px] flex items-center justify-center font-extrabold"
+                          :class="activeTab === 'order' ? 'bg-white text-slate-900 dark:bg-slate-900 dark:text-white' : 'bg-slate-200 dark:bg-base-300 text-slate-700 dark:text-slate-300'">
+                        {{ $orderCount }}
+                    </span>
+                @endif
             </button>
 
             <button type="button" 
-                    wire:click="setTab('service')" 
-                    class="px-3 py-1 rounded-full text-xs font-bold transition-all {{ $tab === 'service' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200/70 dark:hover:bg-base-300' }}">
-                Servis
+                    @click="activeTab = 'service'" 
+                    class="px-3 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+                    :class="activeTab === 'service' ? 'bg-slate-900 text-white shadow-xs dark:bg-white dark:text-slate-900' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200/70 dark:hover:bg-base-300'">
+                <span>Servis</span>
+                @if($serviceCount > 0)
+                    <span class="w-4 h-4 rounded-full text-[10px] flex items-center justify-center font-extrabold"
+                          :class="activeTab === 'service' ? 'bg-white text-slate-900 dark:bg-slate-900 dark:text-white' : 'bg-slate-200 dark:bg-base-300 text-slate-700 dark:text-slate-300'">
+                        {{ $serviceCount }}
+                    </span>
+                @endif
             </button>
 
             <button type="button" 
-                    wire:click="setTab('sell')" 
-                    class="px-3 py-1 rounded-full text-xs font-bold transition-all {{ $tab === 'sell' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200/70 dark:hover:bg-base-300' }}">
-                Jual
+                    @click="activeTab = 'sell'" 
+                    class="px-3 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+                    :class="activeTab === 'sell' ? 'bg-slate-900 text-white shadow-xs dark:bg-white dark:text-slate-900' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200/70 dark:hover:bg-base-300'">
+                <span>Jual</span>
+                @if($sellCount > 0)
+                    <span class="w-4 h-4 rounded-full text-[10px] flex items-center justify-center font-extrabold"
+                          :class="activeTab === 'sell' ? 'bg-white text-slate-900 dark:bg-slate-900 dark:text-white' : 'bg-slate-200 dark:bg-base-300 text-slate-700 dark:text-slate-300'">
+                        {{ $sellCount }}
+                    </span>
+                @endif
             </button>
         </div>
 
@@ -86,11 +127,11 @@
                     
                     // Style by type
                     $bgIcon = match($type) {
-                        'order'    => 'bg-emerald-50 text-emerald-600 border-emerald-100',
-                        'service'  => 'bg-indigo-50 text-indigo-600 border-indigo-100',
-                        'sell'     => 'bg-amber-50 text-amber-600 border-amber-100',
-                        'approval' => 'bg-purple-50 text-purple-600 border-purple-100',
-                        default    => 'bg-slate-50 text-slate-600 border-slate-100',
+                        'order'    => 'bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-950/30 dark:border-emerald-800',
+                        'service'  => 'bg-indigo-50 text-indigo-600 border-indigo-100 dark:bg-indigo-950/30 dark:border-indigo-800',
+                        'sell'     => 'bg-amber-50 text-amber-600 border-amber-100 dark:bg-amber-950/30 dark:border-amber-800',
+                        'approval' => 'bg-purple-50 text-purple-600 border-purple-100 dark:bg-purple-950/30 dark:border-purple-800',
+                        default    => 'bg-slate-50 text-slate-600 border-slate-100 dark:bg-slate-800 dark:border-slate-700',
                     };
 
                     $iconClass = match($type) {
@@ -102,7 +143,9 @@
                     };
                 @endphp
 
-                <div wire:click="markAsRead('{{ $notification->id }}', '{{ $data['url'] ?? '#' }}')"
+                <div x-show="matchesTab('{{ $type }}')"
+                     wire:key="notif-{{ $notification->id }}"
+                     wire:click="markAsRead('{{ $notification->id }}', '{{ $data['url'] ?? '#' }}')"
                      class="p-4 flex items-start gap-3.5 hover:bg-slate-50/80 dark:hover:bg-base-200/60 transition-colors cursor-pointer {{ $isUnread ? 'bg-indigo-50/20 dark:bg-indigo-950/10' : '' }}">
                     
                     {{-- Rounded Icon Box --}}
@@ -147,7 +190,7 @@
         {{-- Footer --}}
         <div class="p-3 bg-slate-50 dark:bg-base-200/60 border-t border-slate-100 dark:border-base-200 text-center">
             <a href="{{ route('admin.dashboard') }}" 
-               @click="open = false"
+               @click="showDropdown = false"
                class="text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
                 Buka Dashboard Utama
             </a>

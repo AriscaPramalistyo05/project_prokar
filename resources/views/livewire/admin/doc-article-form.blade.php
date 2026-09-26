@@ -1,32 +1,23 @@
-<div class="space-y-6 max-w-5xl mx-auto" x-data="docArticleEditor()">
+<div class="space-y-6 max-w-5xl mx-auto" x-data="docArticleForm()">
 
     {{-- Top Action Bar --}}
-    <div class="bg-white p-6 rounded-2xl shadow-xs border border-base-300 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
+    <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-xs border border-base-300 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+        <div class="min-w-0 flex-1">
             <div class="flex items-center gap-2">
-                <h2 class="text-xl font-bold text-base-content">
+                <h2 class="text-xl font-bold text-base-content truncate">
                     {{ $isEditing ? 'Ubah Artikel Dokumentasi' : 'Tulis Artikel Dokumentasi Baru' }}
                 </h2>
-                <span class="badge badge-sm {{ $status === 'published' ? 'badge-success text-white' : 'badge-ghost' }}">
+                <span class="badge badge-sm shrink-0 {{ $status === 'published' ? 'badge-success text-white' : 'badge-ghost' }}">
                     {{ $status === 'published' ? 'Published' : 'Draft' }}
                 </span>
             </div>
-            <p class="text-xs text-neutral-500 mt-1">
+            <p class="text-xs text-neutral-500 mt-1 leading-relaxed">
                 Gunakan editor visual untuk menyusun panduan tanpa perlu menulis kode HTML/Markdown secara manual.
             </p>
         </div>
-        <div class="flex items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2 shrink-0">
             <x-button label="Kembali" icon="o-arrow-left" class="btn-sm btn-ghost" link="{{ route('admin.docs.index') }}" />
             
-            {{-- Tabs: Edit / Preview --}}
-            <div class="join border border-base-300">
-                <button type="button" @click="activeTab = 'edit'" class="btn btn-sm join-item" :class="{ 'btn-active btn-neutral': activeTab === 'edit' }">
-                    <x-icon name="o-pencil-square" class="w-4 h-4" /> Edit
-                </button>
-                <button type="button" @click="activeTab = 'preview'" class="btn btn-sm join-item" :class="{ 'btn-active btn-neutral': activeTab === 'preview' }">
-                    <x-icon name="o-eye" class="w-4 h-4" /> Preview
-                </button>
-            </div>
 
             <x-button label="{{ $isEditing ? 'Perbarui Artikel' : 'Simpan Artikel' }}"
                       icon="o-check"
@@ -52,7 +43,7 @@
     @endif
 
     {{-- Form Content --}}
-    <div x-show="activeTab === 'edit'" class="space-y-6">
+    <div class="space-y-6">
 
         {{-- Meta Settings Card --}}
         <div class="bg-white p-6 rounded-2xl shadow-xs border border-base-300 space-y-4">
@@ -63,7 +54,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {{-- Title --}}
                 <div class="md:col-span-2">
-                    <x-input label="Judul Artikel Dokumentasi" wire:model.live.debounce.400ms="title" placeholder="Contoh: Cara Mengajukan Servis Elektronik Online" required />
+                    <x-input id="article-title-field" label="Judul Artikel Dokumentasi" wire:model.live.debounce.400ms="title" placeholder="Contoh: Cara Mengajukan Servis Elektronik Online" required />
                 </div>
 
                 {{-- Slug --}}
@@ -123,7 +114,7 @@
 
                 {{-- Excerpt / Short Description --}}
                 <div class="md:col-span-2">
-                    <x-textarea label="Deskripsi Singkat / Ringkasan (Lead)" wire:model="excerpt" placeholder="Ringkasan 1-2 kalimat tentang isi panduan ini (tampil di bawah judul dan di hasil pencarian)..." rows="2" />
+                    <x-textarea id="article-excerpt-field" label="Deskripsi Singkat / Ringkasan (Lead)" wire:model="excerpt" placeholder="Ringkasan 1-2 kalimat tentang isi panduan ini (tampil di bawah judul dan di hasil pencarian)..." rows="2" />
                 </div>
             </div>
         </div>
@@ -182,122 +173,139 @@
 
     </div>
 
-    {{-- Live Preview Tab --}}
-    <div x-show="activeTab === 'preview'" class="bg-white p-8 rounded-2xl shadow-xs border border-base-300 min-h-[500px]" style="display: none;">
-        <div class="max-w-3xl mx-auto space-y-6">
-            <div class="border-b border-base-200 pb-4">
-                <span class="badge badge-primary badge-sm mb-2">Pratinjau Halaman Docs</span>
-                <h1 class="text-3xl font-extrabold text-neutral-900 tracking-tight" x-text="$wire.title || 'Judul Artikel'"></h1>
-                <p class="mt-2 text-base text-neutral-600 italic" x-text="$wire.excerpt"></p>
-            </div>
-
-            <div class="docs-content prose max-w-none text-neutral-800" x-html="$wire.content"></div>
-        </div>
-    </div>
 
 </div>
 
 {{-- Load TinyMCE & Editor Script (Cleanly separated from HTML attributes) --}}
 @push('scripts')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.3/tinymce.min.js" integrity="sha384-1Miaw0hyo/w0cd9ZHUnc7Z8ACgtO+lphAEziGNW4z2C1h3nJfMVVEWA5MI031P+X" crossorigin="anonymous" referrerpolicy="origin"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.3/tinymce.min.js"></script>
 <script>
-function docArticleEditor() {
+window.docArticleForm = function() {
     return {
-        activeTab: 'edit',
         init() {
-            this.$nextTick(() => {
-                this.initTiny();
-            });
-        },
-        initTiny() {
-            if (typeof tinymce === 'undefined') {
-                setTimeout(() => this.initTiny(), 200);
-                return;
+            if (window.initDocTinyMCE) {
+                window.initDocTinyMCE();
+            } else {
+                const timer = setInterval(() => {
+                    if (window.initDocTinyMCE) {
+                        clearInterval(timer);
+                        window.initDocTinyMCE();
+                    }
+                }, 100);
             }
+        }
+    };
+};
 
-            tinymce.remove('#tinymce-content');
-            tinymce.init({
-                selector: '#tinymce-content',
-                height: 550,
-                menubar: 'file edit view insert format tools table help',
-                plugins: 'lists link image code table codesample fullscreen searchreplace wordcount visualblocks',
-                toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | link image codesample | callout_info callout_tip callout_warning | code fullscreen',
-                content_style: 'body { font-family: Inter, system-ui, sans-serif; font-size: 15px; line-height: 1.6; color: #334155; padding: 1rem; } img { max-width: 100%; height: auto; max-height: 480px; border-radius: 6px; border: 1px solid #e2e8f0; display: block; margin: 1rem auto; } pre { background: #0f172a; color: #f8fafc; padding: 1rem; border-radius: 6px; } blockquote.callout-info { border-left: 3px solid #0284c7; background: #f0f9ff; color: #0c4a6e; padding: 0.875rem 1.25rem; border-radius: 0 4px 4px 0; margin: 1rem 0; font-style: normal; } blockquote.callout-tip { border-left: 3px solid #059669; background: #ecfdf5; color: #064e3b; padding: 0.875rem 1.25rem; border-radius: 0 4px 4px 0; margin: 1rem 0; font-style: normal; } blockquote.callout-warning { border-left: 3px solid #d97706; background: #fffbeb; color: #78350f; padding: 0.875rem 1.25rem; border-radius: 0 4px 4px 0; margin: 1rem 0; font-style: normal; }',
-                images_upload_url: '{{ route('admin.docs.upload-image') }}',
-                automatic_uploads: true,
-                images_reuse_filename: false,
-                images_upload_handler: (blobInfo, progress) => new Promise((resolve, reject) => {
-                    const xhr = new XMLHttpRequest();
-                    xhr.withCredentials = false;
-                    xhr.open('POST', '{{ route('admin.docs.upload-image') }}');
-                    xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
+window.initDocTinyMCE = function() {
+    if (typeof tinymce === 'undefined') {
+        setTimeout(window.initDocTinyMCE, 150);
+        return;
+    }
 
-                    xhr.upload.onprogress = (e) => {
-                        progress(e.loaded / e.total * 100);
-                    };
+    // Set baseURL explicitly to prevent TinyMCE from searching relative Laravel paths
+    window.tinymce.baseURL = 'https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.3';
 
-                    xhr.onload = () => {
-                        if (xhr.status === 403 || xhr.status === 401) {
-                            reject({ message: 'HTTP Error: ' + xhr.status, remove: true });
-                            return;
-                        }
-                        if (xhr.status < 200 || xhr.status >= 300) {
-                            reject('HTTP Error: ' + xhr.status);
-                            return;
-                        }
-                        try {
-                            const json = JSON.parse(xhr.responseText);
-                            if (!json || typeof json.location !== 'string') {
-                                reject('Format response tidak valid.');
-                                return;
-                            }
-                            resolve(json.location);
-                        } catch (err) {
-                            reject('Gagal membaca response server.');
-                        }
-                    };
+    if (tinymce.get('tinymce-content')) {
+        tinymce.remove('#tinymce-content');
+    }
 
-                    xhr.onerror = () => {
-                        reject('Gagal mengunggah gambar. Periksa koneksi internet.');
-                    };
+    tinymce.init({
+        selector: '#tinymce-content',
+        height: 550,
+        menubar: 'file edit view insert format tools table help',
+        plugins: 'lists link image code table codesample fullscreen searchreplace wordcount visualblocks',
+        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | link image codesample | callout_info callout_tip callout_warning | code fullscreen',
+        content_style: 'body { font-family: Inter, system-ui, sans-serif; font-size: 15px; line-height: 1.6; color: #334155; padding: 1rem; } img { max-width: 100%; height: auto; max-height: 480px; border-radius: 6px; border: 1px solid #e2e8f0; display: block; margin: 1rem auto; } pre { background: #0f172a; color: #f8fafc; padding: 1rem; border-radius: 6px; } blockquote.callout-info { border-left: 3px solid #0284c7; background: #f0f9ff; color: #0c4a6e; padding: 0.875rem 1.25rem; border-radius: 0 4px 4px 0; margin: 1rem 0; font-style: normal; } blockquote.callout-tip { border-left: 3px solid #059669; background: #ecfdf5; color: #064e3b; padding: 0.875rem 1.25rem; border-radius: 0 4px 4px 0; margin: 1rem 0; font-style: normal; } blockquote.callout-warning { border-left: 3px solid #d97706; background: #fffbeb; color: #78350f; padding: 0.875rem 1.25rem; border-radius: 0 4px 4px 0; margin: 1rem 0; font-style: normal; }',
+        images_upload_url: '{{ route('admin.docs.upload-image') }}',
+        automatic_uploads: true,
+        images_reuse_filename: false,
+        images_upload_handler: (blobInfo, progress) => new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.withCredentials = false;
+            xhr.open('POST', '{{ route('admin.docs.upload-image') }}');
+            xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
 
-                    const formData = new FormData();
-                    formData.append('file', blobInfo.blob(), blobInfo.filename());
-                    xhr.send(formData);
-                }),
-                setup: (editor) => {
-                    editor.on('change keyup NodeChange', () => {
-                        @this.set('content', editor.getContent(), false);
-                    });
+            xhr.upload.onprogress = (e) => {
+                progress(e.loaded / e.total * 100);
+            };
 
-                    // Callout buttons without emojis
-                    editor.ui.registry.addButton('callout_info', {
-                        text: 'Catatan / Info',
-                        tooltip: 'Sisipkan Kotak Informasi (Biru)',
-                        onAction: () => {
-                            editor.insertContent('<blockquote class="callout-info"><strong>Catatan:</strong> Tuliskan informasi penting di sini.</blockquote><p></p>');
-                        }
-                    });
+            xhr.onload = () => {
+                if (xhr.status === 403 || xhr.status === 401) {
+                    reject({ message: 'HTTP Error: ' + xhr.status, remove: true });
+                    return;
+                }
+                if (xhr.status < 200 || xhr.status >= 300) {
+                    reject('HTTP Error: ' + xhr.status);
+                    return;
+                }
+                try {
+                    const json = JSON.parse(xhr.responseText);
+                    if (!json || typeof json.location !== 'string') {
+                        reject('Format response tidak valid.');
+                        return;
+                    }
+                    resolve(json.location);
+                } catch (err) {
+                    reject('Gagal membaca response server.');
+                }
+            };
 
-                    editor.ui.registry.addButton('callout_tip', {
-                        text: 'Tips',
-                        tooltip: 'Sisipkan Kotak Tips (Hijau)',
-                        onAction: () => {
-                            editor.insertContent('<blockquote class="callout-tip"><strong>Tips:</strong> Tuliskan tips yang bermanfaat di sini.</blockquote><p></p>');
-                        }
-                    });
+            xhr.onerror = () => {
+                reject('Gagal mengunggah gambar. Periksa koneksi internet.');
+            };
 
-                    editor.ui.registry.addButton('callout_warning', {
-                        text: 'Perhatian',
-                        tooltip: 'Sisipkan Kotak Perhatian (Kuning)',
-                        onAction: () => {
-                            editor.insertContent('<blockquote class="callout-warning"><strong>Perhatian:</strong> Tuliskan peringatan penting di sini.</blockquote><p></p>');
-                        }
-                    });
+            const formData = new FormData();
+            formData.append('file', blobInfo.blob(), blobInfo.filename());
+            xhr.send(formData);
+        }),
+        setup: (editor) => {
+            editor.on('change keyup NodeChange', () => {
+                @this.set('content', editor.getContent(), false);
+            });
+
+            // Tutup dropdown notifikasi saat klik atau mengetik di dalam TinyMCE editor (iframe)
+            editor.on('click focus', () => {
+                window.dispatchEvent(new CustomEvent('close-dropdowns'));
+            });
+
+            // Callout buttons without emojis
+            editor.ui.registry.addButton('callout_info', {
+                text: 'Catatan / Info',
+                tooltip: 'Sisipkan Kotak Informasi (Biru)',
+                onAction: () => {
+                    editor.insertContent('<blockquote class="callout-info"><strong>Catatan:</strong> Tuliskan informasi penting di sini.</blockquote><p></p>');
+                }
+            });
+
+            editor.ui.registry.addButton('callout_tip', {
+                text: 'Tips',
+                tooltip: 'Sisipkan Kotak Tips (Hijau)',
+                onAction: () => {
+                    editor.insertContent('<blockquote class="callout-tip"><strong>Tips:</strong> Tuliskan tips yang bermanfaat di sini.</blockquote><p></p>');
+                }
+            });
+
+            editor.ui.registry.addButton('callout_warning', {
+                text: 'Perhatian',
+                tooltip: 'Sisipkan Kotak Perhatian (Kuning)',
+                onAction: () => {
+                    editor.insertContent('<blockquote class="callout-warning"><strong>Perhatian:</strong> Tuliskan peringatan penting di sini.</blockquote><p></p>');
                 }
             });
         }
-    };
-}
+    });
+};
+
+document.addEventListener('livewire:navigated', () => {
+    if (document.getElementById('tinymce-content')) {
+        window.initDocTinyMCE();
+    }
+});
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('tinymce-content')) {
+        window.initDocTinyMCE();
+    }
+});
 </script>
 @endpush
