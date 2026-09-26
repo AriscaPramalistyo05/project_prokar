@@ -36,6 +36,30 @@ class NotificationDropdown extends Component
         }
     }
 
+    public function deleteNotification(string $notificationId): void
+    {
+        $user = Auth::user();
+        if ($user && $this->notificationsTableExists()) {
+            try {
+                $user->notifications()->where('id', $notificationId)->delete();
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning('Unable to delete notification: ' . $e->getMessage());
+            }
+        }
+    }
+
+    public function clearAllNotifications(): void
+    {
+        $user = Auth::user();
+        if ($user && $this->notificationsTableExists()) {
+            try {
+                $user->notifications()->delete();
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning('Unable to clear all notifications: ' . $e->getMessage());
+            }
+        }
+    }
+
     private function notificationsTableExists(): bool
     {
         try {

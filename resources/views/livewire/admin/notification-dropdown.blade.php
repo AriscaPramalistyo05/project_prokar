@@ -45,12 +45,24 @@
                 @endif
             </div>
 
-            <div class="flex items-center gap-3">
-                @if($unreadCount > 0)
-                    <button type="button" 
-                            wire:click="markAllAsRead" 
-                            class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 transition-colors cursor-pointer">
-                        Tandai dibaca
+            <div class="flex items-center gap-1.5">
+                <button type="button" 
+                        wire:click="markAllAsRead" 
+                        @if($unreadCount === 0) disabled @endif
+                        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold {{ $unreadCount > 0 ? 'text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-950/40 cursor-pointer' : 'text-slate-300 dark:text-slate-600 cursor-not-allowed' }} transition-colors"
+                        title="{{ $unreadCount > 0 ? 'Tandai semua notifikasi sudah dibaca' : 'Tidak ada notifikasi baru' }}">
+                    <i class="fa-solid fa-check-double text-xs"></i>
+                    <span>Tandai semua dibaca</span>
+                </button>
+
+                @if($notifications->isNotEmpty())
+                    <button type="button"
+                            wire:click="clearAllNotifications"
+                            wire:confirm="Hapus semua riwayat notifikasi?"
+                            class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer"
+                            title="Hapus semua notifikasi"
+                            aria-label="Hapus semua notifikasi">
+                        <i class="fa-regular fa-trash-can text-xs"></i>
                     </button>
                 @endif
                 <button type="button" 
@@ -147,7 +159,7 @@
                 <div x-show="matchesTab('{{ $type }}')"
                      wire:key="notif-{{ $notification->id }}"
                      wire:click="markAsRead('{{ $notification->id }}', '{{ $data['url'] ?? '#' }}')"
-                     class="p-4 flex items-start gap-3.5 hover:bg-slate-50/80 dark:hover:bg-base-200/60 transition-colors cursor-pointer {{ $isUnread ? 'bg-indigo-50/20 dark:bg-indigo-950/10' : '' }}">
+                     class="group/item relative p-4 flex items-start gap-3.5 hover:bg-slate-50/80 dark:hover:bg-base-200/60 transition-colors cursor-pointer {{ $isUnread ? 'bg-indigo-50/20 dark:bg-indigo-950/10' : '' }}">
                     
                     {{-- Rounded Icon Box --}}
                     <div class="w-10 h-10 rounded-2xl flex items-center justify-center border shrink-0 text-base {{ $bgIcon }}">
@@ -155,7 +167,7 @@
                     </div>
 
                     {{-- Content --}}
-                    <div class="flex-1 min-w-0">
+                    <div class="flex-1 min-w-0 pr-6">
                         <div class="flex items-start justify-between gap-1 mb-0.5">
                             <h4 class="text-xs font-bold text-slate-900 dark:text-white truncate {{ $isUnread ? 'font-extrabold' : '' }}">
                                 {{ $data['title'] ?? 'Pemberitahuan Sistem' }}
@@ -176,6 +188,15 @@
                             </div>
                         @endif
                     </div>
+
+                    {{-- Ikon Delete Notifikasi Tunggal --}}
+                    <button type="button"
+                            wire:click.stop="deleteNotification('{{ $notification->id }}')"
+                            class="absolute top-3.5 right-3 w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 opacity-0 group-hover/item:opacity-100 sm:opacity-0 max-sm:opacity-100 transition-all cursor-pointer"
+                            title="Hapus notifikasi ini"
+                            aria-label="Hapus notifikasi">
+                        <i class="fa-regular fa-trash-can text-xs"></i>
+                    </button>
                 </div>
             @empty
                 <div class="py-12 px-4 text-center">
