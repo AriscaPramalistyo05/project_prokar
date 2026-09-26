@@ -1,88 +1,55 @@
 @extends('layouts.docs')
 
-@section('title', 'Dokumentasi & Panduan Operasional Resmi')
+@section('title', 'Dokumentasi & Panduan Pengguna')
 @section('description', 'Pusat dokumentasi resmi, alur reparasi, standar operasional prosedur, dan manual book pengguna Prokar Elektronik.')
 
 @section('content')
-<div class="space-y-12 sm:space-y-16">
+<div class="space-y-12 sm:space-y-14">
 
   {{-- ========================================================================= --}}
-  {{-- 1. HEADER SECTION (Inspirasi: docs.midtrans.com - Image 1 & 2)           --}}
+  {{-- 1. HEADER SECTION (Clean, Soft, Flat — Bebas AI-Slop & Tanpa Gradient)    --}}
   {{-- ========================================================================= --}}
-  <div class="relative rounded-3xl overflow-hidden bg-[#0A1628] text-white border border-slate-800 shadow-2xl">
-    {{-- Glow background accents --}}
-    <div class="absolute -top-24 -right-24 w-96 h-96 bg-sky-500/15 rounded-full blur-3xl pointer-events-none"></div>
-    <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
-
-    <div class="relative p-6 sm:p-10 lg:p-12 space-y-6">
+  <div class="rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 lg:p-10">
+    <div class="space-y-4">
       
-      {{-- Badge Versi & Status --}}
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/80 border border-slate-700/80 text-[11px] font-mono text-slate-300 font-semibold shadow-xs">
-        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-        <span>v2.0</span>
-        <span class="text-slate-500">&bull;</span>
-        <span class="text-sky-300 font-bold uppercase tracking-wider">Manual Book & Dokumentasi Resmi</span>
-      </div>
-
-      {{-- Judul Utama (Midtrans Style Headline) --}}
-      <div class="space-y-3">
-        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-tight">
-          Selamat datang di Dokumentasi Prokar Elektronik
+      {{-- Judul Utama --}}
+      <div class="space-y-2.5">
+        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
+          Dokumentasi Prokar Elektronik
         </h1>
-        <p class="text-sm sm:text-base text-slate-300 leading-relaxed max-w-2xl">
-          Jelajahi panduan pengguna, alur operasional perbaikan perangkat, pembelian elektronik bekas berkualitas, serta referensi sistem dalam satu manual terpadu.
+        <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl">
+          Panduan resmi alur perbaikan perangkat elektronik, pembelian unit bekas berkualitas bergaransi toko, pengajuan penjualan barang bekas, dan ketentuan layanan garansi digital.
         </p>
       </div>
 
-      {{-- Tombol Aksi Cepat (Midtrans Call-to-Action) --}}
-      <div class="flex flex-wrap items-center gap-3 pt-2">
+      {{-- Tombol Aksi Bersih --}}
+      <div class="pt-1">
         <a href="{{ url('/docs/pengenalan-prokar-elektronik') }}" 
-           class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs sm:text-sm transition-all shadow-md hover:shadow-lg cursor-pointer">
-          <i class="fa-solid fa-book-open text-xs"></i>
+           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold text-xs sm:text-sm hover:opacity-90 transition-opacity shadow-xs">
           <span>Mulai Membaca</span>
+          <i class="fa-solid fa-arrow-right text-xs"></i>
         </a>
-
-        <button onclick="window.openDocSearch && window.openDocSearch()"
-                @click="window.openDocSearch && window.openDocSearch()"
-                type="button" 
-                class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800/90 hover:bg-slate-800 text-slate-200 hover:text-white border border-slate-700 text-xs sm:text-sm font-semibold transition-all cursor-pointer">
-          <i class="fa-solid fa-magnifying-glass text-xs text-slate-400"></i>
-          <span>Pencarian Cepat</span>
-          <kbd class="ml-1 font-mono text-[10px] bg-slate-900 px-1.5 py-0.5 rounded text-slate-400 border border-slate-700">Ctrl K</kbd>
-        </button>
       </div>
 
-      {{-- Callout Banner Hijau (Image 1 Style) --}}
-      <div class="p-3.5 sm:p-4 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-200 text-xs sm:text-[13px] flex items-start gap-3">
-        <span class="text-base shrink-0">💡</span>
-        <div class="leading-relaxed">
-          <strong class="text-emerald-100 font-semibold">Fitur Utama Sistem:</strong> 
-          Mendukung pelacakan tiket servis online real-time, verifikasi pembayaran otomatis Midtrans Snap, serta penerbitan kartu e-Garansi digital PDF ber-barcode.
-        </div>
-      </div>
-
-      {{-- Kotak Pengumuman & Catatan Rilis (Image 2 Style) --}}
-      <div class="p-5 sm:p-6 rounded-2xl bg-[#07101E] border border-sky-950/80 space-y-3.5">
-        <div class="flex items-center justify-between pb-2 border-b border-slate-800/80">
-          <div class="flex items-center gap-2 text-xs sm:text-sm font-bold text-sky-400">
-            <i class="fa-solid fa-bullhorn text-xs"></i>
-            <span>Pengumuman &amp; Catatan Pembaruan Sistem — September 2026</span>
-          </div>
-          <span class="text-[10px] font-mono text-slate-500">Prokar Core Engine</span>
+      {{-- Kotak Informasi & Alur Layanan (Soft Solid Flat Box) --}}
+      <div class="p-5 sm:p-6 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 mt-5 space-y-3">
+        <div class="flex items-center gap-2 text-xs font-bold text-slate-900 dark:text-white pb-2 border-b border-slate-100 dark:border-slate-700">
+          <i class="fa-solid fa-circle-info text-sky-600 dark:text-sky-400"></i>
+          <span>Informasi Alur &amp; Fitur Utama Sistem</span>
         </div>
 
-        <ul class="space-y-2 text-xs text-slate-300 leading-relaxed list-disc list-inside marker:text-sky-500">
+        <ul class="space-y-2 text-xs text-slate-600 dark:text-slate-300 leading-relaxed list-disc list-inside marker:text-slate-400 dark:marker:text-slate-500">
           <li>
-            <strong class="text-white">Snap Checkout Terintegrasi:</strong> Pembayaran pesanan produk dan DP tiket servis mendukung QRIS, GoPay, dan Virtual Account Bank otomatis.
+            <strong class="text-slate-900 dark:text-white">Layanan Servis Terpadu:</strong> Pilihan antar mandiri ke workshop atau panggil teknisi ke rumah dengan pelacakan progres tiket secara real-time.
           </li>
           <li>
-            <strong class="text-white">Pilihan Servis Fleksibel:</strong> Pelanggan dapat memilih opsi antar unit mandiri ke bengkel atau meminta teknisi datang ke alamat rumah.
+            <strong class="text-slate-900 dark:text-white">Persetujuan Biaya Transparan:</strong> Rincian estimasi suku cadang dan ongkos jasa wajib disetujui pelanggan terlebih dahulu sebelum perbaikan dikerjakan.
           </li>
           <li>
-            <strong class="text-white">Standar Uji QC 15 Titik:</strong> Seluruh produk elektronik bekas diuji fungsionalitas dan kelistrikannya sebelum masuk katalog jual.
+            <strong class="text-slate-900 dark:text-white">Standar Uji QC 15 Titik:</strong> Seluruh produk elektronik bekas diuji kelayakan fungsi dan kelistrikannya serta dilengkapi kartu garansi digital PDF ber-barcode.
           </li>
           <li>
-            <strong class="text-white">Approval Estimasi Biaya Digital:</strong> Pelanggan dapat meninjau rincian biaya sparepart dan menyetujui tindakan perbaikan secara transparan dari gawai pribadi.
+            <strong class="text-slate-900 dark:text-white">Pembayaran Digital Snap:</strong> Mendukung pembayaran instan QRIS, GoPay, dan Virtual Account Bank untuk checkout produk maupun DP servis.
           </li>
         </ul>
       </div>
@@ -91,38 +58,9 @@
   </div>
 
   {{-- ========================================================================= --}}
-  {{-- 2. TAB SWITCHER PERAN AKADEMIK (Pelanggan / Teknisi / Admin)               --}}
+  {{-- 2. TABLE OF CONTENTS / DAFTAR ISI MANUAL BOOK (Inspirasi Image 3)         --}}
   {{-- ========================================================================= --}}
-  <div class="flex items-center gap-2 p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 overflow-x-auto no-scrollbar">
-    <a href="{{ request()->getHost() === env('DOCS_DOMAIN', 'docs.prokarelektronik.com') ? url('/') : url('/docs') }}" 
-       class="px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-2 {{ $currentScope === 'public' ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }}">
-      <i class="fa-solid fa-users text-sky-500"></i>
-      <span>Panduan Pelanggan (Publik)</span>
-    </a>
-
-    <a href="{{ request()->getHost() === env('DOCS_DOMAIN', 'docs.prokarelektronik.com') ? url('/teknisi') : url('/docs/teknisi') }}" 
-       class="px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-2 {{ $currentScope === 'teknisi' ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }}">
-      <i class="fa-solid fa-screwdriver-wrench text-amber-500"></i>
-      <span>SOP Teknisi (Bengkel)</span>
-      @if(!$canAccessTeknisi)
-        <i class="fa-solid fa-lock text-[10px] text-slate-400"></i>
-      @endif
-    </a>
-
-    <a href="{{ request()->getHost() === env('DOCS_DOMAIN', 'docs.prokarelektronik.com') ? url('/admin') : url('/docs/admin') }}" 
-       class="px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-2 {{ $currentScope === 'super_admin' ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }}">
-      <i class="fa-solid fa-shield-halved text-rose-500"></i>
-      <span>Tata Kelola Super Admin</span>
-      @if(!$canAccessAdmin)
-        <i class="fa-solid fa-lock text-[10px] text-slate-400"></i>
-      @endif
-    </a>
-  </div>
-
-  {{-- ========================================================================= --}}
-  {{-- 3. TABLE OF CONTENTS / DAFTAR ISI MANUAL BOOK (Inspirasi Image 3)         --}}
-  {{-- ========================================================================= --}}
-  <div class="space-y-8 pt-4">
+  <div class="space-y-8 pt-2">
 
     {{-- Judul Besar Editorial Table of Contents --}}
     <div class="space-y-1">
@@ -130,7 +68,7 @@
         TABLE OF CONTENTS
       </h2>
       <p class="text-xs sm:text-sm font-mono text-slate-400 dark:text-slate-500 uppercase tracking-widest">
-        DAFTAR ISI &amp; PEMETAAN MODUL MANUAL BOOK AKADEMIK
+        DAFTAR ISI &amp; PEMETAAN PANDUAN PENGGUNA
       </p>
     </div>
 
@@ -141,7 +79,7 @@
           $num = str_pad($index + 1, 2, '0', STR_PAD_LEFT);
         @endphp
 
-        <div class="space-y-3.5 group">
+        <div class="space-y-3 group">
           {{-- Nomor Urut Besar & Judul Bab (Image 3 Style) --}}
           <div class="space-y-1">
             <span class="block text-2xl sm:text-3xl font-extrabold font-mono text-slate-900 dark:text-white tracking-tighter">
@@ -162,7 +100,7 @@
           @endif
 
           {{-- Garis Pembatas Tipis Horisontal Sesuai Image 3 --}}
-          <div class="h-px bg-slate-200 dark:bg-slate-800/80 my-3"></div>
+          <div class="h-px bg-slate-200 dark:bg-slate-800 my-3"></div>
 
           {{-- Sub-bab / Sub-articles List (Format Akademik: 1.1, 1.2, dst.) --}}
           @if($cat->publishedRootArticles && $cat->publishedRootArticles->isNotEmpty())
@@ -187,7 +125,7 @@
         </div>
       @empty
         <div class="col-span-2 py-12 text-center text-slate-400">
-          <p class="text-sm">Belum ada modul dokumentasi pada kategori ini.</p>
+          <p class="text-sm">Belum ada modul dokumentasi.</p>
         </div>
       @endforelse
     </div>
@@ -195,12 +133,12 @@
   </div>
 
   {{-- ========================================================================= --}}
-  {{-- 4. KOTAK BANTUAN & KONTAK OPERASIONAL (Footer Support Note)                 --}}
+  {{-- 3. KOTAK BANTUAN & KONTAK (Footer Support Note)                            --}}
   {{-- ========================================================================= --}}
   <div class="rounded-2xl p-6 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
     <div class="space-y-1 text-center sm:text-left">
-      <h4 class="text-sm font-bold text-slate-900 dark:text-white">Butuh konsultasi atau panduan langsung?</h4>
-      <p class="text-xs text-slate-500 dark:text-slate-400">Tim dukungan teknis dan operasional Prokar Elektronik siap melayani Anda.</p>
+      <h4 class="text-sm font-bold text-slate-900 dark:text-white">Butuh bantuan lebih lanjut?</h4>
+      <p class="text-xs text-slate-500 dark:text-slate-400">Layanan pelanggan dan tim teknis Prokar Elektronik siap membantu kendala Anda.</p>
     </div>
     <div class="flex items-center gap-2.5">
       <a href="{{ route('home') }}" class="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">

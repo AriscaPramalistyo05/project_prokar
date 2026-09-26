@@ -34,7 +34,7 @@ class DocController extends Controller
     }
 
     /**
-     * Docs landing page — list all accessible categories and scenario cards.
+     * Docs landing page — strictly shows public documentation categories.
      */
     public function index(Request $request)
     {
@@ -43,44 +43,19 @@ class DocController extends Controller
         }
 
         $user = $request->user();
-        $scope = $request->input('scope', 'public');
-        if ($scope === 'admin') {
-            $scope = 'super_admin';
-        }
-        if (!in_array($scope, ['public', 'teknisi', 'super_admin'])) {
-            $scope = 'public';
-        }
 
-        $canAccessTeknisi = $user && $user->hasAnyRole(['teknisi', 'super_admin']);
-        $canAccessAdmin = $user && $user->hasRole('super_admin');
-
-        // Check permission if viewing restricted scope
-        if ($scope === 'teknisi' && !$canAccessTeknisi) {
-            $scope = 'public';
-        } elseif ($scope === 'super_admin' && !$canAccessAdmin) {
-            $scope = 'public';
-        }
-
-        $query = DocCategory::orderBy('order')
+        // Customer landing page strictly shows public categories only
+        $categories = DocCategory::whereNull('role_access')
+            ->orderBy('order')
             ->with(['publishedRootArticles' => function ($q) {
                 $q->with('publishedChildren');
-            }]);
+            }])
+            ->get();
 
-        if ($scope === 'teknisi') {
-            $query->where('role_access', 'teknisi');
-        } elseif ($scope === 'super_admin') {
-            $query->where('role_access', 'super_admin');
-        } else {
-            $query->whereNull('role_access');
-        }
+        $allCategories = $this->getCategoriesByScope('public', $user);
+        $currentScope = 'public';
 
-        $categories = $query->get()->filter(fn(DocCategory $cat) => $cat->isAccessibleBy($user));
-        $allCategories = $this->getCategoriesByScope($scope, $user);
-        $currentScope = $scope;
-
-        return view('docs.index', compact(
-            'categories', 'allCategories', 'currentScope', 'canAccessTeknisi', 'canAccessAdmin'
-        ));
+        return view('docs.index', compact('categories', 'allCategories', 'currentScope'));
     }
 
     /**

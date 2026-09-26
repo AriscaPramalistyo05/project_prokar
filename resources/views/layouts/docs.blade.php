@@ -352,5 +352,8 @@
       }
     });
   </script>
+
+  {{-- Global Documentation Search Modal (teleported to body, opens on Ctrl+K or search input click) --}}
+  @include('docs.partials.search-modal', ['standalone' => true])
 </body>
 </html>
