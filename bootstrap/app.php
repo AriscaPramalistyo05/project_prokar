@@ -50,4 +50,15 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*'),
         );
+
+        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException $e, Request $request) {
+            if (!$request->expectsJson()) {
+                if ($request->is('reset-password')) {
+                    return redirect()->route('password.request')
+                        ->with('status', 'Silakan masukkan email Anda untuk mendapatkan tautan atur ulang kata sandi.');
+                }
+
+                return redirect()->back()->with('error', 'Halaman atau tindakan tersebut telah kedaluwarsa. Silakan ulangi kembali.');
+            }
+        });
     })->create();
