@@ -25,9 +25,18 @@
     $shopFavicon = optimized_asset($savedFavicon, 'images/logo prokar.webp');
     $savedLogo = setting('shop_logo', 'images/logo prokar simpel.png');
     $shopLogo = optimized_asset($savedLogo, 'images/logo prokar simpel.webp');
+    $pwaFavicon32 = file_exists(public_path('icons/favicon-32x32.png')) ? asset('icons/favicon-32x32.png') : $shopFavicon;
   @endphp
 
-  <link rel="icon" type="image/png" href="{{ $shopFavicon }}" />
+  <!-- Multi-size Favicons & PWA Icons -->
+  <link rel="shortcut icon" href="{{ $pwaFavicon32 }}" />
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ $pwaFavicon32 }}" />
+  @if(file_exists(public_path('icons/icon-192x192.png')))
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('icons/icon-192x192.png') }}" />
+  @endif
+  @if(file_exists(public_path('icons/apple-touch-icon.png')))
+    <link rel="apple-touch-icon" href="{{ asset('icons/apple-touch-icon.png') }}" />
+  @endif
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="{{ asset('vendor/fonts/docs-fonts.css') }}" />
   <link rel="stylesheet" href="{{ asset('vendor/fontawesome/css/all.min.css') }}" />

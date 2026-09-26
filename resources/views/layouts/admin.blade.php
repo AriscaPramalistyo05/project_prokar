@@ -20,8 +20,9 @@
     <link rel="icon" type="image/png" sizes="32x32" href="{{ file_exists(public_path('icons/favicon-32x32.png')) ? asset('icons/favicon-32x32.png') : $adminFaviconUrl }}" />
     <link rel="icon" type="image/png" sizes="192x192" href="{{ file_exists(public_path('icons/icon-192x192.png')) ? asset('icons/icon-192x192.png') : $adminLogoUrl }}" />
     <link rel="apple-touch-icon" href="{{ file_exists(public_path('icons/apple-touch-icon.png')) ? asset('icons/apple-touch-icon.png') : $adminFaviconUrl }}" />
-    {{-- FontAwesome 6 --}}
+    {{-- FontAwesome 6 & SweetAlert2 --}}
     <link rel="stylesheet" href="{{ asset('vendor/fontawesome/css/all.min.css') }}" />
+    <link rel="stylesheet" href="{{ asset('vendor/sweetalert2/sweetalert2.min.css') }}" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
     <!-- Umami Web Analytics (Self-hosted proxy script) -->
     <script defer src="{{ asset('vendor/umami/script.js') }}" data-website-id="6150499f-eb3e-406f-b3d1-d9834bb6bfc9" data-host-url="https://cloud.umami.is"></script>
@@ -108,7 +109,7 @@
                                 this.enabled = true;
                                 localStorage.setItem('admin_push_notifications_enabled', 'true');
                                 if (window.requestAdminFcmPermission) {
-                                    window.requestAdminFcmPermission().catch(function() {});
+                                    window.requestAdminFcmPermission(true).catch(function() {});
                                 }
                                 if (typeof Swal !== 'undefined') {
                                     Swal.fire({
@@ -160,7 +161,7 @@
                         this.loading = true;
                         try {
                             if (window.requestAdminFcmPermission) {
-                                await window.requestAdminFcmPermission();
+                                await window.requestAdminFcmPermission(true);
                             }
                             this.permission = (typeof Notification !== 'undefined') ? Notification.permission : 'unsupported';
                         } catch (e) {
@@ -361,20 +362,20 @@
     <script src="{{ asset('vendor/firebase/firebase-app-compat.js') }}"></script>
     <script src="{{ asset('vendor/firebase/firebase-messaging-compat.js') }}"></script>
     <script>
-        window.requestAdminFcmPermission = async function() {
+        window.requestAdminFcmPermission = async function(isManual = false) {
             const configEl = document.getElementById('firebase-config');
             if (!configEl) return;
             let config;
             try { config = JSON.parse(configEl.textContent); } catch(e) { return; }
             if (!config || !config.apiKey || !config.projectId || !config.vapidKey) {
-                if (typeof Swal !== 'undefined') {
+                if (isManual && typeof Swal !== 'undefined') {
                     Swal.fire({
                         title: 'Konfigurasi Firebase Belum Lengkap',
                         text: 'Silakan lengkapi Firebase API Key, Project ID, dan VAPID Key di menu Setting Admin terlebih dahulu.',
                         icon: 'info',
                         confirmButtonText: 'Buka Setting',
                         confirmButtonColor: '#0f172a'
-                        }).then((r) => { if (r.isConfirmed) window.location.href = "{{ route('admin.settings', ['tab' => 'fcm-tab']) }}"; });
+                    }).then((r) => { if (r.isConfirmed) window.location.href = "{{ route('admin.settings', ['tab' => 'fcm-tab']) }}"; });
                 }
                 return;
             }
@@ -444,7 +445,15 @@
                 } else if (Notification.permission === 'granted') {
                     const token = localStorage.getItem('prokar_admin_fcm_token');
                     if (!token) {
-                        window.requestAdminFcmPermission && window.requestAdminFcmPermission();
+                        const configEl = document.getElementById('firebase-config');
+                        if (configEl) {
+                            try {
+                                const cfg = JSON.parse(configEl.textContent);
+                                if (cfg && cfg.apiKey && cfg.projectId && cfg.vapidKey) {
+                                    window.requestAdminFcmPermission && window.requestAdminFcmPermission(false);
+                                }
+                            } catch(e) {}
+                        }
                     }
                 }
             }
