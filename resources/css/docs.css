@@ -381,6 +381,17 @@
   color: #cbd5e1;
 }
 
+/* ── Docs Main Layout: sidebar background full-height via container gradient ── */
+/* Mencegah celah putih antara sidebar & main content saat konten di-scroll */
+@media (min-width: 1024px) {
+  #docs-main-layout {
+    background: linear-gradient(to right, #ffffff 280px, transparent 280px);
+  }
+  .dark #docs-main-layout {
+    background: linear-gradient(to right, #0f172a 280px, transparent 280px);
+  }
+}
+
 /* ── Mobile Docs Sidebar Sliding Transitions ── */
 @media (max-width: 1023.98px) {
   #docs-sidebar {
@@ -404,13 +415,16 @@
 
 @media (min-width: 1024px) {
   #docs-sidebar {
-    position: static !important;
+    position: sticky !important;
+    top: 3.5rem !important;
     transform: none !important;
     visibility: visible !important;
     width: 280px !important;
+    min-width: 280px !important;
     height: calc(100vh - 3.5rem) !important;
-    top: 3.5rem !important;
+    overflow-y: auto !important;
     z-index: auto !important;
     box-shadow: none !important;
+    align-self: flex-start !important;
   }
 }

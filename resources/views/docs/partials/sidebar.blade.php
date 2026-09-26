@@ -16,7 +16,7 @@
   }
 @endphp
 
-<div class="h-full flex flex-col bg-white dark:bg-slate-900">
+<div class="h-full flex flex-col bg-white dark:bg-slate-900 lg:bg-transparent dark:lg:bg-transparent">
 
   {{-- Mobile Drawer Header (Visible only on mobile screen) --}}
   <div class="lg:hidden flex items-center justify-between px-4 py-3.5 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/80 shrink-0">
@@ -45,7 +45,7 @@
   </div>
 
   {{-- Desktop Sidebar Header (No badges, no icons, clean text only) --}}
-  <div class="hidden lg:flex items-center px-4 py-3.5 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shrink-0">
+  <div class="hidden lg:flex items-center px-4 py-3.5 border-b border-slate-200 dark:border-slate-800 shrink-0">
     <span class="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
       @if($currentScope === 'teknisi')
         SOP Teknisi

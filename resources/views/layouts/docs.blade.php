@@ -141,7 +141,12 @@
   </header>
 
   {{-- Main Layout Container --}}
-  <div class="flex pt-14 min-h-screen max-w-[1500px] mx-auto relative">
+  {{-- Sidebar background digambar via inline style gradient agar full-height tanpa celah --}}
+  <div id="docs-main-layout"
+       class="flex pt-14 min-h-screen max-w-[1500px] mx-auto relative">
+
+    {{-- Fake sidebar border (full-height via container, tidak putus) --}}
+    <div class="hidden lg:block absolute top-0 bottom-0 left-[280px] w-px bg-slate-200 dark:bg-slate-800 pointer-events-none z-10"></div>
 
     {{-- Mobile Sidebar Drawer Overlay (Clicking closes drawer) --}}
     <div x-show="sidebarOpen"
@@ -158,9 +163,10 @@
          style="display:none;"></div>
 
     {{-- Left Sidebar (Mobile Drawer & Desktop Sticky) --}}
+    {{-- bg di desktop dihandle container gradient, bukan aside langsung --}}
     <aside id="docs-sidebar"
            :class="{ 'is-open': sidebarOpen }"
-           class="bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 shadow-2xl lg:shadow-none scrollbar-thin">
+           class="bg-white dark:bg-slate-900 lg:bg-transparent dark:lg:bg-transparent border-r border-slate-200 dark:border-slate-800 lg:border-r-0 shadow-2xl lg:shadow-none scrollbar-thin lg:shrink-0">
       @include('docs.partials.sidebar')
     </aside>
 
