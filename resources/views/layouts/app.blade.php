@@ -1310,28 +1310,8 @@
     })();
   </script>
 
-  <!-- Umami Web Analytics (Offloaded to idle execution to prevent chaining into critical path) -->
-  <script>
-    (function() {
-      function loadUmami() {
-        if (document.getElementById('umami-analytics-script')) return;
-        var s = document.createElement('script');
-        s.id = 'umami-analytics-script';
-        s.async = true;
-        s.src = "{{ asset('vendor/umami/script.js') }}";
-        s.setAttribute('data-website-id', '6150499f-eb3e-406f-b3d1-d9834bb6bfc9');
-        s.setAttribute('data-host-url', 'https://cloud.umami.is');
-        document.body.appendChild(s);
-      }
-      if ('requestIdleCallback' in window) {
-        requestIdleCallback(loadUmami, { timeout: 2500 });
-      } else {
-        window.addEventListener('load', function() {
-          setTimeout(loadUmami, 1200);
-        });
-      }
-    })();
-  </script>
+  <!-- Umami Web Analytics (Placed at bottom of body with defer to avoid critical path blocking) -->
+  <script defer src="{{ asset('vendor/umami/script.js') }}" data-website-id="6150499f-eb3e-406f-b3d1-d9834bb6bfc9" data-host-url="https://cloud.umami.is"></script>
 
   <!-- PWA Service Worker Registration -->
   <script>
