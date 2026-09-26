@@ -83,6 +83,9 @@ class AppServiceProvider extends ServiceProvider
             app(\App\Services\CartService::class)->syncSessionToDatabase();
         });
 
+        // Dynamically configure SMTP from database settings if present
+        $this->configureMailFromSettings();
+
         // Custom branded email notification for Password Reset
         \Illuminate\Auth\Notifications\ResetPassword::toMailUsing(function (object $notifiable, string $token) {
             $resetUrl = url(route('password.reset', [
@@ -90,9 +93,19 @@ class AppServiceProvider extends ServiceProvider
                 'email' => $notifiable->getEmailForPasswordReset(),
             ], false));
 
+            $fromAddress = config('mail.from.address', 'support@prokarelektronik.com');
+            $fromName = config('mail.from.name', 'Prokar Elektronik');
+
             return (new \Illuminate\Notifications\Messages\MailMessage)
-                ->subject('Atur Ulang Kata Sandi Akun Prokar Elektronik')
+                ->from($fromAddress, $fromName)
+                ->replyTo($fromAddress, $fromName)
+                ->subject('Atur Ulang Kata Sandi — ' . $fromName)
                 ->view('emails.reset-password', [
+                    'user' => $notifiable,
+                    'url' => $resetUrl,
+                    'token' => $token,
+                ])
+                ->text('emails.reset-password-text', [
                     'user' => $notifiable,
                     'url' => $resetUrl,
                     'token' => $token,
@@ -115,5 +128,41 @@ class AppServiceProvider extends ServiceProvider
         \Illuminate\Support\Facades\Gate::define('deleteLogFolder', function (?\App\Models\User $user) {
             return $user && $user->hasRole('super_admin');
         });
+    }
+
+    /**
+     * Dynamically configure SMTP credentials and From identity from settings
+     */
+    protected function configureMailFromSettings(): void
+    {
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('settings')) {
+                $host = setting('mail_host');
+                if (!empty($host)) {
+                    $username = setting('mail_username');
+                    $fromAddress = setting('mail_from_address');
+                    if (empty($fromAddress)) {
+                        $fromAddress = $username ?: config('mail.from.address', 'support@prokarelektronik.com');
+                    }
+                    $fromName = setting('mail_from_name');
+                    if (empty($fromName)) {
+                        $fromName = setting('shop_name', 'Prokar Elektronik');
+                    }
+
+                    config([
+                        'mail.default' => 'smtp',
+                        'mail.mailers.smtp.host' => $host,
+                        'mail.mailers.smtp.port' => (int) setting('mail_port', 587),
+                        'mail.mailers.smtp.encryption' => setting('mail_encryption', 'tls'),
+                        'mail.mailers.smtp.username' => $username,
+                        'mail.mailers.smtp.password' => setting('mail_password'),
+                        'mail.from.address' => $fromAddress,
+                        'mail.from.name' => $fromName,
+                    ]);
+                }
+            }
+        } catch (\Throwable $e) {
+            // Silently fall back to environment during migrations/seeding
+        }
     }
 }

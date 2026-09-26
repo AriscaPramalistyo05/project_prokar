@@ -29,7 +29,12 @@ class OrderConfirmationMail extends Mailable
     public function envelope(): Envelope
     {
         $isPaid = in_array($this->order->payment_status, ['paid', 'dp_paid', 'settlement', 'capture', 'success']);
+        $fromAddress = config('mail.from.address', 'support@prokarelektronik.com');
+        $fromName = config('mail.from.name', 'Prokar Elektronik');
+
         return new Envelope(
+            from: new \Illuminate\Mail\Mailables\Address($fromAddress, $fromName),
+            replyTo: [new \Illuminate\Mail\Mailables\Address($fromAddress, $fromName)],
             subject: ($isPaid ? 'Konfirmasi Pembayaran Pesanan - ' : 'Konfirmasi Pesanan - ') . $this->order->order_code,
         );
     }

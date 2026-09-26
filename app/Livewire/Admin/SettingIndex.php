@@ -738,9 +738,37 @@ class SettingIndex extends Component
         $targetEmail = auth()->user()->email ?? $this->shop_email;
 
         try {
-            Mail::raw('Ini adalah email pengujian (Test Email) dari Pengaturan Sistem Prokar Elektronik. Koneksi SMTP Anda berhasil terhubung dengan sempurna!', function ($message) use ($targetEmail) {
+            $host = !empty($this->mail_host) ? $this->mail_host : setting('mail_host');
+            if (empty($host)) {
+                $this->error('SMTP Host belum diisi!');
+                return;
+            }
+
+            $port = !empty($this->mail_port) ? (int)$this->mail_port : (int)setting('mail_port', 587);
+            $username = !empty($this->mail_username) ? $this->mail_username : setting('mail_username');
+            $password = !empty($this->mail_password) ? $this->mail_password : setting('mail_password');
+            $encryption = !empty($this->mail_encryption) ? $this->mail_encryption : setting('mail_encryption', 'tls');
+            $fromAddress = !empty($this->mail_from_address) ? $this->mail_from_address : ($username ?: setting('mail_from_address', config('mail.from.address')));
+            $fromName = !empty($this->mail_from_name) ? $this->mail_from_name : setting('mail_from_name', setting('shop_name', 'Prokar Elektronik'));
+
+            config([
+                'mail.default' => 'smtp',
+                'mail.mailers.smtp.host' => $host,
+                'mail.mailers.smtp.port' => $port,
+                'mail.mailers.smtp.encryption' => $encryption,
+                'mail.mailers.smtp.username' => $username,
+                'mail.mailers.smtp.password' => $password,
+                'mail.from.address' => $fromAddress,
+                'mail.from.name' => $fromName,
+            ]);
+
+            \Illuminate\Support\Facades\Mail::purge('smtp');
+
+            Mail::raw("Halo,\n\nIni adalah email pengujian (Test Email) dari Pengaturan Sistem Prokar Elektronik.\nKoneksi SMTP Anda berhasil terhubung dan siap digunakan.", function ($message) use ($targetEmail, $fromAddress, $fromName) {
                 $message->to($targetEmail)
-                    ->subject('Test Koneksi SMTP — Prokar Elektronik');
+                    ->from($fromAddress, $fromName)
+                    ->replyTo($fromAddress, $fromName)
+                    ->subject('Test Koneksi SMTP — ' . $fromName);
             });
 
             $this->success("Email uji coba berhasil dikirim ke {$targetEmail}!");
