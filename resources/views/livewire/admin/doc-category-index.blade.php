@@ -144,7 +144,7 @@
                             {{-- Actions --}}
                             <td class="text-right">
                                 <div class="flex items-center justify-end gap-1">
-                                    <a href="{{ route('docs.category', $category->slug) }}"
+                                    <a href="{{ $category->url }}"
                                        target="_blank"
                                        class="btn btn-ghost btn-xs text-neutral-500 hover:text-primary"
                                        title="Lihat kategori publik">

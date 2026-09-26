@@ -226,6 +226,13 @@ class MaintenanceController extends Controller
         }
 
         try {
+            Artisan::call('migrate', ['--force' => true]);
+            $logs[] = 'migrate success: ' . trim(Artisan::output());
+        } catch (\Throwable $e) {
+            $logs[] = 'migrate error: ' . $e->getMessage();
+        }
+
+        try {
             Artisan::call('config:cache');
             $logs[] = 'config:cache success';
         } catch (\Throwable $e) {

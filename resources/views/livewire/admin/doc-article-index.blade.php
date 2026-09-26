@@ -13,7 +13,7 @@
                 </p>
             </div>
             <div class="flex flex-wrap items-center gap-2">
-                <a href="{{ route('docs.index') }}" target="_blank" class="btn btn-sm btn-ghost gap-2 border border-base-300">
+                <a href="{{ (!app()->isLocal() && !str_contains(request()->getHost(), 'localhost') && !str_contains(request()->getHost(), '127.0.0.1')) ? (request()->isSecure() ? 'https://' : 'http://') . env('DOCS_DOMAIN', 'docs.prokarelektronik.com') : route('docs.index') }}" target="_blank" class="btn btn-sm btn-ghost gap-2 border border-base-300">
                     <x-icon name="o-arrow-top-right-on-square" class="w-4 h-4" />
                     <span>Lihat Halaman Docs</span>
                 </a>
@@ -128,7 +128,7 @@
                             <td class="text-right">
                                 <div class="flex items-center justify-end gap-1">
                                     @if($article->category)
-                                        <a href="{{ route('docs.show', $article->slug) }}"
+                                        <a href="{{ $article->url }}"
                                            target="_blank"
                                            class="btn btn-ghost btn-xs text-neutral-500 hover:text-primary"
                                            title="Lihat di halaman docs">

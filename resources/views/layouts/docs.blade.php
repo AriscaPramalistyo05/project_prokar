@@ -79,7 +79,7 @@
           </svg>
         </button>
 
-        <a href="{{ route('docs.index') }}" class="flex items-center gap-2.5">
+        <a href="{{ request()->getHost() === env('DOCS_DOMAIN', 'docs.prokarelektronik.com') ? url('/') : url('/docs') }}" class="flex items-center gap-2.5">
           <img src="{{ $shopLogo }}" alt="{{ $shopName }}" style="height: 26px; max-height: 26px; width: auto; object-fit: contain;" class="h-6 w-auto dark:brightness-0 dark:invert transition-all" onerror="this.onerror=null; this.src='{{ asset('images/logo prokar simpel.png') }}';" />
           <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 border-l border-slate-200 dark:border-slate-800 pl-2.5 hidden sm:inline">Dokumentasi</span>
         </a>
@@ -181,7 +181,7 @@
         <div class="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
           <p>&copy; {{ date('Y') }} {{ $shopName }}. Seluruh hak cipta dilindungi.</p>
           <div class="flex items-center gap-4">
-            <a href="{{ route('docs.index') }}" class="hover:text-slate-900 dark:hover:text-white transition-colors">Dokumentasi</a>
+            <a href="{{ request()->getHost() === env('DOCS_DOMAIN', 'docs.prokarelektronik.com') ? url('/') : url('/docs') }}" class="hover:text-slate-900 dark:hover:text-white transition-colors">Dokumentasi</a>
             <span>&middot;</span>
             <a href="{{ route('home') }}" class="hover:text-slate-900 dark:hover:text-white transition-colors">Website Utama</a>
           </div>

@@ -65,10 +65,8 @@ class SettingIndex extends Component
     public ?string $existing_hero_3card_image_3 = null;
     public string $hero_3card_title_3 = '';
 
-    // Running Text & Brand Partners
+    // Running Text
     public string $marquee_text_black = '';
-    public string $marquee_text_blue = '';
-    public string $brand_partners = '';
 
     // 3 Service Card Images
     public $service_image_tv_file = null;
@@ -187,8 +185,6 @@ class SettingIndex extends Component
         $this->hero_3card_title_3 = (string) ($settingService->get('hero_3card_title_3') ?? 'Mesin Cuci');
 
         $this->marquee_text_black = (string) ($settingService->get('marquee_text_black') ?? 'PRODUK BERGARANSI ★ KUALITAS TERUJI ★ TEKNISI BERPENGALAMAN ★ BISA COD ★');
-        $this->marquee_text_blue = (string) ($settingService->get('marquee_text_blue') ?? 'tersedia berbagai produk elektronik rumah tangga • harga ramah barang berkualitas');
-        $this->brand_partners = (string) ($settingService->get('brand_partners') ?? 'SHARP, POLYTRON, LG, AQUA, SAMSUNG, Panasonic, TOSHIBA, Hisense');
 
         // 3 Service Card Images
         $this->existing_service_image_tv = $settingService->get('service_image_tv');
@@ -659,8 +655,6 @@ class SettingIndex extends Component
         $settingService->set('hero_3card_title_2', $this->hero_3card_title_2, 'homepage', 'text', 'Judul Hero 3-Card 2');
         $settingService->set('hero_3card_title_3', $this->hero_3card_title_3, 'homepage', 'text', 'Judul Hero 3-Card 3');
         $settingService->set('marquee_text_black', $this->marquee_text_black, 'homepage', 'text', 'Marquee Hitam');
-        $settingService->set('marquee_text_blue', $this->marquee_text_blue, 'homepage', 'text', 'Marquee Biru');
-        $settingService->set('brand_partners', $this->brand_partners, 'homepage', 'text', 'Brand Partner');
         $settingService->set('service_other_title', $this->service_other_title, 'homepage', 'text', 'Judul Layanan Lainnya');
         $settingService->set('service_other_desc', $this->service_other_desc, 'homepage', 'textarea', 'Deskripsi Layanan Lainnya');
         $settingService->set('testimonials', json_encode(array_values($this->testimonials)), 'homepage', 'json', 'Testimoni Pelanggan');

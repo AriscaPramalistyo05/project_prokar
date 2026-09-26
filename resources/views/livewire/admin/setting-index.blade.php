@@ -437,21 +437,19 @@
                     </div>
                 </div>
 
-                {{-- 2. Marquee & Partners --}}
+                {{-- 2. Marquee --}}
                 <div>
                     <div class="flex items-center gap-2 pb-3 mb-5 border-b border-gray-100">
                         <span class="w-8 h-8 rounded-lg bg-gray-100 text-gray-900 flex items-center justify-center text-sm font-bold">2</span>
                         <div>
-                            <h3 class="text-base font-bold text-gray-900">Running Text (Marquee) & Brand Partner</h3>
-                            <p class="text-xs text-gray-500">Teks berjalan neobrutalist dan daftar logo/merek elektronik.</p>
+                            <h3 class="text-base font-bold text-gray-900">Running Text (Marquee)</h3>
+                            <p class="text-xs text-gray-500">Teks berjalan neobrutalist pita banner pengumuman atas.</p>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
-                        <x-input label="Marquee Hitam (Pita Banner 1)" wire:model="marquee_text_black" class="bg-gray-50 border-gray-200 focus:bg-white" />
-                        <x-input label="Marquee Biru / Ticker (Pita Banner 2)" wire:model="marquee_text_blue" class="bg-gray-50 border-gray-200 focus:bg-white" />
+                    <div class="mb-4">
+                        <x-input label="Marquee Hitam (Pita Banner)" wire:model="marquee_text_black" class="bg-gray-50 border-gray-200 focus:bg-white" />
                     </div>
-                    <x-input label="Daftar Brand Partner (Pisahkan dengan koma)" wire:model="brand_partners" hint="Contoh: SHARP, POLYTRON, LG, AQUA, SAMSUNG, Panasonic, TOSHIBA, Hisense" class="bg-gray-50 border-gray-200 focus:bg-white" />
                 </div>
 
                 {{-- 3. Layanan Servis Home (3 Gambar Servis + Layanan Lainnya) --}}

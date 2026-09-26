@@ -24,7 +24,7 @@
   <div class="max-w-[1440px] mx-auto flex flex-col sm:flex-row justify-between items-center text-gray-500 font-inter text-xs sm:text-sm gap-4">
     <p>&copy; <span>{{ date('Y') }}</span> Copyright by Prokar Elektronik</p>
     <div class="flex items-center gap-6">
-      <a href="{{route('docs.index') }}" class="hover:text-brand-yellow transition-colors underline">Dokumentasi</a>
+      <a href="{{ (!app()->isLocal() && !str_contains(request()->getHost(), 'localhost') && !str_contains(request()->getHost(), '127.0.0.1')) ? (request()->isSecure() ? 'https://' : 'http://') . env('DOCS_DOMAIN', 'docs.prokarelektronik.com') : route('docs.index') }}" class="hover:text-brand-yellow transition-colors underline">Dokumentasi</a>
       <a href="{{ route('terms') }}" class="hover:text-brand-yellow transition-colors underline">Syarat &amp; Ketentuan</a>
       <a href="{{ route('privacy') }}" class="hover:text-brand-yellow transition-colors underline">Kebijakan Privasi</a>
       <p>Made by <a href="https://github.com/AriscaPramalistyo05" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors">Lar's</a></p>

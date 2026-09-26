@@ -148,6 +148,12 @@ class DocArticle extends Model
             return url('/' . $this->slug);
         }
 
+        // Jika di production dan diakses dari luar subdomain (misal dari panel admin), arahkan ke subdomain
+        if (!app()->isLocal() && !str_contains(request()->getHost(), 'localhost') && !str_contains(request()->getHost(), '127.0.0.1')) {
+            $scheme = request()->isSecure() ? 'https://' : 'http://';
+            return $scheme . $docsSubdomain . '/' . $this->slug;
+        }
+
         return url('/docs/' . $this->slug);
     }
 

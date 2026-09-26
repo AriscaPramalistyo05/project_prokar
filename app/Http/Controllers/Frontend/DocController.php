@@ -10,10 +10,38 @@ use Illuminate\Http\Request;
 class DocController extends Controller
 {
     /**
+     * Check if request should be 301 redirected to docs subdomain in production.
+     */
+    protected function shouldRedirectToSubdomain(Request $request, string $path = ''): ?\Illuminate\Http\RedirectResponse
+    {
+        $docsSubdomain = env('DOCS_DOMAIN', 'docs.prokarelektronik.com');
+        $isSubdomain = $request->getHost() === $docsSubdomain;
+        $isLocal = app()->isLocal()
+            || str_contains($request->getHost(), 'localhost')
+            || str_contains($request->getHost(), '127.0.0.1')
+            || str_contains($request->getHost(), '192.168.');
+
+        if (!$isSubdomain && !$isLocal) {
+            $scheme = $request->isSecure() ? 'https://' : 'http://';
+            $targetUrl = rtrim($scheme . $docsSubdomain . '/' . ltrim($path, '/'), '/');
+            if (empty($path)) {
+                $targetUrl .= '/';
+            }
+            return redirect()->to($targetUrl, 301);
+        }
+
+        return null;
+    }
+
+    /**
      * Docs landing page — list all accessible categories and scenario cards.
      */
     public function index(Request $request)
     {
+        if ($redirect = $this->shouldRedirectToSubdomain($request, '')) {
+            return $redirect;
+        }
+
         $user = $request->user();
 
         // Customer landing page strictly shows public categories only
@@ -34,6 +62,10 @@ class DocController extends Controller
      */
     public function resolve(Request $request, string $slug)
     {
+        if ($redirect = $this->shouldRedirectToSubdomain($request, $slug)) {
+            return $redirect;
+        }
+
         // 1. Try to find published article
         $article = DocArticle::where('slug', $slug)
             ->published()
@@ -114,8 +146,13 @@ class DocController extends Controller
         $allCategories = $this->getCategoriesByScope($currentScope, $user);
 
         // Clean breadcrumb structure
+        $isSubdomain = $request->getHost() === env('DOCS_DOMAIN', 'docs.prokarelektronik.com');
         $rootLabel = $currentScope === 'teknisi' ? 'SOP Teknisi' : ($currentScope === 'super_admin' ? 'Panduan Admin' : 'Dokumentasi');
-        $rootUrl = $currentScope === 'teknisi' ? url('/docs/teknisi') : ($currentScope === 'super_admin' ? url('/docs/admin') : route('docs.index'));
+        $rootUrl = $currentScope === 'teknisi'
+            ? ($isSubdomain ? url('/teknisi') : url('/docs/teknisi'))
+            : ($currentScope === 'super_admin'
+                ? ($isSubdomain ? url('/admin') : url('/docs/admin'))
+                : ($isSubdomain ? url('/') : url('/docs')));
 
         $breadcrumbs = [
             ['label' => $rootLabel, 'url' => $rootUrl],

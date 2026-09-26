@@ -30,9 +30,11 @@
         @endif
     </button>
 
-    {{-- Dropdown Pop-up Panel (Terkontrol aman via showDropdown, bebas dari benturan window.open) --}}
+    {{-- Dropdown Pop-up Panel (Aman dari kebocoran rendering dengan display:none bawaan & wire:ignore.self) --}}
     <div x-show="showDropdown" 
          x-cloak
+         wire:ignore.self
+         style="display: none;"
          x-transition:enter="transition ease-out duration-200"
          x-transition:enter-start="opacity-0 translate-y-2 scale-95"
          x-transition:enter-end="opacity-100 translate-y-0 scale-100"
@@ -53,13 +55,22 @@
                 @endif
             </div>
 
-            @if($unreadCount > 0)
+            <div class="flex items-center gap-3">
+                @if($unreadCount > 0)
+                    <button type="button" 
+                            wire:click="markAllAsRead" 
+                            class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 transition-colors cursor-pointer">
+                        Tandai dibaca
+                    </button>
+                @endif
                 <button type="button" 
-                        wire:click="markAllAsRead" 
-                        class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 transition-colors cursor-pointer">
-                    Tandai semua dibaca
+                        @click="showDropdown = false" 
+                        class="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:hover:bg-base-200 dark:hover:text-slate-200 transition-colors cursor-pointer"
+                        title="Tutup Notifikasi"
+                        aria-label="Tutup Notifikasi">
+                    <i class="fa-solid fa-xmark text-sm"></i>
                 </button>
-            @endif
+            </div>
         </div>
 
         {{-- Filter Tabs (Semua, Order, Servis, Jual) --}}

@@ -122,7 +122,7 @@
                     <div class="font-bold text-sm sm:text-base lg:hidden tracking-tight text-zinc-900 whitespace-nowrap">PROKAR ADMIN</div>
                 </x-slot:brand>
                 <x-slot:actions class="flex items-center gap-1.5 sm:gap-3">
-                    {{-- Compact Push Notification Toggle Switch --}}
+                    {{-- Compact Push Notification Toggle Switch (Shadow-based, no border) --}}
                     <div x-data="{
                         enabled: (typeof Notification !== 'undefined' && Notification.permission === 'granted' && localStorage.getItem('admin_push_notifications_enabled') !== 'false'),
                         loading: false,
@@ -135,14 +135,19 @@
                             }
                         },
                         async toggle() {
+                            if (this.loading) return;
+
                             if (typeof Notification === 'undefined') {
+                                const msg = 'Browser Anda tidak mendukung push notifikasi.';
                                 if (typeof Swal !== 'undefined') {
-                                    Swal.fire({ title: 'Tidak Didukung', text: 'Browser Anda tidak mendukung push notifikasi.', icon: 'warning' });
+                                    Swal.fire({ title: 'Tidak Didukung', text: msg, icon: 'warning' });
+                                } else {
+                                    alert(msg);
                                 }
                                 return;
                             }
 
-                            // Jika sedang ON -> Matikan
+                            // Jika sedang ON -> Matikan secara instan
                             if (this.enabled) {
                                 this.enabled = false;
                                 localStorage.setItem('admin_push_notifications_enabled', 'false');
@@ -160,12 +165,15 @@
 
                             // Jika sedang OFF -> Coba Hidupkan
                             if (Notification.permission === 'denied') {
+                                const msg = 'Izin notifikasi diblokir di peramban. Klik ikon gembok / setelan situs di sebelah address bar untuk mengizinkan.';
                                 if (typeof Swal !== 'undefined') {
                                     Swal.fire({
                                         title: 'Izin Notifikasi Diblokir',
-                                        text: 'Notifikasi diblokir di peramban. Klik ikon gembok / setelan situs di sebelah address bar untuk mengizinkan.',
+                                        text: msg,
                                         icon: 'warning'
                                     });
+                                } else {
+                                    alert(msg);
                                 }
                                 return;
                             }
@@ -200,21 +208,22 @@
                         }
                     }"
                     @fcm-permission-updated.window="enabled = (typeof Notification !== 'undefined' && Notification.permission === 'granted' && localStorage.getItem('admin_push_notifications_enabled') !== 'false')"
-                    class="flex items-center">
+                    class="relative z-20 flex items-center">
                         <button type="button"
                                 @click="toggle()"
                                 :disabled="loading"
                                 :title="enabled ? 'Push notifikasi aktif — klik untuk menonaktifkan' : 'Aktifkan push notifikasi browser'"
-                                class="group/toggle inline-flex items-center p-1 rounded-full hover:bg-slate-100 dark:hover:bg-base-200 transition-colors cursor-pointer select-none"
+                                class="group/toggle inline-flex items-center p-1 rounded-full hover:bg-slate-100 dark:hover:bg-base-200 transition-colors cursor-pointer select-none border-0 outline-none focus:outline-none"
                                 aria-label="Toggle Push Notifikasi">
-                            {{-- Toggle switch: slate-600 default agar kontras di navbar putih, shadow & warna cerah saat hover --}}
-                            <span class="relative inline-flex h-6 w-11 shrink-0 rounded-full transition-all duration-200 ease-in-out group-hover/toggle:shadow-md"
+                            {{-- Toggle track: Menggunakan shadow-inner / shadow-md murni tanpa border --}}
+                            <span class="relative inline-flex h-6 w-11 shrink-0 rounded-full border-0 outline-none transition-all duration-200 ease-in-out"
                                   :class="{
-                                      'bg-emerald-500 group-hover/toggle:bg-emerald-400 group-hover/toggle:shadow-emerald-500/40': enabled,
-                                      'bg-slate-600 group-hover/toggle:bg-slate-500 group-hover/toggle:shadow-slate-500/30': !enabled,
+                                      'bg-emerald-500 shadow-md shadow-emerald-500/30': enabled,
+                                      'bg-slate-200 dark:bg-base-300 shadow-inner': !enabled,
                                       'opacity-50 cursor-not-allowed': loading
                                   }">
-                                <span class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md transition duration-200 ease-in-out"
+                                {{-- Bulatan toggle putih dengan bayangan melayang (shadow-md) murni tanpa border --}}
+                                <span class="pointer-events-none inline-block h-5 w-5 my-0.5 transform rounded-full bg-white shadow-md border-0 ring-0 transition duration-200 ease-in-out"
                                       :class="enabled ? 'translate-x-5' : 'translate-x-0.5'"></span>
                             </span>
                         </button>
