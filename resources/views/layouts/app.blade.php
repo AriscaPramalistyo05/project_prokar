@@ -1015,10 +1015,10 @@
   <!-- Sticky Overlapping Sections (Cuberto Elevated Card Stacking) Engine -->
   <script>
     function initStickyOverlap() {
-      if (window.innerWidth < 1024) return;
       const sections = document.querySelectorAll('.section-overlap');
       if (!sections.length) return;
       const vh = window.innerHeight;
+      const isMobile = window.innerWidth < 1024;
 
       // 1. Batch read DOM metrics without layout mutation to eliminate forced reflow
       const plan = [];
@@ -1026,7 +1026,7 @@
         const el = sections[i];
         const isFirst = el.classList.contains('section-overlap-first');
         let topVal = '0px';
-        if (!isFirst) {
+        if (!isFirst || isMobile) {
           const h = el.offsetHeight;
           if (h > vh) {
             topVal = (vh - h) + 'px';
@@ -1310,8 +1310,31 @@
     })();
   </script>
 
-  <!-- Umami Web Analytics (Placed at bottom of body with defer to avoid critical path blocking) -->
-  <script defer src="{{ asset('vendor/umami/script.js') }}" data-website-id="6150499f-eb3e-406f-b3d1-d9834bb6bfc9" data-host-url="https://cloud.umami.is"></script>
+  <!-- Umami Web Analytics (Offloaded to idle execution to prevent chaining into critical path) -->
+  <script type="text/plain" id="umami-analytics-loader" data-website-id="6150499f-eb3e-406f-b3d1-d9834bb6bfc9" data-host-url="https://cloud.umami.is" data-src="{{ asset('vendor/umami/script.js') }}"></script>
+  <script>
+    (function() {
+      function loadUmami() {
+        if (document.getElementById('umami-analytics-script')) return;
+        var meta = document.getElementById('umami-analytics-loader');
+        if (!meta) return;
+        var s = document.createElement('script');
+        s.id = 'umami-analytics-script';
+        s.async = true;
+        s.src = meta.getAttribute('data-src');
+        s.setAttribute('data-website-id', meta.getAttribute('data-website-id'));
+        s.setAttribute('data-host-url', meta.getAttribute('data-host-url'));
+        document.body.appendChild(s);
+      }
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(loadUmami, { timeout: 3000 });
+      } else {
+        window.addEventListener('load', function() {
+          setTimeout(loadUmami, 1500);
+        });
+      }
+    })();
+  </script>
 
   <!-- PWA Service Worker Registration -->
   <script>
