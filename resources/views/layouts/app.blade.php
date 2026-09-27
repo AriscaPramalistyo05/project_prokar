@@ -489,6 +489,18 @@
       box-shadow: none !important;
       margin-top: 0 !important;
     }
+    @media (max-width: 1023px) {
+      .section-overlap {
+        position: relative !important;
+        top: auto !important;
+        will-change: auto !important;
+      }
+      .section-overlap-first,
+      .section-overlap.no-overlap {
+        position: relative !important;
+        top: auto !important;
+      }
+    }
 
     /* ── Text Animation Classes ── */
     .reveal-wrapper {
@@ -1015,10 +1027,10 @@
   <!-- Sticky Overlapping Sections (Cuberto Elevated Card Stacking) Engine -->
   <script>
     function initStickyOverlap() {
+      if (window.innerWidth < 1024) return;
       const sections = document.querySelectorAll('.section-overlap');
       if (!sections.length) return;
       const vh = window.innerHeight;
-      const isMobile = window.innerWidth < 1024;
 
       // 1. Batch read DOM metrics without layout mutation to eliminate forced reflow
       const plan = [];
@@ -1026,7 +1038,7 @@
         const el = sections[i];
         const isFirst = el.classList.contains('section-overlap-first');
         let topVal = '0px';
-        if (!isFirst || isMobile) {
+        if (!isFirst) {
           const h = el.offsetHeight;
           if (h > vh) {
             topVal = (vh - h) + 'px';
@@ -1373,7 +1385,9 @@
     }
   </script>
 
-  @livewireScripts
+  @if(!request()->routeIs('home'))
+    @livewireScripts
+  @endif
 </body>
 
 </html>

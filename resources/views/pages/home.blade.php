@@ -82,7 +82,7 @@
                                 height="520"
                                 loading="lazy"
                                 decoding="async"
-                                onerror="this.src='https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=360&q=70&fm=webp'" />
+                                onerror="this.src='https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=280&q=55&fm=webp'" />
                         </a>
 
                         <!-- Card 3: Bottom-Left (Mesin Cuci - Card 1 Setting) -->
@@ -94,7 +94,7 @@
                                 height="480"
                                 loading="lazy"
                                 decoding="async"
-                                onerror="this.src='https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=360&h=270&fit=crop&fm=webp&q=70'" />
+                                onerror="this.src='https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=280&h=210&fit=crop&fm=webp&q=55'" />
                         </a>
                     </div>
                 </div>
