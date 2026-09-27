@@ -4,87 +4,12 @@
         '{{ $district_id ?? '' }}',
         '{{ $village_id ?? '' }}',
         '{{ $postal_code ?? '' }}',
-        '{{ addslashes($address_detail ?? '') }}'
+        '{{ addslashes($address_detail ?? '') }}',
+        {{ json_encode($provincesList ?? []) }}
     )"
      x-init="init()"
      class="space-y-4">
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <!-- Provinsi -->
-        <div>
-            <label class="{{ $labelClass }}">Provinsi <span class="text-red-500">*</span></label>
-            <div class="relative">
-                <select x-model="province" @change="onProvinceChange()" class="{{ $inputClass }} appearance-none bg-transparent cursor-pointer">
-                    <option value="">-- Pilih Provinsi --</option>
-                    <template x-for="p in provinces" :key="p.id">
-                        <option :value="p.id" x-text="p.name" :selected="p.id == province"></option>
-                    </template>
-                </select>
-                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
-                </div>
-            </div>
-        </div>
 
-        <!-- Kabupaten/Kota -->
-        <div>
-            <label class="{{ $labelClass }}">Kabupaten/Kota <span class="text-red-500">*</span></label>
-            <div class="relative">
-                <select x-model="regency" @change="onRegencyChange()" :disabled="!province" class="{{ $inputClass }} appearance-none bg-transparent disabled:opacity-50 cursor-pointer">
-                    <option value="">-- Pilih Kab/Kota --</option>
-                    <template x-for="r in regencies" :key="r.id">
-                        <option :value="r.id" x-text="r.name" :selected="r.id == regency"></option>
-                    </template>
-                </select>
-                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
-                </div>
-            </div>
-        </div>
-
-        <!-- Kecamatan -->
-        <div>
-            <label class="{{ $labelClass }}">Kecamatan <span class="text-red-500">*</span></label>
-            <div class="relative">
-                <select x-model="district" @change="onDistrictChange()" :disabled="!regency" class="{{ $inputClass }} appearance-none bg-transparent disabled:opacity-50 cursor-pointer">
-                    <option value="">-- Pilih Kecamatan --</option>
-                    <template x-for="d in districts" :key="d.id">
-                        <option :value="d.id" x-text="d.name" :selected="d.id == district"></option>
-                    </template>
-                </select>
-                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
-                </div>
-            </div>
-        </div>
-
-        <!-- Desa/Kelurahan -->
-        <div>
-            <label class="{{ $labelClass }}">Desa/Kelurahan <span class="text-red-500">*</span></label>
-            <div class="relative">
-                <select x-model="village" @change="syncToParent()" :disabled="!district" class="{{ $inputClass }} appearance-none bg-transparent disabled:opacity-50 cursor-pointer">
-                    <option value="">-- Pilih Desa/Kelurahan --</option>
-                    <template x-for="v in villages" :key="v.id">
-                        <option :value="v.id" x-text="v.name" :selected="v.id == village"></option>
-                    </template>
-                </select>
-                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-        <div class="sm:col-span-1">
-            <label class="{{ $labelClass }}">Kode Pos <span class="text-red-500">*</span></label>
-            <input type="text" x-model="postal_code" @input.debounce.300ms="syncToParent()" class="{{ $inputClass }}" placeholder="Masukkan Kode Pos">
-        </div>
-        <div class="sm:col-span-2">
-            <label class="{{ $labelClass }}">Detail Alamat (Jalan, RT/RW, Patokan) <span class="text-red-500">*</span></label>
-            <textarea x-model="address_detail" @input.debounce.300ms="syncToParent()" rows="3" class="{{ $inputClass }}" placeholder="Contoh: Jl. Diponegoro No.10, RT 01/RW 02, Samping Masjid"></textarea>
-        </div>
-    </div>
-    
     <script>
         (function() {
             window.emsifaCache = window.emsifaCache || {};
@@ -92,7 +17,7 @@
             if (typeof window.addressPickerDataFn === 'undefined') {
                 window.addressPickerDataFn = true;
 
-                window.addressPickerData = function(initProvince, initRegency, initDistrict, initVillage, initPostal, initDetail) {
+                window.addressPickerData = function(initProvince, initRegency, initDistrict, initVillage, initPostal, initDetail, preloadedProvinces) {
                     return {
                         province: initProvince || '',
                         regency: initRegency || '',
@@ -101,13 +26,21 @@
                         postal_code: initPostal || '',
                         address_detail: initDetail || '',
 
-                        provinces: [],
+                        provinces: (Array.isArray(preloadedProvinces) && preloadedProvinces.length > 0) ? preloadedProvinces : (window.emsifaCache['provinces'] || []),
                         regencies: [],
                         districts: [],
                         villages: [],
 
+                        loadingRegencies: false,
+                        loadingDistricts: false,
+                        loadingVillages: false,
+
                         async init() {
-                            await this.fetchProvinces();
+                            if (this.provinces && this.provinces.length > 0) {
+                                window.emsifaCache['provinces'] = this.provinces;
+                            } else {
+                                await this.fetchProvinces();
+                            }
                             if (this.province) await this.fetchRegenciesLoad();
                             if (this.regency) await this.fetchDistrictsLoad();
                             if (this.district) await this.fetchVillagesLoad();
@@ -171,10 +104,12 @@
                         async fetchRegencies() {
                             const key = `regencies_${this.province}`;
                             if (window.emsifaCache[key]) { this.regencies = window.emsifaCache[key]; return; }
+                            this.loadingRegencies = true;
                             try {
                                 const res = await fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${this.province}.json`);
                                 if (res.ok) { const d = await res.json(); window.emsifaCache[key] = d; this.regencies = d; }
                             } catch(e) { console.error('regencies err', e); }
+                            finally { this.loadingRegencies = false; }
                         },
 
                         async fetchRegenciesLoad() {
@@ -184,10 +119,12 @@
                         async fetchDistricts() {
                             const key = `districts_${this.regency}`;
                             if (window.emsifaCache[key]) { this.districts = window.emsifaCache[key]; return; }
+                            this.loadingDistricts = true;
                             try {
                                 const res = await fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/districts/${this.regency}.json`);
                                 if (res.ok) { const d = await res.json(); window.emsifaCache[key] = d; this.districts = d; }
                             } catch(e) { console.error('districts err', e); }
+                            finally { this.loadingDistricts = false; }
                         },
 
                         async fetchDistrictsLoad() {
@@ -197,10 +134,12 @@
                         async fetchVillages() {
                             const key = `villages_${this.district}`;
                             if (window.emsifaCache[key]) { this.villages = window.emsifaCache[key]; return; }
+                            this.loadingVillages = true;
                             try {
                                 const res = await fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/villages/${this.district}.json`);
                                 if (res.ok) { const d = await res.json(); window.emsifaCache[key] = d; this.villages = d; }
                             } catch(e) { console.error('villages err', e); }
+                            finally { this.loadingVillages = false; }
                         },
 
                         async fetchVillagesLoad() {
@@ -208,8 +147,98 @@
                         },
                     };
                 };
+
+                if (typeof window.Alpine !== 'undefined') {
+                    window.Alpine.data('addressPickerData', window.addressPickerData);
+                } else {
+                    document.addEventListener('alpine:init', function() {
+                        window.Alpine.data('addressPickerData', window.addressPickerData);
+                    });
+                }
             }
         })();
     </script>
-</div>
 
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <!-- Provinsi -->
+        <div>
+            <label class="{{ $labelClass }}">Provinsi <span class="text-red-500">*</span></label>
+            <div class="relative">
+                <select x-model="province" @change="onProvinceChange()" class="{{ $inputClass }} appearance-none bg-transparent cursor-pointer">
+                    <option value="">-- Pilih Provinsi --</option>
+                    @if(isset($provincesList) && count($provincesList) > 0)
+                        @foreach($provincesList as $p)
+                            <option value="{{ $p['id'] }}">{{ $p['name'] }}</option>
+                        @endforeach
+                    @else
+                        <template x-for="p in provinces" :key="p.id">
+                            <option :value="p.id" x-text="p.name" :selected="p.id == province"></option>
+                        </template>
+                    @endif
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kabupaten/Kota -->
+        <div>
+            <label class="{{ $labelClass }}">Kabupaten/Kota <span class="text-red-500">*</span></label>
+            <div class="relative">
+                <select x-model="regency" @change="onRegencyChange()" :disabled="!province || loadingRegencies" class="{{ $inputClass }} appearance-none bg-transparent disabled:opacity-50 cursor-pointer">
+                    <option value="" x-text="loadingRegencies ? '-- Memuat Kab/Kota... --' : '-- Pilih Kab/Kota --'">-- Pilih Kab/Kota --</option>
+                    <template x-for="r in regencies" :key="r.id">
+                        <option :value="r.id" x-text="r.name" :selected="r.id == regency"></option>
+                    </template>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kecamatan -->
+        <div>
+            <label class="{{ $labelClass }}">Kecamatan <span class="text-red-500">*</span></label>
+            <div class="relative">
+                <select x-model="district" @change="onDistrictChange()" :disabled="!regency || loadingDistricts" class="{{ $inputClass }} appearance-none bg-transparent disabled:opacity-50 cursor-pointer">
+                    <option value="" x-text="loadingDistricts ? '-- Memuat Kecamatan... --' : '-- Pilih Kecamatan --'">-- Pilih Kecamatan --</option>
+                    <template x-for="d in districts" :key="d.id">
+                        <option :value="d.id" x-text="d.name" :selected="d.id == district"></option>
+                    </template>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Desa/Kelurahan -->
+        <div>
+            <label class="{{ $labelClass }}">Desa/Kelurahan <span class="text-red-500">*</span></label>
+            <div class="relative">
+                <select x-model="village" @change="syncToParent()" :disabled="!district || loadingVillages" class="{{ $inputClass }} appearance-none bg-transparent disabled:opacity-50 cursor-pointer">
+                    <option value="" x-text="loadingVillages ? '-- Memuat Desa/Kelurahan... --' : '-- Pilih Desa/Kelurahan --'">-- Pilih Desa/Kelurahan --</option>
+                    <template x-for="v in villages" :key="v.id">
+                        <option :value="v.id" x-text="v.name" :selected="v.id == village"></option>
+                    </template>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+        <div class="sm:col-span-1">
+            <label class="{{ $labelClass }}">Kode Pos <span class="text-red-500">*</span></label>
+            <input type="text" x-model="postal_code" @input.debounce.300ms="syncToParent()" class="{{ $inputClass }}" placeholder="Masukkan Kode Pos">
+        </div>
+        <div class="sm:col-span-2">
+            <label class="{{ $labelClass }}">Detail Alamat (Jalan, RT/RW, Patokan) <span class="text-red-500">*</span></label>
+            <textarea x-model="address_detail" @input.debounce.300ms="syncToParent()" rows="3" class="{{ $inputClass }}" placeholder="Contoh: Jl. Diponegoro No.10, RT 01/RW 02, Samping Masjid"></textarea>
+        </div>
+    </div>
+</div>

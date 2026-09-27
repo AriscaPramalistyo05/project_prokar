@@ -82,7 +82,7 @@
                                 height="520"
                                 loading="lazy"
                                 decoding="async"
-                                onerror="this.src='https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=600&h=450&fit=crop&fm=webp&q=80'" />
+                                onerror="this.src='https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=360&q=70&fm=webp'" />
                         </a>
 
                         <!-- Card 3: Bottom-Left (Mesin Cuci - Card 1 Setting) -->
@@ -94,7 +94,7 @@
                                 height="480"
                                 loading="lazy"
                                 decoding="async"
-                                onerror="this.src='https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=600&h=450&fit=crop&fm=webp&q=80'" />
+                                onerror="this.src='https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=360&h=270&fit=crop&fm=webp&q=70'" />
                         </a>
                     </div>
                 </div>
@@ -114,7 +114,7 @@
                 <div class="stagger-item">
                     <a href="{{ route('servis.index') }}"
                         class="group relative block h-[400px] lg:h-[500px] rounded-[2rem] overflow-hidden bg-black shadow-card transform hover:-translate-y-2 transition-all duration-500">
-                        <img src="{{ setting('service_image_tv') ? asset('storage/' . setting('service_image_tv')) : 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=600&q=75&fm=webp' }}"
+                        <img src="{{ setting('service_image_tv') ? asset('storage/' . setting('service_image_tv')) : 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=420&q=70&fm=webp' }}"
                             alt="Service TV" width="600" height="400" loading="lazy" decoding="async"
                             class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-8">
@@ -129,7 +129,7 @@
                 <div class="stagger-item md:mt-12">
                     <a href="{{ route('servis.index') }}"
                         class="group relative block h-[400px] lg:h-[500px] rounded-[2rem] overflow-hidden bg-black shadow-card transform hover:-translate-y-2 transition-all duration-500">
-                        <img src="{{ setting('service_image_mesin_cuci') ? asset('storage/' . setting('service_image_mesin_cuci')) : 'https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=600&q=75&fm=webp' }}"
+                        <img src="{{ setting('service_image_mesin_cuci') ? asset('storage/' . setting('service_image_mesin_cuci')) : 'https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=420&q=70&fm=webp' }}"
                             alt="Service Mesin Cuci" width="600" height="400" loading="lazy" decoding="async"
                             class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-8">
@@ -144,7 +144,7 @@
                 <div class="stagger-item">
                     <a href="{{ route('servis.index') }}"
                         class="group relative block h-[400px] lg:h-[500px] rounded-[2rem] overflow-hidden bg-black shadow-card transform hover:-translate-y-2 transition-all duration-500">
-                        <img src="{{ setting('service_image_kulkas') ? asset('storage/' . setting('service_image_kulkas')) : 'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=600&q=75&fm=webp' }}"
+                        <img src="{{ setting('service_image_kulkas') ? asset('storage/' . setting('service_image_kulkas')) : 'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=420&q=70&fm=webp' }}"
                             alt="Service Kulkas" width="600" height="400" loading="lazy" decoding="async"
                             class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-8">

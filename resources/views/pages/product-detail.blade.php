@@ -253,9 +253,9 @@
     x-data="{
         openShareModal: false,
         copied: false,
-        shareUrl: '{{ $productUrl }}',
-        shareTitle: '{{ addslashes($shareTitle) }}',
-        shareText: '{{ addslashes($shareText) }}',
+        shareUrl: @json($productUrl),
+        shareTitle: @json($shareTitle),
+        shareText: @json($shareText),
         handleShare() {
             if (navigator.share) {
                 navigator.share({
@@ -661,6 +661,8 @@
          MODAL SHARE POPOVER (DESKTOP & MOBILE FALLBACK)
     ══════════════════════════════════════════════ --}}
     <div x-show="openShareModal"
+        x-cloak
+        style="display: none;"
         x-transition:enter="transition ease-out duration-200"
         x-transition:enter-start="opacity-0 scale-95"
         x-transition:enter-end="opacity-100 scale-100"
@@ -669,8 +671,7 @@
         x-transition:leave-end="opacity-0 scale-95"
         @click.away="openShareModal = false"
         @keydown.escape.window="openShareModal = false"
-        class="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs"
-        x-cloak>
+        class="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
         <div class="bg-white rounded-2xl max-w-sm w-full p-5 sm:p-6 shadow-2xl border border-gray-100 relative" @click.stop>
             <!-- Header Modal -->
             <div class="flex items-center justify-between pb-3 mb-4 border-b border-gray-100">

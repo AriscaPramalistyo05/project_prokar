@@ -38,11 +38,11 @@ class HomeController extends Controller
 
         $hero3CardImg1 = setting('hero_3card_image_1')
             ? optimized_asset(setting('hero_3card_image_1'))
-            : 'https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=600&h=450&fit=crop&fm=webp&q=80';
+            : 'https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=360&h=270&fit=crop&fm=webp&q=70';
 
         $hero3CardImg2 = setting('hero_3card_image_2')
             ? optimized_asset(setting('hero_3card_image_2'))
-            : 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=600&q=80&fm=webp';
+            : 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=360&q=70&fm=webp';
 
         $hero3CardImg3 = setting('hero_3card_image_3')
             ? optimized_asset(setting('hero_3card_image_3'))
