@@ -180,18 +180,22 @@
   <!-- Vite Production CSS & JS (Moved up to prioritize critical path styling) -->
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-  <!-- Preload Core Icon Font (Eliminates icon FOIT & layout shift) -->
-  <link rel="preload" href="{{ asset('vendor/fontawesome/webfonts/fa-solid-900.woff2') }}" as="font" type="font/woff2" crossorigin />
-
-  <!-- Fonts & Icons: Self-hosted via /vendor/ untuk keamanan SRI & eliminasi cross-domain CORS -->
+  <!-- Fonts: Self-hosted via /vendor/ untuk keamanan SRI & eliminasi cross-domain CORS -->
   <link rel="stylesheet" href="{{ asset('vendor/fonts/fonts.css') }}" media="print" onload="this.media='all'" />
   <link rel="stylesheet" href="{{ asset('vendor/fonts/material-symbols.css') }}" media="print" onload="this.media='all'" />
-  <link rel="stylesheet" href="{{ asset('vendor/fontawesome/css/all.min.css') }}" media="print" onload="this.media='all'" />
   <noscript>
     <link rel="stylesheet" href="{{ asset('vendor/fonts/fonts.css') }}" />
     <link rel="stylesheet" href="{{ asset('vendor/fonts/material-symbols.css') }}" />
-    <link rel="stylesheet" href="{{ asset('vendor/fontawesome/css/all.min.css') }}" />
   </noscript>
+
+  @if(!request()->routeIs('home'))
+    <!-- Preload Core Icon Font & Stylesheet (for inner pages requiring Font Awesome) -->
+    <link rel="preload" href="{{ asset('vendor/fontawesome/webfonts/fa-solid-900.woff2') }}" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="{{ asset('vendor/fontawesome/css/all.min.css') }}" media="print" onload="this.media='all'" />
+    <noscript>
+      <link rel="stylesheet" href="{{ asset('vendor/fontawesome/css/all.min.css') }}" />
+    </noscript>
+  @endif
 
   <style>
     [x-cloak] {
@@ -1385,9 +1389,7 @@
     }
   </script>
 
-  @if(!request()->routeIs('home'))
-    @livewireScripts
-  @endif
+  @livewireScripts
 </body>
 
 </html>
