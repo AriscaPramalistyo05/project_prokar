@@ -180,8 +180,10 @@
   <!-- Vite Production CSS & JS (Moved up to prioritize critical path styling) -->
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-  <!-- Preload Core Icon Font (Eliminates icon FOIT & layout shift) -->
-  <link rel="preload" href="{{ asset('vendor/fontawesome/webfonts/fa-solid-900.woff2') }}" as="font" type="font/woff2" crossorigin />
+  <!-- Preload Core Icon Font (Eliminates icon FOIT & layout shift on non-home pages) -->
+  @if(!request()->routeIs('home'))
+    <link rel="preload" href="{{ asset('vendor/fontawesome/webfonts/fa-solid-900.woff2') }}" as="font" type="font/woff2" crossorigin />
+  @endif
 
   <!-- Fonts & Icons: Self-hosted via /vendor/ untuk keamanan SRI & eliminasi cross-domain CORS -->
   <link rel="stylesheet" href="{{ asset('vendor/fonts/fonts.css') }}" media="print" onload="this.media='all'" />
@@ -479,6 +481,18 @@
       border-radius: var(--radius-overlap) var(--radius-overlap) 0 0;
       box-shadow: 0 -15px 40px -10px rgba(0,0,0,0.22);
       will-change: transform;
+    }
+    /* Seamless Tail Underlay: bridges curved corner cutouts without sacrificing section size */
+    .section-overlap::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: calc(-1 * (var(--radius-overlap) + 40px));
+      height: calc(var(--radius-overlap) + 48px);
+      background-color: inherit;
+      pointer-events: none;
+      z-index: -1;
     }
     .section-overlap-first,
     .section-overlap.no-overlap {

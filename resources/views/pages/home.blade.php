@@ -64,9 +64,11 @@
                         <a href="{{ route('produk.index') }}?kategori=kulkas"
                             class="collage-card collage-card-1" title="{{ setting('hero_3card_title_3') ?? 'Lihat Kulkas Bekas' }}">
                             <img src="{{ $hero3CardImg3 }}"
+                                srcset="{{ asset('storage/settings/hero3card/kulkas_hero_mobile.webp') }} 380w, {{ $hero3CardImg3 }} 1000w"
+                                sizes="(max-width: 1023px) 190px, 205px"
                                 alt="{{ setting('hero_3card_title_3') ?? 'Kulkas elektronik bekas bergaransi' }}"
-                                width="480"
-                                height="520"
+                                width="380"
+                                height="507"
                                 fetchpriority="high"
                                 loading="eager"
                                 decoding="async"
@@ -168,7 +170,8 @@
                 </div>
                 <a href="https://wa.me/{{ $waNumber }}?text=Halo%20Prokar%20Elektronik,%20saya%20mau%20tanya%20jasa%20servis" target="_blank"
                     class="btn-hover bg-brand-yellow text-black px-8 py-4 rounded-full font-bold text-lg whitespace-nowrap flex items-center gap-2">
-                    <i class="fa-brands fa-whatsapp text-2xl"></i> Konsultasi Gratis
+                    <svg class="w-6 h-6 fill-current shrink-0" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24m4.52 11.64c-.25-.13-1.47-.72-1.7-.81-.23-.08-.39-.13-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.13-1.06-.39-2.02-1.25-.75-.67-1.26-1.5-1.41-1.75-.14-.25-.02-.39.11-.51.11-.11.25-.29.37-.44.13-.14.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.13-.56-1.35-.77-1.85-.2-.49-.41-.42-.56-.43-.14-.01-.31-.01-.47-.01-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.44 1.03 2.61.13.17 1.78 2.71 4.3 3.8.6.26 1.07.42 1.44.54.6.19 1.15.16 1.58.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.17-.48-.29"/></svg>
+                    Konsultasi Gratis
                 </a>
             </div>
         </div>
@@ -188,11 +191,11 @@
                     <div class="flex gap-4 reveal-fade">
                         <button id="onsale-prev" aria-label="Produk Sebelumnya"
                             class="w-14 h-14 rounded-full border-2 border-black flex items-center justify-center hover:bg-black hover:text-white transition-colors cursor-pointer">
-                            <i class="fa-solid fa-arrow-left text-xl"></i>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/></svg>
                         </button>
                         <button id="onsale-next" aria-label="Produk Selanjutnya"
                             class="w-14 h-14 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800 transition-colors cursor-pointer">
-                            <i class="fa-solid fa-arrow-right text-xl"></i>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg>
                         </button>
                     </div>
                 </div>
@@ -215,10 +218,10 @@
                                                 onerror="this.src='https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&h=400&fit=crop&fm=webp&q=70'">
                                             <span class="absolute top-4 left-4 z-20 bg-red-600 text-white text-xs font-black px-3 py-1.5 rounded-full uppercase shadow-xs pointer-events-none">Promo</span>
                                             <button type="button"
-                                                onclick="event.preventDefault(); event.stopPropagation(); openCartModal(this.closest('.onsale-card'))"
-                                                class="absolute bottom-4 right-4 w-12 h-12 bg-black text-white rounded-full flex items-center justify-center hover:bg-brand-yellow hover:text-black transition-colors z-10 btn-hover"
+                                                onclick="event.preventDefault(); event.stopPropagation(); window.openCartModal({ id: {{ $product->id }}, name: '{{ addslashes($product->name) }}', price: 'Rp {{ number_format($product->promo_price ?? $product->price, 0, ',', '.') }}', img: '{{ $product->image_url }}', stock: {{ $product->stock ?? 10 }} })"
+                                                class="absolute bottom-4 right-4 w-12 h-12 bg-black text-white rounded-full flex items-center justify-center hover:bg-brand-yellow hover:text-black active:scale-90 transition-all duration-200 shadow-md z-10 btn-hover"
                                                 title="Tambah ke Keranjang">
-                                                <i class="fa-solid fa-cart-plus text-xl"></i>
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm-6-9.75v6m-3-3h6"/></svg>
                                             </button>
                                         </div>
                                         <span class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">{{ $product->category->name ?? 'Elektronik' }}</span>
@@ -247,7 +250,7 @@
                 <div class="mt-8 text-center">
                     <a href="{{ route('produk.index') }}" class="btn-hover inline-flex items-center gap-3 bg-black text-white hover:bg-brand-yellow hover:text-black font-bold px-8 py-4 rounded-full font-public tracking-wide text-base">
                         <span>Lihat Semua Produk</span>
-                        <i class="fa-solid fa-arrow-right"></i>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg>
                     </a>
                 </div>
             </div>
@@ -309,8 +312,8 @@
                                 <span class="text-black text-sm sm:text-base md:text-lg font-bold font-public group-hover:text-blue-600 transition-colors">
                                     {{ $faq['question'] ?? '' }}
                                 </span>
-                                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white flex items-center justify-center shrink-0 shadow-xs group-hover:bg-black group-hover:text-white transition-colors">
-                                    <i class="fa-solid fa-plus text-xs sm:text-sm text-black faq-icon transition-transform duration-300"></i>
+                                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white flex items-center justify-center shrink-0 shadow-xs transition-colors">
+                                    <svg class="w-3.5 h-3.5 text-black faq-icon transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                                 </div>
                             </button>
                             <div class="faq-answer">
@@ -331,8 +334,8 @@
                                         <span class="text-black text-sm sm:text-base md:text-lg font-bold font-public group-hover:text-blue-600 transition-colors">
                                             {{ $faq['question'] ?? '' }}
                                         </span>
-                                        <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white flex items-center justify-center shrink-0 shadow-xs group-hover:bg-black group-hover:text-white transition-colors">
-                                            <i class="fa-solid fa-plus text-xs sm:text-sm text-black faq-icon transition-transform duration-300"></i>
+                                        <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white flex items-center justify-center shrink-0 shadow-xs transition-colors">
+                                            <svg class="w-3.5 h-3.5 text-black faq-icon transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                                         </div>
                                     </button>
                                     <div class="faq-answer">
@@ -348,7 +351,7 @@
                     <div class="text-center pt-8">
                         <button id="btn-faq-more" onclick="toggleMoreFaq()" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white border border-gray-300 text-black hover:bg-black hover:text-white hover:border-black text-sm font-bold tracking-tight transition-all shadow-xs cursor-pointer">
                             <span id="btn-faq-text">Lihat Pertanyaan Lainnya (+{{ count($faqList) - 3 }})</span>
-                            <i id="btn-faq-icon" class="fa-solid fa-chevron-down text-xs transition-transform duration-300"></i>
+                            <svg id="btn-faq-icon" class="w-3.5 h-3.5 transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
                         </button>
                     </div>
                 @endif
