@@ -21,12 +21,12 @@
     <priority>0.8</priority>
             </url>
     <url>
-    <loc>https://prokarelektronik.com/syarat-ketentuan</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.4</priority>
+    <loc>https://docs.prokarelektronik.com</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
             </url>
     <url>
-    <loc>https://prokarelektronik.com/kebijakan-privasi</loc>
+    <loc>https://prokarelektronik.com/syarat-ketentuan</loc>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
             </url>
@@ -37,7 +37,7 @@
             </url>
     <url>
     <loc>https://prokarelektronik.com/produk/kulkas-polytron-belleza-khusus</loc>
-    <lastmod>2026-09-27T08:30:45+07:00</lastmod>
+    <lastmod>2026-09-27T09:42:12+07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
             </url>

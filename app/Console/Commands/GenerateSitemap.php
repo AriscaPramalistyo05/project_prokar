@@ -39,8 +39,10 @@ class GenerateSitemap extends Command
         $sitemap->add(Url::create($this->canonicalUrl('/produk'))->setPriority(0.9)->setChangeFrequency(Url::CHANGE_FREQUENCY_DAILY));
         $sitemap->add(Url::create($this->canonicalUrl('/servis'))->setPriority(0.8)->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY));
         $sitemap->add(Url::create($this->canonicalUrl('/jual'))->setPriority(0.8)->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY));
+        $docsDomain = env('DOCS_DOMAIN', 'docs.prokarelektronik.com');
+        $docsUrl = 'https://' . rtrim($docsDomain, '/');
+        $sitemap->add(Url::create($docsUrl)->setPriority(0.8)->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY));
         $sitemap->add(Url::create($this->canonicalUrl('/syarat-ketentuan'))->setPriority(0.4)->setChangeFrequency(Url::CHANGE_FREQUENCY_YEARLY));
-        $sitemap->add(Url::create($this->canonicalUrl('/kebijakan-privasi'))->setPriority(0.4)->setChangeFrequency(Url::CHANGE_FREQUENCY_YEARLY));
 
         // 2. Categories
         Category::all()->each(function (Category $category) use ($sitemap) {
