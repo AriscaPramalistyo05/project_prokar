@@ -82,7 +82,7 @@
                                 height="520"
                                 loading="lazy"
                                 decoding="async"
-                                onerror="this.src='https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=280&q=55&fm=webp'" />
+                                onerror="this.src='https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=360&q=70&fm=webp'" />
                         </a>
 
                         <!-- Card 3: Bottom-Left (Mesin Cuci - Card 1 Setting) -->
@@ -94,7 +94,7 @@
                                 height="480"
                                 loading="lazy"
                                 decoding="async"
-                                onerror="this.src='https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=280&h=210&fit=crop&fm=webp&q=55'" />
+                                onerror="this.src='https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=360&h=270&fit=crop&fm=webp&q=70'" />
                         </a>
                     </div>
                 </div>
@@ -255,7 +255,7 @@
     @endif
 
     <!-- 4. TESTIMONI SECTION (Cuberto Card Overlap Dark) -->
-    <section id="testimonials" class="section-overlap bg-black pt-16 pb-32 sm:pb-36 lg:pt-24 lg:pb-48 z-40 text-white">
+    <section id="testimonials" class="section-overlap bg-black pt-16 pb-16 lg:pt-24 lg:pb-24 z-40 text-white">
         <div class="max-w-[860px] mx-auto px-6 text-center">
             <h2 class="text-white text-3xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight font-public mt-2 md:mt-4 mb-2 md:mb-3">
                 <span class="reveal-wrapper"><span class="reveal-line">Kata Pelanggan</span></span>
@@ -281,12 +281,12 @@
                 <div class="flex justify-center items-center gap-4 sm:gap-6 mt-6 sm:mt-8">
                     <button id="btn-prev" onclick="changeTestimoni(-1)" aria-label="Testimoni Sebelumnya"
                         class="w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-gray-700 flex items-center justify-center text-gray-600 opacity-40 cursor-not-allowed transition-all">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0 7.5-7.5M3 12h18"/></svg>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/></svg>
                     </button>
                     <div id="testimoni-dots" class="flex gap-2"></div>
                     <button id="btn-next" onclick="changeTestimoni(1)" aria-label="Testimoni Selanjutnya"
                         class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white text-black flex items-center justify-center hover:bg-brand-yellow transition-all cursor-pointer shadow-sm">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0-7.5 7.5M21 12H3"/></svg>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg>
                     </button>
                 </div>
             </div>
@@ -294,7 +294,7 @@
     </section>
 
     <!-- 5. FAQ SECTION (Pertanyaan Umum) -->
-    <section id="faq" class="section-overlap bg-brand-soft pt-16 pb-48 sm:pb-56 lg:pt-24 lg:pb-64 z-50">
+    <section id="faq" class="section-overlap bg-brand-soft pt-16 pb-32 lg:pt-24 lg:pb-44 z-50">
         <div class="max-w-[860px] mx-auto px-6 md:px-12">
             <h2 class="text-black text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight font-public mb-8 md:mb-12 text-center">
                 <span class="reveal-wrapper"><span class="reveal-line">PERTANYAAN UMUM</span></span>

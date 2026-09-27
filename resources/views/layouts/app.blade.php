@@ -1373,9 +1373,7 @@
     }
   </script>
 
-  @if(!request()->routeIs('home'))
-    @livewireScripts
-  @endif
+  @livewireScripts
 </body>
 
 </html>
