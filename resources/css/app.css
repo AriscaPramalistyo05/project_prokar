@@ -230,6 +230,18 @@ body {
   box-shadow: 0 -15px 40px -10px rgba(0,0,0,0.22);
   will-change: transform;
 }
+/* Seamless Tail Underlay: bridges curved corner cutouts without sacrificing section size */
+.section-overlap::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(-1 * (var(--radius-overlap) + 40px));
+  height: calc(var(--radius-overlap) + 48px);
+  background-color: inherit;
+  pointer-events: none;
+  z-index: -1;
+}
 .section-overlap-first,
 .section-overlap.no-overlap {
   position: -webkit-sticky;
