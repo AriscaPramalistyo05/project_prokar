@@ -588,7 +588,7 @@
 </div>
 
     {{-- ── SECTION PRODUK SERUPA ── --}}
-    <div class="border-t border-gray-100 bg-gray-50 py-10 lg:py-14">
+    <div class="border-t border-gray-100 bg-gray-50 pt-10 pb-20 md:pb-24 lg:pt-14 lg:pb-28">
         <div class="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-10">
 
             <div class="flex items-center justify-between mb-6">
