@@ -70,7 +70,7 @@
                                 fetchpriority="high"
                                 loading="eager"
                                 decoding="async"
-                                onerror="this.src='{{ asset('images/hero/kulkas.webp') }}'" />
+                                onerror="this.src='https://prokarelektronik.com/storage/settings/hero3card/kO4u7Yrw9y4qsRPqpt0PZKA70LCPAldNxb2ZHgto.webp'" />
                         </a>
 
                         <!-- Card 2: Middle-Right (Smart TV - Card 2 Setting) -->
@@ -82,7 +82,7 @@
                                 height="520"
                                 loading="lazy"
                                 decoding="async"
-                                onerror="this.src='{{ asset('images/hero/televisi.webp') }}'" />
+                                onerror="this.src='https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=280&q=55&fm=webp'" />
                         </a>
 
                         <!-- Card 3: Bottom-Left (Mesin Cuci - Card 1 Setting) -->
@@ -94,7 +94,7 @@
                                 height="480"
                                 loading="lazy"
                                 decoding="async"
-                                onerror="this.src='{{ asset('images/hero/mesin-cuci.webp') }}'" />
+                                onerror="this.src='https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=280&h=210&fit=crop&fm=webp&q=55'" />
                         </a>
                     </div>
                 </div>
@@ -188,11 +188,11 @@
                     <div class="flex gap-4 reveal-fade">
                         <button id="onsale-prev" aria-label="Produk Sebelumnya"
                             class="w-14 h-14 rounded-full border-2 border-black flex items-center justify-center hover:bg-black hover:text-white transition-colors cursor-pointer">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>
+                            <i class="fa-solid fa-arrow-left text-xl"></i>
                         </button>
                         <button id="onsale-next" aria-label="Produk Selanjutnya"
                             class="w-14 h-14 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800 transition-colors cursor-pointer">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                            <i class="fa-solid fa-arrow-right text-xl"></i>
                         </button>
                     </div>
                 </div>
@@ -218,7 +218,7 @@
                                                 onclick="event.preventDefault(); event.stopPropagation(); openCartModal(this.closest('.onsale-card'))"
                                                 class="absolute bottom-4 right-4 w-12 h-12 bg-black text-white rounded-full flex items-center justify-center hover:bg-brand-yellow hover:text-black transition-colors z-10 btn-hover"
                                                 title="Tambah ke Keranjang">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12 9v6m3-3H9"/></svg>
+                                                <i class="fa-solid fa-cart-plus text-xl"></i>
                                             </button>
                                         </div>
                                         <span class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">{{ $product->category->name ?? 'Elektronik' }}</span>
@@ -247,7 +247,7 @@
                 <div class="mt-8 text-center">
                     <a href="{{ route('produk.index') }}" class="btn-hover inline-flex items-center gap-3 bg-black text-white hover:bg-brand-yellow hover:text-black font-bold px-8 py-4 rounded-full font-public tracking-wide text-base">
                         <span>Lihat Semua Produk</span>
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                        <i class="fa-solid fa-arrow-right"></i>
                     </a>
                 </div>
             </div>
@@ -310,7 +310,7 @@
                                     {{ $faq['question'] ?? '' }}
                                 </span>
                                 <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white flex items-center justify-center shrink-0 shadow-xs group-hover:bg-black group-hover:text-white transition-colors">
-                                    <svg class="w-3.5 h-3.5 text-black faq-icon transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                                    <i class="fa-solid fa-plus text-xs sm:text-sm text-black faq-icon transition-transform duration-300"></i>
                                 </div>
                             </button>
                             <div class="faq-answer">
@@ -332,7 +332,7 @@
                                             {{ $faq['question'] ?? '' }}
                                         </span>
                                         <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white flex items-center justify-center shrink-0 shadow-xs group-hover:bg-black group-hover:text-white transition-colors">
-                                            <svg class="w-3.5 h-3.5 text-black faq-icon transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                                            <i class="fa-solid fa-plus text-xs sm:text-sm text-black faq-icon transition-transform duration-300"></i>
                                         </div>
                                     </button>
                                     <div class="faq-answer">
@@ -348,7 +348,7 @@
                     <div class="text-center pt-8">
                         <button id="btn-faq-more" onclick="toggleMoreFaq()" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white border border-gray-300 text-black hover:bg-black hover:text-white hover:border-black text-sm font-bold tracking-tight transition-all shadow-xs cursor-pointer">
                             <span id="btn-faq-text">Lihat Pertanyaan Lainnya (+{{ count($faqList) - 3 }})</span>
-                            <svg id="btn-faq-icon" class="w-3.5 h-3.5 transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+                            <i id="btn-faq-icon" class="fa-solid fa-chevron-down text-xs transition-transform duration-300"></i>
                         </button>
                     </div>
                 @endif
