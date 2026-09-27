@@ -42,9 +42,31 @@ class Product extends Model
      * use physical weight only and the box dimensions are already accounted for
      * in the cargo service minimums (min 10kg).
      */
+    public function getFormattedWeightAttribute(): string
+    {
+        if (empty($this->weight) || (float)$this->weight <= 0) {
+            return '-';
+        }
+
+        $w = (float) $this->weight;
+
+        // Jika angka < 100 (misal: 35 kg), berarti admin memasukkan satuan kg
+        // Jika angka >= 100 (misal: 500 gram, 1000 gram, 35000 gram), konversi ke kg
+        $kg = ($w >= 100) ? ($w / 1000) : $w;
+
+        return ($kg == floor($kg))
+            ? number_format($kg, 0, ',', '.') . ' kg'
+            : number_format($kg, 1, ',', '.') . ' kg';
+    }
+
     public function getChargeableWeightGram(): int
     {
-        return (int) max(1000, $this->weight ?: 1000);
+        $w = (float) ($this->weight ?: 1000);
+        // Jika admin memasukkan nilai < 100 (misal: 35 kg), konversi ke gram (35000)
+        if ($w < 100 && $w > 0) {
+            $w = $w * 1000;
+        }
+        return (int) max(1000, $w);
     }
 
     protected function casts(): array

@@ -249,35 +249,57 @@
     $shareTitle = $product->name . ' - ' . ($product->promo_price ? format_rupiah($product->promo_price) : format_rupiah($product->price));
     $shareText = 'Cek ' . $product->name . ' di Prokar Elektronik: ' . $productUrl;
 @endphp
-<main class="bg-white text-gray-900 min-h-screen pb-20 lg:pb-0"
-    x-data="{
-        openShareModal: false,
-        copied: false,
-        shareUrl: @json($productUrl),
-        shareTitle: @json($shareTitle),
-        shareText: @json($shareText),
-        handleShare() {
-            if (navigator.share) {
-                navigator.share({
-                    title: this.shareTitle,
-                    text: this.shareText,
-                    url: this.shareUrl
-                }).catch((err) => {
-                    if (err.name !== 'AbortError') {
+<script>
+    (function() {
+        window.productDetailData = function(url, title, text) {
+            return {
+                openShareModal: false,
+                copied: false,
+                shareUrl: url,
+                shareTitle: title,
+                shareText: text,
+                handleShare() {
+                    if (navigator.share) {
+                        navigator.share({
+                            title: this.shareTitle,
+                            text: this.shareText,
+                            url: this.shareUrl
+                        }).catch((err) => {
+                            if (err && err.name !== 'AbortError') {
+                                this.openShareModal = true;
+                            }
+                        });
+                    } else {
                         this.openShareModal = true;
                     }
-                });
-            } else {
-                this.openShareModal = true;
-            }
-        },
-        copyLink() {
-            navigator.clipboard.writeText(this.shareUrl).then(() => {
-                this.copied = true;
-                setTimeout(() => this.copied = false, 2500);
+                },
+                copyLink() {
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(this.shareUrl).then(() => {
+                            this.copied = true;
+                            setTimeout(() => this.copied = false, 2500);
+                        }).catch(() => {
+                            this.openShareModal = true;
+                        });
+                    } else {
+                        this.openShareModal = true;
+                    }
+                }
+            };
+        };
+
+        if (typeof window.Alpine !== 'undefined') {
+            window.Alpine.data('productDetailData', window.productDetailData);
+        } else {
+            document.addEventListener('alpine:init', function() {
+                window.Alpine.data('productDetailData', window.productDetailData);
             });
         }
-    }">
+    })();
+</script>
+
+<main class="bg-white text-gray-900 min-h-screen pb-20 lg:pb-0"
+    x-data="productDetailData(@js($productUrl), @js($shareTitle), @js($shareText))">
     {{-- ══════════════════════════════════════════════
      BREADCRUMB
 ══════════════════════════════════════════════ --}}
@@ -512,16 +534,18 @@
                     <div class="spec-row">
                         <span class="spec-label">Berat</span>
                         <span class="spec-value">
-                            {{ $product->weight ? number_format($product->weight / 1000, 1, ',', '.') . ' kg' : 'Hubungi toko' }}
+                            {{ $product->formatted_weight }}
                         </span>
                     </div>
                     <div class="spec-row">
                         <span class="spec-label">Dimensi</span>
                         <span class="spec-value">
-                            @if ($product->width && $product->length && $product->height)
-                                W×D×H = {{ $product->width }} × {{ $product->length }} × {{ $product->height }} cm
+                            @if ($product->length && $product->width && $product->height)
+                                {{ $product->length }} × {{ $product->width }} × {{ $product->height }} cm
+                            @elseif ($product->length || $product->width || $product->height)
+                                {{ implode(' × ', array_filter([$product->length, $product->width, $product->height])) }} cm
                             @else
-                                Lihat deskripsi
+                                -
                             @endif
                         </span>
                     </div>

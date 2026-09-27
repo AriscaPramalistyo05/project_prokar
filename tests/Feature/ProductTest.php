@@ -137,4 +137,52 @@ class ProductTest extends TestCase
             ->get(route('admin.products.create'))
             ->assertForbidden();
     }
+
+    public function test_product_detail_page_weight_dimension_and_no_code_leak(): void
+    {
+        $category = Category::factory()->create(['name' => 'Kulkas']);
+        $product = Product::factory()->create([
+            'category_id' => $category->id,
+            'name' => 'Kulkas 2 Pintu Panasonic 210L',
+            'weight' => 35, // Dimasukkan 35 kg oleh admin
+            'length' => null,
+            'width' => null,
+            'height' => null,
+            'status' => 'available',
+        ]);
+
+        $response = $this->get(route('produk.show', $product->slug));
+        $response->assertOk();
+
+        // 1. Pastikan berat tampil 35 kg dan BUKAN 0,0 kg
+        $response->assertSee('35 kg');
+        $response->assertDontSee('0,0 kg');
+
+        // 2. Pastikan dimensi kosong menampilkan '-' dan BUKAN 'Lihat deskripsi'
+        $response->assertDontSee('Lihat deskripsi');
+
+        // 3. Pastikan tidak ada kode JavaScript x-data yang bocor ke HTML
+        $response->assertDontSee('{ if (err.name !== \'AbortError\')');
+        $response->assertDontSee('copyLink() { navigator.clipboard.writeText');
+    }
+
+    public function test_product_detail_page_displays_dimensions_when_filled(): void
+    {
+        $category = Category::factory()->create(['name' => 'Kulkas']);
+        $product = Product::factory()->create([
+            'category_id' => $category->id,
+            'name' => 'Kulkas Dimensi Lengkap',
+            'weight' => 45000, // 45000 gram = 45 kg
+            'length' => 60,
+            'width' => 50,
+            'height' => 120,
+            'status' => 'available',
+        ]);
+
+        $response = $this->get(route('produk.show', $product->slug));
+        $response->assertOk();
+
+        $response->assertSee('45 kg');
+        $response->assertSee('60 × 50 × 120 cm');
+    }
 }
