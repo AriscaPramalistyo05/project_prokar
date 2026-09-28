@@ -35,6 +35,8 @@ class Order extends Model
         'remaining_payment',
         'payment_method',
         'payment_status',
+        'stock_reserved',
+        'stock_released_at',
         'midtrans_order_id',
         'midtrans_token',
         'midtrans_response',
@@ -50,6 +52,8 @@ class Order extends Model
             'total' => 'decimal:2',
             'down_payment' => 'decimal:2',
             'remaining_payment' => 'decimal:2',
+            'stock_reserved' => 'boolean',
+            'stock_released_at' => 'datetime',
             'midtrans_response' => 'array',
             'paid_at' => 'datetime',
         ];

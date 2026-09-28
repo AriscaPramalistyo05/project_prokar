@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Services\MidtransService;
+use App\Services\PaymentStatusService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -12,7 +13,7 @@ use Illuminate\View\View;
 class CheckoutController extends Controller
 {
     /**
-     * Display checkout success page with auto-sync from Midtrans.
+     * Display checkout status page with auto-sync from Midtrans.
      */
     public function success(string $orderCode, MidtransService $midtransService): View
     {
@@ -20,8 +21,9 @@ class CheckoutController extends Controller
             ->with('orderItems.product')
             ->firstOrFail();
 
-        // Auto-sync transaction status directly from Midtrans API if not settled
+        // Auto-sync transaction status directly from Midtrans API jika belum selesai & belum dibatalkan
         if (!in_array($order->payment_status, ['paid', 'dp_paid']) &&
+            $order->status !== 'cancelled' &&
             in_array($order->payment_method, ['midtrans', 'midtrans_dp', 'qris', 'bank_transfer', 'gopay', 'shopeepay', 'cstore', 'echannel', 'credit_card'])) {
             $order = $midtransService->syncOrderStatus($order);
         }
@@ -42,20 +44,23 @@ class CheckoutController extends Controller
     /**
      * Save snap payment frontend callback result.
      */
-    public function saveSnapResult(string $orderCode, Request $request, MidtransService $midtransService): JsonResponse
-    {
+    public function saveSnapResult(
+        string $orderCode,
+        Request $request,
+        PaymentStatusService $paymentStatusService
+    ): JsonResponse {
         $order = Order::where('order_code', $orderCode)->firstOrFail();
         $result = $request->all();
 
         if (!empty($result) && is_array($result)) {
-            $paymentType = $result['payment_type'] ?? $order->payment_method;
-            $order->update([
-                'payment_method' => $paymentType,
-                'midtrans_response' => array_merge((array) ($order->midtrans_response ?? []), $result),
-            ]);
-
-            if (in_array($result['transaction_status'] ?? '', ['settlement', 'capture'])) {
-                $midtransService->syncOrderStatus($order);
+            if (!empty($result['transaction_status'])) {
+                $paymentStatusService->processTransactionStatus($order, $result);
+            } else {
+                $paymentType = $result['payment_type'] ?? $order->payment_method;
+                $order->update([
+                    'payment_method' => $paymentType,
+                    'midtrans_response' => array_merge((array) ($order->midtrans_response ?? []), $result),
+                ]);
             }
         }
 

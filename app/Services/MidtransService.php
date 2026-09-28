@@ -74,81 +74,9 @@ class MidtransService
         }
 
         $payload = (array) $res;
-        $transactionStatus = $payload['transaction_status'] ?? null;
-        $paymentType = $payload['payment_type'] ?? $order->payment_method;
+        $paymentStatusService = app(\App\Services\PaymentStatusService::class);
 
-        if (in_array($transactionStatus, ['settlement', 'capture'])) {
-            \Illuminate\Support\Facades\DB::transaction(function () use ($order, $paymentType, $payload) {
-                $isDp = ($order->payment_type === 'down_payment');
-                $targetPaymentStatus = $isDp ? 'dp_paid' : 'paid';
-
-                $order->update([
-                    'status' => 'processing',
-                    'payment_status' => $targetPaymentStatus,
-                    'paid_at' => now(),
-                    'payment_method' => $paymentType,
-                    'midtrans_response' => $payload,
-                ]);
-
-                // Kurangi stok produk via StockService
-                $stockService = app(\App\Services\StockService::class);
-                foreach ($order->orderItems as $item) {
-                    try {
-                        $stockService->reserveStock($item->product_id, $item->quantity);
-                    } catch (\Throwable $e) {
-                        \Illuminate\Support\Facades\Log::error("Failed to reserve stock for product {$item->product_id} in Order {$order->order_code}: " . $e->getMessage());
-                    }
-                }
-
-                // Bersihkan keranjang user
-                if (!empty($order->user_id)) {
-                    \App\Models\CartItem::where('user_id', $order->user_id)->delete();
-                }
-
-                // Kirim notifikasi FCM ke Admin
-                try {
-                    $fcmService = app(\App\Services\FcmNotificationService::class);
-                    $notifTitle = $isDp ? "DP 50% Diterima! 🛒" : "Pembayaran Diterima! 🛒";
-                    $notifBody = $isDp
-                        ? "Pesanan {$order->order_code} telah dibayar DP Rp " . number_format($order->down_payment, 0, ',', '.') . " (Sisa COD: Rp " . number_format($order->remaining_payment, 0, ',', '.') . ")."
-                        : "Pesanan {$order->order_code} senilai Rp " . number_format($order->total, 0, ',', '.') . " telah dibayar lunas.";
-
-                    $fcmService->sendToAdmins(
-                        $notifTitle,
-                        $notifBody,
-                        ['order_code' => $order->order_code, 'type' => $isDp ? 'order_dp_paid' : 'order_paid']
-                    );
-                } catch (\Throwable $e) {
-                    \Illuminate\Support\Facades\Log::error("FCM Send Error: " . $e->getMessage());
-                }
-
-                // Kirim email konfirmasi + Invoice ke customer
-                if (!empty($order->customer_email)) {
-                    try {
-                        \Illuminate\Support\Facades\Mail::to($order->customer_email)->send(new \App\Mail\OrderConfirmationMail($order));
-                    } catch (\Throwable $e) {
-                        \Illuminate\Support\Facades\Log::error("Mail Send Error: " . $e->getMessage());
-                    }
-                }
-            });
-
-            return $order->fresh(['orderItems.product']);
-        } elseif ($transactionStatus === 'pending') {
-            $order->update([
-                'payment_method' => $paymentType,
-                'midtrans_response' => array_merge((array) ($order->midtrans_response ?? []), $payload),
-            ]);
-            return $order->fresh(['orderItems.product']);
-        } elseif (in_array($transactionStatus, ['cancel', 'deny', 'expire'])) {
-            $order->update([
-                'status' => 'cancelled',
-                'payment_status' => 'unpaid',
-                'midtrans_response' => $payload,
-            ]);
-            return $order->fresh(['orderItems.product']);
-        }
-
-        return $order;
+        return $paymentStatusService->processTransactionStatus($order, $payload);
     }
 
     /**

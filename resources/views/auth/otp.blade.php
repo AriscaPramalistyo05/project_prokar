@@ -153,11 +153,45 @@
                 setTimeout(() => inputs[0].focus(), 150);
             }
 
+            let isSubmitting = false;
+
             function syncAndCheck() {
                 const code = Array.from(inputs).map(i => i.value).join('');
                 hiddenInput.value = code;
                 return code;
             }
+
+            function submitFormSafely() {
+                if (isSubmitting) return;
+                const fullCode = syncAndCheck();
+                if (fullCode.length === 6) {
+                    isSubmitting = true;
+                    const submitBtn = document.getElementById('btn-submit-otp');
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                        submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    }
+                    form.submit();
+                }
+            }
+
+            form.addEventListener('submit', (e) => {
+                if (isSubmitting) {
+                    e.preventDefault();
+                    return;
+                }
+                const fullCode = syncAndCheck();
+                if (fullCode.length !== 6) {
+                    e.preventDefault();
+                    return;
+                }
+                isSubmitting = true;
+                const submitBtn = document.getElementById('btn-submit-otp');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                }
+            });
 
             inputs.forEach((input, index) => {
                 // Auto-advance saat mengetik angka di Desktop & Mobile
@@ -190,10 +224,7 @@
                         input.classList.remove('filled');
                     }
 
-                    const fullCode = syncAndCheck();
-                    if (fullCode.length === 6) {
-                        form.submit();
-                    }
+                    submitFormSafely();
                 });
 
                 // Tombol Backspace & Navigasi Panah
@@ -242,7 +273,7 @@
                     const fullCode = syncAndCheck();
                     if (fullCode.length === 6) {
                         inputs[5].focus();
-                        form.submit();
+                        submitFormSafely();
                     } else {
                         const nextEmpty = Array.from(inputs).findIndex(i => !i.value);
                         if (nextEmpty !== -1) {

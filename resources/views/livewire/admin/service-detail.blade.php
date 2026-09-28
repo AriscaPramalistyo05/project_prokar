@@ -2,17 +2,9 @@
     $status = $serviceOrder->status;
     $role = auth()->user()->hasRole('super_admin') ? 'admin' : 'teknisi';
     $isAssignedToMe = $role === 'teknisi' && $serviceOrder->technician_id === auth()->id();
-    
-    // Helper to determine step completion
-    $step1 = in_array($status, ['pending', 'confirmed', 'diagnosing', 'waiting_approval', 'in_progress', 'completed']);
-    $step2 = in_array($status, ['confirmed', 'diagnosing', 'waiting_approval', 'in_progress', 'completed']) && $serviceOrder->technician_id;
-    $step3 = in_array($status, ['diagnosing', 'waiting_approval', 'in_progress', 'completed']);
-    $step4 = in_array($status, ['waiting_approval', 'in_progress', 'completed']);
-    $step5 = in_array($status, ['in_progress', 'completed']);
-    $step6 = $status === 'completed';
     $isCancelled = $status === 'cancelled';
     
-    // Step number for mobile progress card
+    // Step number for progress stepper
     $currentStepNum = match($status) {
         'pending' => 1,
         'confirmed' => 2,
@@ -31,6 +23,14 @@
         'completed' => 'Servis Selesai',
         default => 'Proses Servis',
     };
+
+    // Helper to determine step completion (berurutan dan tidak putus di tengah)
+    $step1 = $currentStepNum >= 1;
+    $step2 = $currentStepNum >= 2;
+    $step3 = $currentStepNum >= 3;
+    $step4 = $currentStepNum >= 4;
+    $step5 = $currentStepNum >= 5;
+    $step6 = $currentStepNum >= 6;
 @endphp
 
 <div wire:poll.5s>

@@ -20,11 +20,19 @@ class OtpController extends Controller
      */
     public function show(): View|RedirectResponse
     {
-        if (!session('otp_user_id')) {
+        // Jika user sudah login dan email sudah aktif, langsung arahkan ke tujuan
+        if (Auth::check() && Auth::user()->hasVerifiedEmail()) {
+            return auth()->user()->hasAnyRole(['super_admin', 'teknisi', 'admin'])
+                ? redirect()->route('admin.dashboard')
+                : redirect()->route('home');
+        }
+
+        $userId = session('otp_user_id') ?? Auth::id();
+
+        if (!$userId) {
             return redirect()->route('register');
         }
 
-        $userId = session('otp_user_id');
         $user = User::findOrFail($userId);
 
         // Ambil OTP aktif terakhir untuk hitung cooldown & countdown
@@ -63,10 +71,17 @@ class OtpController extends Controller
     {
         $request->validate(['otp' => 'required|string|size:6']);
 
-        $userId = session('otp_user_id');
+        // Jika user sudah login dan email sudah terverifikasi (akibat request pertama), langsung arahkan sukses
+        if (Auth::check() && Auth::user()->hasVerifiedEmail()) {
+            return auth()->user()->hasAnyRole(['super_admin', 'teknisi', 'admin'])
+                ? redirect()->route('admin.dashboard')->with('success', 'Akun berhasil diverifikasi!')
+                : redirect()->route('home')->with('success', 'Akun berhasil diverifikasi!');
+        }
+
+        $userId = session('otp_user_id') ?? Auth::id();
 
         if (!$userId) {
-            return redirect()->route('register');
+            return redirect()->route('login')->with('info', 'Silakan masuk untuk melanjutkan verifikasi akun Anda.');
         }
 
         $record = EmailOtpVerification::where('user_id', $userId)
@@ -76,7 +91,17 @@ class OtpController extends Controller
             ->latest()
             ->first();
 
+        // Antisipasi jika request pertama sudah memproses kode ini beberapa milidetik yang lalu
         if (!$record) {
+            $user = User::find($userId);
+            if ($user && !is_null($user->email_verified_at)) {
+                Auth::login($user);
+                session()->forget('otp_user_id');
+                return $user->hasAnyRole(['super_admin', 'teknisi', 'admin'])
+                    ? redirect()->route('admin.dashboard')->with('success', 'Akun berhasil diverifikasi!')
+                    : redirect()->route('home')->with('success', 'Akun berhasil diverifikasi!');
+            }
+
             return back()->withErrors(['otp' => 'Kode tidak valid atau sudah kedaluwarsa.']);
         }
 
@@ -136,10 +161,10 @@ class OtpController extends Controller
      */
     public function resend(Request $request): RedirectResponse
     {
-        $userId = session('otp_user_id');
+        $userId = session('otp_user_id') ?? Auth::id();
 
         if (!$userId) {
-            return redirect()->route('register');
+            return redirect()->route('login');
         }
 
         $user = User::findOrFail($userId);

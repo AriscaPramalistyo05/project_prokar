@@ -21,6 +21,63 @@ class ShippingService
     }
 
     /**
+     * Get configured flat shipping cost from AdditionalFee or SettingService.
+     */
+    public function getFlatShippingCost(): int
+    {
+        // 1. Try from AdditionalFee (menu Biaya Tambahan)
+        try {
+            $fee = \App\Models\AdditionalFee::where(function ($q) {
+                $q->where('name', 'like', '%ongkir%')
+                  ->orWhere('name', 'like', '%ongkos kirim%')
+                  ->orWhere('name', 'like', '%kurir toko%');
+            })->first();
+
+            if ($fee) {
+                return (int) $fee->default_amount;
+            }
+        } catch (\Throwable $e) {}
+
+        // 2. Try from SettingService
+        try {
+            $val = app(\App\Services\SettingService::class)->get('flat_shipping_cost');
+            if ($val !== null && is_numeric($val)) {
+                return (int) $val;
+            }
+        } catch (\Throwable $e) {}
+
+        // 3. Fallback default
+        return 50000;
+    }
+
+    /**
+     * Check if flat store courier shipping is currently active.
+     */
+    public function isFlatShippingActive(): bool
+    {
+        try {
+            $fee = \App\Models\AdditionalFee::where(function ($q) {
+                $q->where('name', 'like', '%ongkir%')
+                  ->orWhere('name', 'like', '%ongkos kirim%')
+                  ->orWhere('name', 'like', '%kurir toko%');
+            })->first();
+
+            if ($fee) {
+                return (bool) $fee->is_active;
+            }
+        } catch (\Throwable $e) {}
+
+        try {
+            $val = app(\App\Services\SettingService::class)->get('flat_shipping_active');
+            if ($val !== null) {
+                return (bool) $val;
+            }
+        } catch (\Throwable $e) {}
+
+        return true;
+    }
+
+    /**
      * Determine shipping options based on target city & cart items.
      *
      * @param string|int|null $cityOrRegency City name or ID
@@ -32,15 +89,18 @@ class ShippingService
     {
         $target = strtolower(trim((string) $cityOrRegency));
 
-        if ($this->isLocalArea($target)) {
+        if ($this->isLocalArea($target) && $this->isFlatShippingActive()) {
+            $flatCost = $this->getFlatShippingCost();
+            $formattedCost = 'Rp ' . number_format($flatCost, 0, ',', '.');
+
             $localOption = [
                 'code' => 'kurir_toko',
                 'service' => 'Kurir Toko',
                 'courier_name' => 'Kurir Toko Prokar',
                 'description' => 'Diantar langsung oleh Kurir Toko Prokar khusus area Jepara, Kudus, Demak, Pati',
-                'cost' => 50000,
+                'cost' => $flatCost,
                 'etd' => 'Estimasi 1-2 Hari Kerja',
-                'label' => 'Kurir Toko Prokar (Jepara, Kudus, Demak, Pati) — Rp 50.000 [Estimasi 1-2 Hari Kerja]',
+                'label' => "Kurir Toko Prokar (Jepara, Kudus, Demak, Pati) — {$formattedCost} [Estimasi 1-2 Hari Kerja]",
             ];
 
             return [

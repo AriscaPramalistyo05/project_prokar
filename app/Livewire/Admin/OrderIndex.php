@@ -76,7 +76,20 @@ class OrderIndex extends Component
 
     public function updateStatus(Order $order, string $status)
     {
-        $order->update(['status' => $status]);
+        if ($status === 'cancelled' && $order->stock_reserved && is_null($order->stock_released_at)) {
+            $stockService = app(\App\Services\StockService::class);
+            foreach ($order->orderItems as $item) {
+                try {
+                    $stockService->releaseStock($item->product_id, $item->quantity);
+                } catch (\Throwable $e) {}
+            }
+            $order->update([
+                'status' => 'cancelled',
+                'stock_released_at' => now(),
+            ]);
+        } else {
+            $order->update(['status' => $status]);
+        }
         $this->dispatch('mary-toast', type: 'success', title: 'Status pesanan berhasil diperbarui');
     }
 

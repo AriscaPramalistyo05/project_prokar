@@ -3,6 +3,7 @@
 @php
     $midtransService = app(\App\Services\MidtransService::class);
     $isPaid = in_array($order->payment_status, ['paid', 'dp_paid']);
+    $isCancelled = ($order->status === 'cancelled' || in_array($order->midtrans_response['transaction_status'] ?? '', ['expire', 'cancel', 'deny']));
     $isCashStore = ($order->payment_method === 'cash_store' || $order->delivery_type === 'pickup');
     $isCod = ($order->payment_method === 'cod');
     $paymentLabel = $midtransService->formatPaymentMethod($order->payment_method, $order->midtrans_response);
@@ -31,9 +32,9 @@
     }
 @endphp
 
-@section('title', ($isPaid ? 'Pembayaran Berhasil' : ($isCashStore ? 'Menunggu Pembayaran (Bayar Tunai / Cash)' : 'Menunggu Pembayaran')) . ' - ' . $order->order_code . ' | Prokar Elektronik')
+@section('title', ($isPaid ? 'Pembayaran Berhasil' : ($isCancelled ? 'Pembayaran Kedaluwarsa / Dibatalkan' : ($isCashStore ? 'Menunggu Pembayaran (Bayar Tunai / Cash)' : 'Menunggu Pembayaran'))) . ' - ' . $order->order_code . ' | Prokar Elektronik')
 @section('description', 'Status pembayaran pesanan ' . $order->order_code . ' di Prokar Elektronik.')
-@section('body_class', 'bg-brand-black font-inter')
+@section('body_class', 'bg-brand-soft font-inter')
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('vendor/fonts/fonts.css') }}" />
@@ -47,25 +48,25 @@
 @endpush
 
 @section('content')
-<main class="bg-brand-black flex flex-col min-h-screen">
+<main class="bg-brand-soft flex flex-col min-h-screen">
 
-  <!-- ═════════════════════ SECTION 1: HERO HEADER (BLACK) ═════════════════════ -->
-  <section class="section-overlap section-overlap-first bg-brand-black pt-16 pb-24 md:pt-24 md:pb-32 z-10 relative text-center">
+  <!-- ═════════════════════ SECTION 1: HERO HEADER (SOFT BLUE & BLACK TEXT) ═════════════════════ -->
+  <section class="section-overlap section-overlap-first bg-brand-soft pt-16 pb-24 md:pt-24 md:pb-32 z-10 relative text-center">
     <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
-      <h1 class="text-white text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tighter font-public mb-4 reveal-wrapper">
+      <h1 class="text-black text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tighter font-public mb-4 reveal-wrapper">
         <span class="reveal-line">
-          {{ $isPaid ? (($order->payment_status === 'dp_paid' || $order->payment_type === 'down_payment') ? 'Uang Muka Diterima' : 'Pembayaran Berhasil') : ($isCashStore ? 'Siap Diambil di Toko' : ($isCod ? 'Pesanan COD Dikonfirmasi' : 'Menunggu Pembayaran')) }}
+          {{ $isPaid ? (($order->payment_status === 'dp_paid' || $order->payment_type === 'down_payment') ? 'Uang Muka Diterima' : 'Pembayaran Berhasil') : ($isCancelled ? 'Pembayaran Kedaluwarsa' : ($isCashStore ? 'Siap Diambil di Toko' : ($isCod ? 'Pesanan COD Dikonfirmasi' : 'Menunggu Pembayaran'))) }}
         </span>
       </h1>
 
-      <p class="text-gray-400 text-xs sm:text-sm md:text-base font-bold tracking-widest uppercase reveal-fade">
-        Nomor Pesanan: <span class="text-[#FFCC00]">{{ $order->order_code }}</span>
+      <p class="text-gray-600 text-xs sm:text-sm md:text-base font-bold tracking-widest uppercase reveal-fade">
+        Nomor Pesanan: <span class="text-black bg-[#FECB00] px-2.5 py-0.5 rounded font-black inline-block mt-1 sm:mt-0">{{ $order->order_code }}</span>
       </p>
     </div>
   </section>
 
-  <!-- ═════════════════════ SECTION 2: CONTENT & RECEIPT (OVERLAPPING SOFT) ═════════════════════ -->
-  <section class="section-overlap bg-brand-soft pt-12 pb-32 md:pt-16 md:pb-40 z-20 flex-grow text-gray-900 rounded-t-[2.5rem] md:rounded-t-[3.5rem] -mt-8 relative shadow-2xl">
+  <!-- ═════════════════════ SECTION 2: CONTENT & RECEIPT ═════════════════════ -->
+  <section class="section-overlap bg-brand-soft pt-6 pb-32 md:pt-10 md:pb-40 z-20 flex-grow text-gray-900 -mt-8 relative">
     <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {{-- ══════════════════════════════════════════════════════════════════
@@ -232,7 +233,125 @@
             </div>
 
         {{-- ══════════════════════════════════════════════════════════════════
-             STATE 2: MENUNGGU PEMBAYARAN (BAYAR DI KASIR TOKO / ONLINE PENDING)
+             STATE 2: TRANSAKSI KEDALUWARSA / DIBATALKAN (EXPIRED / CANCELLED)
+        ══════════════════════════════════════════════════════════════════ --}}
+        @elseif ($isCancelled)
+            <div class="bg-white border border-neutral-200/90 rounded-2xl shadow-sm p-6 sm:p-8 text-center reveal-fade">
+                {{-- Header Icon Rose --}}
+                <div class="w-14 h-14 mx-auto mb-4 bg-rose-50 border border-rose-200 text-rose-600 rounded-full flex items-center justify-center">
+                    <svg class="w-7 h-7" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="15" y1="9" x2="9" y2="15"/>
+                        <line x1="9" y1="9" x2="15" y2="15"/>
+                    </svg>
+                </div>
+
+                <h2 class="text-xl sm:text-2xl font-semibold text-neutral-900 tracking-tight mb-1.5">
+                    Batas Waktu Pembayaran Berakhir
+                </h2>
+
+                <p class="text-sm text-neutral-500 max-w-md mx-auto mb-6">
+                    Transaksi ini telah kedaluwarsa karena tidak ada pembayaran yang diselesaikan sebelum batas waktu berakhir. Stok barang telah dikembalikan ke etalase toko.
+                </p>
+
+                {{-- Status Card Detail --}}
+                <div class="w-full bg-white rounded-xl border border-neutral-200 relative mb-6 overflow-hidden">
+                    <!-- Header Nota Batal -->
+                    <div class="bg-neutral-900 px-5 sm:px-6 py-4 flex justify-between items-center text-left">
+                        <div>
+                            <span class="text-white font-bold text-base tracking-tight">Prokar Elektronik</span>
+                            <span class="text-neutral-400 text-xs block">Karanggondang, Mlonggo, Jepara</span>
+                        </div>
+                        <span class="bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-medium px-2.5 py-1 rounded-full">
+                            Kedaluwarsa (Expired)
+                        </span>
+                    </div>
+
+                    <!-- Body Nota Batal -->
+                    <div class="p-5 sm:p-6 text-left">
+                        <div class="grid grid-cols-2 sm:grid-cols-2 gap-y-4 gap-x-4 mb-5 text-xs sm:text-sm">
+                            <div>
+                                <p class="text-neutral-400 text-[11px] font-medium uppercase tracking-wider mb-0.5">No. Pesanan</p>
+                                <p class="font-mono font-semibold text-neutral-900">{{ $order->order_code }}</p>
+                            </div>
+                            <div>
+                                <p class="text-neutral-400 text-[11px] font-medium uppercase tracking-wider mb-0.5">Status Transaksi</p>
+                                <p class="font-medium text-rose-600 font-semibold">Dibatalkan Otomatis</p>
+                            </div>
+                            <div>
+                                <p class="text-neutral-400 text-[11px] font-medium uppercase tracking-wider mb-0.5">Pelanggan</p>
+                                <p class="font-medium text-neutral-900">{{ $order->customer_name }}</p>
+                            </div>
+                            <div>
+                                <p class="text-neutral-400 text-[11px] font-medium uppercase tracking-wider mb-0.5">Metode Bayar</p>
+                                <p class="font-medium text-neutral-900">{{ $paymentLabel }}</p>
+                            </div>
+                        </div>
+
+                        {{-- Product Items --}}
+                        <div class="border-t border-b border-neutral-100 py-3.5 my-3.5 space-y-2 text-xs sm:text-sm">
+                            @foreach ($order->orderItems as $item)
+                                <div class="flex flex-wrap justify-between items-start gap-2">
+                                    <div class="min-w-0 flex-1 pr-2">
+                                        <p class="font-medium text-neutral-900">{{ $item->product_name }}</p>
+                                        <p class="text-[11px] text-neutral-400">{{ $item->quantity }}x @ Rp {{ number_format($item->product_price, 0, ',', '.') }}</p>
+                                    </div>
+                                    <span class="font-semibold text-neutral-900 whitespace-nowrap">
+                                        Rp {{ number_format($item->subtotal, 0, ',', '.') }}
+                                    </span>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        {{-- Summary --}}
+                        <div class="space-y-1.5 text-xs sm:text-sm">
+                            <div class="flex justify-between items-center pt-2.5 border-t border-neutral-200">
+                                <span class="font-semibold text-sm text-neutral-900">Total Tagihan Batal</span>
+                                <span class="font-bold text-base text-neutral-900">Rp {{ number_format($order->total, 0, ',', '.') }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Action Buttons --}}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+                    <a href="{{ route('produk.index') }}"
+                       class="h-10 px-4 inline-flex items-center justify-center gap-2 rounded-md bg-neutral-900 text-white hover:bg-neutral-800 text-sm font-medium shadow-xs transition-colors w-full">
+                        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="8" cy="21" r="1"/>
+                            <circle cx="19" cy="21" r="1"/>
+                            <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
+                        </svg>
+                        <span>Belanja Produk Lain</span>
+                    </a>
+                    <a href="{{ route('home') }}"
+                       class="h-10 px-4 inline-flex items-center justify-center gap-2 rounded-md border border-input bg-background hover:bg-neutral-100 hover:text-neutral-900 text-neutral-700 text-sm font-medium shadow-2xs transition-colors w-full">
+                        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                            <polyline points="9 22 9 12 15 12 15 22"/>
+                        </svg>
+                        <span>Kembali ke Beranda</span>
+                    </a>
+                </div>
+
+                {{-- Info Card --}}
+                <div class="bg-rose-50/50 border border-rose-100 rounded-xl p-4 text-left">
+                    <h3 class="font-medium text-xs uppercase tracking-wider text-rose-800 mb-2 flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5 text-rose-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="12" y1="8" x2="12" y2="12"/>
+                            <line x1="12" y1="16" x2="12.01" y2="16"/>
+                        </svg>
+                        <span>Stok Produk Telah Dipulihkan</span>
+                    </h3>
+                    <p class="text-xs text-rose-700 font-normal leading-relaxed">
+                        Produk pada pesanan ini telah dilepaskan dari reservasi dan tersedia kembali di katalog etalase. Jika Anda masih menginginkan produk ini, silakan melakukan pemesanan ulang selama stok masih tersedia.
+                    </p>
+                </div>
+            </div>
+
+        {{-- ══════════════════════════════════════════════════════════════════
+             STATE 3: MENUNGGU PEMBAYARAN (BAYAR DI KASIR TOKO / ONLINE PENDING)
         ══════════════════════════════════════════════════════════════════ --}}
         @else
             <div class="bg-white border border-neutral-200/90 rounded-2xl shadow-sm p-6 sm:p-8 text-center reveal-fade">
