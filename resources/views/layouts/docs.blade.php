@@ -68,7 +68,7 @@
       class="bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-inter antialiased transition-colors duration-200 overflow-x-hidden">
 
   {{-- Top Navbar (Midtrans Style: Clean, Flat, Solid) --}}
-  <header class="fixed top-0 left-0 right-0 z-40 h-14 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+  <header class="fixed top-0 left-0 right-0 z-40 h-14 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 print:hidden">
     <div class="flex items-center justify-between h-full px-4 lg:px-6 max-w-[1500px] mx-auto">
 
       {{-- Left: Mobile Hamburger & Logo --}}
@@ -175,7 +175,7 @@
     {{-- bg di desktop dihandle container gradient, bukan aside langsung --}}
     <aside id="docs-sidebar"
            :class="{ 'is-open': sidebarOpen }"
-           class="bg-white dark:bg-slate-900 lg:bg-transparent dark:lg:bg-transparent border-r border-slate-200 dark:border-slate-800 lg:border-r-0 shadow-2xl lg:shadow-none scrollbar-thin lg:shrink-0">
+           class="bg-white dark:bg-slate-900 lg:bg-transparent dark:lg:bg-transparent border-r border-slate-200 dark:border-slate-800 lg:border-r-0 shadow-2xl lg:shadow-none scrollbar-thin lg:shrink-0 print:hidden">
       @include('docs.partials.sidebar')
     </aside>
 
@@ -186,9 +186,9 @@
       </div>
 
       {{-- Minimalist Footer --}}
-      <footer class="border-t border-slate-200 dark:border-slate-800 pt-8 mt-16 {{ View::hasSection('toc') ? 'max-w-[800px]' : 'max-w-[960px]' }} mx-auto w-full">
+      <footer class="border-t border-slate-200 dark:border-slate-800 pt-8 mt-16 print:pt-4 print:mt-8 {{ View::hasSection('toc') ? 'max-w-[800px]' : 'max-w-[960px]' }} mx-auto w-full">
         <div class="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
-          <p>&copy; {{ date('Y') }} {{ $shopName }}. Seluruh hak cipta dilindungi.</p>
+          <p class="font-mono text-slate-500 dark:text-slate-400">{{ url()->current() }}</p>
           <div class="flex items-center gap-4">
             <a href="{{ request()->getHost() === env('DOCS_DOMAIN', 'docs.prokarelektronik.com') ? url('/') : url('/docs') }}" class="hover:text-slate-900 dark:hover:text-white transition-colors">Dokumentasi</a>
             <span>&middot;</span>
@@ -200,7 +200,7 @@
 
     {{-- Right TOC Sidebar (Desktop Only) --}}
     @hasSection('toc')
-    <aside class="hidden xl:block w-56 shrink-0 sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto py-8 pr-4 pl-2 scrollbar-thin">
+    <aside class="hidden xl:block w-56 shrink-0 sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto py-8 pr-4 pl-2 scrollbar-thin print:hidden">
       @yield('toc')
     </aside>
     @endif

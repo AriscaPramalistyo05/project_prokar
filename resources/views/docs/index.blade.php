@@ -4,12 +4,12 @@
 @section('description', 'Pusat dokumentasi resmi, alur reparasi, standar operasional prosedur, dan manual book pengguna Prokar Elektronik.')
 
 @section('content')
-<div class="space-y-12 sm:space-y-14">
+<div class="space-y-12 sm:space-y-14 print:space-y-8">
 
   {{-- ========================================================================= --}}
   {{-- 1. HEADER SECTION (Clean, Soft, Flat — Bebas AI-Slop & Tanpa Gradient)    --}}
   {{-- ========================================================================= --}}
-  <div class="rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 lg:p-10">
+  <div class="rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 lg:p-10 print:p-6 print:rounded-2xl print:border-slate-200 print:bg-white">
     <div class="space-y-4">
       
       {{-- Judul Utama --}}
@@ -40,16 +40,16 @@
 
         <ul class="space-y-2 text-xs text-slate-600 dark:text-slate-300 leading-relaxed list-disc list-inside marker:text-slate-400 dark:marker:text-slate-500">
           <li>
-            <strong class="text-slate-900 dark:text-white">Layanan Servis Terpadu:</strong> Pilihan antar mandiri ke workshop atau panggil teknisi ke rumah dengan pelacakan progres tiket secara real-time.
+            <strong class="text-slate-900 dark:text-white">Layanan Servis Terpadu:</strong> Antar workshop / panggil teknisi dengan pelacakan progres tiket real-time.
           </li>
           <li>
-            <strong class="text-slate-900 dark:text-white">Persetujuan Biaya Transparan:</strong> Rincian estimasi suku cadang dan ongkos jasa wajib disetujui pelanggan terlebih dahulu sebelum perbaikan dikerjakan.
+            <strong class="text-slate-900 dark:text-white">Persetujuan Transparan:</strong> Estimasi suku cadang &amp; ongkos jasa wajib disetujui pelanggan sebelum pengerjaan.
           </li>
           <li>
-            <strong class="text-slate-900 dark:text-white">Standar Uji QC 15 Titik:</strong> Seluruh produk elektronik bekas diuji kelayakan fungsi dan kelistrikannya serta dilengkapi kartu garansi digital PDF ber-barcode.
+            <strong class="text-slate-900 dark:text-white">Standar Uji QC 15 Titik:</strong> Seluruh unit bekas diuji fungsi kelistrikan &amp; disertai kartu garansi digital PDF barcode.
           </li>
           <li>
-            <strong class="text-slate-900 dark:text-white">Pembayaran Digital Snap:</strong> Mendukung pembayaran instan QRIS, GoPay, dan Virtual Account Bank untuk checkout produk maupun DP servis.
+            <strong class="text-slate-900 dark:text-white">Pembayaran Digital Snap:</strong> Pembayaran instan QRIS, GoPay, dan VA Bank untuk checkout maupun DP servis.
           </li>
         </ul>
       </div>
@@ -58,7 +58,7 @@
   </div>
 
   {{-- ========================================================================= --}}
-  {{-- 2. TABLE OF CONTENTS / DAFTAR ISI MANUAL BOOK (Inspirasi Image 3)         --}}
+  {{-- 2. TABLE OF CONTENTS / DAFTAR ISI MANUAL BOOK                             --}}
   {{-- ========================================================================= --}}
   <div class="space-y-8 pt-2">
 
@@ -72,15 +72,15 @@
       </p>
     </div>
 
-    {{-- Grid 2 Kolom Bersih Sesuai Image 3 --}}
+    {{-- Grid 2 Kolom Bersih Sesuai Screenshot User --}}
     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 lg:gap-x-16 gap-y-10 sm:gap-y-12">
       @forelse($categories as $index => $cat)
         @php
           $num = str_pad($index + 1, 2, '0', STR_PAD_LEFT);
         @endphp
 
-        <div class="space-y-3 group">
-          {{-- Nomor Urut Besar & Judul Bab (Image 3 Style) --}}
+        <div class="space-y-3 group print:break-inside-avoid">
+          {{-- Nomor Urut Besar & Judul Bab --}}
           <div class="space-y-1">
             <span class="block text-2xl sm:text-3xl font-extrabold font-mono text-slate-900 dark:text-white tracking-tighter">
               {{ $num }}
@@ -99,10 +99,10 @@
             </p>
           @endif
 
-          {{-- Garis Pembatas Tipis Horisontal Sesuai Image 3 --}}
+          {{-- Garis Pembatas Tipis Horisontal --}}
           <div class="h-px bg-slate-200 dark:bg-slate-800 my-3"></div>
 
-          {{-- Sub-bab / Sub-articles List (Format Akademik: 1.1, 1.2, dst.) --}}
+          {{-- Sub-bab / Sub-articles List --}}
           @if($cat->publishedRootArticles && $cat->publishedRootArticles->isNotEmpty())
             <ul class="space-y-2 pt-1 text-xs">
               @foreach($cat->publishedRootArticles as $subIndex => $article)
@@ -133,15 +133,15 @@
   </div>
 
   {{-- ========================================================================= --}}
-  {{-- 3. KOTAK BANTUAN & KONTAK (Footer Support Note)                            --}}
+  {{-- 3. KOTAK BANTUAN & KONTAK (Tampil Sesuai Screenshot User)                 --}}
   {{-- ========================================================================= --}}
-  <div class="rounded-2xl p-6 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+  <div class="rounded-2xl p-6 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 print:rounded-2xl print:border-slate-200 print:bg-white print:break-inside-avoid">
     <div class="space-y-1 text-center sm:text-left">
       <h4 class="text-sm font-bold text-slate-900 dark:text-white">Butuh bantuan lebih lanjut?</h4>
       <p class="text-xs text-slate-500 dark:text-slate-400">Layanan pelanggan dan tim teknis Prokar Elektronik siap membantu kendala Anda.</p>
     </div>
     <div class="flex items-center gap-2.5">
-      <a href="{{ route('home') }}" class="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
+      <a href="{{ route('home') }}" class="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors print:border print:border-slate-300">
         Website Utama
       </a>
       @if(setting('shop_whatsapp'))

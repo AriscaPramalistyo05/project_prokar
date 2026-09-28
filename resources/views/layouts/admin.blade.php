@@ -263,7 +263,7 @@
         </x-slot:sidebar>
 
         {{-- Konten Utama --}}
-        <x-slot:content class="!p-0 min-h-screen">
+        <x-slot:content class="!p-0 min-h-screen flex flex-col justify-between">
             {{-- Topbar --}}
             <x-nav sticky full-width class="bg-base-100 border-b border-base-200 z-30 !px-3 sm:!px-6 !py-2 sm:!py-3">
                 <x-slot:brand class="flex items-center gap-1.5 sm:gap-2">
@@ -313,9 +313,15 @@
             </x-nav>
 
             {{-- Area Konten Halaman --}}
-            <div class="p-3.5 sm:p-6 lg:p-8">
+            <div class="p-3.5 sm:p-6 lg:p-8 flex-1">
                 {{ $slot }}
             </div>
+
+            {{-- Dynamic URL Footer --}}
+            <footer class="border-t border-base-200 px-4 sm:px-8 py-3.5 text-xs text-base-content/60 flex flex-col sm:flex-row items-center justify-between gap-2">
+                <span class="font-mono text-slate-500">{{ url()->current() }}</span>
+                <span>Prokar Elektronik</span>
+            </footer>
         </x-slot:content>
     </x-main>
 

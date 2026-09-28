@@ -96,7 +96,6 @@ Route::domain($docsSubdomain)->group(function () {
     Route::post('/logout', [\App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'destroy'])->name('subdomain.logout');
 
     Route::match(['get', 'post'], '/api/deploy/optimize', [MaintenanceController::class, 'deployOptimize']);
-    Route::match(['get', 'post'], '/api/deploy/seed-docs', [MaintenanceController::class, 'deploySeedDocs']);
 
     // Direct storage handler on docs subdomain
     Route::get('/storage/{path}', function (\Illuminate\Http\Request $request, string $path) {
@@ -134,8 +133,6 @@ Route::domain($docsSubdomain)->group(function () {
 // ─── DEPLOYMENT WEBHOOK (CI/CD CACHE REBUILD & SEED) ───────────────
 Route::match(['get', 'post'], '/api/deploy/optimize', [MaintenanceController::class, 'deployOptimize'])
     ->name('deploy.optimize');
-Route::match(['get', 'post'], '/api/deploy/seed-docs', [MaintenanceController::class, 'deploySeedDocs'])
-    ->name('deploy.seed-docs');
 
 Route::prefix('docs')->name('docs.')->group(function () {
     Route::get('/', [DocController::class, 'index'])->name('index');
