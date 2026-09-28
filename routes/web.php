@@ -122,11 +122,11 @@ Route::domain($docsSubdomain)->group(function () {
             return redirect()->to(url('/' . $slug), 301);
         });
         Route::get('/{categorySlug}/{articleSlug}', [DocController::class, 'legacyShow'])
-            ->where('categorySlug', '^(?!login|logout|register|search|api|docs|admin|storage).*$')
+            ->where('categorySlug', '^(?!login|logout|register|search|api|docs|storage).*$')
             ->where('articleSlug', '^(?!.*\.png|.*\.jpg|.*\.jpeg|.*\.webp|.*\.gif|.*\.svg).*$')
             ->name('legacy.show');
         Route::get('/{slug}', [DocController::class, 'resolve'])
-            ->where('slug', '^(?!login|logout|register|search|api|docs|admin|storage).*$')
+            ->where('slug', '^(?!login|logout|register|search|api|docs|storage).*$')
             ->name('show');
     });
 });
@@ -142,7 +142,7 @@ Route::prefix('docs')->name('docs.')->group(function () {
     Route::get('/search', [DocController::class, 'search'])->name('search');
     Route::get('/category/{slug}', [DocController::class, 'category'])->name('category');
     Route::get('/{categorySlug}/{articleSlug}', [DocController::class, 'legacyShow'])
-        ->where('categorySlug', '^(?!login|logout|register|search|api|docs|admin|storage).*$')
+        ->where('categorySlug', '^(?!login|logout|register|search|api|docs|storage).*$')
         ->where('articleSlug', '^(?!.*\.png|.*\.jpg|.*\.jpeg|.*\.webp|.*\.gif|.*\.svg).*$')
         ->name('legacy.show');
     Route::get('/{slug}', [DocController::class, 'resolve'])
