@@ -183,6 +183,9 @@ Route::middleware('auth')->group(function () {
 // ─── ADMIN ──────────────────────────────────────────────────────
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'staff'])->group(function () {
 
+    // Redirect /admin langsung ke dashboard admin
+    Route::get('/', fn () => redirect()->route('admin.dashboard'));
+
     // 1. Dashboard Utama: Bisa diakses oleh semua staf yang memiliki hak akses admin
     Route::get('/dashboard', \App\Livewire\Admin\Dashboard::class)->name('dashboard');
 
