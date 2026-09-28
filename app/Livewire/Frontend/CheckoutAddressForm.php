@@ -9,7 +9,9 @@ use App\Models\Product;
 use App\Services\CartService;
 use App\Services\MidtransService;
 use App\Services\ShippingService;
+use App\Services\StockService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 
@@ -208,8 +210,9 @@ class CheckoutAddressForm extends Component
             $isLocal = $shippingService->isLocalArea((string) $targetCity);
 
             if ($isLocal) {
-                $shippingCost = 50000;
-                $shippingCourierName = 'Kurir Toko Prokar (Flat Rp 50.000)';
+                $shippingCost = $shippingService->getFlatShippingCost();
+                $formattedCost = 'Rp ' . number_format($shippingCost, 0, ',', '.');
+                $shippingCourierName = "Kurir Toko Prokar (Flat {$formattedCost})";
             } else {
                 if ($this->shippingCost > 0) {
                     $shippingCost = $this->shippingCost;
@@ -246,48 +249,69 @@ class CheckoutAddressForm extends Component
             $paymentMethod = 'cod';
         }
 
-        // 4. Buat Record Order di Database
-        $order = Order::create([
-            'user_id' => Auth::id(),
-            'customer_name' => $this->name,
-            'customer_email' => $this->email,
-            'customer_phone' => $this->phone,
-            'delivery_type' => $this->deliveryType,
-            'address_detail' => $this->deliveryType === 'pickup' ? 'Ambil di Toko Prokar Elektronik Jepara' : $this->address_detail,
-            'province_id' => $this->deliveryType === 'pickup' ? '33' : $this->province_id,
-            'regency_id' => $this->deliveryType === 'pickup' ? '3320' : $this->regency_id,
-            'district_id' => $this->deliveryType === 'pickup' ? '3320070' : $this->district_id,
-            'village_id' => $this->deliveryType === 'pickup' ? '3320070002' : $this->village_id,
-            'postal_code' => $this->deliveryType === 'pickup' ? '59452' : $this->postal_code,
-            'subtotal' => $subtotal,
-            'shipping_cost' => $shippingCost,
-            'total' => $total,
-            'status' => 'pending',
-            'payment_type' => $paymentType,
-            'down_payment' => $downPayment,
-            'remaining_payment' => $remainingPayment,
-            'payment_method' => $paymentMethod,
-            'payment_status' => 'unpaid',
-        ]);
+        // 4. Buat Record Order & Reserve Stok di Database
+        $stockService = app(StockService::class);
+        $order = null;
 
-        // 5. Buat OrderItem untuk setiap produk
-        $midtransItems = [];
-        foreach ($verifiedItems as $item) {
-            OrderItem::create([
-                'order_id' => $order->id,
-                'product_id' => $item['id'],
-                'product_name' => $item['name'],
-                'product_price' => (int) $item['unit_price'],
-                'quantity' => (int) $item['quantity'],
-                'subtotal' => (int) $item['subtotal'],
+        try {
+            DB::beginTransaction();
+
+            $order = Order::create([
+                'user_id' => Auth::id(),
+                'customer_name' => $this->name,
+                'customer_email' => $this->email,
+                'customer_phone' => $this->phone,
+                'delivery_type' => $this->deliveryType,
+                'address_detail' => $this->deliveryType === 'pickup' ? 'Ambil di Toko Prokar Elektronik Jepara' : $this->address_detail,
+                'province_id' => $this->deliveryType === 'pickup' ? '33' : $this->province_id,
+                'regency_id' => $this->deliveryType === 'pickup' ? '3320' : $this->regency_id,
+                'district_id' => $this->deliveryType === 'pickup' ? '3320070' : $this->district_id,
+                'village_id' => $this->deliveryType === 'pickup' ? '3320070002' : $this->village_id,
+                'postal_code' => $this->deliveryType === 'pickup' ? '59452' : $this->postal_code,
+                'subtotal' => $subtotal,
+                'shipping_cost' => $shippingCost,
+                'total' => $total,
+                'status' => 'pending',
+                'payment_type' => $paymentType,
+                'down_payment' => $downPayment,
+                'remaining_payment' => $remainingPayment,
+                'payment_method' => $paymentMethod,
+                'payment_status' => 'unpaid',
+                'stock_reserved' => true,
             ]);
 
-            $midtransItems[] = [
-                'id' => 'PROD-' . $item['id'],
-                'price' => (int) $item['unit_price'],
-                'quantity' => (int) $item['quantity'],
-                'name' => mb_strimwidth($item['name'], 0, 45, '...'),
-            ];
+            // 5. Buat OrderItem & Kunci Stok Produk
+            $midtransItems = [];
+            foreach ($verifiedItems as $item) {
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $item['id'],
+                    'product_name' => $item['name'],
+                    'product_price' => (int) $item['unit_price'],
+                    'quantity' => (int) $item['quantity'],
+                    'subtotal' => (int) $item['subtotal'],
+                ]);
+
+                // Mengunci stok secara pesimistik agar tidak diserobot pembeli lain
+                $stockService->reserveStock($item['id'], (int) $item['quantity']);
+
+                $midtransItems[] = [
+                    'id' => 'PROD-' . $item['id'],
+                    'price' => (int) $item['unit_price'],
+                    'quantity' => (int) $item['quantity'],
+                    'name' => mb_strimwidth($item['name'], 0, 45, '...'),
+                ];
+            }
+
+            DB::commit();
+        } catch (\App\Exceptions\ProductUnavailableException $e) {
+            DB::rollBack();
+            $this->addError('payment', $e->getMessage());
+            return;
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            $this->addError('payment', 'Gagal memproses pesanan: ' . $e->getMessage());
+            return;
         }
 
         if ($shippingCost > 0) {
@@ -367,6 +391,16 @@ class CheckoutAddressForm extends Component
                 'order_code' => $this->orderCode,
             ]);
         } catch (\Throwable $e) {
+            // Jika token gateway gagal dibuat, kembalikan stok yang sempat di-reserve
+            foreach ($verifiedItems as $item) {
+                try {
+                    $stockService->releaseStock($item['id'], (int) $item['quantity']);
+                } catch (\Throwable $ex) {}
+            }
+            $order->update([
+                'status' => 'cancelled',
+                'stock_released_at' => now(),
+            ]);
             $this->addError('payment', 'Gagal menghubungkan ke payment gateway: ' . $e->getMessage());
         }
     }

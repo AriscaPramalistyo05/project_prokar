@@ -96,7 +96,7 @@
                                     <span
                                         class="bg-[#FFCC00] text-[#0A0A0A] text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded">Flat</span>
                                 </div>
-                                <span class="font-mono font-bold text-[#FFCC00] text-xs">Rp 50.000</span>
+                                <span class="font-mono font-bold text-[#FFCC00] text-xs">{{ $this->formatRupiah($shippingFee > 0 ? $shippingFee : app(\App\Services\ShippingService::class)->getFlatShippingCost()) }}</span>
                             </div>
                             <p class="text-[11px] text-[#FCFCFA]/70 mt-0.5 font-inter">Area Jepara, Kudus, Demak, Pati •
                                 <span class="text-[#FFCC00] font-semibold">Estimasi 1–2 Hari Kerja</span></p>
@@ -146,7 +146,7 @@
                         @elseif ($shippingFee > 0)
                             {{ $this->formatRupiah($shippingFee) }}
                         @elseif ($isLocalArea)
-                            Rp 50.000
+                            {{ $this->formatRupiah($shippingFee > 0 ? $shippingFee : app(\App\Services\ShippingService::class)->getFlatShippingCost()) }}
                         @else
                             Belum Diisi
                         @endif
@@ -290,7 +290,7 @@
                                 <span
                                     class="bg-[#FFCC00] text-[#0A0A0A] text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded">Flat</span>
                             </div>
-                            <span class="font-mono font-bold text-[#FFCC00] text-xs">Rp 50.000</span>
+                            <span class="font-mono font-bold text-[#FFCC00] text-xs">{{ $this->formatRupiah($shippingFee > 0 ? $shippingFee : app(\App\Services\ShippingService::class)->getFlatShippingCost()) }}</span>
                         </div>
                         <p class="text-[11px] text-[#FCFCFA]/70 mt-0.5 font-inter">Area Jepara, Kudus, Demak, Pati •
                             <span class="text-[#FFCC00] font-semibold">Estimasi 1–2 Hari Kerja</span></p>
@@ -339,7 +339,7 @@
                     @elseif ($shippingFee > 0)
                         {{ $this->formatRupiah($shippingFee) }}
                     @elseif ($isLocalArea)
-                        Rp 50.000
+                        {{ $this->formatRupiah($shippingFee > 0 ? $shippingFee : app(\App\Services\ShippingService::class)->getFlatShippingCost()) }}
                     @else
                         Belum Diisi
                     @endif
