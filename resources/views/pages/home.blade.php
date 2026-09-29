@@ -16,7 +16,7 @@
 
 
     <!-- 1. HERO SECTION (Identical to index.html Reference) -->
-    <section id="hero" class="section-overlap section-overlap-first hero-redesign bg-white z-10">
+    <section id="hero" class="section-overlap section-overlap-first hero-redesign bg-white z-10 snap-start snap-always">
         <div class="hero-shell">
             <div class="hero-grid">
                 <!-- LEFT COLUMN: Headline & Copywriting -->
@@ -105,8 +105,8 @@
     </section>
 
     <!-- 2. SERVIS SECTION (Cuberto Card Overlap) -->
-    <section id="servis" class="section-overlap bg-brand-yellow pt-20 pb-20 lg:pt-28 lg:pb-32 z-20">
-        <div class="max-w-[1440px] mx-auto px-6 md:px-12">
+    <section id="servis" class="section-overlap bg-brand-yellow pt-20 pb-20 lg:pt-28 lg:pb-32 z-20 snap-start snap-always min-h-[100dvh] flex flex-col justify-center">
+        <div class="max-w-[1440px] mx-auto px-6 md:px-12 w-full">
             <h2 class="text-black text-4xl md:text-6xl font-black uppercase tracking-tighter font-public mb-16 text-center">
                 <span class="reveal-wrapper"><span class="reveal-line">Layanan Servis Kami</span></span>
             </h2>
@@ -179,8 +179,8 @@
 
     <!-- 3. ON SALE SECTION (Produk Promo Pilihan) -->
     @if (isset($promoProducts) && $promoProducts->isNotEmpty())
-        <section id="on-sale" class="section-overlap bg-white pt-20 pb-20 lg:pt-28 lg:pb-32 z-30">
-            <div class="max-w-[1440px] mx-auto px-6 md:px-12">
+        <section id="on-sale" class="section-overlap bg-white pt-20 pb-20 lg:pt-28 lg:pb-32 z-30 snap-start snap-always min-h-[100dvh] flex flex-col justify-center">
+            <div class="max-w-[1440px] mx-auto px-6 md:px-12 w-full">
                 <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
                     <div>
                         <h2 class="text-black text-4xl md:text-6xl font-black uppercase tracking-tighter font-public mb-2">
@@ -258,8 +258,8 @@
     @endif
 
     <!-- 4. TESTIMONI SECTION (Cuberto Card Overlap Dark) -->
-    <section id="testimonials" class="section-overlap bg-black pt-16 pb-16 lg:pt-24 lg:pb-24 z-40 text-white">
-        <div class="max-w-[860px] mx-auto px-6 text-center">
+    <section id="testimonials" class="section-overlap bg-black pt-16 pb-16 lg:pt-24 lg:pb-24 z-40 text-white snap-start snap-always min-h-[100dvh] flex flex-col justify-center">
+        <div class="max-w-[860px] mx-auto px-6 text-center w-full">
             <h2 class="text-white text-3xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight font-public mt-2 md:mt-4 mb-2 md:mb-3">
                 <span class="reveal-wrapper"><span class="reveal-line">Kata Pelanggan</span></span>
             </h2>
@@ -297,8 +297,8 @@
     </section>
 
     <!-- 5. FAQ SECTION (Pertanyaan Umum) -->
-    <section id="faq" class="section-overlap bg-brand-soft pt-16 pb-32 lg:pt-24 lg:pb-44 z-50">
-        <div class="max-w-[860px] mx-auto px-6 md:px-12">
+    <section id="faq" class="section-overlap bg-brand-soft pt-16 pb-32 lg:pt-24 lg:pb-44 z-50 snap-start snap-always min-h-[100dvh] flex flex-col justify-center">
+        <div class="max-w-[860px] mx-auto px-6 md:px-12 w-full">
             <h2 class="text-black text-3xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight font-public mb-8 md:mb-12 text-center">
                 <span class="reveal-wrapper"><span class="reveal-line">PERTANYAAN UMUM</span></span>
             </h2>
@@ -360,8 +360,8 @@
     </section>
 
     <!-- 6. LOKASI & KONTAK SECTION -->
-    <section id="lokasi" class="section-overlap bg-white pt-20 pb-24 lg:pt-28 lg:pb-36 z-[60]">
-        <div class="max-w-[1440px] mx-auto px-6 md:px-12">
+    <section id="lokasi" class="section-overlap bg-white pt-20 pb-24 lg:pt-28 lg:pb-36 z-[60] snap-start snap-always min-h-[100dvh] flex flex-col justify-center">
+        <div class="max-w-[1440px] mx-auto px-6 md:px-12 w-full">
             <h2 class="text-black text-4xl md:text-6xl font-black uppercase tracking-tighter font-public mb-12 text-center">
                 <span class="reveal-wrapper"><span class="reveal-line">Lokasi Kami</span></span>
             </h2>
@@ -705,6 +705,165 @@
                 behavior: 'smooth'
             });
         }
+
+        // 5. Smart Snap Docking Engine (Pilihan A: Auto-dock to nearest section on scroll settle)
+        (function() {
+            const mainEl = document.querySelector('main');
+            if (!mainEl) return;
+            const sections = Array.from(mainEl.querySelectorAll(':scope > section'));
+            if (sections.length < 2) return;
+
+            let isSnapping = false;
+            let scrollTimer = null;
+            let isTouching = false;
+            let lastScrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+            let scrollDirection = 0; // 1 = down, -1 = up
+
+            window.addEventListener('touchstart', function() {
+                isTouching = true;
+            }, { passive: true });
+
+            window.addEventListener('touchend', function() {
+                isTouching = false;
+                scheduleSnap();
+            }, { passive: true });
+
+            window.addEventListener('touchcancel', function() {
+                isTouching = false;
+            }, { passive: true });
+
+            function getMaxScroll() {
+                if (window.lenis && typeof window.lenis.limit === 'number') {
+                    return window.lenis.limit;
+                }
+                return Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+            }
+
+            function getSectionDockTargets() {
+                const targets = [];
+                const vh = window.innerHeight;
+                let runningTop = 0;
+
+                for (let i = 0; i < sections.length; i++) {
+                    const sec = sections[i];
+                    const h = sec.offsetHeight;
+
+                    // Start of section
+                    targets.push({
+                        pos: runningTop,
+                        el: sec
+                    });
+
+                    // If section is much taller than viewport (e.g. expanded FAQ), allow docking at its bottom too.
+                    // Note: Exclude the last section (lokasi) because the footer immediately follows it.
+                    if (i < sections.length - 1 && h > vh * 1.35) {
+                        targets.push({
+                            pos: Math.round(runningTop + h - vh),
+                            el: sec
+                        });
+                    }
+
+                    runningTop += h;
+                }
+
+                // Add footer / bottom of document as a docking target
+                const footerEl = document.querySelector('footer');
+                const maxScroll = getMaxScroll();
+                if (maxScroll > 0) {
+                    const lastPos = targets.length > 0 ? targets[targets.length - 1].pos : 0;
+                    if (maxScroll - lastPos > 40) {
+                        targets.push({
+                            pos: maxScroll,
+                            el: footerEl || null,
+                            isFooter: true
+                        });
+                    }
+                }
+
+                return targets;
+            }
+
+            function performSnap() {
+                if (isSnapping || isTouching) return;
+
+                const currentY = Math.max(0, window.pageYOffset || document.documentElement.scrollTop || 0);
+                const maxScroll = getMaxScroll();
+
+                // If user has already reached the bottom of the page (reading footer), do not snap back
+                if (currentY >= maxScroll - 30) {
+                    return;
+                }
+
+                const targets = getSectionDockTargets();
+                const vh = window.innerHeight;
+
+                let bestTarget = null;
+                let minDistance = Infinity;
+
+                for (let i = 0; i < targets.length; i++) {
+                    const targetPos = targets[i].pos;
+                    const rawDist = Math.abs(targetPos - currentY);
+
+                    // Bias in direction of scroll so user's intent is rewarded
+                    let weightedDist = rawDist;
+                    if (scrollDirection > 0 && targetPos > currentY) {
+                        weightedDist *= 0.65; // favor forward snap when scrolling down
+                    } else if (scrollDirection < 0 && targetPos < currentY) {
+                        weightedDist *= 0.65; // favor backward snap when scrolling up
+                    }
+
+                    if (weightedDist < minDistance) {
+                        minDistance = weightedDist;
+                        bestTarget = targetPos;
+                    }
+                }
+
+                if (bestTarget !== null) {
+                    const diff = Math.abs(bestTarget - currentY);
+                    // Snap if outside 10px deadzone and within 85% of screen height
+                    if (diff > 10 && diff < vh * 0.85) {
+                        isSnapping = true;
+
+                        if (window.lenis && typeof window.lenis.scrollTo === 'function') {
+                            window.lenis.scrollTo(bestTarget, {
+                                duration: 0.6,
+                                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                                onComplete: () => {
+                                    setTimeout(() => {
+                                        isSnapping = false;
+                                        lastScrollY = Math.max(0, window.pageYOffset || document.documentElement.scrollTop || 0);
+                                    }, 60);
+                                }
+                            });
+                        } else {
+                            window.scrollTo({
+                                top: bestTarget,
+                                behavior: 'smooth'
+                            });
+                            setTimeout(() => {
+                                isSnapping = false;
+                                lastScrollY = Math.max(0, window.pageYOffset || document.documentElement.scrollTop || 0);
+                            }, 500);
+                        }
+                    }
+                }
+            }
+
+            function scheduleSnap() {
+                if (isSnapping || isTouching) return;
+                clearTimeout(scrollTimer);
+                // 130ms debounce after user stops scrolling/wheeling
+                scrollTimer = setTimeout(performSnap, 130);
+            }
+
+            window.addEventListener('scroll', function() {
+                if (isSnapping) return;
+                const currentY = Math.max(0, window.pageYOffset || document.documentElement.scrollTop || 0);
+                scrollDirection = currentY > lastScrollY ? 1 : (currentY < lastScrollY ? -1 : 0);
+                lastScrollY = currentY;
+                scheduleSnap();
+            }, { passive: true });
+        })();
     });
 </script>
 @endpush
