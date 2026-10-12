@@ -473,6 +473,7 @@
       }
     @endif
 
+
     /* ── Overlapping Sections (Cuberto Elevated Card Stacking) ── */
     .section-overlap {
       position: -webkit-sticky;
@@ -1084,12 +1085,13 @@
         lenisScript.crossOrigin = 'anonymous';
         lenisScript.onload = function() {
           if (typeof Lenis === 'undefined') return;
+          const isHome = {{ request()->routeIs('home') ? 'true' : 'false' }};
           const lenis = new Lenis({
-            duration: 1.2,
+            duration: isHome ? 0.8 : 1.2,
             easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
             direction: 'vertical',
             smooth: true,
-            mouseMultiplier: 1,
+            mouseMultiplier: isHome ? 0.9 : 1,
             touchMultiplier: 0,
           });
 
