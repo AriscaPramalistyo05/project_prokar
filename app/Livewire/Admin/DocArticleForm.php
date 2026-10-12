@@ -30,6 +30,11 @@ class DocArticleForm extends Component
 
     public bool $isEditing = false;
 
+    // Order conflict modal state
+    public bool $showConflictModal = false;
+    public string $conflictArticleTitle = '';
+    public int $conflictOrder = 0;
+
     protected function rules(): array
     {
         $slugRule = $this->isEditing
@@ -66,8 +71,31 @@ class DocArticleForm extends Component
             $this->version = $docArticle->version;
             $this->existing_featured_image = $docArticle->featured_image;
         } else {
-            // Auto-set order to next available
-            $maxOrder = DocArticle::max('order') ?? 0;
+            $firstCategory = DocCategory::orderBy('order')->first();
+            $this->doc_category_id = $firstCategory?->id;
+            $maxOrder = DocArticle::where('doc_category_id', $this->doc_category_id)
+                ->whereNull('parent_id')
+                ->max('order') ?? 0;
+            $this->order = $maxOrder + 1;
+        }
+    }
+
+    public function updatedDocCategoryId(): void
+    {
+        if (!$this->isEditing) {
+            $maxOrder = DocArticle::where('doc_category_id', $this->doc_category_id)
+                ->when($this->parent_id, fn($q) => $q->where('parent_id', $this->parent_id), fn($q) => $q->whereNull('parent_id'))
+                ->max('order') ?? 0;
+            $this->order = $maxOrder + 1;
+        }
+    }
+
+    public function updatedParentId(): void
+    {
+        if (!$this->isEditing) {
+            $maxOrder = DocArticle::where('doc_category_id', $this->doc_category_id)
+                ->when($this->parent_id, fn($q) => $q->where('parent_id', $this->parent_id), fn($q) => $q->whereNull('parent_id'))
+                ->max('order') ?? 0;
             $this->order = $maxOrder + 1;
         }
     }
@@ -96,6 +124,44 @@ class DocArticleForm extends Component
     public function save(): void
     {
         $this->validate();
+
+        // Check if order number already exists in this scope (same category and parent)
+        $conflict = DocArticle::where('doc_category_id', $this->doc_category_id)
+            ->when($this->parent_id, fn($q) => $q->where('parent_id', $this->parent_id), fn($q) => $q->whereNull('parent_id'))
+            ->where('order', $this->order)
+            ->when($this->isEditing, fn($q) => $q->where('id', '!=', $this->docArticle->id))
+            ->first();
+
+        if ($conflict) {
+            $this->conflictArticleTitle = $conflict->title;
+            $this->conflictOrder = $this->order;
+            $this->showConflictModal = true;
+            return;
+        }
+
+        $this->executeSave(false);
+    }
+
+    public function confirmSaveAndShift(): void
+    {
+        $this->executeSave(true);
+    }
+
+    public function closeConflictModal(): void
+    {
+        $this->showConflictModal = false;
+    }
+
+    protected function executeSave(bool $shiftOthers = false): void
+    {
+        if ($shiftOthers) {
+            // Shift conflicting article and all subsequent articles down (+1)
+            DocArticle::where('doc_category_id', $this->doc_category_id)
+                ->when($this->parent_id, fn($q) => $q->where('parent_id', $this->parent_id), fn($q) => $q->whereNull('parent_id'))
+                ->when($this->isEditing, fn($q) => $q->where('id', '!=', $this->docArticle->id))
+                ->where('order', '>=', $this->order)
+                ->increment('order');
+        }
 
         $data = [
             'title' => $this->title,
@@ -133,13 +199,18 @@ class DocArticleForm extends Component
 
         if ($this->isEditing) {
             $this->docArticle->update($data);
-            $message = 'Artikel dokumentasi berhasil diperbarui.';
+            $message = $shiftOthers
+                ? 'Artikel berhasil diperbarui dan urutan artikel lainnya telah disesuaikan.'
+                : 'Artikel dokumentasi berhasil diperbarui.';
         } else {
             $data['author_id'] = auth()->id();
             DocArticle::create($data);
-            $message = 'Artikel dokumentasi berhasil dibuat.';
+            $message = $shiftOthers
+                ? 'Artikel berhasil dibuat dan urutan artikel lainnya telah disesuaikan.'
+                : 'Artikel dokumentasi berhasil dibuat.';
         }
 
+        $this->showConflictModal = false;
         session()->flash('notify', ['type' => 'success', 'message' => $message]);
         $this->redirect(route('admin.docs.index'), navigate: true);
     }

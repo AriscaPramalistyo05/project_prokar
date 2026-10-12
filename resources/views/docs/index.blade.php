@@ -23,11 +23,16 @@
       </div>
 
       {{-- Tombol Aksi Bersih --}}
-      <div class="pt-1">
+      <div class="pt-1 flex flex-wrap gap-2.5">
         <a href="{{ url('/docs/pengenalan-prokar-elektronik') }}" 
            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold text-xs sm:text-sm hover:opacity-90 transition-opacity shadow-xs">
           <span>Mulai Membaca</span>
           <i class="fa-solid fa-arrow-right text-xs"></i>
+        </a>
+        <a href="{{ route('docs.manual-book') }}" target="_blank"
+           class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold text-xs sm:text-sm border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-xs">
+          <i class="fa-solid fa-print text-xs"></i>
+          <span>Cetak Manual Book</span>
         </a>
       </div>
 

@@ -114,15 +114,26 @@ Route::domain($docsSubdomain)->group(function () {
         Route::get('/', [DocController::class, 'index'])->name('index');
         Route::get('/search', [DocController::class, 'search'])->name('search');
         Route::get('/category/{slug}', [DocController::class, 'category'])->name('category');
+        Route::get('/manual-book/print', [DocController::class, 'manualBook'])->name('manual-book');
         Route::get('/docs/{slug}', function ($slug) {
             if ($slug === 'dashboard') {
                 return redirect()->route('admin.dashboard');
             }
             return redirect()->to(url('/' . $slug), 301);
         });
+        Route::get('/{slug}/pdf', [DocController::class, 'downloadPdf'])
+            ->where('slug', '^(?!login|logout|register|search|api|docs|storage).*$')
+            ->name('download.pdf');
+        Route::get('/docs/{slug}/pdf', [DocController::class, 'downloadPdf'])
+            ->where('slug', '^(?!login|logout|register|search|api|docs|storage).*$');
+        Route::get('/{slug}/docx', [DocController::class, 'downloadDocx'])
+            ->where('slug', '^(?!login|logout|register|search|api|docs|storage).*$')
+            ->name('download.docx');
+        Route::get('/docs/{slug}/docx', [DocController::class, 'downloadDocx'])
+            ->where('slug', '^(?!login|logout|register|search|api|docs|storage).*$');
         Route::get('/{categorySlug}/{articleSlug}', [DocController::class, 'legacyShow'])
             ->where('categorySlug', '^(?!login|logout|register|search|api|docs|storage).*$')
-            ->where('articleSlug', '^(?!.*\.png|.*\.jpg|.*\.jpeg|.*\.webp|.*\.gif|.*\.svg).*$')
+            ->where('articleSlug', '^(?!pdf$|docx$|.*\.png|.*\.jpg|.*\.jpeg|.*\.webp|.*\.gif|.*\.svg).*$')
             ->name('legacy.show');
         Route::get('/{slug}', [DocController::class, 'resolve'])
             ->where('slug', '^(?!login|logout|register|search|api|docs|storage).*$')
@@ -138,9 +149,16 @@ Route::prefix('docs')->name('docs.')->group(function () {
     Route::get('/', [DocController::class, 'index'])->name('index');
     Route::get('/search', [DocController::class, 'search'])->name('search');
     Route::get('/category/{slug}', [DocController::class, 'category'])->name('category');
+    Route::get('/manual-book/print', [DocController::class, 'manualBook'])->name('manual-book');
+    Route::get('/{slug}/pdf', [DocController::class, 'downloadPdf'])
+        ->where('slug', '^(?!login|logout|register|search|api|storage).*$')
+        ->name('download.pdf');
+    Route::get('/{slug}/docx', [DocController::class, 'downloadDocx'])
+        ->where('slug', '^(?!login|logout|register|search|api|storage).*$')
+        ->name('download.docx');
     Route::get('/{categorySlug}/{articleSlug}', [DocController::class, 'legacyShow'])
         ->where('categorySlug', '^(?!login|logout|register|search|api|docs|storage).*$')
-        ->where('articleSlug', '^(?!.*\.png|.*\.jpg|.*\.jpeg|.*\.webp|.*\.gif|.*\.svg).*$')
+        ->where('articleSlug', '^(?!pdf$|docx$|.*\.png|.*\.jpg|.*\.jpeg|.*\.webp|.*\.gif|.*\.svg).*$')
         ->name('legacy.show');
     Route::get('/{slug}', [DocController::class, 'resolve'])
         ->where('slug', '^(?!login|logout|register|search|api|storage).*$')

@@ -173,6 +173,37 @@
 
     </div>
 
+    {{-- Order Conflict Confirmation Modal --}}
+    @if($showConflictModal)
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs">
+            <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 max-w-sm w-full p-5 space-y-3.5 animate-in fade-in zoom-in-95 duration-150">
+                <div class="space-y-1.5">
+                    <h4 class="text-base font-bold text-slate-900 dark:text-white">
+                        Nomor Urut Sudah Terpakai
+                    </h4>
+                    <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                        Nomor <strong>#{{ $conflictOrder }}</strong> sudah dipakai oleh <strong>"{{ $conflictArticleTitle }}"</strong>. Tetap simpan di nomor ini? Artikel lainnya akan otomatis bergeser ke bawah.
+                    </p>
+                </div>
+
+                <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+                    <button type="button"
+                            wire:click="closeConflictModal"
+                            class="btn btn-sm btn-ghost">
+                        Batal
+                    </button>
+                    <button type="button"
+                            wire:click="confirmSaveAndShift"
+                            wire:loading.attr="disabled"
+                            class="btn btn-sm btn-primary">
+                        <span wire:loading.remove wire:target="confirmSaveAndShift">Ya, Tetap Simpan</span>
+                        <span wire:loading wire:target="confirmSaveAndShift" class="loading loading-spinner loading-xs"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
+
 
 </div>
 

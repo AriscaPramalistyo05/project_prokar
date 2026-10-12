@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use App\Models\DocArticle;
 use App\Models\DocCategory;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 class DocController extends Controller
@@ -300,7 +301,8 @@ class DocController extends Controller
     }
 
     /**
-     * Normalize image URLs in article content to guarantee they load from storage.
+     * Normalize image URLs in article content to guarantee they load from relative storage ('self').
+     * Prevents CSP violations when APP_URL or local IP mismatches the browser's visiting origin.
      */
     private function normalizeImageUrls(?string $content): string
     {
@@ -308,21 +310,400 @@ class DocController extends Controller
             return '';
         }
 
-        $mainStorageUrl = rtrim(env('APP_URL', 'https://prokarelektronik.com'), '/') . '/storage/';
-
-        // Replace relative paths like ../../../storage/ or /storage/
+        // 1. Replace any absolute storage URLs (e.g. http://192.168.0.102:8000/storage/... or http://localhost:8000/storage/...)
+        //    with root-relative /storage/... so they load from 'self' regardless of IP or domain
         $content = preg_replace(
-            '/src=["\'](?:\.\.\/)+storage\/([^"\']+)["\']/i',
-            'src="' . $mainStorageUrl . '$1"',
+            '/src=["\']https?:\/\/[^\/"\']+\/storage\/([^"\']+)["\']/i',
+            'src="/storage/$1"',
             $content
         );
 
+        // 2. Replace relative paths like ../../../storage/
         $content = preg_replace(
-            '/src=["\']\/storage\/([^"\']+)["\']/i',
-            'src="' . $mainStorageUrl . '$1"',
+            '/src=["\'](?:\.\.\/)+storage\/([^"\']+)["\']/i',
+            'src="/storage/$1"',
+            $content
+        );
+
+        // 3. Ensure storage/... without leading slash gets leading slash
+        $content = preg_replace(
+            '/src=["\'](?!\/|https?:\/\/|data:)storage\/([^"\']+)["\']/i',
+            'src="/storage/$1"',
             $content
         );
 
         return $content;
+    }
+
+    /**
+     * Manual Book — Full documentation print layout for hardcopy/PDF.
+     * Aggregates ALL published articles from ALL accessible categories,
+     * grouped and sorted by database order. Content is sourced directly
+     * from the WYSIWYG HTML stored in the database — nothing is rewritten.
+     */
+    public function manualBook(Request $request)
+    {
+        $user = $request->user();
+
+        // Get all categories the current user can access, ordered by DB order
+        $allCategories = DocCategory::orderBy('order')
+            ->with(['publishedRootArticles' => function ($q) {
+                $q->with('publishedChildren');
+            }])
+            ->get()
+            ->filter(fn(DocCategory $cat) => $cat->isAccessibleBy($user));
+
+        // Normalize image URLs in every article so they render correctly in print
+        foreach ($allCategories as $cat) {
+            foreach ($cat->publishedRootArticles as $article) {
+                if (!empty($article->content)) {
+                    $article->content = $this->normalizeImageUrls($article->content);
+                }
+                foreach ($article->publishedChildren as $child) {
+                    if (!empty($child->content)) {
+                        $child->content = $this->normalizeImageUrls($child->content);
+                    }
+                }
+            }
+        }
+
+        return view('docs.manual-book', [
+            'categories' => $allCategories,
+        ]);
+    }
+
+    /**
+     * Download article documentation as A4 PDF (Academic User Guide Appendix Style).
+     */
+    public function downloadPdf(Request $request, string $slug)
+    {
+        $article = DocArticle::where('slug', $slug)
+            ->published()
+            ->with(['category', 'parent', 'author'])
+            ->first();
+
+        if (!$article) {
+            abort(404, 'Halaman dokumentasi tidak ditemukan.');
+        }
+
+        $category = $article->category;
+        $user = $request->user();
+
+        // Check category access permissions
+        if ($category && !$category->isAccessibleBy($user)) {
+            if (!$user) {
+                $loginUrl = $request->getHost() === env('DOCS_DOMAIN', 'docs.prokarelektronik.com')
+                    ? route('subdomain.login')
+                    : route('login');
+                return redirect()->guest($loginUrl);
+            }
+            abort(403, 'Anda tidak memiliki hak akses untuk mengunduh panduan internal ini.');
+        }
+
+        // Prepare content for DomPDF (ensure image paths and styling work cleanly)
+        $processedContent = $this->prepareContentForPdf($article->content);
+
+        // Featured image Base64 Data URI if available
+        $featuredImageDataUri = null;
+        if (!empty($article->featured_image)) {
+            $candidatePath = public_path('storage/' . $article->featured_image);
+            if (file_exists($candidatePath)) {
+                $ext = strtolower(pathinfo($candidatePath, PATHINFO_EXTENSION));
+                $mime = match ($ext) {
+                    'png' => 'image/png',
+                    'jpg', 'jpeg' => 'image/jpeg',
+                    'gif' => 'image/gif',
+                    'webp' => 'image/webp',
+                    'svg' => 'image/svg+xml',
+                    default => 'image/png',
+                };
+                $featuredImageDataUri = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($candidatePath));
+            }
+        }
+
+        // Build breadcrumbs matching docs web layout
+        $rootLabel = ($category && $category->role_access === 'teknisi')
+            ? 'SOP Teknisi'
+            : (($category && $category->role_access === 'super_admin') ? 'Panduan Admin' : 'Dokumentasi');
+
+        $breadcrumbs = [$rootLabel];
+        if ($category) {
+            $breadcrumbs[] = $category->name;
+        }
+        if ($article->parent) {
+            $breadcrumbs[] = $article->parent->title;
+        }
+        $breadcrumbs[] = $article->title;
+
+        $pdf = Pdf::loadView('pdf.doc-guide', [
+            'article' => $article,
+            'category' => $category,
+            'breadcrumbs' => $breadcrumbs,
+            'processedContent' => $processedContent,
+            'featuredImageDataUri' => $featuredImageDataUri,
+            'generatedAt' => now()->translatedFormat('d F Y, H:i') . ' WIB',
+        ])
+        ->setPaper('a4', 'portrait')
+        ->setOptions([
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => true,
+            'defaultFont' => 'DejaVu Sans',
+            'chroot' => public_path(),
+        ]);
+
+        $safeTitle = \Illuminate\Support\Str::slug($article->title);
+        $fileName = 'Panduan-' . ($safeTitle ?: 'Dokumen') . '-A4.pdf';
+
+        if ($request->query('view') === 'stream') {
+            return $pdf->stream($fileName);
+        }
+
+        return $pdf->download($fileName);
+    }
+
+    /**
+     * Prepare article HTML content specifically for DomPDF rendering.
+     * Encodes local storage images to Base64 Data URIs so DomPDF renders them reliably without path/protocol issues.
+     */
+    protected function prepareContentForPdf(?string $content): string
+    {
+        if (empty($content)) {
+            return '';
+        }
+
+        // Convert local storage image URLs to Base64 Data URIs
+        $content = preg_replace_callback('/<img\s+[^>]*src=["\']([^"\']+)["\'][^>]*>/i', function ($match) {
+            $imgTag = $match[0];
+            $src = $match[1];
+
+            if (str_starts_with($src, 'data:image')) {
+                return $imgTag;
+            }
+
+            // Extract relative storage path
+            $storageRelativePath = null;
+            if (preg_match('/storage\/(.+)$/i', $src, $subMatch)) {
+                $storageRelativePath = $subMatch[1];
+            }
+
+            if ($storageRelativePath) {
+                $localPath = public_path('storage/' . $storageRelativePath);
+                if (file_exists($localPath)) {
+                    $ext = strtolower(pathinfo($localPath, PATHINFO_EXTENSION));
+                    $mime = match ($ext) {
+                        'png' => 'image/png',
+                        'jpg', 'jpeg' => 'image/jpeg',
+                        'gif' => 'image/gif',
+                        'webp' => 'image/webp',
+                        'svg' => 'image/svg+xml',
+                        default => 'image/png',
+                    };
+                    $dataUri = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($localPath));
+                    return str_replace($src, $dataUri, $imgTag);
+                }
+            }
+
+            return $imgTag;
+        }, $content);
+
+        return $content;
+    }
+
+    /**
+     * Download article documentation as A4 DOCX (Academic User Guide Appendix Style).
+     */
+    public function downloadDocx(Request $request, string $slug)
+    {
+        $article = DocArticle::where('slug', $slug)
+            ->published()
+            ->with(['category', 'parent', 'author'])
+            ->first();
+
+        if (!$article) {
+            abort(404, 'Halaman dokumentasi tidak ditemukan.');
+        }
+
+        $category = $article->category;
+        $user = $request->user();
+
+        // Check category access permissions
+        if ($category && !$category->isAccessibleBy($user)) {
+            if (!$user) {
+                $loginUrl = $request->getHost() === env('DOCS_DOMAIN', 'docs.prokarelektronik.com')
+                    ? route('subdomain.login')
+                    : route('login');
+                return redirect()->guest($loginUrl);
+            }
+            abort(403, 'Anda tidak memiliki hak akses untuk mengunduh panduan internal ini.');
+        }
+
+        // Initialize PhpWord
+        $phpWord = new \PhpOffice\PhpWord\PhpWord();
+
+        // Default document settings
+        $phpWord->setDefaultFontName('Calibri');
+        $phpWord->setDefaultFontSize(11);
+
+        // Add section with A4 paper and academic margins: Top 3cm, Right 4cm, Bottom 3cm, Left 3cm
+        $section = $phpWord->addSection([
+            'paperSize' => 'A4',
+            'orientation' => 'portrait',
+            'marginTop' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(3),
+            'marginRight' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(4),
+            'marginBottom' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(3),
+            'marginLeft' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(3),
+        ]);
+
+        // Footer with academic appendix text and dynamic page numbering
+        $footer = $section->addFooter();
+        $footer->addPreserveText('Lampiran Dokumentasi Sistem — ' . ($category ? $category->name : 'Project Prokar') . ' | Halaman {PAGE} dari {NUMPAGES}', [
+            'name' => 'Calibri',
+            'size' => 9,
+            'color' => '64748B',
+            'italic' => true,
+        ], [
+            'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::RIGHT,
+        ]);
+
+        // Heading 1: Category Name (16px ≈ 12pt, BOLD, UPPERCASE)
+        $categoryName = $category ? strtoupper($category->name) : 'DOKUMENTASI SISTEM';
+        $section->addText($categoryName, [
+            'name' => 'Calibri',
+            'size' => 12,
+            'bold' => true,
+            'color' => '0F172A',
+        ], [
+            'spaceBefore' => 0,
+            'spaceAfter' => 60,
+        ]);
+
+        // Heading 2: Article Title (14px ≈ 10.5pt, BOLD, Capitalized Each Word)
+        $articleTitle = ucwords(strtolower($article->title));
+        $section->addText($articleTitle, [
+            'name' => 'Calibri',
+            'size' => 10.5,
+            'bold' => true,
+            'color' => '1E293B',
+        ], [
+            'spaceBefore' => 40,
+            'spaceAfter' => 140,
+        ]);
+
+        // Excerpt if available
+        if (!empty($article->excerpt)) {
+            $section->addText($article->excerpt, [
+                'name' => 'Calibri',
+                'size' => 10,
+                'italic' => true,
+                'color' => '475569',
+            ], [
+                'spaceBefore' => 0,
+                'spaceAfter' => 160,
+            ]);
+        }
+
+        // Featured image if available
+        if (!empty($article->featured_image)) {
+            $candidatePath = public_path('storage/' . $article->featured_image);
+            if (file_exists($candidatePath)) {
+                $section->addImage($candidatePath, [
+                    'width' => 420,
+                    'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER,
+                    'spaceBefore' => 60,
+                    'spaceAfter' => 160,
+                ]);
+            }
+        }
+
+        // Prepare and parse HTML content into Word elements
+        $cleanHtml = $this->prepareContentForDocx($article->content);
+        if (!empty($cleanHtml)) {
+            try {
+                \PhpOffice\PhpWord\Shared\Html::addHtml($section, $cleanHtml, false, false);
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning('DOCX HTML parse warning: ' . $e->getMessage());
+                $section->addText(strip_tags($article->content));
+            }
+        }
+
+        $safeTitle = \Illuminate\Support\Str::slug($article->title);
+        $fileName = 'Panduan-' . ($safeTitle ?: 'Dokumen') . '-A4.docx';
+
+        $writer = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
+
+        return response()->streamDownload(function () use ($writer) {
+            $writer->save('php://output');
+        }, $fileName, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+        ]);
+    }
+
+    /**
+     * Prepare article HTML content specifically for PhpWord XML parsing.
+     * Resolves local storage image paths and normalizes XML self-closing tags.
+     */
+    protected function prepareContentForDocx(?string $content): string
+    {
+        if (empty($content)) {
+            return '';
+        }
+
+        // 1. Resolve local image file paths and strip broken images so PhpWord does not throw
+        $content = preg_replace_callback('/<img\s+([^>]*?)src=["\']([^"\']+)["\']([^>]*?)>/i', function ($match) {
+            $before = $match[1];
+            $src = $match[2];
+            $after = $match[3];
+
+            if (str_starts_with($src, 'data:image')) {
+                return '<img ' . $before . 'src="' . $src . '"' . $after . ' />';
+            }
+
+            // Relative or domain storage URL
+            $storagePath = null;
+            if (preg_match('/storage\/(.+)$/i', $src, $m)) {
+                $storagePath = $m[1];
+            }
+
+            if ($storagePath) {
+                $local = public_path('storage/' . $storagePath);
+                if (file_exists($local)) {
+                    $normPath = str_replace('\\', '/', $local);
+                    return '<img ' . $before . 'src="' . $normPath . '"' . $after . ' />';
+                }
+            }
+
+            // Check if $src is directly a valid local file
+            if (file_exists($src)) {
+                $normPath = str_replace('\\', '/', $src);
+                return '<img ' . $before . 'src="' . $normPath . '"' . $after . ' />';
+            }
+
+            // If not found locally, drop the tag to prevent PhpWord crash
+            return '';
+        }, $content);
+
+        // 2. Convert common HTML entities that break XML parser
+        $content = str_replace(['&nbsp;', '&bull;', '&copy;', '&reg;', '&trade;'], ['&#160;', '&#8226;', '&#169;', '&#174;', '&#8482;'], $content);
+
+        // 3. Normalize self-closing tags
+        $content = preg_replace('/<br\s*\/?>/i', '<br/>', $content);
+        $content = preg_replace('/<hr\s*\/?>/i', '<hr/>', $content);
+        $content = preg_replace('/<img\s+([^>]*?)(?<!\/)>/i', '<img $1 />', $content);
+
+        // 4. Use DOMDocument to clean and convert HTML to valid XML
+        libxml_use_internal_errors(true);
+        $dom = new \DOMDocument();
+        $dom->loadHTML('<?xml encoding="utf-8" ?><body>' . $content . '</body>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        $body = $dom->getElementsByTagName('body')->item(0);
+        $cleanXml = '';
+        if ($body) {
+            foreach ($body->childNodes as $child) {
+                $cleanXml .= $dom->saveXML($child);
+            }
+        }
+        libxml_clear_errors();
+
+        return $cleanXml ?: $content;
     }
 }

@@ -15,7 +15,7 @@ class SecurityHeadersMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         // Suppress PHP version leak in response header
-        if (function_exists('header_remove')) {
+        if (function_exists('header_remove') && !headers_sent()) {
             header_remove('X-Powered-By');
         }
 
@@ -53,9 +53,25 @@ class SecurityHeadersMiddleware
 
         // 1. Content Security Policy (CSP)
         // Uses cryptographic Nonce ('nonce-...') for scripts and styles, with 'unsafe-eval' for Alpine.js / Livewire 3 expressions
-        $viteDev = (app()->environment('local', 'testing') || config('app.debug'))
+        $isDev = (app()->environment('local', 'testing') || config('app.debug'));
+        $viteDev = $isDev
             ? ' http://localhost:5173 http://127.0.0.1:5173 ws://localhost:5173 ws://127.0.0.1:5173'
             : '';
+
+        $localOrigins = '';
+        if ($isDev) {
+            $configuredAppUrl = config('app.url');
+            $requestOrigin = $request->getSchemeAndHttpHost();
+
+            $extraOrigins = array_filter(array_unique([
+                $configuredAppUrl ? rtrim($configuredAppUrl, '/') : null,
+                $requestOrigin,
+                'http://localhost:8000',
+                'http://127.0.0.1:8000',
+            ]));
+
+            $localOrigins = ' ' . implode(' ', $extraOrigins);
+        }
 
         $csp = implode('; ', [
             "default-src 'self'",
@@ -66,14 +82,14 @@ class SecurityHeadersMiddleware
             "style-src-elem 'self' 'unsafe-inline' 'nonce-{$nonce}' https://fonts.googleapis.com https://fonts.bunny.net https://cdnjs.cloudflare.com" . $viteDev,
             "style-src-attr 'unsafe-inline'",
             "font-src 'self' https://fonts.gstatic.com https://fonts.bunny.net data:" . $viteDev,
-            "img-src 'self' data: blob: https://prokarelektronik.com https://*.prokarelektronik.com https://images.unsplash.com https://storage.googleapis.com https://*.midtrans.com https://api.qrserver.com https://*.googleusercontent.com https://googleusercontent.com https://*.ggpht.com https://*.google.com https://ui-avatars.com" . $viteDev,
-            "connect-src 'self' https://prokarelektronik.com https://*.prokarelektronik.com https://cdn.jsdelivr.net https://www.gstatic.com https://*.firebaseio.com https://*.googleapis.com https://firebaseinstallations.googleapis.com https://fcmregistrations.googleapis.com https://www.googleapis.com https://fcm.googleapis.com https://app.midtrans.com https://app.sandbox.midtrans.com https://api.midtrans.com https://api.sandbox.midtrans.com https://www.emsifa.com wss://*.firebaseio.com https://cloud.umami.is https://gateway.umami.is https://gateway-us.umami.is https://*.umami.is" . $viteDev,
-            "frame-src 'self' https://app.midtrans.com https://app.sandbox.midtrans.com https://www.google.com https://prokarelektronik.com https://*.prokarelektronik.com",
+            "img-src 'self' data: blob: https://prokarelektronik.com https://*.prokarelektronik.com https://images.unsplash.com https://storage.googleapis.com https://*.midtrans.com https://api.qrserver.com https://*.googleusercontent.com https://googleusercontent.com https://*.ggpht.com https://*.google.com https://ui-avatars.com" . $viteDev . $localOrigins,
+            "connect-src 'self' https://prokarelektronik.com https://*.prokarelektronik.com https://cdn.jsdelivr.net https://www.gstatic.com https://*.firebaseio.com https://*.googleapis.com https://firebaseinstallations.googleapis.com https://fcmregistrations.googleapis.com https://www.googleapis.com https://fcm.googleapis.com https://app.midtrans.com https://app.sandbox.midtrans.com https://api.midtrans.com https://api.sandbox.midtrans.com https://www.emsifa.com wss://*.firebaseio.com https://cloud.umami.is https://gateway.umami.is https://gateway-us.umami.is https://*.umami.is" . $viteDev . $localOrigins,
+            "frame-src 'self' https://app.midtrans.com https://app.sandbox.midtrans.com https://www.google.com https://prokarelektronik.com https://*.prokarelektronik.com" . $localOrigins,
             "frame-ancestors 'self'",
             "worker-src 'self' blob:",
             "object-src 'none'",
             "base-uri 'self'",
-            "form-action 'self' https://app.midtrans.com https://app.sandbox.midtrans.com https://prokarelektronik.com https://*.prokarelektronik.com",
+            "form-action 'self' https://app.midtrans.com https://app.sandbox.midtrans.com https://prokarelektronik.com https://*.prokarelektronik.com" . $localOrigins,
         ]);
         $response->headers->set('Content-Security-Policy', $csp);
 

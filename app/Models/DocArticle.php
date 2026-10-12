@@ -158,6 +158,36 @@ class DocArticle extends Model
     }
 
     /**
+     * Get the PDF download URL path for this article.
+     */
+    public function getPdfUrlAttribute(): string
+    {
+        $docsSubdomain = env('DOCS_DOMAIN', 'docs.prokarelektronik.com');
+        $isSubdomain = request()->getHost() === $docsSubdomain;
+
+        if ($isSubdomain) {
+            return route('subdomain.docs.download.pdf', $this->slug);
+        }
+
+        return route('docs.download.pdf', $this->slug);
+    }
+
+    /**
+     * Get the DOCX download URL path for this article.
+     */
+    public function getDocxUrlAttribute(): string
+    {
+        $docsSubdomain = env('DOCS_DOMAIN', 'docs.prokarelektronik.com');
+        $isSubdomain = request()->getHost() === $docsSubdomain;
+
+        if ($isSubdomain) {
+            return route('subdomain.docs.download.docx', $this->slug);
+        }
+
+        return route('docs.download.docx', $this->slug);
+    }
+
+    /**
      * Get featured image URL.
      */
     public function getFeaturedImageUrlAttribute(): ?string

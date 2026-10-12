@@ -23,6 +23,21 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // Ensure PhpOffice packages are always autoloadable
+        spl_autoload_register(function ($class) {
+            if (str_starts_with($class, 'PhpOffice\\PhpWord\\')) {
+                $file = base_path('vendor/phpoffice/phpword/src/PhpWord/' . str_replace('\\', '/', substr($class, 18)) . '.php');
+                if (file_exists($file)) {
+                    require_once $file;
+                }
+            } elseif (str_starts_with($class, 'PhpOffice\\Math\\')) {
+                $file = base_path('vendor/phpoffice/math/src/Math/' . str_replace('\\', '/', substr($class, 15)) . '.php');
+                if (file_exists($file)) {
+                    require_once $file;
+                }
+            }
+        });
+
         if ($this->app->environment('local', 'testing') && class_exists(\Laravel\Dusk\DuskServiceProvider::class)) {
             $this->app->register(\Laravel\Dusk\DuskServiceProvider::class);
         }

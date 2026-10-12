@@ -11,14 +11,36 @@
 
   {{-- Article Header --}}
   <header class="border-b border-slate-200 dark:border-slate-800 pb-4 sm:pb-5">
-    <div class="flex flex-wrap items-center gap-2 mb-2.5">
-      <span class="text-[10px] sm:text-[11px] font-mono text-slate-400">
-        v{{ $article->version ?? '1.0' }}
-      </span>
+    <div class="flex flex-wrap items-center justify-between gap-2.5 mb-2.5">
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] sm:text-[11px] font-mono font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+          v{{ $article->version ?? '1.0' }}
+        </span>
+        <span class="text-[11px] text-slate-400 hidden xs:inline">
+          Diperbarui {{ $article->updated_at?->diffForHumans() ?? 'baru saja' }}
+        </span>
+      </div>
 
-      <span class="text-[11px] text-slate-400 ml-auto hidden xs:inline">
-        Diperbarui {{ $article->updated_at?->diffForHumans() ?? 'baru saja' }}
-      </span>
+      <div class="flex items-center gap-2">
+        <a href="{{ $article->pdf_url }}"
+           target="_blank"
+           title="Unduh Panduan PDF (Ukuran Kertas A4)"
+           class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 shadow-2xs hover:border-slate-300 dark:hover:border-slate-600 transition-all cursor-pointer group">
+          <svg class="w-3.5 h-3.5 text-rose-500 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.75 12 3 3m0 0 3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+          </svg>
+          <span>Unduh PDF</span>
+        </a>
+
+        <a href="{{ $article->docx_url }}"
+           title="Unduh Panduan Word DOCX (Ukuran Kertas A4)"
+           class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 shadow-2xs hover:border-slate-300 dark:hover:border-slate-600 transition-all cursor-pointer group">
+          <svg class="w-3.5 h-3.5 text-blue-600 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.75 12 3 3m0 0 3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+          </svg>
+          <span>Unduh Word (DOCX)</span>
+        </a>
+      </div>
     </div>
 
     {{-- Title --}}
