@@ -54,12 +54,9 @@ export default defineConfig({
                 entryFileNames: 'assets/[name]-[hash].js',
             },
         },
-        // Hapus console.log di production
-        terserOptions: {
-            compress: {
-                drop_console: true,
-                drop_debugger: true,
-            },
+        // Hapus console.log & debugger di production (esbuild, default minifier Vite)
+        esbuild: {
+            drop: ['console', 'debugger'],
         },
         // Kurangi chunk size warning threshold
         chunkSizeWarningLimit: 500,

@@ -104,15 +104,16 @@
 
 # ─── CACHE-CONTROL HEADERS ────────────────────────────────────
 <IfModule mod_headers.c>
-    # Vite build assets (hash-based) — cache 1 year, immutable
-    <FilesMatch "\.(css|js)$">
-        Header set Cache-Control "public, max-age=31536000, immutable"
+    # Service Worker files — WAJIB no-cache agar browser selalu cek update
+    <FilesMatch "(sw|firebase-messaging-sw)\.js$">
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
     </FilesMatch>
 
-    # Images & fonts — cache 6 months
-    <FilesMatch "\.(ico|jpg|jpeg|png|gif|webp|avif|svg|woff|woff2|ttf|eot)$">
-        Header set Cache-Control "public, max-age=15552000"
-        Header set Vary "Accept-Encoding"
+    # PWA manifest — no-cache agar metadata selalu fresh
+    <FilesMatch "manifest\.json$">
+        Header set Cache-Control "no-cache, must-revalidate"
     </FilesMatch>
 
     # HTML — no cache (always fresh for Livewire)
@@ -120,6 +121,12 @@
         Header set Cache-Control "no-cache, no-store, must-revalidate"
         Header set Pragma "no-cache"
         Header set Expires "0"
+    </FilesMatch>
+
+    # Images & fonts — cache 6 months
+    <FilesMatch "\.(ico|jpg|jpeg|png|gif|webp|avif|svg|woff|woff2|ttf|eot)$">
+        Header set Cache-Control "public, max-age=15552000"
+        Header set Vary "Accept-Encoding"
     </FilesMatch>
 
     # Videos
@@ -130,4 +137,13 @@
 
     # Keep-Alive
     Header set Connection keep-alive
+</IfModule>
+
+# ─── VITE BUILD ASSETS (hash-based filenames) ─────────────────
+# Hanya file di /build/assets/ yang memiliki content hash di filename
+# sehingga aman di-cache immutable selama 1 tahun.
+<IfModule mod_headers.c>
+    <If "%{REQUEST_URI} =~ m#^/build/assets/#">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </If>
 </IfModule>
