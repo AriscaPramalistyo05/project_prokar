@@ -203,6 +203,20 @@ class MaintenanceController extends Controller
         }
 
         try {
+            Artisan::call('route:cache');
+            $logs[] = 'route:cache success';
+        } catch (\Throwable $e) {
+            $logs[] = 'route:cache error: ' . $e->getMessage();
+        }
+
+        try {
+            Artisan::call('event:cache');
+            $logs[] = 'event:cache success';
+        } catch (\Throwable $e) {
+            $logs[] = 'event:cache error: ' . $e->getMessage();
+        }
+
+        try {
             Artisan::call('permission:cache-reset');
             $logs[] = 'permission:cache-reset success';
         } catch (\Throwable $e) {

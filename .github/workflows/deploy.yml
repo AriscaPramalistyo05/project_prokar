@@ -31,6 +31,13 @@ jobs:
           npm ci || npm install --no-audit
           npm run build
 
+      - name: 🔄 Auto-bump Service Worker Cache Version
+        run: |
+          DEPLOY_TS=$(date +%Y%m%d%H%M)
+          echo "Bumping SW CACHE_NAME to prokar-pwa-v2.${DEPLOY_TS}"
+          sed -i "s/const CACHE_NAME = 'prokar-pwa-v[^']*'/const CACHE_NAME = 'prokar-pwa-v2.${DEPLOY_TS}'/" public/firebase-messaging-sw.js
+          grep "CACHE_NAME" public/firebase-messaging-sw.js | head -1
+
       - name: 📂 Sync files via FTPS
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:

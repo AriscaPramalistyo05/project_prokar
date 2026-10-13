@@ -1,8 +1,9 @@
 // Prokar Elektronik - Unified Service Worker (PWA & FCM Push Notifications)
-const CACHE_NAME = 'prokar-pwa-v1';
+// CACHE_NAME harus di-bump setiap deployment agar cache lama otomatis dihapus.
+// Format: prokar-pwa-v{MAJOR}.{YYYYMMDD}
+const CACHE_NAME = 'prokar-pwa-v2.20261013';
 const PRECACHE_ASSETS = [
     '/',
-    '/manifest.json',
     '/icons/icon-192x192.png',
     '/icons/icon-512x512.png',
     '/icons/apple-touch-icon.png',
@@ -39,16 +40,16 @@ self.addEventListener('activate', function (event) {
     self.clients.claim();
 });
 
-// 3. Network First Strategy for Navigation & Dynamic Requests (Safe for Livewire)
+// 3. Fetch Strategy — Safe for Livewire, Vite hash-based assets, and PWA
 self.addEventListener('fetch', function (event) {
     // Only handle GET requests
     if (event.request.method !== 'GET') {
         return;
     }
 
-    const url = new URL(event.request.url);
+    var url = new URL(event.request.url);
 
-    // Don't cache admin, API, livewire update endpoints, or external payment gateways
+    // BYPASS: Don't intercept admin, API, livewire, or external payment gateways
     if (
         url.pathname.startsWith('/admin') ||
         url.pathname.startsWith('/api') ||
@@ -60,24 +61,52 @@ self.addEventListener('fetch', function (event) {
         return;
     }
 
-    // Static Assets: Cache First, fallback to Network
+    // BYPASS: Vite build assets (/build/) — JANGAN di-cache oleh SW.
+    // File sudah memiliki content hash di filename (app-CQS0izMm.css),
+    // sehingga browser HTTP cache + .htaccess immutable sudah cukup.
+    // Caching di SW justru menyebabkan stale asset karena manifest.json
+    // di HTML bisa mengarah ke hash baru tapi SW mengembalikan hash lama.
+    if (url.pathname.startsWith('/build/')) {
+        return;
+    }
+
+    // Static Assets (icons, images): Stale-While-Revalidate
+    // Tampilkan cached version langsung, tapi update cache di background.
     if (
         url.pathname.startsWith('/icons/') ||
-        url.pathname.startsWith('/images/') ||
-        url.pathname.startsWith('/build/') ||
-        url.pathname === '/manifest.json'
+        url.pathname.startsWith('/images/')
     ) {
         event.respondWith(
-            caches.match(event.request).then(function (response) {
-                return response || fetch(event.request).then(function (networkResponse) {
-                    if (networkResponse && networkResponse.status === 200) {
-                        const responseClone = networkResponse.clone();
-                        caches.open(CACHE_NAME).then(function (cache) {
-                            cache.put(event.request, responseClone);
-                        });
-                    }
-                    return networkResponse;
+            caches.open(CACHE_NAME).then(function (cache) {
+                return cache.match(event.request).then(function (cachedResponse) {
+                    var fetchPromise = fetch(event.request).then(function (networkResponse) {
+                        if (networkResponse && networkResponse.status === 200) {
+                            cache.put(event.request, networkResponse.clone());
+                        }
+                        return networkResponse;
+                    }).catch(function () {
+                        return cachedResponse;
+                    });
+                    return cachedResponse || fetchPromise;
                 });
+            })
+        );
+        return;
+    }
+
+    // manifest.json: Network First (agar PWA metadata selalu fresh)
+    if (url.pathname === '/manifest.json') {
+        event.respondWith(
+            fetch(event.request).then(function (networkResponse) {
+                if (networkResponse && networkResponse.status === 200) {
+                    var responseClone = networkResponse.clone();
+                    caches.open(CACHE_NAME).then(function (cache) {
+                        cache.put(event.request, responseClone);
+                    });
+                }
+                return networkResponse;
+            }).catch(function () {
+                return caches.match(event.request);
             })
         );
         return;
