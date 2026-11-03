@@ -67,9 +67,6 @@ Aplikasi ini melayani 3 pilar bisnis utama:
 * Notification Center dropdown di panel admin dengan tab kategori dan fitur *Tandai Semua Dibaca*.
 * Mini toggle switch yang simpel dan responsif di topbar admin.
 
-### 📱 Progressive Web App (PWA)
-* Dapat diinstal langsung ke layar utama HP/desktop seperti aplikasi native via `manifest.json`.
-* Floating Install Banner berdesain *Clean White Card* dengan tombol unduh ber-kontras tinggi.
 
 ### 💻 Antarmuka Admin Responsif & Adaptif
 * **Mobile View**: Sidebar drawer full-height (*100dvh*) dengan tombol tutup (`X` SVG) di samping logo.
